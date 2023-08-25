@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 class Config:
     def __init__(self, config_file = None):
         self.delay = 0
-        self.samplerate = 48000
+        self.samplerate = 44100
         if config_file:
           self.set_config_from_yaml(self.read_and_validate_yaml(config_file))
 
