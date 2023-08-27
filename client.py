@@ -17,7 +17,7 @@ class CommandHandler:
         }
 
     def handle_command(self, choice, client_socket):
-        command = self.commands.get(choice, client_socket)
+        command = self.commands.get(choice)
         if command:
             command[0](client_socket)
         else:
