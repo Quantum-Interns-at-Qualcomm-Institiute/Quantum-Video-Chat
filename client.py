@@ -152,6 +152,10 @@ class Client:
 
     # Close all connections
     def __del__(self):
+        if self.server_socket:
+            self.server_socket.close()
+        if self.peer_socket:
+            self.peer_socket.close()
         return
 
 
