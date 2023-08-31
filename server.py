@@ -19,6 +19,10 @@ class UserIDManager:
 
     def get_addr(self, query_id):
         return self.client_ids.get(query_id, None)
+    
+    def del_id(self, user_id):
+        if self.id_exists(user_id):
+            del self.client_ids[user_id]
 
 
 class ClientHandler(threading.Thread):
@@ -36,6 +40,8 @@ class ClientHandler(threading.Thread):
             logging.error(f"Exception while handling client {self.addr}: {str(e)}", exc_info=True)
         finally:
             self.conn.close()
+            if self.user_id:
+                self.user_id_manager.del_id(self.user_id)
             logging.info(f"Connection closed with {self.addr}")
 
     def handle(self):
@@ -87,6 +93,7 @@ class ClientHandler(threading.Thread):
             logging.error(f"Failed to get address for ID {query_id}")
             self.conn.sendall("Failed to get address.".encode())
         else:
+            self.conn.sendall('Address located'.encode())
             response = f"{target_addr[0]}:{target_addr[1]}"
             self.conn.sendall(response.encode())
             logging.info(f"Sent address {response} to client {self.addr}")
@@ -101,6 +108,9 @@ class ClientHandler(threading.Thread):
         logging.info(f"Ping received from client {self.addr}")
         self.conn.sendall(b"Pong")
 
+    def __del__(self):
+        print('ClientHandler deleted')
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
@@ -114,6 +124,7 @@ if __name__ == "__main__":
         user_id_manager = UserIDManager()
         while True:
             conn, addr = server_socket.accept()
+            # How do we make 
             client_handler = ClientHandler(conn, addr, user_id_manager)
             client_handler.start()
 
