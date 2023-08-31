@@ -93,7 +93,7 @@ class ClientHandler(threading.Thread):
             logging.error(f"Failed to get address for ID {query_id}")
             self.conn.sendall("Failed to get address.".encode())
         else:
-            self.conn.sendall('Address located'.encode())
+            # self.conn.sendall('Address located'.encode())
             response = f"{target_addr[0]}:{target_addr[1]}"
             self.conn.sendall(response.encode())
             logging.info(f"Sent address {response} to client {self.addr}")
