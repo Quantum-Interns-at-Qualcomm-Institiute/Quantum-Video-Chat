@@ -1,4 +1,3 @@
-# Importing required libraries
 import socket
 import threading
 import logging
@@ -43,7 +42,7 @@ class ClientHandler(threading.Thread):
         self.user_id = self.user_id_manager.generate_id(self.addr)
         self.user_id_manager.add_id(self.user_id, self.addr)
         logging.info(f"Assigned ID {self.user_id} to {self.addr}")
-        self.conn.sendall(f"Your ID is {self.user_id}".encode())
+        self.conn.sendall(f"Your ID/Port number is {self.user_id} {self.addr[1]}".encode())
         while True:
             command = self.conn.recv(1024).decode()
             if not command:
