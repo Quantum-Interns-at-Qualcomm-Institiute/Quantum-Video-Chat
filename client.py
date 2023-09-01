@@ -2,7 +2,10 @@ import socket
 import logging
 import threading
 import select
+from PIL import Image, ImageFile
+from io import BytesIO
 from threading import Thread
+
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -15,32 +18,42 @@ class CommandHandler:
             '2': (self.client.ping_server, 'Ping server'),
             '3': (self.client.connect_to_client_by_id, 'Connect to client'),
             '4': (self.client.listen_for_connections, 'Listen for connections'),
-            '5': (self.client.send_text, 'Send text')
+            '5': (self.client.send_text, 'Send text'),
+            '6': (self.client.send_image, 'Send image')
         }
         self.use_peer = {
             '1': False,
             '2': False,
             '3': False,
             '4': False,
-            '5': True
+            '5': True,
+            '6': True
         }
 
     def handle_command(self, choice, client_socket):
         command = self.commands.get(choice, client_socket)
         if command:
+            self.client.in_command = True
             command[0](client_socket)
+            self.client.in_command = False
         else:
             print("Invalid command. Try again.")
 
     def process_command(self, command, client_socket):
         handlers = {
-            '5': (self.client.receive_text, 'Receive text')
+            '5': (self.client.receive_text, 'Receive text'),
+            '6': (self.client.receive_image, 'Receive image')
         }
         handler = handlers.get(command)
         if handler:
+            self.client.in_command = True
             handler[0](client_socket)
+            self.client.in_command = False
         else:
-            logging.warning(f"Unknown command {command} from client")
+            if command == "Dummy message":
+                client_socket.sendall(b"Dummy message")
+            else:
+                logging.warning(f"Unknown command {command} from client")
 
 
 class Client:
@@ -50,6 +63,7 @@ class Client:
         self.user_id = None
         self.listening_socket = None
         self.peer_socket = None
+        self.in_command = False
 
     def start_listening(self):
         self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,8 +75,9 @@ class Client:
         self.start_listening()
         # while self.listening_socket:
         conn, addr = self.listening_socket.accept()
+        self.peer_socket = conn
         self.handle_connection(conn)
-        self.listening_socket.close()
+        # self.peer_socket.close()
         
             # readable, _, _ = select.select([self.listening_socket], [], [], 0.1)
             # if readable:
@@ -71,17 +86,21 @@ class Client:
             #     self.listening_socket.close()
 
     def handle_connection(self, conn):
-        with conn:
-            logging.info(f"Connection established with {conn.getpeername()}")
-            conn.sendall(b"Hello from client!")
-            response = conn.recv(1024).decode()
-            logging.info(f"Received: {response}")
-            peer_thread = Thread(target = self.handle_peer_commands, args = (conn,))
-            peer_thread.start()
-            peer_thread.join()
+        # with conn:
+        logging.info(f"Connection established with {conn.getpeername()}")
+        conn.sendall(b"Hello from client!")
+        response = conn.recv(1024).decode()
+        host, port = response.split(" ")[-1].split(":")
+        # self.peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.peer_socket.connect((host, int(port)))
+        self.peer_thread = Thread(target = self.handle_peer_commands, args = (conn,))
+        self.peer_thread.start()
+        # peer_thread.join()
             
     def handle_peer_commands(self, conn):
         while True:
+            if self.in_command:
+                continue
             command = conn.recv(1024).decode()
             if not command:
                 if command != "":
@@ -139,10 +158,13 @@ class Client:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             client_socket.connect((host, port))
-            client_socket.sendall(b"Hello!")
+            # client_socket.listen(1)
+            client_socket.sendall(f"Address: {self.host}:{self.port+2}".encode())
             response = client_socket.recv(1024).decode()
             logging.info(f"Handshake response: {response}")
             self.peer_socket = client_socket
+            peer_thread = Thread(target = self.handle_peer_commands, args = (client_socket,))
+            peer_thread.start()
         except Exception as e:
             logging.error(f"Exception while handshaking with client: {str(e)}", exc_info=True)
 
@@ -165,6 +187,34 @@ class Client:
     def receive_text(self, client_socket):
         message = client_socket.recv(1024).decode()
         logging.info(f"Peer says: {message}")
+
+    def send_image(self, client_socket):
+        img_path = input("Enter image path: ")
+        with Image.open(img_path) as image:
+            width, height = image.size
+            client_socket.sendall(f"{width} {height}".encode())
+            client_socket.recv(1024)
+            # client_socket.sendall(image.tobytes())
+            with BytesIO() as output:
+                image.save(output, format="JPEG")  # You can change the format if needed (e.g., PNG)
+                image_bytes = output.getvalue()
+                client_socket.sendall(image_bytes)
+    
+    def receive_image(self, client_socket):
+        size = client_socket.recv(1024).decode().split(" ")
+        size = (int(size[0]), int(size[1]))
+        client_socket.sendall(b"Dummy message")
+        client_socket.recv(1024)
+        client_socket.sendall(b"Size received")
+        image_bytes = client_socket.recv(40960000)
+        print(len(image_bytes), size[0]*size[1])
+        # image = Image.frombytes('RGB', size, message)
+        with BytesIO(image_bytes) as input_buffer:
+            image = Image.open(input_buffer)
+            # image = Image.open(BytesIO(message))
+            ImageFile.LOAD_TRUNCATED_IMAGES = True
+            image.show()
+            logging.info(f"Peer sends: {image}")
 
 
 
