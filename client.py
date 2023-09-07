@@ -5,7 +5,9 @@ import select
 from PIL import Image, ImageFile
 from io import BytesIO
 from threading import Thread
-
+import cv2
+import time
+import numpy as np
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +21,8 @@ class CommandHandler:
             '3': (self.client.connect_to_client_by_id, 'Connect to client'),
             '4': (self.client.listen_for_connections, 'Listen for connections'),
             '5': (self.client.send_text, 'Send text'),
-            '6': (self.client.send_image, 'Send image')
+            '6': (self.client.send_image, 'Send image'),
+            '7': (self.client.send_video, 'Send video')
         }
         self.use_peer = {
             '1': False,
@@ -27,7 +30,8 @@ class CommandHandler:
             '3': False,
             '4': False,
             '5': True,
-            '6': True
+            '6': True,
+            '7': True
         }
 
     def handle_command(self, choice, client_socket):
@@ -42,7 +46,8 @@ class CommandHandler:
     def process_command(self, command, client_socket):
         handlers = {
             '5': (self.client.receive_text, 'Receive text'),
-            '6': (self.client.receive_image, 'Receive image')
+            '6': (self.client.receive_image, 'Receive image'),
+            '7': (self.client.receive_video, 'Receive video')
         }
         handler = handlers.get(command)
         if handler:
@@ -64,6 +69,8 @@ class Client:
         self.listening_socket = None
         self.peer_socket = None
         self.in_command = False
+        self.frame = None
+        self.res = (160, 120)
 
     def start_listening(self):
         self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -216,6 +223,36 @@ class Client:
             image.show()
             logging.info(f"Peer sends: {image}")
 
+    def send_video(self, client_socket):
+        cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            message = cv2.imencode('.jpg', frame)[1].tostring()
+            client_socket.sendall(message)
+            # logging.info(f"Peer sends: {len(message)}")
+            # time.sleep(0.1)
+        cap.release()
+        client_socket.sendall(b"End of video")
+
+    def receive_video(self, client_socket):
+        while True:
+            message = b""
+            while len(message) < self.res[0]*self.res[1]*3:
+                message += client_socket.recv(4096000)
+            if message == b"End of video":
+                break
+            # logging.info(f"Peer sends: {len(message)}")
+            nparr = np.fromstring(message, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            self.frame = frame
+
+            # time.sleep(0.1)
+        cv2.destroyAllWindows()
+
 
 
 
@@ -228,4 +265,14 @@ if __name__ == "__main__":
     # PORT = random.randint(60000, 70000)
 
     client = Client(HOST, PORT)
-    client.connect()
+    # client.connect()
+    client_thread = Thread(target = client.connect, args = ())
+    client_thread.start()
+    # cv2.resizeWindow("Peer", (client.res[0], client.res[1]))
+    while True:
+        # print(client.frame)
+        if not client.frame is None:
+            # print(client.frame)
+            cv2.imshow("Peer", client.frame)
+            cv2.waitKey(1)
+        # time.sleep(0.1)
