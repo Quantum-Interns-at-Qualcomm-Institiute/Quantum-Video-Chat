@@ -11,9 +11,9 @@ from aiortc import (
     RTCSessionDescription,
     VideoStreamTrack,
 )
-from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
+from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaStreamTrack
 from aiortc.contrib.signaling import BYE, add_signaling_arguments, create_signaling
-from av import VideoFrame
+from av import VideoFrame, AudioFrame
 
 
 class FlagVideoStreamTrack(VideoStreamTrack):
@@ -87,9 +87,15 @@ async def run(pc, player, recorder, signaling, role):
             pc.addTrack(FlagVideoStreamTrack())
 
     @pc.on("track")
-    def on_track(track):
+    async def on_track(track: MediaStreamTrack):
         print("Receiving %s" % track.kind)
-        recorder.addTrack(track)
+        # recorder.addTrack(track)
+        while True:
+            frame = await track.recv()
+            if isinstance(frame, VideoFrame):
+                frame = frame.to_ndarray(format="bgr24")
+                cv2.imshow("recv", frame)
+                cv2.waitKey(1)
 
     # connect signaling
     await signaling.connect()
@@ -135,19 +141,23 @@ if __name__ == "__main__":
     # create signaling and peer connection
     signaling = create_signaling(args)
     pc = RTCPeerConnection()
-    
 
     # create media source
     if args.play_from:
         player = MediaPlayer(args.play_from)
     else:
         player = None
+    player = MediaPlayer('default:none', format='avfoundation', options={
+        'framerate': '30', 
+        'video_size': '640x480'
+    })
 
     # create media sink
     if args.record_to:
         recorder = MediaRecorder(args.record_to)
     else:
         recorder = MediaBlackhole()
+    # recorder = MediaRecorder('recording.mp4')
 
     # run event loop
     loop = asyncio.get_event_loop()
