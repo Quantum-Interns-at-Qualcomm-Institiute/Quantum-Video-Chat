@@ -115,6 +115,7 @@ class ClientHandler(threading.Thread):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     HOST = '127.0.0.1'
+    # HOST = 'ENTER SERVER IP HERE'
     PORT = 65431
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

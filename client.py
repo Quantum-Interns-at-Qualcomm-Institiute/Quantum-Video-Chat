@@ -70,6 +70,7 @@ class Client:
         self.peer_socket = None
         self.in_command = False
         self.frame = None
+        self.peer_frame = None
         self.res = (160, 120)
 
     def start_listening(self):
@@ -229,6 +230,7 @@ class Client:
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
         while True:
             ret, frame = cap.read()
+            self.frame = frame
             if not ret:
                 break
             message = cv2.imencode('.jpg', frame)[1].tostring()
@@ -248,7 +250,7 @@ class Client:
             # logging.info(f"Peer sends: {len(message)}")
             nparr = np.fromstring(message, np.uint8)
             frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            self.frame = frame
+            self.peer_frame = frame
 
             # time.sleep(0.1)
         cv2.destroyAllWindows()
@@ -261,6 +263,7 @@ import random
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     HOST = '127.0.0.1'
+    # HOST = 'ENTER SERVER IP HERE'
     PORT = 65431
     # PORT = random.randint(60000, 70000)
 
@@ -271,8 +274,9 @@ if __name__ == "__main__":
     # cv2.resizeWindow("Peer", (client.res[0], client.res[1]))
     while True:
         # print(client.frame)
-        if not client.frame is None:
+        if not client.frame is None and not client.peer_frame is None:
             # print(client.frame)
-            cv2.imshow("Peer", client.frame)
+            cv2.imshow("Peer", client.peer_frame)
+            cv2.imshow("Self", client.frame)
             cv2.waitKey(1)
         # time.sleep(0.1)
