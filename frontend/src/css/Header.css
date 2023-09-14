@@ -1,0 +1,31 @@
+.header {
+    font-family: var(--heading-font)  
+}
+
+.header h1 {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translate(-50%);
+    font-size: 80px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.header img#logo {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+
+    /* max-width: 175px; */
+    max-height: 100px;
+}
+
+.header .waveforms {
+    position: absolute;
+    top: 40p;
+    right: 40px;
+    
+    font-size: 32px;
+    color: var(--waveformsblue)
+}

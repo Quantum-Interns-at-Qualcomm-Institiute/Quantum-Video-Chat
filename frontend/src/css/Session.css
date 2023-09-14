@@ -1,0 +1,135 @@
+#go-back {
+    position: absolute;
+}
+
+.session-content {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+
+    padding: 50px;
+    padding-top: 200px;
+}
+
+.session-content .left {
+    flex: 13;
+    display: flex;
+    flex-direction: column;
+    margin-right: 25px;
+}
+
+.session-content .left .info {
+    display: flex;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.session-content .video-stream {
+    aspect-ratio: 16/9;
+    width: 100%;
+    background-color: black;
+}
+
+.session-content .right {
+    display: flex;
+    flex-direction: column;
+    flex: 7;
+    margin-left: 25px;
+}
+
+.session-content .right .chat {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    
+    background-color: rgb(216, 216, 216);
+    border-radius: 10px;
+}
+
+.session-content .chat .messages {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.session-content .chat .message {
+    margin: 5px 10px 0px;
+}
+
+.session-content .chat .message span {
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: black;
+}
+
+.session-content .chat #incoming-message span {
+    background-color: #00FFC2;
+
+}
+
+.session-content .chat #outgoing-message span {
+    background-color: #00C2FF;
+    float: right;
+
+}
+
+.session-content .chat .typing {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+}
+
+.session-content .chat #text {
+    flex-grow: 1;
+    height: 50px;
+    border: none;
+    outline: none;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding-left: 10px;
+    font-size: 18px;
+}
+
+.session-content .chat #send {
+    border:none;
+    width: 75px;
+    height: 50px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    background-color: rgb(0, 165, 0);
+    font-family: var(--heading-font);
+    font-size: 18px;
+    color: white;
+
+    cursor: pointer;
+}
+
+.session-content .right #quit {
+    height: 50px;
+    margin: 20px 0 0;
+    border-radius: 10px;
+    border: none;
+
+    background-color: rgb(255, 44, 44);
+    font-family: var(--heading-font);
+    font-size: 32px;
+    color: white;
+
+    cursor: pointer;
+}
+
+.session-content .chat #send:hover, .session-content .right #quit:hover {
+    filter: brightness(.95);
+}
+
+.session-content .chat #send:active, .session-content .right #quit:active {
+    filter: brightness(.9);
+}
