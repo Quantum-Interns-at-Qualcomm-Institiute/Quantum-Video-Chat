@@ -8,6 +8,8 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
+from encryption import EncryptionScheme, XOR
+import random
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -188,12 +190,39 @@ class Client:
         response = client_socket.recv(1024).decode()
         logging.info(f"Server response: {response}")
 
+    def generateKey(self,text):
+        return ''.join([str(random.randint(0, 1)) for _ in range(len(text))])
+
     def send_text(self, client_socket):
         text = input("Enter text: ")
-        client_socket.sendall(text.encode())
+
+        #converts input text to bitstring
+        bitstring = ""
+        for char in text:
+            binary_char = bin(ord(char))[2:].zfill(8)
+            bitstring += binary_char
+
+        key = self.generateKey(bitstring) # hard-coded key for now, will use methods from other classes later
+        encoder = XOR()
+        encoded_bitstring = encoder.encrypt(bitstring,key)
+        client_socket.sendall(encoded_bitstring)
     
     def receive_text(self, client_socket):
-        message = client_socket.recv(1024).decode()
+        encoded_bitstring = client_socket.recv(1024)
+
+        key = self.generateKey(encoded_bitstring)
+        decoder = XOR()
+        decoded_bitstring = decoder.decrypt(encoded_bitstring,key)
+
+        # converts decoded bitstring to text
+        message = ""
+        for i in range(0, len(decoded_bitstring), 8):
+            # Extract 8 bits at a time and convert to an integer
+            eight_bits = decoded_bitstring[i:i + 8]
+            char_code = int(eight_bits, 2)
+            
+            # Convert the integer to a character and append to the result
+            message += chr(char_code)
         logging.info(f"Peer says: {message}")
 
     def send_image(self, client_socket):
