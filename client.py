@@ -10,6 +10,7 @@ import time
 import numpy as np
 from encryption import EncryptionScheme, XOR
 import random
+from bitarray import bitarray
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -190,39 +191,39 @@ class Client:
         response = client_socket.recv(1024).decode()
         logging.info(f"Server response: {response}")
 
-    def generateKey(self,text):
-        return ''.join([str(random.randint(0, 1)) for _ in range(len(text))])
+    def generateKey(self,length):
+        key = bitarray(length)
+        for i in range(length):
+            key[i] = random.getrandbits(1)
+        return key
 
     def send_text(self, client_socket):
         text = input("Enter text: ")
 
-        #converts input text to bitstring
-        bitstring = ""
-        for char in text:
-            binary_char = bin(ord(char))[2:].zfill(8)
-            bitstring += binary_char
+        #text to bitstring
+        encoded_bytes = text.encode('utf-8')
+        bit_array = bitarray()
+        bit_array.frombytes(encoded_bytes)
+        key = self.generateKey(len(bit_array))
 
-        key = self.generateKey(bitstring) # hard-coded key for now, will use methods from other classes later
-        encoder = XOR()
-        encoded_bitstring = encoder.encrypt(bitstring,key)
-        client_socket.sendall(encoded_bitstring)
+        #encrypt
+        encrypter = XOR()
+        encrypted = encrypter.encrypt(bit_array,key)
+
+        #encode and send
+        key_data = (key + encrypted).to01()
+        client_socket.sendall(key_data.encode())
     
     def receive_text(self, client_socket):
-        encoded_bitstring = client_socket.recv(1024)
-
-        key = self.generateKey(encoded_bitstring)
-        decoder = XOR()
-        decoded_bitstring = decoder.decrypt(encoded_bitstring,key)
-
-        # converts decoded bitstring to text
-        message = ""
-        for i in range(0, len(decoded_bitstring), 8):
-            # Extract 8 bits at a time and convert to an integer
-            eight_bits = decoded_bitstring[i:i + 8]
-            char_code = int(eight_bits, 2)
-            
-            # Convert the integer to a character and append to the result
-            message += chr(char_code)
+        key_data = client_socket.recv(1024).decode()
+        key = bitarray(key_data[:len(key_data)//2])
+        data = bitarray(key_data[len(key_data)//2:])
+        decrypter = XOR()
+        decrypted = decrypter.decrypt(data,key)
+        bitstring = decrypted.to01()
+        bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
+        message = bytes_data.decode('utf-8')
+        
         logging.info(f"Peer says: {message}")
 
     def send_image(self, client_socket):
