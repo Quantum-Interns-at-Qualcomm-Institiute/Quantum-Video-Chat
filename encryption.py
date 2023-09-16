@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from bitarray import bitarray
 
 class EncryptionScheme(ABC):
   
@@ -38,29 +39,18 @@ class KeyExchange(ABC):
 
 class XOR(EncryptionScheme):
 
-    # data and key are bitstrings with same length
+    # data and key are bit arrays with same length
     def encrypt(self, data, key):
-        if len(key) != len(data):
-            raise ValueError("length of data must be equal to length of key")
-        ans = ""
-        for i in range(len(key)):
-            ans += "0" if data[i]==key[i] else "1"
-        return ans
+        result = bitarray()
+        for bit1, bit2 in zip(data, key):
+            result.append(bit1 ^ bit2)
+        
+        return result
     
-    # data and key are bitstrings with same length
+    # data and key are bit arrays with same length
     def decrypt(self, data, key):
-        ans = ""
-        for i in range(len(key)):
-            ans += "0" if data[i]==key[i] else "1"
-        return ans
-
-if __name__ == "__main__":
-    encoder = XOR()
-    text = "0101010"
-    key = "1010101"
-    encoded = encoder.encrypt(text,key)
-    print(encoded)
-    decoded = encoder.decrypt(encoded,key)
-    print(decoded)
-    print(decoded==text)
-    encoder.encrypt(text,"00000")
+        result = bitarray()
+        for bit1, bit2 in zip(data, key):
+            result.append(bit1 ^ bit2)
+        
+        return result
