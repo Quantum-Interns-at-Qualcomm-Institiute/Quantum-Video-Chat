@@ -1,10 +1,14 @@
 import argparse
 import asyncio
 import logging
+from threading import Thread
 import math
+import pyaudio
+
+import sounddevice as sd
 
 import cv2
-import numpy
+import numpy as np
 from aiortc import (
     RTCIceCandidate,
     RTCPeerConnection,
@@ -14,7 +18,7 @@ from aiortc import (
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaStreamTrack
 from aiortc.contrib.signaling import BYE, add_signaling_arguments, create_signaling
 from av import VideoFrame, AudioFrame
-
+# MediaStreamTrack.stop = lambda: None
 
 # class FlagVideoStreamTrack(VideoStreamTrack):
 #     """
@@ -110,7 +114,7 @@ from av import VideoFrame, AudioFrame
 #             raise MediaStreamError
 #         return encode(self._frame)
 
-async def run(pc, player: MediaPlayer, recorder, signaling, role):
+async def run(pc: RTCPeerConnection, player: MediaPlayer, recorder, signaling, role):
     def add_tracks():
         if player and player.audio:
             pc.addTrack(player.audio)
@@ -120,20 +124,42 @@ async def run(pc, player: MediaPlayer, recorder, signaling, role):
         # else:
         #     pc.addTrack(FlagVideoStreamTrack())
 
+    async def video_track(track: VideoStreamTrack):
+        # track.add_listener("event", lambda event: print(event))
+        while True:
+            # print("track execution %s" % track.kind)
+            frame: VideoFrame = await track.recv()
+            # print("track receive %s" % track.kind)
+            frame = frame.to_ndarray(format="bgr24")
+            cv2.imshow("recv", frame)
+            cv2.waitKey(1)
+
+    async def audio_track(track: MediaStreamTrack):
+        # track.add_listener("event", lambda event: print(event))
+        stream = pyaudio.PyAudio().open(format=pyaudio.paFloat32, rate=44100, channels=1, output=True)
+        stream.start_stream()
+        while True:
+            # print("track execution %s" % track.kind)
+            frame: AudioFrame = await track.recv()
+            # print("track receive %s" % track.kind)
+            frame = frame.to_ndarray().astype(np.float32).tostring()
+            stream.write(frame)
+    
     @pc.on("track")
     async def on_track(track: MediaStreamTrack):
         print("Receiving %s" % track.kind)
-        # recorder.addTrack(track)
         if track.kind == "video":
-            track: VideoStreamTrack = track
-            while True:
-                frame = await track.recv()
-                frame = frame.to_ndarray(format="bgr24")
-                cv2.imshow("recv", frame)
-                cv2.waitKey(1)
+            await video_track(track)
+            # await asyncio.ensure_future(video_track(track))
+
+        if track.kind == "audio":
+            await audio_track(track)
+            # await asyncio.ensure_future(audio_track(track))
 
     # connect signaling
     await signaling.connect()
+
+    print("Ready for signaling")
 
     if role == "offer":
         # send offer
@@ -147,7 +173,7 @@ async def run(pc, player: MediaPlayer, recorder, signaling, role):
 
         if isinstance(obj, RTCSessionDescription):
             await pc.setRemoteDescription(obj)
-            await recorder.start()
+            # await recorder.start()
 
             if obj.type == "offer":
                 # send answer
@@ -160,6 +186,8 @@ async def run(pc, player: MediaPlayer, recorder, signaling, role):
             print("Exiting")
             break
 
+        await pc.getStats()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Video stream from the command line")
     parser.add_argument("role", choices=["offer", "answer"])
@@ -170,8 +198,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     HOST = '127.0.0.1'
-    # HOST = 'IP ADDRESS'
     # HOST = '100.80.231.89'
+    # HOST = '192.168.68.72'
     PORT = '65431'
     signaling_parser = argparse.ArgumentParser()
     add_signaling_arguments(signaling_parser)
@@ -183,17 +211,39 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG)
 
     # create signaling and peer connection
-    signaling = create_signaling(signaling_args)
-    pc = RTCPeerConnection()
+    vsignaling = create_signaling(signaling_args)
+    vpc = RTCPeerConnection()
+
+
+    HOST = '127.0.0.1'
+    # HOST = '100.80.231.89'
+    # HOST = '192.168.68.72'
+    PORT = '65432'
+    signaling_parser = argparse.ArgumentParser()
+    add_signaling_arguments(signaling_parser)
+    signaling_args = signaling_parser.parse_args(
+        ['--signaling', 'tcp-socket', '--signaling-host', HOST, '--signaling-port', PORT]
+    )
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
+    # create signaling and peer connection
+    asignaling = create_signaling(signaling_args)
+    apc = RTCPeerConnection()
 
     # create media source
     if args.play_from:
         player = MediaPlayer(args.play_from)
     else:
         player = None
-    player = MediaPlayer('default:none', format='avfoundation', options={
+    vplayer = MediaPlayer('default:none', format='avfoundation', options={
         'framerate': '30', 
-        'video_size': '640x480'
+        'video_size': '640x480',
+        'pixel_format': 'bgr0'
+    })
+    aplayer = MediaPlayer('none:default', format='avfoundation', options={
+        'sample_rate': '44100'
     })
 
     # create media sink
@@ -201,18 +251,30 @@ if __name__ == "__main__":
         recorder = MediaRecorder(args.record_to)
     else:
         recorder = MediaBlackhole()
+    # recorder = MediaBlackhole()
     # recorder = MediaRecorder('recording.mp4')
 
     # run event loop
-    loop = asyncio.get_event_loop()
+    # loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(
-            run(
-                pc=pc,
-                player=player,
-                recorder=recorder,
-                signaling=signaling,
-                role=args.role,
+        loop.run_until_complete( 
+            asyncio.gather(
+                run(
+                    pc=vpc,
+                    player=vplayer,
+                    recorder=recorder,
+                    signaling=vsignaling,
+                    role=args.role,
+                ),
+                run(
+                    pc=apc,
+                    player=aplayer,
+                    recorder=recorder,
+                    signaling=asignaling,
+                    role=args.role,
+                )
             )
         )
     except KeyboardInterrupt:
@@ -220,5 +282,7 @@ if __name__ == "__main__":
     finally:
         # cleanup
         loop.run_until_complete(recorder.stop())
-        loop.run_until_complete(signaling.close())
-        loop.run_until_complete(pc.close())
+        loop.run_until_complete(vsignaling.close())
+        loop.run_until_complete(vpc.close())
+        loop.run_until_complete(asignaling.close())
+        loop.run_until_complete(apc.close())
