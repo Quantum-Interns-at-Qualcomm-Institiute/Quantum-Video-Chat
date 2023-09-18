@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from bitarray import bitarray
 
 class EncryptionScheme(ABC):
   
@@ -35,3 +36,21 @@ class KeyExchange(ABC):
     def send_key(self):
         """Send the generated key."""
         pass
+
+class XOR(EncryptionScheme):
+
+    # data and key are bit arrays with same length
+    def encrypt(self, data, key):
+        result = bitarray()
+        for bit1, bit2 in zip(data, key):
+            result.append(bit1 ^ bit2)
+        
+        return result
+    
+    # data and key are bit arrays with same length
+    def decrypt(self, data, key):
+        result = bitarray()
+        for bit1, bit2 in zip(data, key):
+            result.append(bit1 ^ bit2)
+        
+        return result
