@@ -42,10 +42,24 @@ class XOREncryption(EncryptionScheme):
     def get_name(self):
         return self.name
 
+class DebugEncryption(EncryptionScheme):
+    def __init__(self):
+        self.name = "Debug"
+        
+    def encrypt(self, data, key):
+        return data
+    
+    def decrypt(self, data, key):
+        return data
+    
+    def get_name(self):
+        return self.name
+    
+
 class AESEncryption(EncryptionScheme):
     def __init__(self, bits=128):
         self.bits = bits
-        self.name = f"AES{bits}"
+        self.name = f"AES-{bits}"
         
     # data and key are bit arrays with same length
     def encrypt(self, data, key):
@@ -59,11 +73,13 @@ class AESEncryption(EncryptionScheme):
         return self.name
 
 class EncryptionFactory:
-    def create_encryption_scheme(self, type):
+    def create_encryption_scheme(self, type) -> EncryptionScheme:
         if type == "AES":
             return AESEncryption()
         elif type == "XOR":
             return XOREncryption()
+        elif type == "DEBUG":
+            return DebugEncryption()
         else:
             raise ValueError("Invalid encryption scheme type")
 
@@ -73,6 +89,7 @@ class EncryptionFactory:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 # Key Generation
+
 class KeyGenerator(ABC):
     
     @abstractmethod
@@ -138,7 +155,7 @@ class RandomKeyGenerator(KeyGenerator):
 
 class KeyGeneratorFactory:
 
-    def create_key_generator(self, type):
+    def create_key_generator(self, type) -> KeyGenerator:
         if type == "DEBUG":
             return DebugKeyGenerator()
         elif type == "RANDOM":

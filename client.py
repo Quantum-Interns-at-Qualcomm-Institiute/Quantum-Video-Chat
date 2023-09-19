@@ -63,8 +63,73 @@ class CommandHandler:
             else:
                 logging.warning(f"Unknown command {command} from client")
 
+# --- Start API stuff ---
+import requests
+import logging
 
-class Client:
+logging.basicConfig(filename='client.log', level=logging.DEBUG, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+class ClientAPI:
+    def __init__(self, api_base_url):
+        self.api_base_url = api_base_url
+        
+    def post(self, endpoint, payload):
+        try:
+            response = requests.post(f"{self.api_base_url}{endpoint}", json=payload)
+            if response.status_code == 501:
+                logger.error("API not implemented yet.")
+            return response.json()
+        except Exception as e:
+            logger.error(f"An error occurred while making a POST request: {e}")
+
+
+class NewClient:
+    def __init__(self, server_ip, server_port, api_base_url, encryption_scheme_type = 'DEBUG', key_generator_type = 'DEBUG'):
+        logger.info(f"Initializing client with host: {server_ip}, port: {server_port}")
+        self.host = server_ip
+        self.port = server_port
+        self.api = ClientAPI(api_base_url)
+        
+        with EncryptionFactory() as factory:
+            self.encryption_scheme = factory.create_encryption_scheme(encryption_scheme_type)
+            
+        with KeyGeneratorFactory() as factory:
+            self.key_generator = factory.create_key_generator(key_generator_type)
+
+    
+    def configure_security(self):
+        self.api.post('/api/configure_security', {
+            "encryption_scheme": self.encryption_scheme,
+            # "key_generator": self.key_generator
+        })
+
+    def configure_security(self):
+        logger.info("Configuring security settings.")
+        try:
+            response = self.api.post('/api/configure_security', {
+                "encryption_scheme": self.encryption_scheme.get_name(),
+                # Tempted to keep this out of the API, but if we're doing key pools they need to be on the same page
+                # "key_generator": self.key_generator
+            })
+            if response.status_code == 501:
+                logger.error("API component not implemented yet.")
+            else:
+                logger.info(f"Security configured with status code {response.status_code}")
+        except Exception as e:
+            logger.error(f"An error occurred while configuring security: {e}")
+    
+    def initiate_key_exchange(self):
+        # Initiates the key exchange process by making an RPC call to the peer client
+        pass
+    
+    def connect(self):
+        logger.info("Attempting to connect.")
+        self.configure_security()
+        # Make this async/await so we can make sure key exchange goes through
+        self.initiate_key_exchange()
+# --- End API stuff ---
+class OldClient:
     def __init__(self, host, port, encryption_scheme='XOR', key_generator = 'DEBUG'):
         self.host = host
         self.port = port
@@ -76,10 +141,10 @@ class Client:
         self.peer_frame = None
         self.res = (160, 120)
         with EncryptionFactory() as factory:
-            self.encryption_scheme: EncryptionScheme = factory.create_encryption_scheme(encryption_scheme)
+            self.encryption_scheme = factory.create_encryption_scheme(encryption_scheme)
             
         with KeyGeneratorFactory() as factory:
-            self.key_generator: KeyGenerator = factory.create_key_generator(key_generator)
+            self.key_generator = factory.create_key_generator(key_generator)
         
         self.key: bitarray = None
 
@@ -296,7 +361,7 @@ if __name__ == "__main__":
     PORT = 65431
     # PORT = random.randint(60000, 70000)
 
-    client = Client(HOST, PORT)
+    client = OldClient(HOST, PORT)
     # client.connect()
     client_thread = Thread(target = client.connect, args = ())
     client_thread.start()
