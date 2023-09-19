@@ -76,10 +76,10 @@ class Client:
         self.peer_frame = None
         self.res = (160, 120)
         with EncryptionFactory() as factory:
-            self.encryption_scheme = (EncryptionScheme) (factory.create_encryption_scheme(encryption_scheme))
+            self.encryption_scheme: EncryptionScheme = factory.create_encryption_scheme(encryption_scheme)
             
         with KeyGeneratorFactory() as factory:
-            self.key_generator = (KeyGenerator) (factory.create_key_generator())
+            self.key_generator: KeyGenerator = factory.create_key_generator(key_generator)
         
         self.key: bitarray = None
 
@@ -199,24 +199,28 @@ class Client:
         logging.info(f"Server response: {response}")
 
     def generateKey(self, length):
-        self.key = self.key_generator.generate_key(length=length)
+        self.key_generator.generate_key(length=length)
+        self.key = self.key_generator.get_key()
 
     def encrypt(self, text):
         return self.encryption_scheme.encrypt(text, self.key)
     
     def send_text(self, client_socket):
-        text = self.encrypt(input("Enter text: "))
-        #encode and send
-        payload = (self.key + text).to01()
+        plaintext = bitarray()
+        text_input = input("Enter text: ").encode('utf-8')
+        plaintext.frombytes(text_input)
+        self.generateKey(len(plaintext))
+        
+        payload = (self.key + self.encrypt(plaintext)).to01()
         client_socket.sendall(payload.encode()) # Probably doesnt need the final encode here
     
     def receive_text(self, client_socket):
-        key_data = client_socket.recv(1024).decode()
-        decrypt_key = bitarray(key_data[:len(key_data)//2])
-        encrypted_text = bitarray(key_data[len(key_data)//2:])
-        decrypted = self.encryption_scheme.decrypt(encrypted_text, decrypt_key)
-        bitstring = decrypted.to01()
-        bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
+        data = client_socket.recv(1024).decode()
+        decrypt_key = bitarray(data[:len(data)//2])
+        encrypted_text = bitarray(data[len(data)//2:])
+        
+        decrypted = self.encryption_scheme.decrypt(encrypted_text, decrypt_key).to01()
+        bytes_data = int(decrypted, 2).to_bytes((len(decrypted) + 7) // 8, byteorder='big')
         message = bytes_data.decode('utf-8')
         
         logging.info(f"Peer says: {message}")
