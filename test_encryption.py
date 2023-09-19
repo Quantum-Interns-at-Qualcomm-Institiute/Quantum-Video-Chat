@@ -1,36 +1,28 @@
 import random
-from encryption import EncryptionScheme, XOR
 from bitarray import bitarray
-def generateKey(length):
-    key = bitarray(length)
-    for i in range(length):
-        key[i] = random.getrandbits(1)
-    return key
+from encryption import EncryptionFactory, EncryptionScheme, KeyGenerator, KeyGeneratorFactory
 
+ENCRYPTION_SCHEME = "XOR"
+KEY_GENERATOR_TYPE = "DEBUG" # Key alternates 0 and 1
+
+with EncryptionFactory() as factory:
+    encryption_scheme: EncryptionScheme = factory.create_encryption_scheme(ENCRYPTION_SCHEME)
+
+with KeyGeneratorFactory() as factory:
+    key_generator: KeyGenerator = factory.create_key_generator(KEY_GENERATOR_TYPE)
+
+
+plaintext = bitarray()
 text = input("Enter text: ")
-
-#text to bitstring
-encoded_bytes = text.encode('utf-8')
-bit_array = bitarray()
-bit_array.frombytes(encoded_bytes)
+encoded_text = text.encode('utf-8')
+plaintext.frombytes(encoded_text)
 
 
-print(type(bit_array))
-key = generateKey(len(bit_array))
-
-#encrypt
-encrypter = XOR()
-encrypted = encrypter.encrypt(bit_array,key)
-key_data = (key + encrypted).to01()
-print(key)
-print(encrypted)
-print(key_data)
-decrypter = XOR()
-key = bitarray(key_data[:len(key_data)//2])
-data = bitarray(key_data[len(key_data)//2:])
-decrypted = decrypter.decrypt(data,key)
+key_generator.generate_key(length = len(plaintext))
+ciphertext = encryption_scheme.encrypt(plaintext, key_generator.get_key())
+payload = (key_generator.get_key() + ciphertext).to01()
+decrypted = encryption_scheme.decrypt(data =bitarray(payload[len(payload)//2:]), key = bitarray(payload[:len(payload)//2]))
 bitstring = decrypted.to01()
 bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
 message = bytes_data.decode('utf-8')
-print(message)
-print(text==message)
+print(f"Same?: {text==message}")
