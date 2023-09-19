@@ -50,7 +50,7 @@ def delete_id():
       return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
 
 
-@app.route('/api/configure_security', methods=['POST'])
+@app.route('/security/configure', methods=['POST'])
 def configure_security():
     try:
         logger.info("Received request to configure security.")
@@ -60,7 +60,7 @@ def configure_security():
         logger.error(f"An error occurred while configuring security: {e}")
         return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
 
-@app.route('/api/initiate_key_exchange', methods=['POST'])
+@app.route('/security/key/initiate_exchange', methods=['POST'])
 def initiate_key_exchange():
     try:
         logger.info("Received request to initiate key exchange.")
@@ -70,7 +70,7 @@ def initiate_key_exchange():
         logger.error(f"An error occurred while initiating key exchange: {e}")
         return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
 
-@app.route('/api/health_check', methods=['GET'])
+@app.route('/tools/health_check', methods=['GET'])
 def health_check():
     try:
         logger.info("Received health check request.")
