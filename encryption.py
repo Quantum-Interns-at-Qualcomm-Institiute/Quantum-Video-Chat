@@ -124,12 +124,12 @@ class DebugKeyGenerator(KeyGenerator):
             self.key = bit_array
             self.length = len(key)
         
-    def generate_key(self, key = None, length = 0):
+    def generate_key(self, key = None, key_length = 0):
         if key is not None:
             self.specified_key(self, key)
             
-        elif length != 0:
-            self.speficied_keylength(length)
+        elif key_length != 0:
+            self.speficied_keylength(key_length)
         
         else:
             raise ValueError("Invalid parameters")
@@ -141,14 +141,13 @@ class RandomKeyGenerator(KeyGenerator):
     def __init__(self, key_length = 0):
         self.key_length = key_length
         self.key: bitarray = None
-        self.generate_key(self.key_length)
         
     def generate_key(self, key_length = None):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
             raise ValueError("Error, please make key length nonzero")
-        self.key = [int(b) for b in format(int.from_bytes(os.urandom((self.key_length + 7) // 8), 'big'), f'0{self.key_length}b')[:self.key_length]]
+        self.key = bitarray([int(b) for b in format(int.from_bytes(os.urandom((self.key_length + 7) // 8), 'big'), f'0{self.key_length}b')[:self.key_length]])
 
     def get_key(self):
         return self.key
