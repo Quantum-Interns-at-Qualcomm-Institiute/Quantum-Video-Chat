@@ -8,3 +8,12 @@ sounddevice==0.4.1
 
 # Configurations
 python-dotenv==0.15.0
+
+# WebRTC
+aiortc==1.5.0
+
+# Audio and Video Frames
+av==10.0.0
+
+# Audio Output
+pyaudio==0.2.13

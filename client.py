@@ -8,6 +8,9 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
+from encryption import EncryptionScheme, XOR
+import random
+from bitarray import bitarray
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO)
@@ -188,12 +191,39 @@ class Client:
         response = client_socket.recv(1024).decode()
         logging.info(f"Server response: {response}")
 
+    def generateKey(self,length):
+        key = bitarray(length)
+        for i in range(length):
+            key[i] = random.getrandbits(1)
+        return key
+
     def send_text(self, client_socket):
         text = input("Enter text: ")
-        client_socket.sendall(text.encode())
+
+        #text to bitstring
+        encoded_bytes = text.encode('utf-8')
+        bit_array = bitarray()
+        bit_array.frombytes(encoded_bytes)
+        key = self.generateKey(len(bit_array))
+
+        #encrypt
+        encrypter = XOR()
+        encrypted = encrypter.encrypt(bit_array,key)
+
+        #encode and send
+        key_data = (key + encrypted).to01()
+        client_socket.sendall(key_data.encode())
     
     def receive_text(self, client_socket):
-        message = client_socket.recv(1024).decode()
+        key_data = client_socket.recv(1024).decode()
+        key = bitarray(key_data[:len(key_data)//2])
+        data = bitarray(key_data[len(key_data)//2:])
+        decrypter = XOR()
+        decrypted = decrypter.decrypt(data,key)
+        bitstring = decrypted.to01()
+        bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
+        message = bytes_data.decode('utf-8')
+        
         logging.info(f"Peer says: {message}")
 
     def send_image(self, client_socket):
