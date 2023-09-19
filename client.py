@@ -8,7 +8,7 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
-from encryption import EncryptionScheme, XOR
+from encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
 import random
 from bitarray import bitarray
 
@@ -65,7 +65,7 @@ class CommandHandler:
 
 
 class Client:
-    def __init__(self, host, port):
+    def __init__(self, host, port, encryption_scheme='XOR', key_generator = 'DEBUG'):
         self.host = host
         self.port = port
         self.user_id = None
@@ -75,6 +75,13 @@ class Client:
         self.frame = None
         self.peer_frame = None
         self.res = (160, 120)
+        with EncryptionFactory() as factory:
+            self.encryption_scheme = (EncryptionScheme) (factory.create_encryption_scheme(encryption_scheme))
+            
+        with KeyGeneratorFactory() as factory:
+            self.key_generator = (KeyGenerator) (factory.create_key_generator())
+        
+        self.key: bitarray = None
 
     def start_listening(self):
         self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -191,35 +198,23 @@ class Client:
         response = client_socket.recv(1024).decode()
         logging.info(f"Server response: {response}")
 
-    def generateKey(self,length):
-        key = bitarray(length)
-        for i in range(length):
-            key[i] = random.getrandbits(1)
-        return key
+    def generateKey(self, length):
+        self.key = self.key_generator.generate_key(length=length)
 
+    def encrypt(self, text):
+        return self.encryption_scheme.encrypt(text, self.key)
+    
     def send_text(self, client_socket):
-        text = input("Enter text: ")
-
-        #text to bitstring
-        encoded_bytes = text.encode('utf-8')
-        bit_array = bitarray()
-        bit_array.frombytes(encoded_bytes)
-        key = self.generateKey(len(bit_array))
-
-        #encrypt
-        encrypter = XOR()
-        encrypted = encrypter.encrypt(bit_array,key)
-
+        text = self.encrypt(input("Enter text: "))
         #encode and send
-        key_data = (key + encrypted).to01()
-        client_socket.sendall(key_data.encode())
+        payload = (self.key + text).to01()
+        client_socket.sendall(payload.encode()) # Probably doesnt need the final encode here
     
     def receive_text(self, client_socket):
         key_data = client_socket.recv(1024).decode()
-        key = bitarray(key_data[:len(key_data)//2])
-        data = bitarray(key_data[len(key_data)//2:])
-        decrypter = XOR()
-        decrypted = decrypter.decrypt(data,key)
+        decrypt_key = bitarray(key_data[:len(key_data)//2])
+        encrypted_text = bitarray(key_data[len(key_data)//2:])
+        decrypted = self.encryption_scheme.decrypt(encrypted_text, decrypt_key)
         bitstring = decrypted.to01()
         bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
         message = bytes_data.decode('utf-8')
