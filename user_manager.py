@@ -62,16 +62,6 @@ class UserNotFound(Exception):
 
 class UserManager:
 
-
-    def remove_user(self, user_id):
-        if user_id not in self.users:
-            logger.error(f"User {user_id} not found.")
-            raise UserNotFound(f"User ID {user_id} does not exist.")
-        del self.users[user_id]
-        logger.info(f"Removed user {user_id}.")
-
-class UserManager:
-
     def __init__(self, storage: UserStorageInterface):
         self.storage = storage
 
@@ -100,5 +90,9 @@ class UserManager:
         return user_info
 
     def remove_user(self, user_id):
-        self.storage.remove_user(user_id)
-        logger.info(f"Removed user {user_id}.")
+        user = self.get_user(user_id)
+        if user is not None:
+            self.storage.remove_user(user_id)
+            logger.info(f"Removed user {user_id}.")
+        else:
+            logger.info(f"No user found with id {user_id}")

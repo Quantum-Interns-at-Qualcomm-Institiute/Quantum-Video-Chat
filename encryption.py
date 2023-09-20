@@ -2,6 +2,11 @@ from abc import ABC, abstractmethod
 from bitarray import bitarray
 import os
 import string
+import logging
+# Initialize logging
+logging.basicConfig(filename='encryption.log', level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Encryption Schemes
 class EncryptionScheme(ABC):
@@ -104,7 +109,7 @@ class KeyGenerator(ABC):
     
 class DebugKeyGenerator(KeyGenerator):
     def __init__(self):
-            self.key: bitarray = None
+            self.key: bitarray = bitarray()
             self.key_length = 0
             
     def speficied_keylength(self, length):
@@ -113,16 +118,18 @@ class DebugKeyGenerator(KeyGenerator):
         self.key = bitarray([i % 2 for i in range(self.key_length)])
         
     def specified_key(self, key):
-        with bitarray() as bit_array:
-            if type(key) == bitarray:
-                bit_array = key
-            elif type(key) == string:
-                encoded_bytes = key.encode('utf-8')
-                bit_array.frombytes(encoded_bytes)
-            else:
-                raise ValueError("Error, only bitarray or string allowed")
-            self.key = bit_array
-            self.length = len(key)
+        bit_array = bitarray()
+        if type(key) == bitarray:
+            bit_array = key
+            logger.log(f"Now using key ${key}")
+        elif type(key) == string:
+            encoded_bytes = key.encode('utf-8')
+            bit_array.frombytes(encoded_bytes)
+        else:
+            logger.error("")
+            raise ValueError("Error, only bitarray or string allowed")
+        self.key = bit_array
+        self.length = len(key)
         
     def generate_key(self, key = None, key_length = 0):
         if key is not None:
@@ -142,10 +149,11 @@ class RandomKeyGenerator(KeyGenerator):
         self.key_length = key_length
         self.key: bitarray = None
         
-    def generate_key(self, key_length = None):
+    def generate_key(self, key_length = 0):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
+            logger.error(f"Try to make key of length {key_length}")
             raise ValueError("Error, please make key length nonzero")
         self.key = bitarray([int(b) for b in format(int.from_bytes(os.urandom((self.key_length + 7) // 8), 'big'), f'0{self.key_length}b')[:self.key_length]])
 
