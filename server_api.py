@@ -105,15 +105,14 @@ async def remove_user(user_id):
 #         logger.error(f"An error occurred while initiating key exchange: {e}")
 #         return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
 
-# @app.route('/tools/health_check', methods=['GET'])
-# def health_check():
-#     try:
-#         logger.info("Received health check request.")
-#         # TODO: Implement this function
-#         return jsonify({"error": "Not Implemented"}), 501
-#     except Exception as e:
-#         logger.error(f"An error occurred during the health check: {e}")
-#         return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
+@app.route('/tools/health_check', methods=['GET'])
+def health_check():
+    try:
+        logger.info("Received health check request.")
+        return jsonify({"status": "OK"}), 200
+    except Exception as e:
+        logger.error(f"An error occurred during the health check: {e}")
+        return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
 
 if __name__ == '__main__':
     logger.info("Starting the server.")

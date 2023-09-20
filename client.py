@@ -90,6 +90,13 @@ class NewClient:
         self.host = server_ip
         self.port = server_port
         self.api = ClientAPI(api_base_url)
+        self.user_id = None
+        self.listening_socket = None
+        self.peer_socket = None
+        self.in_command = False
+        self.frame = None
+        self.peer_frame = None
+        self.res = (160, 120)
         
         with EncryptionFactory() as factory:
             self.encryption_scheme = factory.create_encryption_scheme(encryption_scheme_type)
@@ -97,6 +104,7 @@ class NewClient:
         with KeyGeneratorFactory() as factory:
             self.key_generator = factory.create_key_generator(key_generator_type)
 
+        self.key: bitarray = None
     
     def configure_security(self):
         self.api.post('/api/configure_security', {
@@ -123,11 +131,30 @@ class NewClient:
         # Initiates the key exchange process by making an RPC call to the peer client
         pass
     
-    def connect(self):
+    async def start_listening(self):
+        self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.listening_socket.bind((self.host, self.port+2))
+        self.listening_socket.listen(1)
+        logging.info(f"Listening on {self.host}:{self.port+2}")
+
+    async def listen_for_connections(self, _):
+        await self.start_listening()
+        conn, addr = self.listening_socket.accept()
+        self.peer_socket = conn
+        await self.handle_connection(conn)
+
+    async def handle_connection(self, conn):
+        logging.info(f"Connection established with {conn.getpeername()}")
+        response = conn.recv(1024).decode()
+        host, port = response.split(" ")[-1].split(":")
+
+    async def connect(self):
         logger.info("Attempting to connect.")
-        self.configure_security()
+        await self.configure_security()
         # Make this async/await so we can make sure key exchange goes through
-        self.initiate_key_exchange()
+        await self.initiate_key_exchange()
+        await self.start_listening()
+        await self.listen_for_connections()
 # --- End API stuff ---
 class OldClient:
     def __init__(self, host, port, encryption_scheme='XOR', key_generator = 'DEBUG'):
@@ -350,12 +377,7 @@ class OldClient:
         cv2.destroyAllWindows()
 
 
-
-
-import random
-# Main block
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+def oldMain():
     HOST = '127.0.0.1'
     # HOST = 'ENTER SERVER IP HERE'
     PORT = 65431
@@ -374,3 +396,20 @@ if __name__ == "__main__":
             cv2.imshow("Self", client.frame)
             cv2.waitKey(1)
         # time.sleep(0.1)
+
+import random
+# Main block
+if __name__ == "__main__":
+    HOST = '127.0.0.1'
+    # HOST = 'ENTER SERVER IP HERE'
+    PORT = 65431
+    # PORT = random.randint(60000, 70000)
+    API_BASE_URL = 'http://localhost:5000'
+
+    client = NewClient(HOST, PORT, API_BASE_URL)
+    client.connect()
+    while True:
+        if not client.frame is None and not client.peer_frame is None:
+            cv2.imshow("Peer", client.peer_frame)
+            cv2.imshow("Self", client.frame)
+            cv2.waitKey(1)
