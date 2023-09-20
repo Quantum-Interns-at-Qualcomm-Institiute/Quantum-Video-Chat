@@ -8,7 +8,7 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
-from encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
+from client.utils.encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
 import random
 from bitarray import bitarray
 

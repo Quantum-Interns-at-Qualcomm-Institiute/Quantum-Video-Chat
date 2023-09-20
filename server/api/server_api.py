@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from server import Server, DuplicateUser, UserNotFound
+from server.main_server import Server, DuplicateUser, UserNotFound
 import logging
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
 import configparser  # For reading configuration file
