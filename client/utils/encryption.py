@@ -3,6 +3,11 @@ from bitarray import bitarray
 import os
 import string
 import logging
+import secrets
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+
 # Initialize logging
 logging.basicConfig(filename='encryption.log', level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -66,13 +71,32 @@ class AESEncryption(EncryptionScheme):
         self.bits = bits
         self.name = f"AES-{bits}"
         
-    # data and key are bit arrays with same length
+    # data and key are bit arrays
+    # using AES-CBC
     def encrypt(self, data, key):
-        pass
+        data = data.tobytes()
+        key = key.tobytes()
+        cipher = AES.new(key, AES.MODE_CBC)
+        cipheredData = cipher.encrypt(pad(data, AES.block_size))
+        result_data = bitarray()
+        result_data.frombytes(cipheredData)
+        result_iv = bitarray()
+        result_iv.frombytes(cipher.iv)
+        return result_iv + result_data
     
-    # data and key are bit arrays with same length
+    # data and key are bit arrays
+    # data contains iv and encrypted data
     def decrypt(self, data, key):
-        pass
+        key = key.tobytes()
+        iv = data[:128] #iv always has 128 bits
+        cipheredData = data[128:]
+        iv = iv.tobytes()
+        cipheredData = cipheredData.tobytes()
+        cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+        originalData = unpad(cipher.decrypt(cipheredData), AES.block_size)
+        result = bitarray()
+        result.frombytes(originalData)
+        return result
     
     def get_name(self):
         return self.name

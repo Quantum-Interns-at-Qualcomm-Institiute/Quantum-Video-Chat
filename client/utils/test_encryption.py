@@ -2,7 +2,7 @@ import random
 from bitarray import bitarray
 from encryption import EncryptionFactory, EncryptionScheme, KeyGenerator, KeyGeneratorFactory
 
-ENCRYPTION_SCHEME = "XOR"
+ENCRYPTION_SCHEME = "AES"
 KEY_GENERATOR_TYPE = "RANDOM" # Key alternates 0 and 1
 
 plaintext = bitarray()
@@ -16,11 +16,11 @@ with EncryptionFactory() as factory:
 with KeyGeneratorFactory() as factory:
     key_generator: KeyGenerator = factory.create_key_generator(KEY_GENERATOR_TYPE)
 
-
-key_generator.generate_key(key_length = len(plaintext))
+key_length = 256
+key_generator.generate_key(key_length = key_length) #key_generator.generate_key(key_length = len(plaintext))
 ciphertext = encryption_scheme.encrypt(plaintext, key_generator.get_key())
 payload = (key_generator.get_key() + ciphertext).to01()
-decrypted = encryption_scheme.decrypt(data =bitarray(payload[len(payload)//2:]), key = bitarray(payload[:len(payload)//2]))
+decrypted = encryption_scheme.decrypt(data =bitarray(payload[key_length:]), key = bitarray(payload[:key_length])) #decrypted = encryption_scheme.decrypt(data =bitarray(payload[len(payload)//2:]), key = bitarray(payload[:len(payload)//2]))
 bitstring = decrypted.to01()
 bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
 message = bytes_data.decode('utf-8')
