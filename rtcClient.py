@@ -4,8 +4,11 @@ import logging
 from threading import Thread
 import math
 import pyaudio
+import platform
 
 import sounddevice as sd
+sample_rate = 44100
+# sample_rate = 8196
 
 import cv2
 import numpy as np
@@ -136,25 +139,26 @@ async def run(pc: RTCPeerConnection, player: MediaPlayer, recorder, signaling, r
 
     async def audio_track(track: MediaStreamTrack):
         # track.add_listener("event", lambda event: print(event))
-        stream = pyaudio.PyAudio().open(format=pyaudio.paFloat32, rate=44100, channels=1, output=True)
+        stream = pyaudio.PyAudio().open(format=pyaudio.paFloat32, rate=sample_rate, channels=1, output=True, frames_per_buffer=7680)
         stream.start_stream()
         while True:
             # print("track execution %s" % track.kind)
             frame: AudioFrame = await track.recv()
             # print("track receive %s" % track.kind)
-            frame = frame.to_ndarray().astype(np.float32).tostring()
+            frame = frame.to_ndarray()
+            # print(len(frame))
             stream.write(frame)
     
     @pc.on("track")
     async def on_track(track: MediaStreamTrack):
         print("Receiving %s" % track.kind)
         if track.kind == "video":
-            await video_track(track)
-            # await asyncio.ensure_future(video_track(track))
+            # await video_track(track)
+            await asyncio.ensure_future(video_track(track))
 
         if track.kind == "audio":
-            await audio_track(track)
-            # await asyncio.ensure_future(audio_track(track))
+            # await audio_track(track)
+            await asyncio.ensure_future(audio_track(track))
 
     # connect signaling
     await signaling.connect()
@@ -237,14 +241,22 @@ if __name__ == "__main__":
         player = MediaPlayer(args.play_from)
     else:
         player = None
-    vplayer = MediaPlayer('default:none', format='avfoundation', options={
+    
+    voptions = {
         'framerate': '30', 
         'video_size': '640x480',
         'pixel_format': 'bgr0'
-    })
-    aplayer = MediaPlayer('none:default', format='avfoundation', options={
-        'sample_rate': '44100'
-    })
+    }
+    aoptions = {
+        'sample_rate': str(sample_rate)
+    }
+    if platform.system() == 'Darwin':
+        vplayer = MediaPlayer('default:none', format='avfoundation', options=voptions)
+        aplayer = MediaPlayer('none:default', format='avfoundation', options=aoptions)
+        # aplayer = MediaPlayer('sin.wav', format=None, options=aoptions)
+    elif platform.system() == 'Windows':
+        vplayer = MediaPlayer('video=Integrated Camera', format='dshow', options=voptions)
+        aplayer = MediaPlayer('audio=Microphone (Realtek(R) Audio)', format='dshow', options=aoptions)
 
     # create media sink
     if args.record_to:
