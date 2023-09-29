@@ -4,7 +4,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import sounddevice as sd
-from audio import Audio
+from icebox.audio import Audio
 
 class GUI:
   
