@@ -3,9 +3,9 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-from gui import GUI
-from audio import Audio
-from config import Config
+from client.GUI.gui import GUI
+from icebox.audio import Audio
+from icebox.audio_config import Config
 
 logging.basicConfig(level=logging.INFO)
 

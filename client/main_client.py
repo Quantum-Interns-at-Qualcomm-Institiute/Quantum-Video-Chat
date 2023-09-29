@@ -8,7 +8,7 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
-from encryption import EncryptionScheme, XOR
+from client.utils.encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
 import random
 from bitarray import bitarray
 
@@ -63,9 +63,101 @@ class CommandHandler:
             else:
                 logging.warning(f"Unknown command {command} from client")
 
+# --- Start API stuff ---
+import requests
+import logging
 
-class Client:
-    def __init__(self, host, port):
+logging.basicConfig(filename='client.log', level=logging.DEBUG, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+class ClientAPI:
+    def __init__(self, api_base_url):
+        self.api_base_url = api_base_url
+        
+    def post(self, endpoint, payload):
+        try:
+            response = requests.post(f"{self.api_base_url}{endpoint}", json=payload)
+            if response.status_code == 501:
+                logger.error("API not implemented yet.")
+            return response.json()
+        except Exception as e:
+            logger.error(f"An error occurred while making a POST request: {e}")
+
+
+class NewClient:
+    def __init__(self, server_ip, server_port, api_base_url, encryption_scheme_type = 'DEBUG', key_generator_type = 'DEBUG'):
+        logger.info(f"Initializing client with host: {server_ip}, port: {server_port}")
+        self.host = server_ip
+        self.port = server_port
+        self.api = ClientAPI(api_base_url)
+        self.user_id = None
+        self.listening_socket = None
+        self.peer_socket = None
+        self.in_command = False
+        self.frame = None
+        self.peer_frame = None
+        self.res = (160, 120)
+        
+        with EncryptionFactory() as factory:
+            self.encryption_scheme = factory.create_encryption_scheme(encryption_scheme_type)
+            
+        with KeyGeneratorFactory() as factory:
+            self.key_generator = factory.create_key_generator(key_generator_type)
+
+        self.key: bitarray = None
+    
+    def configure_security(self):
+        self.api.post('/api/configure_security', {
+            "encryption_scheme": self.encryption_scheme,
+            # "key_generator": self.key_generator
+        })
+
+    def configure_security(self):
+        logger.info("Configuring security settings.")
+        try:
+            response = self.api.post('/api/configure_security', {
+                "encryption_scheme": self.encryption_scheme.get_name(),
+                # Tempted to keep this out of the API, but if we're doing key pools they need to be on the same page
+                # "key_generator": self.key_generator
+            })
+            if response.status_code == 501:
+                logger.error("API component not implemented yet.")
+            else:
+                logger.info(f"Security configured with status code {response.status_code}")
+        except Exception as e:
+            logger.error(f"An error occurred while configuring security: {e}")
+    
+    def initiate_key_exchange(self):
+        # Initiates the key exchange process by making an RPC call to the peer client
+        pass
+    
+    async def start_listening(self):
+        self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.listening_socket.bind((self.host, self.port+2))
+        self.listening_socket.listen(1)
+        logging.info(f"Listening on {self.host}:{self.port+2}")
+
+    async def listen_for_connections(self, _):
+        await self.start_listening()
+        conn, addr = self.listening_socket.accept()
+        self.peer_socket = conn
+        await self.handle_connection(conn)
+
+    async def handle_connection(self, conn):
+        logging.info(f"Connection established with {conn.getpeername()}")
+        response = conn.recv(1024).decode()
+        host, port = response.split(" ")[-1].split(":")
+
+    async def connect(self):
+        logger.info("Attempting to connect.")
+        await self.configure_security()
+        # Make this async/await so we can make sure key exchange goes through
+        await self.initiate_key_exchange()
+        await self.start_listening()
+        await self.listen_for_connections()
+# --- End API stuff ---
+class OldClient:
+    def __init__(self, host, port, encryption_scheme='XOR', key_generator = 'DEBUG'):
         self.host = host
         self.port = port
         self.user_id = None
@@ -75,6 +167,13 @@ class Client:
         self.frame = None
         self.peer_frame = None
         self.res = (160, 120)
+        with EncryptionFactory() as factory:
+            self.encryption_scheme = factory.create_encryption_scheme(encryption_scheme)
+            
+        with KeyGeneratorFactory() as factory:
+            self.key_generator = factory.create_key_generator(key_generator)
+        
+        self.key: bitarray = None
 
     def start_listening(self):
         self.listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -191,37 +290,29 @@ class Client:
         response = client_socket.recv(1024).decode()
         logging.info(f"Server response: {response}")
 
-    def generateKey(self,length):
-        key = bitarray(length)
-        for i in range(length):
-            key[i] = random.getrandbits(1)
-        return key
+    def generateKey(self, length):
+        self.key_generator.generate_key(length=length)
+        self.key = self.key_generator.get_key()
 
+    def encrypt(self, text):
+        return self.encryption_scheme.encrypt(text, self.key)
+    
     def send_text(self, client_socket):
-        text = input("Enter text: ")
-
-        #text to bitstring
-        encoded_bytes = text.encode('utf-8')
-        bit_array = bitarray()
-        bit_array.frombytes(encoded_bytes)
-        key = self.generateKey(len(bit_array))
-
-        #encrypt
-        encrypter = XOR()
-        encrypted = encrypter.encrypt(bit_array,key)
-
-        #encode and send
-        key_data = (key + encrypted).to01()
-        client_socket.sendall(key_data.encode())
+        plaintext = bitarray()
+        text_input = input("Enter text: ").encode('utf-8')
+        plaintext.frombytes(text_input)
+        self.generateKey(len(plaintext))
+        
+        payload = (self.key + self.encrypt(plaintext)).to01()
+        client_socket.sendall(payload.encode()) # Probably doesnt need the final encode here
     
     def receive_text(self, client_socket):
-        key_data = client_socket.recv(1024).decode()
-        key = bitarray(key_data[:len(key_data)//2])
-        data = bitarray(key_data[len(key_data)//2:])
-        decrypter = XOR()
-        decrypted = decrypter.decrypt(data,key)
-        bitstring = decrypted.to01()
-        bytes_data = int(bitstring, 2).to_bytes((len(bitstring) + 7) // 8, byteorder='big')
+        data = client_socket.recv(1024).decode()
+        decrypt_key = bitarray(data[:len(data)//2])
+        encrypted_text = bitarray(data[len(data)//2:])
+        
+        decrypted = self.encryption_scheme.decrypt(encrypted_text, decrypt_key).to01()
+        bytes_data = int(decrypted, 2).to_bytes((len(decrypted) + 7) // 8, byteorder='big')
         message = bytes_data.decode('utf-8')
         
         logging.info(f"Peer says: {message}")
@@ -286,18 +377,13 @@ class Client:
         cv2.destroyAllWindows()
 
 
-
-
-import random
-# Main block
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+def oldMain():
     HOST = '127.0.0.1'
     # HOST = 'ENTER SERVER IP HERE'
     PORT = 65431
     # PORT = random.randint(60000, 70000)
 
-    client = Client(HOST, PORT)
+    client = OldClient(HOST, PORT)
     # client.connect()
     client_thread = Thread(target = client.connect, args = ())
     client_thread.start()
@@ -310,3 +396,20 @@ if __name__ == "__main__":
             cv2.imshow("Self", client.frame)
             cv2.waitKey(1)
         # time.sleep(0.1)
+
+import random
+# Main block
+if __name__ == "__main__":
+    HOST = '127.0.0.1'
+    # HOST = 'ENTER SERVER IP HERE'
+    PORT = 65431
+    # PORT = random.randint(60000, 70000)
+    API_BASE_URL = 'http://localhost:5000'
+
+    client = NewClient(HOST, PORT, API_BASE_URL)
+    client.connect()
+    while True:
+        if not client.frame is None and not client.peer_frame is None:
+            cv2.imshow("Peer", client.peer_frame)
+            cv2.imshow("Self", client.frame)
+            cv2.waitKey(1)
