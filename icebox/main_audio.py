@@ -3,7 +3,7 @@
 import logging
 import tkinter as tk
 from tkinter import messagebox
-from client.GUI.gui import GUI
+from client.GUI.audioGui import GUI
 from icebox.audio import Audio
 from icebox.audio_config import Config
 
