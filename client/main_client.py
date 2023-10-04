@@ -8,7 +8,7 @@ from threading import Thread
 import cv2
 import time
 import numpy as np
-from client.utils.encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
+from utils.encryption import EncryptionScheme, EncryptionFactory, KeyGeneratorFactory, KeyGenerator
 import random
 from bitarray import bitarray
 
@@ -398,12 +398,20 @@ def oldMain():
         # time.sleep(0.1)
 
 import random
+from GUI.gui import InitClientGUI
+
 # Main block
 if __name__ == "__main__":
-    HOST = '127.0.0.1'
+    serverIP = [None,None]
+    ip_okay = False
+    initClientGUI = InitClientGUI(serverIP)
+    initClientGUI.run()
+
+    # HOST = '127.0.0.1'
     # HOST = 'ENTER SERVER IP HERE'
-    PORT = 65431
+    # PORT = 65431
     # PORT = random.randint(60000, 70000)
+    HOST, PORT = serverIP
     API_BASE_URL = 'http://localhost:5000'
 
     client = NewClient(HOST, PORT, API_BASE_URL)

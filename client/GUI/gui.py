@@ -1,70 +1,74 @@
+from tkinter import *
 
-# gui.py
+class InitClientGUI:
 
-import tkinter as tk
-from tkinter import messagebox
-import sounddevice as sd
-from icebox.audio import Audio
+    def __init__(self,out):
+        self.root = Tk()
+        self.root.title("Quantum Video Chat")
+        self.default_ip = '127.0.0.1'
+        self.default_port = '65431'
+        self.out = out
+        self.entries = {}
+        self.createForm()
 
-class GUI:
-  
-    def __init__(self, toggle_audio_callback, set_delay_callback, set_input_device_callback, audio):
-        self.root = tk.Tk()
-        self.root.title("Speech Jammer")
-        self.toggle_audio_callback = toggle_audio_callback
-        self.audio = audio
-        self.set_delay_callback = set_delay_callback
-        self.set_input_device_callback = set_input_device_callback
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.toggle_button = tk.Button(self.root, text="Start", command=self.toggle_audio)
-        self.toggle_button.pack()
-
-        self.delay_label = tk.Label(self.root, text="Delay (ms):")
-        self.delay_label.pack()
-
-        self.delay_entry = tk.Entry(self.root)
-        self.delay_entry.pack()
-
-        self.set_delay_button = tk.Button(self.root, text="Set Delay", command=self.set_delay)
-        self.set_delay_button.pack()
-
-        self.input_device_label = tk.Label(self.root, text="Input Device:")
-        self.input_device_label.pack()
-
-        self.input_device_var = tk.StringVar(self.root)
-        self.input_device_optionmenu = tk.OptionMenu(self.root, self.input_device_var, *sd.query_devices(), command=self.set_input_device)
-        self.input_device_optionmenu.pack()
-      
-        self.output_device_label = tk.Label(self.root, text="Output Device:")
-        self.output_device_label.pack()
-
-        self.output_device_var = tk.StringVar(self.root)
-        self.output_device_optionmenu = tk.OptionMenu(self.root, self.output_device_var, *sd.query_devices(), command=self.set_output_device)
-        self.output_device_optionmenu.pack()
-
-    def set_input_device(self, device):
-        self.audio.set_input_device(device)
-    
-    def set_output_device(self, device):
-        self.output_device = device     
+    def setDefaultValues(self):
+        self.entries["IP"].delete(0,END)
+        self.entries["Port"].delete(0,END)
+        self.entries["IP"].insert(0,self.default_ip)
+        self.entries["Port"].insert(0,self.default_port)
         
-    def toggle_audio(self):
-        if self.toggle_button.cget("text") == "Start":
-            self.toggle_button.config(text="Stop")
-        else:
-            self.toggle_button.config(text="Start")
-        self.toggle_audio_callback()
+    def createForm(self):
+        row1 = Frame(self.root)
+        IP_label = Label(row1, text = "Server IP", anchor="w")
+        IP_field = Entry(row1)
+        row1.pack(side = TOP, fill = X, padx = 5, pady = 5)
+        IP_label.pack(side = LEFT)
+        IP_field.pack(side = RIGHT, expand = YES, fill = X)
 
-    def set_delay(self):
-        try:
-            delay = int(self.delay_entry.get())            
-            if delay < 0:
-                raise ValueError
-            self.set_delay_callback(delay)
-        except ValueError:
-            messagebox.showerror("Invalid delay", "Delay must be a non-negative integer")
+        row2 = Frame(self.root)
+        Port_label = Label(row2, text = "Port", anchor="w")
+        Port_field = Entry(row2)
+        row2.pack(side = TOP, fill = X, padx = 5, pady = 5)
+        Port_label.pack(side = LEFT)
+        Port_field.pack(side = RIGHT, expand = YES, fill = X)
+
+        self.entries["IP"] = IP_field
+        self.entries["Port"] = Port_field
+
+        # Default Fields Values:
+        self.setDefaultValues()
+
+        b1 = Button(self.root, text = 'Connect',
+            command=self.connectButton)
+        b1.pack(side = BOTTOM, padx = 5, pady = 5)
+
+        self.root.bind('<Return>', (lambda e : self.connectButton()))
+
+    # TODO:
+    # This function may be better defined in main_client.py
+    def verifyServerIP(self, HOST, PORT):
+        return PORT.isdigit()
+
+    def connectButton(self):
+        HOST = self.entries['IP'].get()
+        PORT = self.entries['Port'].get()
+
+        if self.verifyServerIP(HOST,PORT):
+            self.out[0] = HOST
+            self.out[1] = int(PORT)
+            self.root.destroy()
+            return
+
+        self.reset()
+
+    def reset(self):
+        self.setDefaultValues()
+
+        self.out[0] = None
+        self.out[1] = None
+
+    def quit(self):
+        self.root.quit()
 
     def run(self):
         self.root.mainloop()
