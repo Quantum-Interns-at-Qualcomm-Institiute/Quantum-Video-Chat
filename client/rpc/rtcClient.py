@@ -5,9 +5,11 @@ from threading import Thread
 import math
 import pyaudio
 import platform
+import time
 
 import sounddevice as sd
 sample_rate = 44100
+key = []
 # sample_rate = 8196
 
 import cv2
@@ -18,9 +20,12 @@ from aiortc import (
     RTCSessionDescription,
     VideoStreamTrack,
 )
-from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaStreamTrack
+from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaStreamTrack, MediaRelay
+from aiortc.rtp import RtpPacket
+from aiortc.mediastreams import VideoStreamTrack, AudioStreamTrack
 from aiortc.contrib.signaling import BYE, add_signaling_arguments, create_signaling
-from av import VideoFrame, AudioFrame
+from av import VideoFrame, AudioFrame, Packet
+from av.frame import Frame
 # MediaStreamTrack.stop = lambda: None
 
 # class FlagVideoStreamTrack(VideoStreamTrack):
@@ -117,37 +122,105 @@ from av import VideoFrame, AudioFrame
 #             raise MediaStreamError
 #         return encode(self._frame)
 
-async def run(pc: RTCPeerConnection, player: MediaPlayer, recorder, signaling, role):
-    def add_tracks():
-        if player and player.audio:
-            pc.addTrack(player.audio)
+def encode(data: bytes):
+    return data
 
-        if player and player.video:
-            pc.addTrack(player.video)
+def decode(data: bytes):
+    return data
+
+class EncodedVideoStreamTrack(VideoStreamTrack):
+    def __init__(self, source: VideoStreamTrack, encode=None):
+        super().__init__()
+        self.kind = source.kind
+        self.source = source
+        self.encode = encode
+
+    async def recv(self):
+        frame = await self.source.recv()
+        if self.encode is None:
+            return frame
+        
+        data = frame.to_ndarray(format="bgra")
+        shape = data.shape
+
+        data = self.encode(data.tobytes())
+        data = np.frombuffer(data, dtype=np.uint8).reshape(shape)
+        packet = VideoFrame.from_ndarray(data, format="bgra")
+        packet.pts, packet.time_base = await self.next_timestamp()
+        
+        return packet
+    
+class EncodedAudioStreamTrack(AudioStreamTrack):
+    def __init__(self, source: AudioStreamTrack, encode=None):
+        super().__init__()
+        self.kind = source.kind
+        self.source = source
+        self.encode = encode
+
+    async def recv(self):
+        frame = await self.source.recv()
+        if self.encode is None:
+            return frame
+        
+        data = frame.to_ndarray(format="s16", layout='mono', dtype='<i2')
+        shape = data.shape
+        print(data.shape, data.dtype)
+
+        data = self.encode(data.tobytes())
+        data = np.frombuffer(data, dtype='<i2').reshape(shape)
+        print(data.shape, data.dtype)
+        packet = AudioFrame.from_ndarray(data, format="s16", layout='mono')
+        packet.framerate = frame.framerate
+        packet.pts, packet.time_base = await self.next_timestamp()
+        print(packet)
+        
+        return packet
+
+async def run(pc: RTCPeerConnection, track: MediaStreamTrack, recorder, signaling, role):
+    def add_tracks():
+        pc.addTrack(track)
+        # if player and player.audio:
+        #     pc.addTrack(player.audio)
+
+        # if player and player.video:
+        #     pc.addTrack(player.video)
         # else:
         #     pc.addTrack(FlagVideoStreamTrack())
 
-    async def video_track(track: VideoStreamTrack):
+    async def video_track(track: EncodedVideoStreamTrack):
         # track.add_listener("event", lambda event: print(event))
         while True:
             # print("track execution %s" % track.kind)
-            frame: VideoFrame = await track.recv()
+            frame = await track.recv()
             # print("track receive %s" % track.kind)
-            frame = frame.to_ndarray(format="bgr24")
-            cv2.imshow("recv", frame)
-            cv2.waitKey(1)
+            data = frame.to_ndarray(format="bgra")
+            shape = data.shape
 
-    async def audio_track(track: MediaStreamTrack):
+            data = decode(data.tobytes())
+            data = np.frombuffer(data, dtype=np.uint8).reshape(shape)
+
+            cv2.imshow("recv", data)
+            cv2.waitKey(1)
+            # break
+
+    async def audio_track(track: EncodedAudioStreamTrack):
         # track.add_listener("event", lambda event: print(event))
-        stream = pyaudio.PyAudio().open(format=pyaudio.paFloat32, rate=sample_rate, channels=1, output=True, frames_per_buffer=7680)
-        stream.start_stream()
+        sdstream = sd.OutputStream(samplerate=sample_rate*2, channels=1, dtype='int16')
+        sdstream.start()
+        # buffer = np.array([])
         while True:
-            # print("track execution %s" % track.kind)
-            frame: AudioFrame = await track.recv()
-            # print("track receive %s" % track.kind)
-            frame = frame.to_ndarray()
-            # print(len(frame))
-            stream.write(frame)
+            print("track execution %s" % track.kind)
+            frame = await track.recv()
+            print("track receive %s" % track.kind)
+            data = frame.to_ndarray()
+            shape = data.shape
+
+            data = decode(data.tobytes())
+            data = np.frombuffer(data, dtype=np.int16).reshape(shape)
+
+            print(data.shape, data)
+            data = data[0]
+            sdstream.write(data)
     
     @pc.on("track")
     async def on_track(track: MediaStreamTrack):
@@ -155,10 +228,12 @@ async def run(pc: RTCPeerConnection, player: MediaPlayer, recorder, signaling, r
         if track.kind == "video":
             # await video_track(track)
             await asyncio.ensure_future(video_track(track))
+            pass
 
         if track.kind == "audio":
             # await audio_track(track)
             await asyncio.ensure_future(audio_track(track))
+            pass
 
     # connect signaling
     await signaling.connect()
@@ -201,9 +276,12 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    HOST = '127.0.0.1'
+    # HOST = '127.0.0.1'
     # HOST = '100.80.231.89'
     # HOST = '192.168.68.72'
+    # HOST = '128.54.191.80'
+    # HOST = '100.115.52.50'
+    HOST = '0.0.0.0'
     PORT = '65431'
     signaling_parser = argparse.ArgumentParser()
     add_signaling_arguments(signaling_parser)
@@ -219,9 +297,6 @@ if __name__ == "__main__":
     vpc = RTCPeerConnection()
 
 
-    HOST = '127.0.0.1'
-    # HOST = '100.80.231.89'
-    # HOST = '192.168.68.72'
     PORT = '65432'
     signaling_parser = argparse.ArgumentParser()
     add_signaling_arguments(signaling_parser)
@@ -251,12 +326,15 @@ if __name__ == "__main__":
         'sample_rate': str(sample_rate)
     }
     if platform.system() == 'Darwin':
-        vplayer = MediaPlayer('default:none', format='avfoundation', options=voptions)
-        aplayer = MediaPlayer('none:default', format='avfoundation', options=aoptions)
+        video_player = MediaPlayer('default:none', format='avfoundation', options=voptions)
+        audio_player = MediaPlayer('none:default', format='avfoundation', options=aoptions)
         # aplayer = MediaPlayer('sin.wav', format=None, options=aoptions)
     elif platform.system() == 'Windows':
-        vplayer = MediaPlayer('video=Integrated Camera', format='dshow', options=voptions)
-        aplayer = MediaPlayer('audio=Microphone (Realtek(R) Audio)', format='dshow', options=aoptions)
+        video_player = MediaPlayer('video=Integrated Camera', format='dshow', options=voptions)
+        audio_player = MediaPlayer('audio=Microphone (Realtek(R) Audio)', format='dshow', options=aoptions)
+
+    video_track = EncodedVideoStreamTrack(video_player.video, encode=encode)
+    audio_track = EncodedAudioStreamTrack(audio_player.audio, encode=None)
 
     # create media sink
     if args.record_to:
@@ -275,14 +353,14 @@ if __name__ == "__main__":
             asyncio.gather(
                 run(
                     pc=vpc,
-                    player=vplayer,
+                    track=video_track,
                     recorder=recorder,
                     signaling=vsignaling,
                     role=args.role,
                 ),
                 run(
                     pc=apc,
-                    player=aplayer,
+                    track=audio_track,
                     recorder=recorder,
                     signaling=asignaling,
                     role=args.role,
@@ -298,3 +376,5 @@ if __name__ == "__main__":
         loop.run_until_complete(vpc.close())
         loop.run_until_complete(asignaling.close())
         loop.run_until_complete(apc.close())
+
+    print("exit")
