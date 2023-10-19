@@ -1,0 +1,13 @@
+2023-09-20 12:34:41,660 - root - ERROR - Exception while communicating with server: [Errno 61] Connection refused
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/Documents/POC-Audio-Server/client.py", line 211, in connect
+    client_socket.connect((self.host, self.port))
+ConnectionRefusedError: [Errno 61] Connection refused
+2023-09-20 12:34:41,687 - root - INFO - Connection closed
+2023-09-20 12:43:10,384 - __main__ - INFO - Initializing client with host: 127.0.0.1, port: 65431
+2023-09-20 12:43:10,384 - __main__ - INFO - Attempting to connect.
+2023-09-20 12:43:10,384 - __main__ - INFO - Configuring security settings.
+2023-09-20 12:43:10,391 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): localhost:5000
+2023-09-20 12:43:10,402 - urllib3.connectionpool - DEBUG - http://localhost:5000 "POST /api/configure_security HTTP/1.1" 403 0
+2023-09-20 12:43:10,402 - __main__ - ERROR - An error occurred while making a POST request: Expecting value: line 1 column 1 (char 0)
+2023-09-20 12:43:10,402 - __main__ - ERROR - An error occurred while configuring security: 'NoneType' object has no attribute 'status_code'
