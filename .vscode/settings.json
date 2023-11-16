@@ -1,6 +1,8 @@
 {
-    "editor.tokenColorCustomizations": {
-        "comments": "",
-        "textMateRules": []
+    "files.exclude": {
+        "frontend/": true,
+        "icebox/": true,
+        "old": true,
+
     }
 }

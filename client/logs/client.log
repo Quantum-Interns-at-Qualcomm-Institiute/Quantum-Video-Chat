@@ -1,0 +1,94 @@
+[14:31:20] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[14:31:20] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[14:31:20] (INFO) ClientAPI.run: Starting Client API.
+[14:31:20] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[14:31:25] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[14:31:25] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[14:31:25] (INFO) ClientAPI.run: Starting Client API.
+[14:31:25] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[14:31:25] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[14:31:25] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[14:31:25] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[14:31:26] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[14:31:26] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[14:31:26] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[14:31:26] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[14:31:35] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[14:31:35] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[14:31:35] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[14:31:35] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[14:31:37] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 962b5.
+[14:31:37] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[14:31:37] (INFO) SocketAPI.run: Starting WebSocket API.
+[14:31:37] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[14:31:37] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[14:31:37] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[14:31:37] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-11-16 14:31:37] "GET /socket.io/?transport=polling&EIO=4&t=1700173897.6238062 HTTP/1.1" 200 254 0.000998
+[14:31:37] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[14:31:37] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[14:31:37] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[14:31:37] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[14:31:37] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[14:31:37] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[14:31:37] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[14:31:37] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 52791 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[14:31:37] (INFO) Client.handle_peer_connection: Polling User
+[14:32:04] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[14:32:04] (INFO) Client.handle_peer_connection: Attempting to connect to peer 52791 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[14:32:04] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[14:32:04] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[14:32:04] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-11-16 14:32:04] "GET /socket.io/?transport=polling&EIO=4&t=1700173924.4199948 HTTP/1.1" 200 254 0.000000
+[14:32:04] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[14:32:04] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[14:32:04] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[14:32:04] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[14:32:04] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[14:32:04] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[14:32:04] (INFO) Client.handle_peer_connection: Successfully connected to peer User 52791.
+[14:32:04] (INFO) SocketClient.send_message: Sending message: Hello from user 962b5
+[14:32:04] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[14:32:04] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[14:32:04] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[14:32:04] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[14:32:04] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[14:32:04] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[14:32:04] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[14:32:04] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[14:32:04] (INFO) SocketClient.send_message: Sending message: Hello from user 52791
+[14:32:04] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[14:32:04] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[14:32:04] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[14:32:48] (INFO) SocketClient.send_message: Sending message: What's up nerd hehehehe
+[14:32:48] (INFO) SocketAPI.on_message: Received message from User 52791: 'What's up nerd hehehehe'
+[14:32:48] (INFO) SocketClient.on_message: Received message from user 52791: What's up nerd hehehehe
+[14:32:48] (INFO) SocketClient.on_message: Received message from user 52791: What's up nerd hehehehe
+[14:32:57] (INFO) SocketClient.send_message: Sending message: KILL YOURSEL;FFFF
+[14:32:57] (INFO) SocketAPI.on_message: Received message from User 962b5: 'KILL YOURSEL;FFFF'
+[14:32:57] (INFO) SocketClient.on_message: Received message from user 962b5: KILL YOURSEL;FFFF
+[14:32:57] (INFO) SocketClient.on_message: Received message from user 962b5: KILL YOURSEL;FFFF
+[14:33:00] (INFO) SocketClient.send_message: Sending message: SKREEE
+[14:33:00] (INFO) SocketAPI.on_message: Received message from User 52791: 'SKREEE'
+[14:33:00] (INFO) SocketClient.on_message: Received message from user 52791: SKREEE
+[14:33:00] (INFO) SocketClient.on_message: Received message from user 52791: SKREEE
+[14:33:01] (INFO) SocketClient.send_message: Sending message: SKREE
+[14:33:01] (INFO) SocketAPI.on_message: Received message from User 52791: 'SKREE'
+[14:33:01] (INFO) SocketClient.on_message: Received message from user 52791: SKREE
+[14:33:01] (INFO) SocketClient.on_message: Received message from user 52791: SKREE
+[14:33:01] (INFO) SocketClient.send_message: Sending message: SKREE
+[14:33:01] (INFO) SocketAPI.on_message: Received message from User 52791: 'SKREE'
+[14:33:01] (INFO) SocketClient.on_message: Received message from user 52791: SKREE
+[14:33:01] (INFO) SocketClient.on_message: Received message from user 52791: SKREE
+[14:33:03] (INFO) SocketClient.send_message: Sending message: AAAAH
+[14:33:03] (INFO) SocketAPI.on_message: Received message from User 962b5: 'AAAAH'
+[14:33:03] (INFO) SocketClient.on_message: Received message from user 962b5: AAAAH
+[14:33:03] (INFO) SocketClient.on_message: Received message from user 962b5: AAAAH
+[14:33:05] (INFO) SocketClient.send_message: Sending message: COMMIT SUICIDE
+[14:33:05] (INFO) SocketAPI.on_message: Received message from User 962b5: 'COMMIT SUICIDE'
+[14:33:05] (INFO) SocketClient.on_message: Received message from user 962b5: COMMIT SUICIDE
+[14:33:05] (INFO) SocketClient.on_message: Received message from user 962b5: COMMIT SUICIDE
