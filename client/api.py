@@ -5,6 +5,8 @@ from threading import Thread
 # TODO: Look into usage for gevent
 from gevent.pywsgi import WSGIServer # For asynchronous handling
 
+from utils.av import TestFlaskNamespace, generate_flask_namespace
+
 #region --- Logging ---
 import logging
 logging.basicConfig(filename='./logs/api.log', level=logging.DEBUG, 
@@ -219,6 +221,7 @@ class SocketAPI(Thread):
     client = None
     endpoint = None
     state = SocketState.NEW
+    namespaces = None
 
     conn_token = None
     users = {}
@@ -333,6 +336,10 @@ class SocketAPI(Thread):
     def run(self):
         cls = SocketAPI
 
+        cls.namespaces = generate_flask_namespace(cls)
+        for namespace in cls.namespaces:
+            cls.socketio.on_namespace(cls.namespaces[namespace])
+
         cls.logger.info(f"Starting WebSocket API.")
         if cls.state == SocketState.NEW:
             raise ServerError(f"Cannot start API before initialization.")
@@ -424,6 +431,7 @@ class SocketAPI(Thread):
         # Close all connections (if that's a thing)
         # Kill Web Socket
         # State returns to INIT
+
     #endregion
 #endregion
 

@@ -2,6 +2,7 @@ import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
 import logging
+from utils.av import TestClientNamespace, generate_client_namespace
 
 # XXX: Switch back to level=logging.DEBUG
 logging.basicConfig(filename='./logs/client.log', level=logging.INFO, 
@@ -39,6 +40,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     conn_token = None
     sess_token = None
     instance = None
+    namespaces = None
     # state = SocketClientState.NEW
     # TODO: ^ there's a `client.connected` member variable; we can just use that tbh
     display_message = None
@@ -76,6 +78,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     def init(cls, endpoint, conn_token, user_id, display_message): # TODO: Unsure if client needed.
         cls.logger.info(f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
+        cls.namespaces = generate_client_namespace(cls)
+
         # if cls.state == SocketClientState.OPEN:
             # raise ServerError(f"Cannot reconfigure Socket Client while connection is open.")
         cls.conn_token = conn_token
@@ -93,10 +97,10 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         SocketClient.connect()
 
     @classmethod
-    def send_message(cls, msg: str):
+    def send_message(cls, msg: str, namespace='/'):
         # TODO: Ensure we're actually connected first lelz
         cls.logger.info(f"Sending message: {msg}")
-        cls.sio.send(((str(cls.user_id),cls.sess_token),msg))
+        cls.sio.send(((str(cls.user_id),cls.sess_token),msg), namespace=namespace)
 
     @classmethod
     def connect(cls):
@@ -104,7 +108,9 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # TODO: State Management
         # cls.state = SocketClientState.OPEN
         try:
-            cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(cls.user_id, cls.conn_token))
+            cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(cls.user_id, cls.conn_token), namespaces=['/']+list(cls.namespaces.keys()))
+            for name in cls.namespaces:
+                cls.sio.register_namespace(cls.namespaces[name])
         except socketio.exceptions.ConnectionError as e:
             cls.logger.error(f"Connection failed: {str(e)}")
 
@@ -142,6 +148,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     def on_message(cls,user_id, msg):
         cls.logger.info(f"Received message from user {user_id}: {msg}")
         SocketClient.display_message(user_id, msg)
+
     #endregion
 #endregion
 
@@ -450,7 +457,10 @@ if __name__ == "__main__":
         SocketClient.send_message(f"Hello from user {client.user_id}")
         while True:
             msg = input()
-            SocketClient.send_message(msg)
+            if '/test' in SocketClient.namespaces:
+                SocketClient.send_message(msg, namespace='/test')
+            else:
+                SocketClient.send_message(msg)
         #endregion
 
     except GUIQuit as e:
