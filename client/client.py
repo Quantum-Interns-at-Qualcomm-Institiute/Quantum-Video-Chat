@@ -2,7 +2,7 @@ import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
 import logging
-from utils.av import TestClientNamespace, generate_client_namespace
+from utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
 logging.basicConfig(filename='./logs/client.log', level=logging.INFO, 
@@ -41,6 +41,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     sess_token = None
     instance = None
     namespaces = None
+    av = None
     # state = SocketClientState.NEW
     # TODO: ^ there's a `client.connected` member variable; we can just use that tbh
     display_message = None
@@ -78,7 +79,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     def init(cls, endpoint, conn_token, user_id, display_message): # TODO: Unsure if client needed.
         cls.logger.info(f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
-        cls.namespaces = generate_client_namespace(cls)
+        cls.av = AV(cls)
+        cls.namespaces = cls.av.client_namespaces
 
         # if cls.state == SocketClientState.OPEN:
             # raise ServerError(f"Cannot reconfigure Socket Client while connection is open.")
@@ -136,6 +138,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # Set state
         # SocketClient.sess_token = sess_token
         cls.logger.info(f"Socket connection established to endpoint {SocketClient.endpoint}")
+        for name in cls.namespaces:
+            cls.namespaces[name].on_connect()
 
     @sio.on('token')
     @HandleExceptions
@@ -457,10 +461,11 @@ if __name__ == "__main__":
         SocketClient.send_message(f"Hello from user {client.user_id}")
         while True:
             msg = input()
-            if '/test' in SocketClient.namespaces:
-                SocketClient.send_message(msg, namespace='/test')
-            else:
-                SocketClient.send_message(msg)
+            print(SocketClient.av.key_queue['/video_key'].qsize())
+            # if '/test' in SocketClient.namespaces:
+            #     SocketClient.send_message(msg, namespace='/test')
+            # else:
+            #     SocketClient.send_message(msg)
         #endregion
 
     except GUIQuit as e:

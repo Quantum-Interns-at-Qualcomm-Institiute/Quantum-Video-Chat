@@ -337,8 +337,8 @@ class SocketAPI(Thread):
         cls = SocketAPI
 
         cls.namespaces = generate_flask_namespace(cls)
-        for namespace in cls.namespaces:
-            cls.socketio.on_namespace(cls.namespaces[namespace])
+        for name in cls.namespaces:
+            cls.socketio.on_namespace(cls.namespaces[name])
 
         cls.logger.info(f"Starting WebSocket API.")
         if cls.state == SocketState.NEW:
