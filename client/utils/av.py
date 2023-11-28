@@ -472,13 +472,13 @@ class AudioClientNamespace(AVClientNamespace):
             stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, input=True, frames_per_buffer=self.av.frames_per_buffer)
 
             while True:
-                if not self.av.key_queue[self.cls.user_id]["audio"].empty():
-                    self.av.key[self.cls.user_id]["audio"] = await self.av.key_queue[self.cls.user_id]["audio"].get()
+                if not self.av.key_queue[self.cls.user_id]["/audio_key"].empty():
+                    self.av.key[self.cls.user_id]["/audio_key"] = await self.av.key_queue[self.cls.user_id]["/audio_key"].get()
 
                 data = stream.read(self.av.frames_per_buffer, exception_on_overflow=False)
 
                 if self.av.encryption is not None:
-                    data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["audio"])
+                    data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/audio_key"])
                 self.send(data)
                 await asyncio.sleep(self.av.audio_wait)
 
@@ -487,11 +487,14 @@ class AudioClientNamespace(AVClientNamespace):
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
         async def handle_message():
-            if not self.av.key_queue[user_id]["audio"].empty():
-                self.av.key[user_id]["audio"] = await self.av.key_queue[user_id]["audio"].get()
+            if user_id == self.cls.user_id:
+                return
+            
+            if not self.av.key_queue[user_id]["/audio_key"].empty():
+                self.av.key[user_id]["/audio_key"] = await self.av.key_queue[user_id]["/audio_key"].get()
 
             data = msg
-            data = self.av.encryption.decrypt(data, self.av.key[user_id]["audio"])
+            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/audio_key"])
             
             self.stream.write(data, num_frames=self.av.frames_per_buffer, exception_on_underflow=False)
 
@@ -530,8 +533,8 @@ class VideoClientNamespace(AVClientNamespace):
             while True:
                 start = time.time()
 
-                if not self.av.key_queue[self.cls.user_id]["video"].empty():
-                    self.av.key[self.cls.user_id]["video"] = await self.av.key_queue[self.cls.user_id]["video"].get()
+                if not self.av.key_queue[self.cls.user_id]["/video_key"].empty():
+                    self.av.key[self.cls.user_id]["/video_key"] = await self.av.key_queue[self.cls.user_id]["/video_key"].get()
 
                 result, image = cap.read()
                 image = cv2.resize(image, (self.av.video_shape[1], self.av.video_shape[0]))
@@ -539,9 +542,10 @@ class VideoClientNamespace(AVClientNamespace):
 
                 data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
-                data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["video"])
+                data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/video_key"])
 
                 self.send(data)
+                # self.cls.video[self.cls.user_id] = data
 
                 end = time.time()
                 print("max send framerate:", 1/(end-start))
@@ -553,22 +557,27 @@ class VideoClientNamespace(AVClientNamespace):
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
         async def handle_message():
+            if user_id == self.cls.user_id:
+                return
+            
             start = time.time()
 
-            cv2.namedWindow("recv", cv2.WINDOW_NORMAL)
-            cv2.resizeWindow("recv", self.av.display_shape[1], self.av.display_shape[0])
-            if not self.av.key_queue[user_id]["video"].empty():
-                self.av.key[user_id]["video"] = await self.av.key_queue[user_id]["video"].get()
+            # the stuff in comments got moved to the main thread because cv2 needs to be in the main thread for macOS
+            # cv2.namedWindow(f"User {user_id}", cv2.WINDOW_NORMAL)
+            # cv2.resizeWindow(f"User {user_id}", self.av.display_shape[1], self.av.display_shape[0])
+            if not self.av.key_queue[user_id]["/video_key"].empty():
+                self.av.key[user_id]["/video_key"] = await self.av.key_queue[user_id]["/video_key"].get()
 
             data = msg
-            data = self.av.encryption.decrypt(data, self.av.key[user_id]["video"])
+            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
             data = np.frombuffer(data, dtype=np.uint8).reshape(self.av.video_shape)
 
-            cv2.imshow(f"User {user_id}", data)
-            cv2.waitKey(1)
+            self.cls.video[user_id] = data
+            # cv2.imshow(f"User {user_id}", data)
+            # cv2.waitKey(1)
 
             end = time.time()
             print("max recv framerate:", 1/(end-start))
@@ -584,9 +593,9 @@ class VideoClientNamespace(AVClientNamespace):
 class AV:
     namespaces = {
         '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        # '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
-        # '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
+        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
+        '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("DEBUG")):

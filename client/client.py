@@ -1,3 +1,4 @@
+import time
 import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
@@ -42,6 +43,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     instance = None
     namespaces = None
     av = None
+    video = {}
     # state = SocketClientState.NEW
     # TODO: ^ there's a `client.connected` member variable; we can just use that tbh
     display_message = None
@@ -160,6 +162,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 #region --- Main Client ---
 from utils import Endpoint
 from api import ClientAPI, SocketAPI, SocketState
+import cv2
 class Client:
     def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
         self.logger = logging.getLogger('Client')
@@ -451,6 +454,7 @@ if __name__ == "__main__":
                 alert = Alert('Warning', f"Failed to connect to User {peer_id}")
                 continue
             else: break
+
         #endregion
 
 
@@ -460,12 +464,24 @@ if __name__ == "__main__":
 
         SocketClient.send_message(f"Hello from user {client.user_id}")
         while True:
-            msg = input()
-            print([SocketClient.av.key_queue[user_id]['/video_key'].qsize() for user_id in SocketClient.av.key_queue])
+            # msg = input()
+            # print([SocketClient.av.key_queue[user_id]['/video_key'].qsize() for user_id in SocketClient.av.key_queue])
             # if '/test' in SocketClient.namespaces:
             #     SocketClient.send_message(msg, namespace='/test')
             # else:
             #     SocketClient.send_message(msg)
+
+            # this is here in the main thread because cv2 only runs in the main thread for macOS
+            for user_id in SocketClient.video:
+                window_name = f"User {user_id}" if user_id != client.user_id else "Self"
+
+                # my computer can't handle 4 displays at once so I'm not gonna show the self display
+                if window_name == "Self": continue
+
+                cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+                cv2.resizeWindow(window_name, SocketClient.av.display_shape[1], SocketClient.av.display_shape[0])
+                cv2.imshow(window_name, SocketClient.video[user_id])
+                cv2.waitKey(1)
         #endregion
 
     except GUIQuit as e:
