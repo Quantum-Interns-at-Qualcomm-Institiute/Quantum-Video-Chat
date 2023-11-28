@@ -78,8 +78,8 @@
 #         while True:
 #             start = time.time()
 
-#             if not key_queue["video"].empty():
-#                 key["video"] = await key_queue["video"].get()
+#             if not key_queue[user_id]["video"].empty():
+#                 key[user_id]["video"] = await key_queue[user_id]["video"].get()
 
 #             result, image = cap.read()
 #             image = cv2.resize(image, (video_shape[1], video_shape[0]))
@@ -88,7 +88,7 @@
 #             data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
 #             if encryption is not None:
-#                 data = encryption.encrypt(data, key["video"])
+#                 data = encryption.encrypt(data, key[user_id]["video"])
 
 #             video_channel.send(data)
 
@@ -102,13 +102,13 @@
 #         stream = audio.open(format=pyaudio.paInt16, channels=1, rate=sample_rate, input=True, frames_per_buffer=frames_per_buffer)
 
 #         while True:
-#             if not key_queue["audio"].empty():
-#                 key["audio"] = await key_queue["audio"].get()
+#             if not key_queue[user_id]["audio"].empty():
+#                 key[user_id]["audio"] = await key_queue[user_id]["audio"].get()
 
 #             data = stream.read(frames_per_buffer, exception_on_overflow=False)
 
 #             if encryption is not None:
-#                 data = encryption.encrypt(data, key["audio"])
+#                 data = encryption.encrypt(data, key[user_id]["audio"])
 #             audio_channel.send(data)
 #             await asyncio.sleep(audio_wait)
 
@@ -121,7 +121,7 @@
 
 #             @key_channel.on("message")
 #             async def on_message(message):
-#                 await key_queue["video"].put(message)
+#                 await key_queue[user_id]["video"].put(message)
 
 #         # Video data channel
 #         elif channel.label == "video data":
@@ -136,12 +136,12 @@
 
 #                 cv2.namedWindow("recv", cv2.WINDOW_NORMAL)
 #                 cv2.resizeWindow("recv", display_shape[1], display_shape[0])
-#                 if not key_queue["video"].empty():
-#                     key["video"] = await key_queue["video"].get()
+#                 if not key_queue[user_id]["video"].empty():
+#                     key[user_id]["video"] = await key_queue[user_id]["video"].get()
 
 #                 data = message
 #                 if encryption is not None:
-#                     data = encryption.decrypt(data, key["video"])
+#                     data = encryption.decrypt(data, key[user_id]["video"])
 
 #                 data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
@@ -159,7 +159,7 @@
 
 #             @key_channel.on("message")
 #             async def on_message(message):
-#                 await key_queue["audio"].put(message)
+#                 await key_queue[user_id]["audio"].put(message)
 
 #         # Audio data channel
 #         elif channel.label == "audio data":
@@ -171,12 +171,12 @@
 
 #             @audio_channel.on("message")
 #             async def on_message(message):
-#                 if not key_queue["audio"].empty():
-#                     key["audio"] = await key_queue["audio"].get()
+#                 if not key_queue[user_id]["audio"].empty():
+#                     key[user_id]["audio"] = await key_queue[user_id]["audio"].get()
 
 #                 data = message
 #                 if encryption is not None:
-#                     data = encryption.decrypt(data, key["audio"])
+#                     data = encryption.decrypt(data, key[user_id]["audio"])
                 
 #                 stream.write(data, num_frames=frames_per_buffer, exception_on_underflow=False)
 
@@ -191,7 +191,7 @@
 #         video_key_channel = pc.createDataChannel("video key")
 #         @video_key_channel.on("open")
 #         async def on_open():
-#             asyncio.ensure_future(send_keys(video_key_channel, key_queue["video"]))
+#             asyncio.ensure_future(send_keys(video_key_channel, key_queue[user_id]["video"]))
 #             pass
 
 #         # video data channel
@@ -204,7 +204,7 @@
 #         audio_key_channel = pc.createDataChannel("audio key")
 #         @audio_key_channel.on("open")
 #         async def on_open():
-#             asyncio.ensure_future(send_keys(audio_key_channel, key_queue["audio"]))
+#             asyncio.ensure_future(send_keys(audio_key_channel, key_queue[user_id]["audio"]))
 #             pass
 
 #         # audio data channel
@@ -295,6 +295,7 @@
 
 
 
+from collections import defaultdict
 from threading import Thread
 import asyncio
 
@@ -443,14 +444,14 @@ class KeyClientNamespace(AVClientNamespace):
 
                 self.send(key)
 
-                await self.av.key_queue[self.namespace].put(key)
+                await self.av.key_queue[self.cls.user_id][self.namespace].put(key)
                 await asyncio.sleep(1)
         
         Thread(target=asyncio.run, args=(send_keys(),)).start()
 
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
-        asyncio.run(self.av.key_queue[self.namespace].put(msg))
+        asyncio.run(self.av.key_queue[user_id][self.namespace].put(msg))
 
 #endregion
 
@@ -471,13 +472,13 @@ class AudioClientNamespace(AVClientNamespace):
             stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, input=True, frames_per_buffer=self.av.frames_per_buffer)
 
             while True:
-                if not self.av.key_queue["audio"].empty():
-                    self.av.key["audio"] = await self.av.key_queue["audio"].get()
+                if not self.av.key_queue[self.cls.user_id]["audio"].empty():
+                    self.av.key[self.cls.user_id]["audio"] = await self.av.key_queue[self.cls.user_id]["audio"].get()
 
                 data = stream.read(self.av.frames_per_buffer, exception_on_overflow=False)
 
                 if self.av.encryption is not None:
-                    data = self.av.encryption.encrypt(data, self.av.key["audio"])
+                    data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["audio"])
                 self.send(data)
                 await asyncio.sleep(self.av.audio_wait)
 
@@ -486,11 +487,11 @@ class AudioClientNamespace(AVClientNamespace):
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
         async def handle_message():
-            if not self.av.key_queue["audio"].empty():
-                self.av.key["audio"] = await self.av.key_queue["audio"].get()
+            if not self.av.key_queue[user_id]["audio"].empty():
+                self.av.key[user_id]["audio"] = await self.av.key_queue[user_id]["audio"].get()
 
             data = msg
-            data = self.av.encryption.decrypt(data, self.av.key["audio"])
+            data = self.av.encryption.decrypt(data, self.av.key[user_id]["audio"])
             
             self.stream.write(data, num_frames=self.av.frames_per_buffer, exception_on_underflow=False)
 
@@ -529,8 +530,8 @@ class VideoClientNamespace(AVClientNamespace):
             while True:
                 start = time.time()
 
-                if not self.av.key_queue["video"].empty():
-                    self.av.key["video"] = await self.av.key_queue["video"].get()
+                if not self.av.key_queue[self.cls.user_id]["video"].empty():
+                    self.av.key[self.cls.user_id]["video"] = await self.av.key_queue[self.cls.user_id]["video"].get()
 
                 result, image = cap.read()
                 image = cv2.resize(image, (self.av.video_shape[1], self.av.video_shape[0]))
@@ -538,7 +539,7 @@ class VideoClientNamespace(AVClientNamespace):
 
                 data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
-                data = self.av.encryption.encrypt(data, self.av.key["video"])
+                data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["video"])
 
                 self.send(data)
 
@@ -556,11 +557,11 @@ class VideoClientNamespace(AVClientNamespace):
 
             cv2.namedWindow("recv", cv2.WINDOW_NORMAL)
             cv2.resizeWindow("recv", self.av.display_shape[1], self.av.display_shape[0])
-            if not self.av.key_queue["video"].empty():
-                self.av.key["video"] = await self.av.key_queue["video"].get()
+            if not self.av.key_queue[user_id]["video"].empty():
+                self.av.key[user_id]["video"] = await self.av.key_queue[user_id]["video"].get()
 
             data = msg
-            data = self.av.encryption.decrypt(data, self.av.key["video"])
+            data = self.av.encryption.decrypt(data, self.av.key[user_id]["video"])
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
@@ -605,8 +606,14 @@ class AV:
         self.frames_per_buffer = self.sample_rate//6
         self.audio_wait = 1/8
 
-        self.key_queue = {"/video_key": asyncio.Queue(), "/audio_key": asyncio.Queue()}
-        self.key = {"/video_key": self.key_gen.get_key().tobytes(), "/audio_key": self.key_gen.get_key().tobytes()}
+        self.key_queue = defaultdict(lambda: {
+            "/video_key": asyncio.Queue(), 
+            "/audio_key": asyncio.Queue()
+            })
+        self.key = defaultdict(lambda: {
+            "/video_key": self.key_gen.get_key().tobytes(), 
+            "/audio_key": self.key_gen.get_key().tobytes()
+            })
 
         self.encryption = encryption
 
