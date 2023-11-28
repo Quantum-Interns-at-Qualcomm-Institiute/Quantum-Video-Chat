@@ -3460,3 +3460,592 @@
 2023-11-27 20:40:22,846 - SocketAPI - INFO - Client disconnected from namespace /video_key.
 2023-11-27 20:40:22,983 - SocketClient - INFO - Sending message: b'\xc2\x95\x9en4\x11U\x14\x82u\x13\xf2U\xd3\xe67'
 2023-11-27 20:40:22,984 - SocketAPI - INFO - Received message from User 962b5: 'b'\xc2\x95\x9en4\x11U\x14\x82u\x13\xf2U\xd3\xe67'' in namespace /video_key
+2023-11-28 11:27:10,614 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:27:10,615 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:27:10,615 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:27:10,841 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:27:12,097 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:27:12,097 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:27:12,097 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:27:12,099 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:27:12,102 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:27:12,102 - Client - INFO - Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+2023-11-28 11:27:15,298 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:27:15,298 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:27:15,298 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:27:15,299 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:27:15,420 - ClientAPI - ERROR - Endpoint http://127.0.0.1:4000 in use.
+2023-11-28 11:27:15,420 - Client - INFO - Setting API endpoint: http://127.0.0.1:4001
+2023-11-28 11:27:15,420 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4001.
+2023-11-28 11:27:16,594 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:27:16,595 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:27:16,595 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:27:16,598 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:27:16,600 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:27:16,600 - Client - INFO - Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+2023-11-28 11:27:20,249 - Client - INFO - Attempting to initiate connection to peer User 52791.
+2023-11-28 11:27:20,249 - SocketAPI - INFO - Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+2023-11-28 11:27:20,250 - SocketAPI - INFO - Starting WebSocket API.
+2023-11-28 11:27:20,250 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:27:20,250 - SocketAPI - INFO - Serving WebSocket API at http://127.0.0.1:3000
+2023-11-28 11:27:20,251 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:27:20,254 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:27:20,256 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:27:20,256 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:27:20,259 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:27:20] "GET /socket.io/?transport=polling&EIO=4&t=1701199640.2526562 HTTP/1.1" 200 254 0.002627
+2023-11-28 11:27:20,259 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199640.2526562 HTTP/1.1" 200 97
+2023-11-28 11:27:20,261 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:27:20,261 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:27:20,261 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:27:20,261 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:27:20,264 - SocketAPI - INFO - Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:27:20,264 - SocketAPI - INFO - Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+2023-11-28 11:27:20,264 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:27:20,265 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:27:20,265 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:27:20,265 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:27:20,265 - Client - INFO - Requester's SocketAPI and SocketClient should be ready now.
+2023-11-28 11:27:20,266 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:27:20,266 - Client - INFO - Contacting Server at http://127.0.0.1:5000/peer_connection.
+2023-11-28 11:27:20,266 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:27:20,267 - SocketClient - INFO - Sending message: b'#\xc6\xcc\xaf\x189\xa3\x11\xaa\x8a.\xdf\xd3\x0b\xe7\xa2'
+2023-11-28 11:27:20,267 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:27:20,269 - SocketAPI - INFO - Received message from User 962b5: 'b'#\xc6\xcc\xaf\x189\xa3\x11\xaa\x8a.\xdf\xd3\x0b\xe7\xa2'' in namespace /video_key
+2023-11-28 11:27:20,278 - ClientAPI - INFO - Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:27:20,278 - Client - INFO - Polling User
+2023-11-28 11:27:21,652 - Client - INFO - User Accepted Connection.
+2023-11-28 11:27:21,652 - Client - INFO - Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:27:21,652 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:27:21,652 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:27:21,653 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:27:21,654 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:27:21,654 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:27:21,654 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:27:21] "GET /socket.io/?transport=polling&EIO=4&t=1701199641.652957 HTTP/1.1" 200 254 0.000305
+2023-11-28 11:27:21,654 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199641.652957 HTTP/1.1" 200 97
+2023-11-28 11:27:21,655 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:27:21,655 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:27:21,655 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:27:21,655 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:27:21,656 - SocketAPI - INFO - Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:27:21,656 - SocketAPI - INFO - Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+2023-11-28 11:27:21,656 - SocketAPI - INFO - Socket API acquired all expected users.
+2023-11-28 11:27:21,656 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:27:21,656 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:27:21,656 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:27:21,656 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:27:21,657 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:27:21,657 - Client - INFO - Successfully connected to peer User 962b5.
+2023-11-28 11:27:21,657 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:27:21,657 - SocketClient - INFO - Sending message: b'\ta%\xda\x98\xd88\x86\x04\x86\x12\xad\x012\xde\xdf'
+2023-11-28 11:27:21,658 - SocketAPI - INFO - Received message from User 52791: 'b'\ta%\xda\x98\xd88\x86\x04\x86\x12\xad\x012\xde\xdf'' in namespace /video_key
+2023-11-28 11:27:21,658 - SocketClient - INFO - Received message from user 52791: b'\ta%\xda\x98\xd88\x86\x04\x86\x12\xad\x012\xde\xdf' in namespace /video_key
+2023-11-28 11:27:21,660 - SocketClient - INFO - Sending message: Hello from user 52791
+2023-11-28 11:27:21,660 - SocketAPI - INFO - Received message from User 52791: 'Hello from user 52791'
+2023-11-28 11:27:21,661 - Client - INFO - Just quit da GUI; returning from client.handle_peer_connection().
+2023-11-28 11:27:21,661 - ClientAPI - INFO - client.handle_peer_connection() finished.
+2023-11-28 11:27:21,661 - ClientAPI - INFO - Responding with 200
+2023-11-28 11:27:21,661 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:27:21,661 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:27:21,662 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /peer_connection HTTP/1.1" 200 21
+2023-11-28 11:27:21,662 - Client - INFO - Received response 200 from Server.
+2023-11-28 11:27:21,662 - Client - INFO - Confirmed all users have connected to SocketAPI.
+2023-11-28 11:27:21,662 - SocketClient - INFO - Sending message: Hello from user 962b5
+2023-11-28 11:27:21,662 - SocketAPI - INFO - Received message from User 962b5: 'Hello from user 962b5'
+2023-11-28 11:27:21,662 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:27:21,662 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:27:32,718 - geventwebsocket.handler - DEBUG - Closed WebSocket
+2023-11-28 11:27:32,718 - geventwebsocket.handler - DEBUG - Failed to write closing frame -> closing socket
+2023-11-28 11:27:32,718 - geventwebsocket.handler - DEBUG - Closed WebSocket
+2023-11-28 11:27:32,718 - SocketAPI - INFO - Client disconnected.
+2023-11-28 11:27:32,718 - SocketAPI - INFO - Client disconnected from namespace /video_key.
+2023-11-28 11:28:07,102 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:28:07,102 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:28:07,102 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:28:07,230 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:28:09,145 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:28:09,145 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:28:09,145 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:28:09,149 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:28:09,152 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:28:09,152 - Client - INFO - Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+2023-11-28 11:28:11,619 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:28:11,619 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:28:11,619 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:28:11,744 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:28:11,745 - ClientAPI - ERROR - Endpoint http://127.0.0.1:4000 in use.
+2023-11-28 11:28:11,745 - Client - INFO - Setting API endpoint: http://127.0.0.1:4001
+2023-11-28 11:28:11,745 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4001.
+2023-11-28 11:28:13,041 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:28:13,041 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:28:13,041 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:28:13,044 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:28:13,046 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:28:13,046 - Client - INFO - Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+2023-11-28 11:28:15,807 - Client - INFO - Attempting to initiate connection to peer User 52791.
+2023-11-28 11:28:15,807 - SocketAPI - INFO - Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+2023-11-28 11:28:15,807 - SocketAPI - INFO - Starting WebSocket API.
+2023-11-28 11:28:15,807 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:28:15,807 - SocketAPI - INFO - Serving WebSocket API at http://127.0.0.1:3000
+2023-11-28 11:28:15,809 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:28:15,811 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:28:15,812 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:28:15,812 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:28:15,814 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:28:15] "GET /socket.io/?transport=polling&EIO=4&t=1701199695.809761 HTTP/1.1" 200 254 0.001849
+2023-11-28 11:28:15,814 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199695.809761 HTTP/1.1" 200 97
+2023-11-28 11:28:15,815 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:28:15,815 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:28:15,815 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:28:15,815 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:28:15,818 - SocketAPI - INFO - Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:28:15,818 - SocketAPI - INFO - Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+2023-11-28 11:28:15,818 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:28:15,818 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:28:15,818 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:28:15,819 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:28:15,819 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:28:15,819 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:28:15,819 - SocketClient - INFO - Sending message: b'\x00\x81\xe8U\xf899u\xf3\x9f\xe9\x011\xaf\x9ay'
+2023-11-28 11:28:15,819 - Client - INFO - Requester's SocketAPI and SocketClient should be ready now.
+2023-11-28 11:28:15,820 - SocketAPI - INFO - Received message from User 962b5: 'b'\x00\x81\xe8U\xf899u\xf3\x9f\xe9\x011\xaf\x9ay'' in namespace /video_key
+2023-11-28 11:28:15,820 - Client - INFO - Contacting Server at http://127.0.0.1:5000/peer_connection.
+2023-11-28 11:28:15,822 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:28:15,831 - ClientAPI - INFO - Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:28:15,831 - Client - INFO - Polling User
+2023-11-28 11:28:17,072 - Client - INFO - User Accepted Connection.
+2023-11-28 11:28:17,072 - Client - INFO - Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:28:17,072 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:28:17,072 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:28:17,073 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:28:17,073 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:28:17,073 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:28:17,073 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:28:17] "GET /socket.io/?transport=polling&EIO=4&t=1701199697.07267 HTTP/1.1" 200 254 0.000211
+2023-11-28 11:28:17,074 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199697.07267 HTTP/1.1" 200 97
+2023-11-28 11:28:17,074 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:28:17,074 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:28:17,074 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:28:17,074 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:28:17,075 - SocketAPI - INFO - Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:28:17,075 - SocketAPI - INFO - Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+2023-11-28 11:28:17,075 - SocketAPI - INFO - Socket API acquired all expected users.
+2023-11-28 11:28:17,075 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:28:17,076 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:28:17,076 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:28:17,076 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:28:17,076 - Client - INFO - Successfully connected to peer User 962b5.
+2023-11-28 11:28:17,076 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:28:17,076 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:28:17,076 - SocketClient - INFO - Sending message: b'\x97\x85\xb8F\x83\xfc\x91m\x16\x1b\xca\xbb!\xd2\x98]'
+2023-11-28 11:28:17,077 - SocketAPI - INFO - Received message from User 52791: 'b'\x97\x85\xb8F\x83\xfc\x91m\x16\x1b\xca\xbb!\xd2\x98]'' in namespace /video_key
+2023-11-28 11:28:17,077 - SocketClient - INFO - Received message from user 52791: b'\x97\x85\xb8F\x83\xfc\x91m\x16\x1b\xca\xbb!\xd2\x98]' in namespace /video_key
+2023-11-28 11:28:17,079 - SocketClient - INFO - Sending message: Hello from user 52791
+2023-11-28 11:28:17,079 - Client - INFO - Just quit da GUI; returning from client.handle_peer_connection().
+2023-11-28 11:28:17,079 - ClientAPI - INFO - client.handle_peer_connection() finished.
+2023-11-28 11:28:17,079 - ClientAPI - INFO - Responding with 200
+2023-11-28 11:28:17,079 - SocketAPI - INFO - Received message from User 52791: 'Hello from user 52791'
+2023-11-28 11:28:17,079 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:28:17,080 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:28:17,080 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /peer_connection HTTP/1.1" 200 21
+2023-11-28 11:28:17,080 - Client - INFO - Received response 200 from Server.
+2023-11-28 11:28:17,080 - Client - INFO - Confirmed all users have connected to SocketAPI.
+2023-11-28 11:28:17,080 - SocketClient - INFO - Sending message: Hello from user 962b5
+2023-11-28 11:28:17,081 - SocketAPI - INFO - Received message from User 962b5: 'Hello from user 962b5'
+2023-11-28 11:28:17,081 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:28:17,081 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:28:18,518 - __main__ - ERROR - Encountered unexpected exception: 'Queue' object is not subscriptable
+
+2023-11-28 11:28:25,654 - geventwebsocket.handler - DEBUG - Closed WebSocket
+2023-11-28 11:28:25,654 - geventwebsocket.handler - DEBUG - Failed to write closing frame -> closing socket
+2023-11-28 11:28:25,654 - geventwebsocket.handler - DEBUG - Closed WebSocket
+2023-11-28 11:28:25,655 - SocketAPI - INFO - Client disconnected.
+2023-11-28 11:28:25,655 - SocketAPI - INFO - Client disconnected from namespace /video_key.
+2023-11-28 11:30:01,815 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:30:01,815 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:30:01,815 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:30:01,949 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:30:03,967 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:30:03,967 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:30:03,967 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:30:03,970 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:30:03,973 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:30:03,973 - Client - INFO - Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+2023-11-28 11:30:06,654 - Client - INFO - Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+2023-11-28 11:30:06,654 - ClientAPI - INFO - Initializing Client API with endpoint http://127.0.0.1:4000.
+2023-11-28 11:30:06,654 - ClientAPI - INFO - Starting Client API.
+2023-11-28 11:30:06,816 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4000.
+2023-11-28 11:30:06,816 - ClientAPI - ERROR - Endpoint http://127.0.0.1:4000 in use.
+2023-11-28 11:30:06,816 - Client - INFO - Setting API endpoint: http://127.0.0.1:4001
+2023-11-28 11:30:06,816 - ClientAPI - INFO - Serving Client API at http://127.0.0.1:4001.
+2023-11-28 11:30:08,165 - Client - INFO - Setting server endpoint: http://127.0.0.1:5000
+2023-11-28 11:30:08,165 - Client - INFO - Attempting to connect to server: http://127.0.0.1:5000.
+2023-11-28 11:30:08,166 - Client - INFO - Contacting Server at http://127.0.0.1:5000/create_user.
+2023-11-28 11:30:08,168 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:30:08,169 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /create_user HTTP/1.1" 200 100
+2023-11-28 11:30:08,169 - Client - INFO - Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+2023-11-28 11:30:11,572 - Client - INFO - Attempting to initiate connection to peer User 52791.
+2023-11-28 11:30:11,572 - SocketAPI - INFO - Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+2023-11-28 11:30:11,573 - SocketAPI - INFO - Starting WebSocket API.
+2023-11-28 11:30:11,573 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:30:11,573 - SocketAPI - INFO - Serving WebSocket API at http://127.0.0.1:3000
+2023-11-28 11:30:11,573 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:30:11,577 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:30:11,580 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:30:11,580 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:30:11,582 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:30:11] "GET /socket.io/?transport=polling&EIO=4&t=1701199811.574836 HTTP/1.1" 200 254 0.003071
+2023-11-28 11:30:11,583 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199811.574836 HTTP/1.1" 200 97
+2023-11-28 11:30:11,585 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:30:11,585 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:30:11,585 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:30:11,585 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:30:11,588 - SocketAPI - INFO - Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:30:11,588 - SocketAPI - INFO - Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+2023-11-28 11:30:11,588 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:30:11,589 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:30:11,589 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:30:11,589 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:30:11,589 - Client - INFO - Requester's SocketAPI and SocketClient should be ready now.
+2023-11-28 11:30:11,590 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:30:11,590 - Client - INFO - Contacting Server at http://127.0.0.1:5000/peer_connection.
+2023-11-28 11:30:11,590 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:11,591 - SocketClient - INFO - Sending message: b'=\xbac&_\xe2\xbe\xfadYc\x15G\x1f\x83\x8a'
+2023-11-28 11:30:11,592 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:5000
+2023-11-28 11:30:11,593 - SocketAPI - INFO - Received message from User 962b5: 'b'=\xbac&_\xe2\xbe\xfadYc\x15G\x1f\x83\x8a'' in namespace /video_key
+2023-11-28 11:30:11,604 - ClientAPI - INFO - Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:30:11,604 - Client - INFO - Polling User
+2023-11-28 11:30:12,594 - SocketClient - INFO - Sending message: b"w\xc4\x90\xf8G\x8d\xb9e\xd3\x123\xd52BR'"
+2023-11-28 11:30:12,597 - SocketAPI - INFO - Received message from User 962b5: 'b"w\xc4\x90\xf8G\x8d\xb9e\xd3\x123\xd52BR'"' in namespace /video_key
+2023-11-28 11:30:12,910 - Client - INFO - User Accepted Connection.
+2023-11-28 11:30:12,910 - Client - INFO - Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+2023-11-28 11:30:12,910 - SocketClient - INFO - Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+2023-11-28 11:30:12,911 - SocketClient - INFO - Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:30:12,911 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): 127.0.0.1:3000
+2023-11-28 11:30:12,912 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:30:12,912 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:30:12,912 - geventwebsocket.handler - INFO - 127.0.0.1 - - [2023-11-28 11:30:12] "GET /socket.io/?transport=polling&EIO=4&t=1701199812.91115 HTTP/1.1" 200 254 0.000262
+2023-11-28 11:30:12,912 - urllib3.connectionpool - DEBUG - http://127.0.0.1:3000 "GET /socket.io/?transport=polling&EIO=4&t=1701199812.91115 HTTP/1.1" 200 97
+2023-11-28 11:30:12,913 - geventwebsocket.handler - DEBUG - Initializing WebSocket
+2023-11-28 11:30:12,913 - geventwebsocket.handler - DEBUG - Validating WebSocket request
+2023-11-28 11:30:12,913 - geventwebsocket.handler - DEBUG - Attempting to upgrade connection
+2023-11-28 11:30:12,913 - geventwebsocket.handler - DEBUG - WebSocket request accepted, switching protocols
+2023-11-28 11:30:12,914 - SocketAPI - INFO - Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+2023-11-28 11:30:12,914 - SocketAPI - INFO - Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+2023-11-28 11:30:12,914 - SocketAPI - INFO - Socket API acquired all expected users.
+2023-11-28 11:30:12,914 - SocketAPI - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:30:12,915 - SocketClient - INFO - Received session token 'this is a session token'
+2023-11-28 11:30:12,915 - SocketClient - INFO - Setting session token 'this is a session token'
+2023-11-28 11:30:12,915 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000
+2023-11-28 11:30:12,915 - SocketClient - INFO - Socket connection established to endpoint http://127.0.0.1:3000 on namespace /video_key
+2023-11-28 11:30:12,915 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:12,915 - SocketClient - INFO - Sending message: b';V\xae\x1eqB\xc5\xdf<z,\x87=x\xacQ'
+2023-11-28 11:30:12,915 - Client - INFO - Successfully connected to peer User 962b5.
+2023-11-28 11:30:12,916 - SocketAPI - INFO - Received message from User 52791: 'b';V\xae\x1eqB\xc5\xdf<z,\x87=x\xacQ'' in namespace /video_key
+2023-11-28 11:30:12,917 - SocketClient - INFO - Received message from user 52791: b';V\xae\x1eqB\xc5\xdf<z,\x87=x\xacQ' in namespace /video_key
+2023-11-28 11:30:12,917 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:12,918 - SocketClient - INFO - Sending message: Hello from user 52791
+2023-11-28 11:30:12,918 - Client - INFO - Just quit da GUI; returning from client.handle_peer_connection().
+2023-11-28 11:30:12,918 - SocketAPI - INFO - Received message from User 52791: 'Hello from user 52791'
+2023-11-28 11:30:12,918 - ClientAPI - INFO - client.handle_peer_connection() finished.
+2023-11-28 11:30:12,918 - ClientAPI - INFO - Responding with 200
+2023-11-28 11:30:12,919 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:30:12,919 - SocketClient - INFO - Received message from user 52791: Hello from user 52791
+2023-11-28 11:30:12,919 - urllib3.connectionpool - DEBUG - http://127.0.0.1:5000 "POST /peer_connection HTTP/1.1" 200 21
+2023-11-28 11:30:12,920 - Client - INFO - Received response 200 from Server.
+2023-11-28 11:30:12,920 - Client - INFO - Confirmed all users have connected to SocketAPI.
+2023-11-28 11:30:12,920 - SocketClient - INFO - Sending message: Hello from user 962b5
+2023-11-28 11:30:12,920 - SocketAPI - INFO - Received message from User 962b5: 'Hello from user 962b5'
+2023-11-28 11:30:12,920 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:30:12,920 - SocketClient - INFO - Received message from user 962b5: Hello from user 962b5
+2023-11-28 11:30:13,595 - SocketClient - INFO - Sending message: b"\xa2Iz\xf0\\8'*0\x81\x88\xaf;\n\x92:"
+2023-11-28 11:30:13,598 - SocketAPI - INFO - Received message from User 962b5: 'b"\xa2Iz\xf0\\8'*0\x81\x88\xaf;\n\x92:"' in namespace /video_key
+2023-11-28 11:30:13,599 - SocketClient - INFO - Received message from user 962b5: b"\xa2Iz\xf0\\8'*0\x81\x88\xaf;\n\x92:" in namespace /video_key
+2023-11-28 11:30:13,599 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:13,917 - SocketClient - INFO - Sending message: b'\xb6\xd2\xc7\x88\xe6b\xd8\xe4$G"\xc3\xae}\xb4\xe2'
+2023-11-28 11:30:13,919 - SocketAPI - INFO - Received message from User 52791: 'b'\xb6\xd2\xc7\x88\xe6b\xd8\xe4$G"\xc3\xae}\xb4\xe2'' in namespace /video_key
+2023-11-28 11:30:13,921 - SocketClient - INFO - Received message from user 52791: b'\xb6\xd2\xc7\x88\xe6b\xd8\xe4$G"\xc3\xae}\xb4\xe2' in namespace /video_key
+2023-11-28 11:30:13,921 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:14,597 - SocketClient - INFO - Sending message: b'\x8d@\xd5F\xd3\x14\xd5}\x80\x0c\xe5@\xaf\xffc-'
+2023-11-28 11:30:14,599 - SocketAPI - INFO - Received message from User 962b5: 'b'\x8d@\xd5F\xd3\x14\xd5}\x80\x0c\xe5@\xaf\xffc-'' in namespace /video_key
+2023-11-28 11:30:14,601 - SocketClient - INFO - Received message from user 962b5: b'\x8d@\xd5F\xd3\x14\xd5}\x80\x0c\xe5@\xaf\xffc-' in namespace /video_key
+2023-11-28 11:30:14,601 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:14,919 - SocketClient - INFO - Sending message: b'\xb65\xa6\x82\xc1\xe2\xabCnf>\xb6\x8as\x87J'
+2023-11-28 11:30:14,922 - SocketAPI - INFO - Received message from User 52791: 'b'\xb65\xa6\x82\xc1\xe2\xabCnf>\xb6\x8as\x87J'' in namespace /video_key
+2023-11-28 11:30:14,924 - SocketClient - INFO - Received message from user 52791: b'\xb65\xa6\x82\xc1\xe2\xabCnf>\xb6\x8as\x87J' in namespace /video_key
+2023-11-28 11:30:14,924 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:15,599 - SocketClient - INFO - Sending message: b'\xe3\x9b\x1b\xfb\xc4f5\xca\xba\x03\xfdE!\x90-\x96'
+2023-11-28 11:30:15,602 - SocketAPI - INFO - Received message from User 962b5: 'b'\xe3\x9b\x1b\xfb\xc4f5\xca\xba\x03\xfdE!\x90-\x96'' in namespace /video_key
+2023-11-28 11:30:15,604 - SocketClient - INFO - Received message from user 962b5: b'\xe3\x9b\x1b\xfb\xc4f5\xca\xba\x03\xfdE!\x90-\x96' in namespace /video_key
+2023-11-28 11:30:15,604 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:15,921 - SocketClient - INFO - Sending message: b'!\xd5\x17\xa1\xe3l{\xa5t\x90\xb2\xec\xbaC^\x96'
+2023-11-28 11:30:15,922 - SocketAPI - INFO - Received message from User 52791: 'b'!\xd5\x17\xa1\xe3l{\xa5t\x90\xb2\xec\xbaC^\x96'' in namespace /video_key
+2023-11-28 11:30:15,922 - SocketClient - INFO - Received message from user 52791: b'!\xd5\x17\xa1\xe3l{\xa5t\x90\xb2\xec\xbaC^\x96' in namespace /video_key
+2023-11-28 11:30:15,923 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:16,602 - SocketClient - INFO - Sending message: b'"\xbd`%^\x001D\xfd\x0f\xc5\x19\x83\xe2QL'
+2023-11-28 11:30:16,605 - SocketAPI - INFO - Received message from User 962b5: 'b'"\xbd`%^\x001D\xfd\x0f\xc5\x19\x83\xe2QL'' in namespace /video_key
+2023-11-28 11:30:16,607 - SocketClient - INFO - Received message from user 962b5: b'"\xbd`%^\x001D\xfd\x0f\xc5\x19\x83\xe2QL' in namespace /video_key
+2023-11-28 11:30:16,607 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:16,923 - SocketClient - INFO - Sending message: b'\xdb\x89\xef\xb2M\xc2d\xd5\xef\xb3[d}\x1d\xd3\xb7'
+2023-11-28 11:30:16,926 - SocketAPI - INFO - Received message from User 52791: 'b'\xdb\x89\xef\xb2M\xc2d\xd5\xef\xb3[d}\x1d\xd3\xb7'' in namespace /video_key
+2023-11-28 11:30:16,927 - SocketClient - INFO - Received message from user 52791: b'\xdb\x89\xef\xb2M\xc2d\xd5\xef\xb3[d}\x1d\xd3\xb7' in namespace /video_key
+2023-11-28 11:30:16,928 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:17,604 - SocketClient - INFO - Sending message: b'i$:\x18B VwE\xceq\xcf\xe4\x93\xcc&'
+2023-11-28 11:30:17,607 - SocketAPI - INFO - Received message from User 962b5: 'b'i$:\x18B VwE\xceq\xcf\xe4\x93\xcc&'' in namespace /video_key
+2023-11-28 11:30:17,609 - SocketClient - INFO - Received message from user 962b5: b'i$:\x18B VwE\xceq\xcf\xe4\x93\xcc&' in namespace /video_key
+2023-11-28 11:30:17,609 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:17,925 - SocketClient - INFO - Sending message: b"Ky'\xb6\xde\xad.\xb0\xf8>\xfb!m\xf9\xd9\xf2"
+2023-11-28 11:30:17,929 - SocketAPI - INFO - Received message from User 52791: 'b"Ky'\xb6\xde\xad.\xb0\xf8>\xfb!m\xf9\xd9\xf2"' in namespace /video_key
+2023-11-28 11:30:17,930 - SocketClient - INFO - Received message from user 52791: b"Ky'\xb6\xde\xad.\xb0\xf8>\xfb!m\xf9\xd9\xf2" in namespace /video_key
+2023-11-28 11:30:17,930 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:18,607 - SocketClient - INFO - Sending message: b'0\x19\\^\x89q\xf6\x88teV\x83\x80\x1a\xc0\xd5'
+2023-11-28 11:30:18,609 - SocketAPI - INFO - Received message from User 962b5: 'b'0\x19\\^\x89q\xf6\x88teV\x83\x80\x1a\xc0\xd5'' in namespace /video_key
+2023-11-28 11:30:18,611 - SocketClient - INFO - Received message from user 962b5: b'0\x19\\^\x89q\xf6\x88teV\x83\x80\x1a\xc0\xd5' in namespace /video_key
+2023-11-28 11:30:18,612 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:18,927 - SocketClient - INFO - Sending message: b'\xea\x1e#t\xdc\x9f8\x1f\x9f%\xb7 \xec4q)'
+2023-11-28 11:30:18,928 - SocketAPI - INFO - Received message from User 52791: 'b'\xea\x1e#t\xdc\x9f8\x1f\x9f%\xb7 \xec4q)'' in namespace /video_key
+2023-11-28 11:30:18,929 - SocketClient - INFO - Received message from user 52791: b'\xea\x1e#t\xdc\x9f8\x1f\x9f%\xb7 \xec4q)' in namespace /video_key
+2023-11-28 11:30:18,929 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:19,609 - SocketClient - INFO - Sending message: b'\xedq\xa6\x8c>\x90^\xc5%X\xdd\xd2\x04>\xf0$'
+2023-11-28 11:30:19,610 - SocketAPI - INFO - Received message from User 962b5: 'b'\xedq\xa6\x8c>\x90^\xc5%X\xdd\xd2\x04>\xf0$'' in namespace /video_key
+2023-11-28 11:30:19,611 - SocketClient - INFO - Received message from user 962b5: b'\xedq\xa6\x8c>\x90^\xc5%X\xdd\xd2\x04>\xf0$' in namespace /video_key
+2023-11-28 11:30:19,612 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:19,929 - SocketClient - INFO - Sending message: b'\x05\xda\x952T\xa6|\x1e1\x98\xd1\x7f\x18\xb7\xd1\xe5'
+2023-11-28 11:30:19,931 - SocketAPI - INFO - Received message from User 52791: 'b'\x05\xda\x952T\xa6|\x1e1\x98\xd1\x7f\x18\xb7\xd1\xe5'' in namespace /video_key
+2023-11-28 11:30:19,932 - SocketClient - INFO - Received message from user 52791: b'\x05\xda\x952T\xa6|\x1e1\x98\xd1\x7f\x18\xb7\xd1\xe5' in namespace /video_key
+2023-11-28 11:30:19,932 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:20,610 - SocketClient - INFO - Sending message: b'\xd3\xffI\xdb\x07\xce\x8az|J\xa7\x0b%\x9d\x0b\xd1'
+2023-11-28 11:30:20,613 - SocketAPI - INFO - Received message from User 962b5: 'b'\xd3\xffI\xdb\x07\xce\x8az|J\xa7\x0b%\x9d\x0b\xd1'' in namespace /video_key
+2023-11-28 11:30:20,615 - SocketClient - INFO - Received message from user 962b5: b'\xd3\xffI\xdb\x07\xce\x8az|J\xa7\x0b%\x9d\x0b\xd1' in namespace /video_key
+2023-11-28 11:30:20,615 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:20,931 - SocketClient - INFO - Sending message: b'$~\xd8\xa4\xe6\xe5&\xef\xdb\x7f\xb3\xa7\xc6V\xe6G'
+2023-11-28 11:30:20,933 - SocketAPI - INFO - Received message from User 52791: 'b'$~\xd8\xa4\xe6\xe5&\xef\xdb\x7f\xb3\xa7\xc6V\xe6G'' in namespace /video_key
+2023-11-28 11:30:20,935 - SocketClient - INFO - Received message from user 52791: b'$~\xd8\xa4\xe6\xe5&\xef\xdb\x7f\xb3\xa7\xc6V\xe6G' in namespace /video_key
+2023-11-28 11:30:20,935 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:21,613 - SocketClient - INFO - Sending message: b'\xf7\x9er\x03j<\xc5`\x9ak\xf0\xefv\x95\x11\xac'
+2023-11-28 11:30:21,615 - SocketAPI - INFO - Received message from User 962b5: 'b'\xf7\x9er\x03j<\xc5`\x9ak\xf0\xefv\x95\x11\xac'' in namespace /video_key
+2023-11-28 11:30:21,616 - SocketClient - INFO - Received message from user 962b5: b'\xf7\x9er\x03j<\xc5`\x9ak\xf0\xefv\x95\x11\xac' in namespace /video_key
+2023-11-28 11:30:21,617 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:21,933 - SocketClient - INFO - Sending message: b'7A\xd9\xc2\xa4+\x13i\x0f\xd9\x8b\x1d\xc8\xdc\xcc\x0f'
+2023-11-28 11:30:21,936 - SocketAPI - INFO - Received message from User 52791: 'b'7A\xd9\xc2\xa4+\x13i\x0f\xd9\x8b\x1d\xc8\xdc\xcc\x0f'' in namespace /video_key
+2023-11-28 11:30:21,937 - SocketClient - INFO - Received message from user 52791: b'7A\xd9\xc2\xa4+\x13i\x0f\xd9\x8b\x1d\xc8\xdc\xcc\x0f' in namespace /video_key
+2023-11-28 11:30:21,938 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:22,614 - SocketClient - INFO - Sending message: b'\x17|\xc7\x14~\xc0r\xacc=\xe7$\xf0\x16\xa7\x18'
+2023-11-28 11:30:22,616 - SocketAPI - INFO - Received message from User 962b5: 'b'\x17|\xc7\x14~\xc0r\xacc=\xe7$\xf0\x16\xa7\x18'' in namespace /video_key
+2023-11-28 11:30:22,617 - SocketClient - INFO - Received message from user 962b5: b'\x17|\xc7\x14~\xc0r\xacc=\xe7$\xf0\x16\xa7\x18' in namespace /video_key
+2023-11-28 11:30:22,617 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:22,935 - SocketClient - INFO - Sending message: b"3\nS.\xa6\x91\xb6\xda\xf0LG\x19\xa5\xbd'\x8b"
+2023-11-28 11:30:22,938 - SocketAPI - INFO - Received message from User 52791: 'b"3\nS.\xa6\x91\xb6\xda\xf0LG\x19\xa5\xbd'\x8b"' in namespace /video_key
+2023-11-28 11:30:22,939 - SocketClient - INFO - Received message from user 52791: b"3\nS.\xa6\x91\xb6\xda\xf0LG\x19\xa5\xbd'\x8b" in namespace /video_key
+2023-11-28 11:30:22,939 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:23,616 - SocketClient - INFO - Sending message: b'\xab\xfc\xcb\x86zq {\x9c4\xf3\x11\xf7K\x82\x1b'
+2023-11-28 11:30:23,619 - SocketAPI - INFO - Received message from User 962b5: 'b'\xab\xfc\xcb\x86zq {\x9c4\xf3\x11\xf7K\x82\x1b'' in namespace /video_key
+2023-11-28 11:30:23,621 - SocketClient - INFO - Received message from user 962b5: b'\xab\xfc\xcb\x86zq {\x9c4\xf3\x11\xf7K\x82\x1b' in namespace /video_key
+2023-11-28 11:30:23,621 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:23,937 - SocketClient - INFO - Sending message: b'O\xac\xf5\x9c\xe1\xec\x95gU\x90Gr\xc7\x83\x95\x11'
+2023-11-28 11:30:23,940 - SocketAPI - INFO - Received message from User 52791: 'b'O\xac\xf5\x9c\xe1\xec\x95gU\x90Gr\xc7\x83\x95\x11'' in namespace /video_key
+2023-11-28 11:30:23,941 - SocketClient - INFO - Received message from user 52791: b'O\xac\xf5\x9c\xe1\xec\x95gU\x90Gr\xc7\x83\x95\x11' in namespace /video_key
+2023-11-28 11:30:23,941 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:24,618 - SocketClient - INFO - Sending message: b'\xa9g\xcc\xab\xf0)\xb8I;\xd3\xb2OE%\x0e\x83'
+2023-11-28 11:30:24,621 - SocketAPI - INFO - Received message from User 962b5: 'b'\xa9g\xcc\xab\xf0)\xb8I;\xd3\xb2OE%\x0e\x83'' in namespace /video_key
+2023-11-28 11:30:24,623 - SocketClient - INFO - Received message from user 962b5: b'\xa9g\xcc\xab\xf0)\xb8I;\xd3\xb2OE%\x0e\x83' in namespace /video_key
+2023-11-28 11:30:24,623 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:24,939 - SocketClient - INFO - Sending message: b'\x0f\xc4\xd4%l\x96\xe8\xe3\xf7\x8f\xbe*\xf66\xb8\xb5'
+2023-11-28 11:30:24,941 - SocketAPI - INFO - Received message from User 52791: 'b'\x0f\xc4\xd4%l\x96\xe8\xe3\xf7\x8f\xbe*\xf66\xb8\xb5'' in namespace /video_key
+2023-11-28 11:30:24,943 - SocketClient - INFO - Received message from user 52791: b'\x0f\xc4\xd4%l\x96\xe8\xe3\xf7\x8f\xbe*\xf66\xb8\xb5' in namespace /video_key
+2023-11-28 11:30:24,943 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:25,620 - SocketClient - INFO - Sending message: b'\xa0+\xc8my\x86b\xfd\xc3\t\x88o\x07\x96m\xe6'
+2023-11-28 11:30:25,622 - SocketAPI - INFO - Received message from User 962b5: 'b'\xa0+\xc8my\x86b\xfd\xc3\t\x88o\x07\x96m\xe6'' in namespace /video_key
+2023-11-28 11:30:25,624 - SocketClient - INFO - Received message from user 962b5: b'\xa0+\xc8my\x86b\xfd\xc3\t\x88o\x07\x96m\xe6' in namespace /video_key
+2023-11-28 11:30:25,625 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:25,941 - SocketClient - INFO - Sending message: b'\x1d~k#\x0e\x87#!\x03\xb3\x02\xca$\xf0y\xd4'
+2023-11-28 11:30:25,943 - SocketAPI - INFO - Received message from User 52791: 'b'\x1d~k#\x0e\x87#!\x03\xb3\x02\xca$\xf0y\xd4'' in namespace /video_key
+2023-11-28 11:30:25,944 - SocketClient - INFO - Received message from user 52791: b'\x1d~k#\x0e\x87#!\x03\xb3\x02\xca$\xf0y\xd4' in namespace /video_key
+2023-11-28 11:30:25,944 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:26,622 - SocketClient - INFO - Sending message: b'\x15m\xd7+\x13\xa5Q\x07\x00[\x15\xe0\x9c\x1ad\x9d'
+2023-11-28 11:30:26,625 - SocketAPI - INFO - Received message from User 962b5: 'b'\x15m\xd7+\x13\xa5Q\x07\x00[\x15\xe0\x9c\x1ad\x9d'' in namespace /video_key
+2023-11-28 11:30:26,626 - SocketClient - INFO - Received message from user 962b5: b'\x15m\xd7+\x13\xa5Q\x07\x00[\x15\xe0\x9c\x1ad\x9d' in namespace /video_key
+2023-11-28 11:30:26,627 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:26,942 - SocketClient - INFO - Sending message: b'zG\x06N\xd4/h%\xff\r\xf1\x8dM_\xd0\x97'
+2023-11-28 11:30:26,943 - SocketAPI - INFO - Received message from User 52791: 'b'zG\x06N\xd4/h%\xff\r\xf1\x8dM_\xd0\x97'' in namespace /video_key
+2023-11-28 11:30:26,944 - SocketClient - INFO - Received message from user 52791: b'zG\x06N\xd4/h%\xff\r\xf1\x8dM_\xd0\x97' in namespace /video_key
+2023-11-28 11:30:26,944 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:27,624 - SocketClient - INFO - Sending message: b'\x84O\x02\xd6\x88T\x9a#\xa1\x12(r\xb6\xe4\xdf\xf8'
+2023-11-28 11:30:27,625 - SocketAPI - INFO - Received message from User 962b5: 'b'\x84O\x02\xd6\x88T\x9a#\xa1\x12(r\xb6\xe4\xdf\xf8'' in namespace /video_key
+2023-11-28 11:30:27,626 - SocketClient - INFO - Received message from user 962b5: b'\x84O\x02\xd6\x88T\x9a#\xa1\x12(r\xb6\xe4\xdf\xf8' in namespace /video_key
+2023-11-28 11:30:27,627 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:27,944 - SocketClient - INFO - Sending message: b'\x90\x1c\xc2AO\xb6\xf6[\xc3S\x92\x9fS\x1cCH'
+2023-11-28 11:30:27,945 - SocketAPI - INFO - Received message from User 52791: 'b'\x90\x1c\xc2AO\xb6\xf6[\xc3S\x92\x9fS\x1cCH'' in namespace /video_key
+2023-11-28 11:30:27,946 - SocketClient - INFO - Received message from user 52791: b'\x90\x1c\xc2AO\xb6\xf6[\xc3S\x92\x9fS\x1cCH' in namespace /video_key
+2023-11-28 11:30:27,946 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:28,626 - SocketClient - INFO - Sending message: b'\x04yj\x83\x0b\xe2JAL\x0e\x99J\xecJ\x15\x8f'
+2023-11-28 11:30:28,628 - SocketAPI - INFO - Received message from User 962b5: 'b'\x04yj\x83\x0b\xe2JAL\x0e\x99J\xecJ\x15\x8f'' in namespace /video_key
+2023-11-28 11:30:28,629 - SocketClient - INFO - Received message from user 962b5: b'\x04yj\x83\x0b\xe2JAL\x0e\x99J\xecJ\x15\x8f' in namespace /video_key
+2023-11-28 11:30:28,629 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:28,946 - SocketClient - INFO - Sending message: b'\xf2\xb8\x04\x9d\x84\x89\xad\xbc2\xb6\xb4\xbcCB\xd2N'
+2023-11-28 11:30:28,948 - SocketAPI - INFO - Received message from User 52791: 'b'\xf2\xb8\x04\x9d\x84\x89\xad\xbc2\xb6\xb4\xbcCB\xd2N'' in namespace /video_key
+2023-11-28 11:30:28,950 - SocketClient - INFO - Received message from user 52791: b'\xf2\xb8\x04\x9d\x84\x89\xad\xbc2\xb6\xb4\xbcCB\xd2N' in namespace /video_key
+2023-11-28 11:30:28,950 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:29,627 - SocketClient - INFO - Sending message: b'\xccb_\xa1C\x11\x0f\xb4\xc4G\x97s\xff\tx\x9b'
+2023-11-28 11:30:29,628 - SocketAPI - INFO - Received message from User 962b5: 'b'\xccb_\xa1C\x11\x0f\xb4\xc4G\x97s\xff\tx\x9b'' in namespace /video_key
+2023-11-28 11:30:29,629 - SocketClient - INFO - Received message from user 962b5: b'\xccb_\xa1C\x11\x0f\xb4\xc4G\x97s\xff\tx\x9b' in namespace /video_key
+2023-11-28 11:30:29,629 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:29,947 - SocketClient - INFO - Sending message: b'\xa4\xac\xe53\xde\xf1\xc2\xb9v\xcfh\\\xe6\xad\xe9\xdb'
+2023-11-28 11:30:29,949 - SocketAPI - INFO - Received message from User 52791: 'b'\xa4\xac\xe53\xde\xf1\xc2\xb9v\xcfh\\\xe6\xad\xe9\xdb'' in namespace /video_key
+2023-11-28 11:30:29,951 - SocketClient - INFO - Received message from user 52791: b'\xa4\xac\xe53\xde\xf1\xc2\xb9v\xcfh\\\xe6\xad\xe9\xdb' in namespace /video_key
+2023-11-28 11:30:29,951 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:30,629 - SocketClient - INFO - Sending message: b'\xed\xd1\x13\xec\x00\x96\xae\x84WO\xb8V\xea\xb8#('
+2023-11-28 11:30:30,629 - SocketAPI - INFO - Received message from User 962b5: 'b'\xed\xd1\x13\xec\x00\x96\xae\x84WO\xb8V\xea\xb8#('' in namespace /video_key
+2023-11-28 11:30:30,630 - SocketClient - INFO - Received message from user 962b5: b'\xed\xd1\x13\xec\x00\x96\xae\x84WO\xb8V\xea\xb8#(' in namespace /video_key
+2023-11-28 11:30:30,630 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:30,949 - SocketClient - INFO - Sending message: b'\xd5M\x00L\x1b\xcb\xe1h\x8a>I~\xfc\x88\xcfH'
+2023-11-28 11:30:30,950 - SocketAPI - INFO - Received message from User 52791: 'b'\xd5M\x00L\x1b\xcb\xe1h\x8a>I~\xfc\x88\xcfH'' in namespace /video_key
+2023-11-28 11:30:30,951 - SocketClient - INFO - Received message from user 52791: b'\xd5M\x00L\x1b\xcb\xe1h\x8a>I~\xfc\x88\xcfH' in namespace /video_key
+2023-11-28 11:30:30,952 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:31,630 - SocketClient - INFO - Sending message: b'\xef\xd6\x98H\x8c\x1a=\x93\xa1\xfem\x91/\xf1Fs'
+2023-11-28 11:30:31,633 - SocketAPI - INFO - Received message from User 962b5: 'b'\xef\xd6\x98H\x8c\x1a=\x93\xa1\xfem\x91/\xf1Fs'' in namespace /video_key
+2023-11-28 11:30:31,635 - SocketClient - INFO - Received message from user 962b5: b'\xef\xd6\x98H\x8c\x1a=\x93\xa1\xfem\x91/\xf1Fs' in namespace /video_key
+2023-11-28 11:30:31,635 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:31,950 - SocketClient - INFO - Sending message: b'\x13\xe0\xcc\xcd\x003\xe7\xe4}\xc1\xb8\xedX\xea\xe6\xfc'
+2023-11-28 11:30:31,952 - SocketAPI - INFO - Received message from User 52791: 'b'\x13\xe0\xcc\xcd\x003\xe7\xe4}\xc1\xb8\xedX\xea\xe6\xfc'' in namespace /video_key
+2023-11-28 11:30:31,954 - SocketClient - INFO - Received message from user 52791: b'\x13\xe0\xcc\xcd\x003\xe7\xe4}\xc1\xb8\xedX\xea\xe6\xfc' in namespace /video_key
+2023-11-28 11:30:31,954 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:32,632 - SocketClient - INFO - Sending message: b'w\x99\x0f\x07\x1e\x02\x86\x0b\x81\x000X\xaeXZ\x9e'
+2023-11-28 11:30:32,635 - SocketAPI - INFO - Received message from User 962b5: 'b'w\x99\x0f\x07\x1e\x02\x86\x0b\x81\x000X\xaeXZ\x9e'' in namespace /video_key
+2023-11-28 11:30:32,637 - SocketClient - INFO - Received message from user 962b5: b'w\x99\x0f\x07\x1e\x02\x86\x0b\x81\x000X\xaeXZ\x9e' in namespace /video_key
+2023-11-28 11:30:32,637 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:32,952 - SocketClient - INFO - Sending message: b'\xdf\x8a\xed/}\x81\xb2\x8ck\xee0\x8eV6F\x8f'
+2023-11-28 11:30:32,955 - SocketAPI - INFO - Received message from User 52791: 'b'\xdf\x8a\xed/}\x81\xb2\x8ck\xee0\x8eV6F\x8f'' in namespace /video_key
+2023-11-28 11:30:32,957 - SocketClient - INFO - Received message from user 52791: b'\xdf\x8a\xed/}\x81\xb2\x8ck\xee0\x8eV6F\x8f' in namespace /video_key
+2023-11-28 11:30:32,957 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:33,634 - SocketClient - INFO - Sending message: b'\xb4u\xd1\x94;\xecJ\x90 \xe7\x92\xbb\xbdO\x9b\x92'
+2023-11-28 11:30:33,635 - SocketAPI - INFO - Received message from User 962b5: 'b'\xb4u\xd1\x94;\xecJ\x90 \xe7\x92\xbb\xbdO\x9b\x92'' in namespace /video_key
+2023-11-28 11:30:33,636 - SocketClient - INFO - Received message from user 962b5: b'\xb4u\xd1\x94;\xecJ\x90 \xe7\x92\xbb\xbdO\x9b\x92' in namespace /video_key
+2023-11-28 11:30:33,636 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:33,955 - SocketClient - INFO - Sending message: b'7\n\xa1czo\xc3\xe1\xc3\xbd\x02CK6\xc0\xa4'
+2023-11-28 11:30:33,957 - SocketAPI - INFO - Received message from User 52791: 'b'7\n\xa1czo\xc3\xe1\xc3\xbd\x02CK6\xc0\xa4'' in namespace /video_key
+2023-11-28 11:30:33,959 - SocketClient - INFO - Received message from user 52791: b'7\n\xa1czo\xc3\xe1\xc3\xbd\x02CK6\xc0\xa4' in namespace /video_key
+2023-11-28 11:30:33,959 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:34,636 - SocketClient - INFO - Sending message: b'\xed\x0f&V?\x1aT\xd9\x9f\xba\x9b\xc0*\x18\xc7Q'
+2023-11-28 11:30:34,639 - SocketAPI - INFO - Received message from User 962b5: 'b'\xed\x0f&V?\x1aT\xd9\x9f\xba\x9b\xc0*\x18\xc7Q'' in namespace /video_key
+2023-11-28 11:30:34,641 - SocketClient - INFO - Received message from user 962b5: b'\xed\x0f&V?\x1aT\xd9\x9f\xba\x9b\xc0*\x18\xc7Q' in namespace /video_key
+2023-11-28 11:30:34,641 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:34,957 - SocketClient - INFO - Sending message: b'\xf8]\xd4L\xea\xeb\x14\x15q5i\xf5\x99\xbf\x87('
+2023-11-28 11:30:34,959 - SocketAPI - INFO - Received message from User 52791: 'b'\xf8]\xd4L\xea\xeb\x14\x15q5i\xf5\x99\xbf\x87('' in namespace /video_key
+2023-11-28 11:30:34,960 - SocketClient - INFO - Received message from user 52791: b'\xf8]\xd4L\xea\xeb\x14\x15q5i\xf5\x99\xbf\x87(' in namespace /video_key
+2023-11-28 11:30:34,961 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:35,638 - SocketClient - INFO - Sending message: b'\xc8\xf9TR\x0bZ\x10K\xe8{c\xacT\xeb\x94;'
+2023-11-28 11:30:35,641 - SocketAPI - INFO - Received message from User 962b5: 'b'\xc8\xf9TR\x0bZ\x10K\xe8{c\xacT\xeb\x94;'' in namespace /video_key
+2023-11-28 11:30:35,643 - SocketClient - INFO - Received message from user 962b5: b'\xc8\xf9TR\x0bZ\x10K\xe8{c\xacT\xeb\x94;' in namespace /video_key
+2023-11-28 11:30:35,643 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:35,958 - SocketClient - INFO - Sending message: b')\xa1I\xf8\x8e\xee\x94\x87ik\x9c\x96\xa8R\xfb\x1b'
+2023-11-28 11:30:35,960 - SocketAPI - INFO - Received message from User 52791: 'b')\xa1I\xf8\x8e\xee\x94\x87ik\x9c\x96\xa8R\xfb\x1b'' in namespace /video_key
+2023-11-28 11:30:35,961 - SocketClient - INFO - Received message from user 52791: b')\xa1I\xf8\x8e\xee\x94\x87ik\x9c\x96\xa8R\xfb\x1b' in namespace /video_key
+2023-11-28 11:30:35,961 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:36,640 - SocketClient - INFO - Sending message: b'\xf0\xdd\xaf\xf6\xda*\x9e(~\xd3\x9a\x10\tR\xebQ'
+2023-11-28 11:30:36,642 - SocketAPI - INFO - Received message from User 962b5: 'b'\xf0\xdd\xaf\xf6\xda*\x9e(~\xd3\x9a\x10\tR\xebQ'' in namespace /video_key
+2023-11-28 11:30:36,644 - SocketClient - INFO - Received message from user 962b5: b'\xf0\xdd\xaf\xf6\xda*\x9e(~\xd3\x9a\x10\tR\xebQ' in namespace /video_key
+2023-11-28 11:30:36,644 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:36,960 - SocketClient - INFO - Sending message: b'D\x83\xd6\x9e\xbaN\xd4\xe9\x1c\x17\x88Ae\xf9\xf3\x8f'
+2023-11-28 11:30:36,963 - SocketAPI - INFO - Received message from User 52791: 'b'D\x83\xd6\x9e\xbaN\xd4\xe9\x1c\x17\x88Ae\xf9\xf3\x8f'' in namespace /video_key
+2023-11-28 11:30:36,965 - SocketClient - INFO - Received message from user 52791: b'D\x83\xd6\x9e\xbaN\xd4\xe9\x1c\x17\x88Ae\xf9\xf3\x8f' in namespace /video_key
+2023-11-28 11:30:36,965 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:37,642 - SocketClient - INFO - Sending message: b'\xdb\xe1\xb2Nkp\xb4V\x8f\x01\xb6A$J\x1d\x13'
+2023-11-28 11:30:37,645 - SocketAPI - INFO - Received message from User 962b5: 'b'\xdb\xe1\xb2Nkp\xb4V\x8f\x01\xb6A$J\x1d\x13'' in namespace /video_key
+2023-11-28 11:30:37,647 - SocketClient - INFO - Received message from user 962b5: b'\xdb\xe1\xb2Nkp\xb4V\x8f\x01\xb6A$J\x1d\x13' in namespace /video_key
+2023-11-28 11:30:37,648 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:37,963 - SocketClient - INFO - Sending message: b'\xa3\xa2\xc2Gi\xbf\xe9\xf3\x8eKQI\xd4\x12\xd2\xa6'
+2023-11-28 11:30:37,966 - SocketAPI - INFO - Received message from User 52791: 'b'\xa3\xa2\xc2Gi\xbf\xe9\xf3\x8eKQI\xd4\x12\xd2\xa6'' in namespace /video_key
+2023-11-28 11:30:37,967 - SocketClient - INFO - Received message from user 52791: b'\xa3\xa2\xc2Gi\xbf\xe9\xf3\x8eKQI\xd4\x12\xd2\xa6' in namespace /video_key
+2023-11-28 11:30:37,968 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:38,645 - SocketClient - INFO - Sending message: b'=\x0f\xbd\x82\xe9^\xf7X\xc0\x12\xb2\xf3\xc5\xd9\xa0\x9a'
+2023-11-28 11:30:38,648 - SocketAPI - INFO - Received message from User 962b5: 'b'=\x0f\xbd\x82\xe9^\xf7X\xc0\x12\xb2\xf3\xc5\xd9\xa0\x9a'' in namespace /video_key
+2023-11-28 11:30:38,649 - SocketClient - INFO - Received message from user 962b5: b'=\x0f\xbd\x82\xe9^\xf7X\xc0\x12\xb2\xf3\xc5\xd9\xa0\x9a' in namespace /video_key
+2023-11-28 11:30:38,650 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:38,965 - SocketClient - INFO - Sending message: b"\xad\xf5C\xb0\x90v\x8c\xb2t\xcfHG'\x8b\xd6#"
+2023-11-28 11:30:38,966 - SocketAPI - INFO - Received message from User 52791: 'b"\xad\xf5C\xb0\x90v\x8c\xb2t\xcfHG'\x8b\xd6#"' in namespace /video_key
+2023-11-28 11:30:38,967 - SocketClient - INFO - Received message from user 52791: b"\xad\xf5C\xb0\x90v\x8c\xb2t\xcfHG'\x8b\xd6#" in namespace /video_key
+2023-11-28 11:30:38,967 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:39,647 - SocketClient - INFO - Sending message: b'\xf1\x87\x05\x11\xb4@.1 \x17,\xf9\xd77/\xd9'
+2023-11-28 11:30:39,650 - SocketAPI - INFO - Received message from User 962b5: 'b'\xf1\x87\x05\x11\xb4@.1 \x17,\xf9\xd77/\xd9'' in namespace /video_key
+2023-11-28 11:30:39,651 - SocketClient - INFO - Received message from user 962b5: b'\xf1\x87\x05\x11\xb4@.1 \x17,\xf9\xd77/\xd9' in namespace /video_key
+2023-11-28 11:30:39,652 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:39,966 - SocketClient - INFO - Sending message: b'\x9b\x92W\x8f\xaf\xbe*\xee\xd3y\xf7w\x18=.a'
+2023-11-28 11:30:39,967 - SocketAPI - INFO - Received message from User 52791: 'b'\x9b\x92W\x8f\xaf\xbe*\xee\xd3y\xf7w\x18=.a'' in namespace /video_key
+2023-11-28 11:30:39,968 - SocketClient - INFO - Received message from user 52791: b'\x9b\x92W\x8f\xaf\xbe*\xee\xd3y\xf7w\x18=.a' in namespace /video_key
+2023-11-28 11:30:39,969 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:40,649 - SocketClient - INFO - Sending message: b'\xb9vo\xfe\xb0f\xbf\xafp}\xaf5\xc3f\x83c'
+2023-11-28 11:30:40,651 - SocketAPI - INFO - Received message from User 962b5: 'b'\xb9vo\xfe\xb0f\xbf\xafp}\xaf5\xc3f\x83c'' in namespace /video_key
+2023-11-28 11:30:40,652 - SocketClient - INFO - Received message from user 962b5: b'\xb9vo\xfe\xb0f\xbf\xafp}\xaf5\xc3f\x83c' in namespace /video_key
+2023-11-28 11:30:40,653 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:40,968 - SocketClient - INFO - Sending message: b'\x9b\x91\xebp\xb9\x9f\xb8;u\x91\x90d\xb7tZ\xf5'
+2023-11-28 11:30:40,971 - SocketAPI - INFO - Received message from User 52791: 'b'\x9b\x91\xebp\xb9\x9f\xb8;u\x91\x90d\xb7tZ\xf5'' in namespace /video_key
+2023-11-28 11:30:40,971 - SocketClient - INFO - Received message from user 52791: b'\x9b\x91\xebp\xb9\x9f\xb8;u\x91\x90d\xb7tZ\xf5' in namespace /video_key
+2023-11-28 11:30:40,972 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:41,651 - SocketClient - INFO - Sending message: b'\xa7Y\x8f\x1d`\x03\x16L\x88\xa5\xb8\xd9V\x96Yl'
+2023-11-28 11:30:41,654 - SocketAPI - INFO - Received message from User 962b5: 'b'\xa7Y\x8f\x1d`\x03\x16L\x88\xa5\xb8\xd9V\x96Yl'' in namespace /video_key
+2023-11-28 11:30:41,656 - SocketClient - INFO - Received message from user 962b5: b'\xa7Y\x8f\x1d`\x03\x16L\x88\xa5\xb8\xd9V\x96Yl' in namespace /video_key
+2023-11-28 11:30:41,656 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:41,971 - SocketClient - INFO - Sending message: b'\xb1\x8d~\xd0\xdd\xbb\x11\x8ax\xefh\xa7\xaf5\xa1\x08'
+2023-11-28 11:30:41,974 - SocketAPI - INFO - Received message from User 52791: 'b'\xb1\x8d~\xd0\xdd\xbb\x11\x8ax\xefh\xa7\xaf5\xa1\x08'' in namespace /video_key
+2023-11-28 11:30:41,975 - SocketClient - INFO - Received message from user 52791: b'\xb1\x8d~\xd0\xdd\xbb\x11\x8ax\xefh\xa7\xaf5\xa1\x08' in namespace /video_key
+2023-11-28 11:30:41,976 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:42,654 - SocketClient - INFO - Sending message: b"KT\x95i\x0e\xd7\xc5\xf7\xba\xd2\x82\xfcI\xd5'@"
+2023-11-28 11:30:42,656 - SocketAPI - INFO - Received message from User 962b5: 'b"KT\x95i\x0e\xd7\xc5\xf7\xba\xd2\x82\xfcI\xd5'@"' in namespace /video_key
+2023-11-28 11:30:42,657 - SocketClient - INFO - Received message from user 962b5: b"KT\x95i\x0e\xd7\xc5\xf7\xba\xd2\x82\xfcI\xd5'@" in namespace /video_key
+2023-11-28 11:30:42,658 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:42,973 - SocketClient - INFO - Sending message: b"\x06+\xd1\x1d'\xb5\xc0\xb2\xd4\r\x9a\xa4#p+Q"
+2023-11-28 11:30:42,975 - SocketAPI - INFO - Received message from User 52791: 'b"\x06+\xd1\x1d'\xb5\xc0\xb2\xd4\r\x9a\xa4#p+Q"' in namespace /video_key
+2023-11-28 11:30:42,977 - SocketClient - INFO - Received message from user 52791: b"\x06+\xd1\x1d'\xb5\xc0\xb2\xd4\r\x9a\xa4#p+Q" in namespace /video_key
+2023-11-28 11:30:42,977 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:43,655 - SocketClient - INFO - Sending message: b'{\xddO\xa8\rX\x86\\\xcf\x06>\xdblw|\xda'
+2023-11-28 11:30:43,658 - SocketAPI - INFO - Received message from User 962b5: 'b'{\xddO\xa8\rX\x86\\\xcf\x06>\xdblw|\xda'' in namespace /video_key
+2023-11-28 11:30:43,660 - SocketClient - INFO - Received message from user 962b5: b'{\xddO\xa8\rX\x86\\\xcf\x06>\xdblw|\xda' in namespace /video_key
+2023-11-28 11:30:43,660 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:43,975 - SocketClient - INFO - Sending message: b'YQ\x98m\xab\x8eU\x14e?\xa5X]\x1c\xcdn'
+2023-11-28 11:30:43,976 - SocketAPI - INFO - Received message from User 52791: 'b'YQ\x98m\xab\x8eU\x14e?\xa5X]\x1c\xcdn'' in namespace /video_key
+2023-11-28 11:30:43,977 - SocketClient - INFO - Received message from user 52791: b'YQ\x98m\xab\x8eU\x14e?\xa5X]\x1c\xcdn' in namespace /video_key
+2023-11-28 11:30:43,977 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:44,657 - SocketClient - INFO - Sending message: b'\xe5\xd6d\xa9\xc6lO\x0fI\xc9\xd2\x9e\xd6\xa7\xc6('
+2023-11-28 11:30:44,658 - SocketAPI - INFO - Received message from User 962b5: 'b'\xe5\xd6d\xa9\xc6lO\x0fI\xc9\xd2\x9e\xd6\xa7\xc6('' in namespace /video_key
+2023-11-28 11:30:44,659 - SocketClient - INFO - Received message from user 962b5: b'\xe5\xd6d\xa9\xc6lO\x0fI\xc9\xd2\x9e\xd6\xa7\xc6(' in namespace /video_key
+2023-11-28 11:30:44,659 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:44,977 - SocketClient - INFO - Sending message: b'\xefs\xa2\xc4\xde\x96bK\xd4\x17Km\xfe\xd3E\xd6'
+2023-11-28 11:30:44,978 - SocketAPI - INFO - Received message from User 52791: 'b'\xefs\xa2\xc4\xde\x96bK\xd4\x17Km\xfe\xd3E\xd6'' in namespace /video_key
+2023-11-28 11:30:44,979 - SocketClient - INFO - Received message from user 52791: b'\xefs\xa2\xc4\xde\x96bK\xd4\x17Km\xfe\xd3E\xd6' in namespace /video_key
+2023-11-28 11:30:44,979 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:45,658 - SocketClient - INFO - Sending message: b'\x0b\xf7y\xa2TF\x93\x85H\xd7\xf2\xb3e\x87E\xd2'
+2023-11-28 11:30:45,659 - SocketAPI - INFO - Received message from User 962b5: 'b'\x0b\xf7y\xa2TF\x93\x85H\xd7\xf2\xb3e\x87E\xd2'' in namespace /video_key
+2023-11-28 11:30:45,660 - SocketClient - INFO - Received message from user 962b5: b'\x0b\xf7y\xa2TF\x93\x85H\xd7\xf2\xb3e\x87E\xd2' in namespace /video_key
+2023-11-28 11:30:45,661 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:45,978 - SocketClient - INFO - Sending message: b'\xc5CN\x85\xcc\xc3\xef\xb7\xe3\xa67\x03IY\xc3P'
+2023-11-28 11:30:45,980 - SocketAPI - INFO - Received message from User 52791: 'b'\xc5CN\x85\xcc\xc3\xef\xb7\xe3\xa67\x03IY\xc3P'' in namespace /video_key
+2023-11-28 11:30:45,981 - SocketClient - INFO - Received message from user 52791: b'\xc5CN\x85\xcc\xc3\xef\xb7\xe3\xa67\x03IY\xc3P' in namespace /video_key
+2023-11-28 11:30:45,981 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:46,660 - SocketClient - INFO - Sending message: b'\xb3\x81\xf8\xc7\x19\x14\x8d_\xc9\x08-\xd8\xdb\xf1\x02Z'
+2023-11-28 11:30:46,661 - SocketAPI - INFO - Received message from User 962b5: 'b'\xb3\x81\xf8\xc7\x19\x14\x8d_\xc9\x08-\xd8\xdb\xf1\x02Z'' in namespace /video_key
+2023-11-28 11:30:46,662 - SocketClient - INFO - Received message from user 962b5: b'\xb3\x81\xf8\xc7\x19\x14\x8d_\xc9\x08-\xd8\xdb\xf1\x02Z' in namespace /video_key
+2023-11-28 11:30:46,662 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:46,980 - SocketClient - INFO - Sending message: b'\xdbx\x04\xea^+\xba\x0eQ\xc0%\x8dv-.\x85'
+2023-11-28 11:30:46,982 - SocketAPI - INFO - Received message from User 52791: 'b'\xdbx\x04\xea^+\xba\x0eQ\xc0%\x8dv-.\x85'' in namespace /video_key
+2023-11-28 11:30:46,983 - SocketClient - INFO - Received message from user 52791: b'\xdbx\x04\xea^+\xba\x0eQ\xc0%\x8dv-.\x85' in namespace /video_key
+2023-11-28 11:30:46,983 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:47,662 - SocketClient - INFO - Sending message: b'\xb5\xbcsWw\x88\x0b\xfb8\x95\x9c\x9c\x9c\xb1\x8e\xc6'
+2023-11-28 11:30:47,663 - SocketAPI - INFO - Received message from User 962b5: 'b'\xb5\xbcsWw\x88\x0b\xfb8\x95\x9c\x9c\x9c\xb1\x8e\xc6'' in namespace /video_key
+2023-11-28 11:30:47,664 - SocketClient - INFO - Received message from user 962b5: b'\xb5\xbcsWw\x88\x0b\xfb8\x95\x9c\x9c\x9c\xb1\x8e\xc6' in namespace /video_key
+2023-11-28 11:30:47,664 - asyncio - DEBUG - Using selector: KqueueSelector
+2023-11-28 11:30:47,982 - SocketClient - INFO - Sending message: b'|\xebm\x1dz\xbe\xb6\x892~\xe8\xc2C!\xeb\x17'

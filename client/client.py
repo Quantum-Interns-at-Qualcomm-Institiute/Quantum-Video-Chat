@@ -461,7 +461,7 @@ if __name__ == "__main__":
         SocketClient.send_message(f"Hello from user {client.user_id}")
         while True:
             msg = input()
-            print(SocketClient.av.key_queue['/video_key'].qsize())
+            print([SocketClient.av.key_queue[user_id]['/video_key'].qsize() for user_id in SocketClient.av.key_queue])
             # if '/test' in SocketClient.namespaces:
             #     SocketClient.send_message(msg, namespace='/test')
             # else:
