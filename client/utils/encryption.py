@@ -9,7 +9,10 @@ from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 
 # Initialize logging
-logging.basicConfig(filename='encryption.log', level=logging.DEBUG,
+# logging.basicConfig(filename='encryption.log', level=logging.DEBUG,
+#                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# Kill logging
+logging.basicConfig(filename='/dev/null', level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
