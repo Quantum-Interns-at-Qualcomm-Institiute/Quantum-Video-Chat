@@ -601,7 +601,7 @@ class AV:
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("DEBUG")):
         self.cls = cls
 
-        self.key_gen = KeyGeneratorFactory().create_key_generator("RANDOM")
+        self.key_gen = KeyGeneratorFactory().create_key_generator("FILE")
         self.key_gen.generate_key(key_length=128)
 
         display_shapes = [(720, 960, 3), (720, 1280, 3)]
