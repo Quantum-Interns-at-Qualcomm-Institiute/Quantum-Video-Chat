@@ -180,6 +180,25 @@ class RandomKeyGenerator(KeyGenerator):
 
     def get_key(self):
         return self.key
+    
+class FileKeyGenerator(KeyGenerator):
+    def __init__(self, file_name = os.path.dirname(__file__) + "/key.bin", key_length = 0):
+        self.key_length = key_length
+        self.key: bitarray = None
+        self.file_name = file_name
+        self.file = open(self.file_name, "rb")
+        
+    def generate_key(self, key_length = 0):
+        if key_length:
+            self.key_length = key_length
+        elif self.key_length < 1:
+            logger.error(f"Try to make key of length {key_length}")
+            raise ValueError("Error, please make key length nonzero")
+        self.key = bitarray()
+        self.key.frombytes(self.file.read(key_length))
+
+    def get_key(self):
+        return self.key
 
 class KeyGeneratorFactory:
 
@@ -188,6 +207,8 @@ class KeyGeneratorFactory:
             return DebugKeyGenerator()
         elif type == "RANDOM":
             return RandomKeyGenerator()
+        elif type == "FILE":
+            return FileKeyGenerator()
         else:
             raise ValueError("Invalid encryption scheme type")
 
