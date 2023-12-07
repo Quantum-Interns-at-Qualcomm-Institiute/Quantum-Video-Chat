@@ -463,6 +463,7 @@ if __name__ == "__main__":
             if SocketClient.is_connected(): break
 
         SocketClient.send_message(f"Hello from user {client.user_id}")
+        input("Press Enter to continue...")
         while True:
             # msg = input()
             # print([SocketClient.av.key_queue[user_id]['/video_key'].qsize() for user_id in SocketClient.av.key_queue])
