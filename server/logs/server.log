@@ -3381,3 +3381,294 @@
 [17:43:38] (INFO) ServerAPI.kill: Killing Server API.
 [17:43:38] (INFO) __main__.<module>: Exiting main program execution.
 
+[10:03:48] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:03:48] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:03:48] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:03:52] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:03:52] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:03:52] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:03:52] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:03:52] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:03:56] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:03:56] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:03:56] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:03:56] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:03:56] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:03:59] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:03:59] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:03:59] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:03:59] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:03:59] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:03:59] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:03:59] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:03:59] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:03:59] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:03:59] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:03:59] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:03:59] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:03:59] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:03:59] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:04:00] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:04:00] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:04:46] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:04:46] (INFO) ServerAPI.kill: Killing Server API.
+[10:04:46] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:07:24] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:07:24] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:07:24] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:07:29] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:07:29] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:07:29] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:07:29] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:07:29] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:07:34] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:07:34] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:07:34] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:07:34] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:07:34] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:12:27] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:12:27] (INFO) ServerAPI.kill: Killing Server API.
+[10:12:27] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:12:50] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:12:50] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:12:50] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:12:54] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:12:54] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:12:54] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:12:54] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:12:54] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:12:58] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:12:58] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:12:58] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:12:58] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:12:58] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:13:01] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:13:01] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:13:01] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:13:01] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:13:01] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:13:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:13:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:13:01] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:13:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:13:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:13:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:13:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:13:01] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:13:01] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:13:16] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:13:16] (INFO) ServerAPI.kill: Killing Server API.
+[10:13:16] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:14:56] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:14:56] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:14:56] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:15:00] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:15:00] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:15:00] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:15:00] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:15:00] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:15:04] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:15:04] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:15:04] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:15:04] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:15:04] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:15:07] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:15:07] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:15:07] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:15:07] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:15:07] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:15:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:07] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:15:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:07] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:15:07] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:15:08] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:15:08] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:15:48] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:15:48] (INFO) ServerAPI.kill: Killing Server API.
+[10:15:48] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:16:13] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:16:13] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:16:13] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:16:17] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:16:17] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:16:17] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:16:17] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:16:17] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:16:21] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:16:21] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:16:21] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:16:21] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:16:21] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:16:25] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:16:25] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:16:25] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:16:25] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:16:25] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:16:25] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:16:25] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:16:25] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:16:25] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:16:25] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:16:25] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:16:25] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:16:25] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:16:25] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:16:26] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:16:26] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:16:38] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:16:38] (INFO) ServerAPI.kill: Killing Server API.
+[10:16:38] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:16:59] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:16:59] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:16:59] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:17:03] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:17:03] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:17:03] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:17:03] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:17:03] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:17:07] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:17:07] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:17:07] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:17:07] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:17:07] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:17:10] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:17:10] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:17:10] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:17:10] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:17:10] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:17:10] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:17:10] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:17:10] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:17:10] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:17:10] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:17:10] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:17:10] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:17:10] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:17:10] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:17:11] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:17:11] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:17:38] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:17:38] (INFO) ServerAPI.kill: Killing Server API.
+[10:17:38] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:19:38] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:19:38] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:19:38] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:19:41] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:19:41] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:19:41] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:19:41] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:19:41] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:19:45] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:19:45] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:19:45] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:19:45] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:19:45] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:19:47] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:19:47] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:19:47] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:19:47] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:19:47] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:19:47] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:19:47] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:19:47] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:19:47] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:19:47] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:19:47] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:19:47] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:19:47] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:19:47] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:19:49] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:19:49] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:19:55] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:19:55] (INFO) ServerAPI.kill: Killing Server API.
+[10:19:55] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:23:48] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:23:48] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:23:48] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:23:51] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:23:51] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:23:51] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:23:51] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:23:51] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:23:55] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:23:55] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:23:55] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:23:55] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:23:55] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:23:58] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:23:58] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:23:58] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:23:58] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:23:58] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:23:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:23:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:23:58] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:23:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:23:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:23:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:23:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:23:58] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:23:58] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:24:00] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:24:00] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:24:09] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:24:09] (INFO) ServerAPI.kill: Killing Server API.
+[10:24:09] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:24:21] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:24:21] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:24:21] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:24:24] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:24:24] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:24:24] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:24:24] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:24:24] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:24:28] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:24:28] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:24:28] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:24:28] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:24:28] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:24:30] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:24:30] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:24:30] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791 at http://127.0.0.1:3000.
+[10:24:30] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:24:30] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:24:30] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:24:30] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:24:30] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:24:30] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:24:30] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:24:30] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:24:30] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:24:30] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:24:30] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:24:32] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:24:32] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:24:43] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:24:43] (INFO) ServerAPI.kill: Killing Server API.
+[10:24:43] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:26:01] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:26:01] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:26:01] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:26:05] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:26:05] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:26:05] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:26:05] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:26:05] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:26:12] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:26:12] (INFO) ServerAPI.kill: Killing Server API.
+[10:26:12] (INFO) __main__.<module>: Exiting main program execution.
+

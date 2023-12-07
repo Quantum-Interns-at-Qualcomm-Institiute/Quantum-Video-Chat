@@ -399,6 +399,7 @@ class BroadcastFlaskNamespace(FlaskNamespace):
             # self.cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message of namespace {self.namespace}.")
             return
 
+        # Change include_self to True if you want your own video to be displayed
         send((user_id,msg), broadcast=True, include_self=False)
 
     def on_disconnect(self):
@@ -562,7 +563,8 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_message(user_id, msg)
         async def handle_message():
             if user_id == self.cls.user_id:
-                return
+                self.av.key[user_id]["/video_key"] = self.av.key_gen.get_key().tobytes()
+                # return
             
             start = time.time()
 

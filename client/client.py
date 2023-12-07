@@ -103,7 +103,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     @classmethod
     def send_message(cls, msg: str, namespace='/'):
         # TODO: Ensure we're actually connected first lelz
-        cls.logger.info(f"Sending message: {msg}")
+        # cls.logger.info(f"Sending message: {msg}")
         cls.sio.send(((str(cls.user_id),cls.sess_token),msg), namespace=namespace)
 
     @classmethod
@@ -477,7 +477,7 @@ if __name__ == "__main__":
                 window_name = f"User {user_id}" if user_id != client.user_id else "Self"
 
                 # my computer can't handle 4 displays at once so I'm not gonna show the self display
-                if window_name == "Self": continue
+                # if window_name == "Self": continue
 
                 cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
                 cv2.resizeWindow(window_name, SocketClient.av.display_shape[1], SocketClient.av.display_shape[0])
