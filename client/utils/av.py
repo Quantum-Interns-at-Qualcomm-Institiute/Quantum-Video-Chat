@@ -326,8 +326,6 @@ import pathlib
 
 from utils.encryption import AESEncryption, RandomKeyGenerator, KeyGeneratorFactory, EncryptionFactory, EncryptionScheme
 
-import logging
-
 def display_message(user_id, msg):
     print(f"({user_id}): {msg}")
 
@@ -342,20 +340,21 @@ class TestFlaskNamespace(FlaskNamespace):
         self.namespace = namespace
 
     def on_connect(self):
-        self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
+        # self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
+        pass
 
     def on_message(self, auth, msg):
         user_id, sess_token = auth
         user_id = user_id
-        self.cls.logger.info(f"Received message from User {user_id}: '{msg}' in namespace {self.namespace}")
+        # self.cls.logger.info(f"Received message from User {user_id}: '{msg}' in namespace {self.namespace}")
         if not self.cls.verify_sess_token(*auth):
-            self.cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message of namespace {self.namespace}.")
+            # self.cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message of namespace {self.namespace}.")
             return
 
         send((user_id,msg), broadcast=True)
 
     def on_disconnect(self):
-        self.cls.logger.info(f"Client disconnected from namespace {self.namespace}.")
+        # self.cls.logger.info(f"Client disconnected from namespace {self.namespace}.")
         if self.cls.client.state == ClientState.CONNECTED:
             self.cls.client.state = ClientState.LIVE
 
@@ -368,12 +367,12 @@ class TestClientNamespace(ClientNamespace):
         self.cls = cls
 
     def on_connect(self):
-        self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace /test")
+        # self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace /test")
         display_message(self.cls.user_id, "Connected to /test")
 
     def on_message(self,user_id, msg):
         msg = '/test: ' + msg
-        self.cls.logger.info(f"Received /test message from user {user_id}: {msg}")
+        # self.cls.logger.info(f"Received /test message from user {user_id}: {msg}")
         
         async def disp():
             display_message(user_id, msg)
@@ -389,20 +388,21 @@ class BroadcastFlaskNamespace(FlaskNamespace):
         self.namespace = namespace
 
     def on_connect(self):
-        self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
+        # self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
+        pass
 
     def on_message(self, auth, msg):
         user_id, sess_token = auth
         user_id = user_id
-        self.cls.logger.info(f"Received message from User {user_id}: '{msg}' in namespace {self.namespace}")
+        # self.cls.logger.info(f"Received message from User {user_id}: '{msg}' in namespace {self.namespace}")
         if not self.cls.verify_sess_token(*auth):
-            self.cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message of namespace {self.namespace}.")
+            # self.cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message of namespace {self.namespace}.")
             return
 
         send((user_id,msg), broadcast=True, include_self=False)
 
     def on_disconnect(self):
-        self.cls.logger.info(f"Client disconnected from namespace {self.namespace}.")
+        # self.cls.logger.info(f"Client disconnected from namespace {self.namespace}.")
         if self.cls.client.state == ClientState.CONNECTED:
             self.cls.client.state = ClientState.LIVE
 
@@ -418,10 +418,11 @@ class AVClientNamespace(ClientNamespace):
 
     def on_connect(self):
         print("on_connect")
-        self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
+        # self.cls.logger.info(f"Socket connection established to endpoint {self.cls.endpoint} on namespace {self.namespace}")
 
     def on_message(self, user_id, msg):
-        self.cls.logger.info(f"Received message from user {user_id}: {msg} in namespace {self.namespace}")
+        # self.cls.logger.info(f"Received message from user {user_id}: {msg} in namespace {self.namespace}")
+        pass
 
     def send(self, msg):
         self.cls.send_message(msg, namespace=self.namespace)
@@ -437,6 +438,7 @@ class KeyClientNamespace(AVClientNamespace):
         super().on_connect()
 
         async def send_keys():
+            await asyncio.sleep(2)
             print('send_keys')
             while True:
                 self.av.key_gen.generate_key(128)
@@ -468,6 +470,7 @@ class AudioClientNamespace(AVClientNamespace):
         self.stream.start_stream()
 
         async def send_audio():
+            await asyncio.sleep(2)
             audio = pyaudio.PyAudio()
             stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, input=True, frames_per_buffer=self.av.frames_per_buffer)
 
@@ -514,6 +517,7 @@ class VideoClientNamespace(AVClientNamespace):
         self.output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgb24')
 
         async def send_video():
+            await asyncio.sleep(2)
             cap = cv2.VideoCapture(1)
             
             # doesn't work
@@ -548,7 +552,7 @@ class VideoClientNamespace(AVClientNamespace):
                 # self.cls.video[self.cls.user_id] = data
 
                 end = time.time()
-                print("max send framerate:", 1/(end-start))
+                # print("max send framerate:", 1/(end-start))
 
                 await asyncio.sleep(1/self.av.frame_rate/5)
 
@@ -580,7 +584,7 @@ class VideoClientNamespace(AVClientNamespace):
             # cv2.waitKey(1)
 
             end = time.time()
-            print("max recv framerate:", 1/(end-start))
+            # print("max recv framerate:", 1/(end-start))
 
         asyncio.run(handle_message())
 
@@ -644,8 +648,8 @@ def generate_flask_namespace(cls):
     namespaces = test_namespaces if testing else AV.namespaces
     return {name: namespaces[name][0](name, cls) for name in namespaces}
 
-def generate_client_namespace(cls, *kwargs):
+def generate_client_namespace(cls, *args):
     namespaces = test_namespaces if testing else AV.namespaces
-    return {name: namespaces[name][1](name, cls, *kwargs) for name in namespaces}
+    return {name: namespaces[name][1](name, cls, *args) for name in namespaces}
 
 #endregion
