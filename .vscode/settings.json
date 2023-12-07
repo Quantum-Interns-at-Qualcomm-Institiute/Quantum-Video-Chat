@@ -3,6 +3,6 @@
         "frontend/": true,
         "icebox/": true,
         "old": true,
-
+        "**/__pycache__" : true
     }
 }

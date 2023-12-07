@@ -22,10 +22,17 @@ from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidPa
 
 #region --- Server ---
 class Server:
-    def __init__(self, api_endpoint, user_storage="DICT"):
+    def __init__(self, api_endpoint, SocketAPI, SocketState, user_storage="DICT"):
+        # TODO: GET RID OF THIS AND FIX IT LATER OMG THIS IS DISGUSTING
+        # the socket api should start in main with the server api...
+        self.SocketAPI = SocketAPI
+        self.SocketState = SocketState
+
         self.api_endpoint = Endpoint(*api_endpoint)
         self.logger = logging.getLogger('Server')
         self.logger.info(f"Intializing server with API Endpoint {self.api_endpoint}")
+
+        self.websocket_endpoint = SocketAPI.DEFAULT_ENDPOINT
         
         with UserStorageFactory() as factory:
             storage = factory.create_storage(user_storage)
@@ -82,8 +89,24 @@ class Server:
             self.logger.error(f"Unable to reach Client API for User {user_id} at endpoint {endpoint}.")
             raise e # TODO: Figure out specifically what exception is raised so I can catch only that, and then handle it instead of re-raising (or maybe re-raise different exception and then caller can handle)
         return response
+    
+    def set_websocket_endpoint(self, endpoint):
+        # if self.state >= ClientState.LIVE:
+        #     raise InternalClientError("Cannot change Web Socket endpoint after connection already estbablished.") # TODO: use InvalidState
+
+        self.websocket_endpoint = Endpoint(*endpoint)
+        self.SocketAPI.endpoint = self.websocket_endpoint
+        self.logger.info(f"Setting Web Socket endpoint: {self.websocket_endpoint}")
+    
+    def start_websocket(self, users):
+        self.logger.info(f"Starting WebSocket API.")
+        if not self.websocket_endpoint:
+            raise ServerError(f"Cannot start WebSocket API without defined endpoint.")
+
+        self.websocket_instance = self.SocketAPI.init(self, users)
+        self.websocket_instance.start()
         
-    def handle_peer_connection(self, user_id, peer_id, websocket_endpoint, conn_token):
+    def handle_peer_connection(self, user_id, peer_id):
         if user_id == peer_id:
             raise BadRequest(f"Cannot intermediate connection between User {user_id} and self.")
         
@@ -104,12 +127,15 @@ class Server:
             raise InvalidState(f"Cannot connect User {user_id} to peer: User must be IDLE.")
         
         self.logger.info(f"Contacting User {peer_id} to connect to User {user_id}.")
+
+        self.start_websocket(users=(user_id, peer_id))
+
         try:
             response = self.contact_client(peer_id, '/peer_connection', json={
                 'sess_token': self.get_user(peer_id).sess_token,
                 'peer_id': user_id,
-                'socket_endpoint': tuple(websocket_endpoint),
-                'conn_token': conn_token
+                'socket_endpoint': tuple(self.websocket_endpoint),
+                'conn_token': self.SocketAPI.conn_token
             })
         except Exception as e:
             raise BadGateway(f"Unable to reach peer User {peer_id}.")
@@ -118,6 +144,7 @@ class Server:
             f"Peer User {peer_id} refused connection request."
             raise BadGateway(f"Peer User {peer_id} refused connection request.")
         self.logger.info(f"Peer User {peer_id} accepted connection request.")
+        return self.websocket_endpoint, self.SocketAPI.conn_token
 
 #endregion
 
