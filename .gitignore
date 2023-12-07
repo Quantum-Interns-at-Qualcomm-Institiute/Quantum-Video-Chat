@@ -2,3 +2,4 @@ __pycache__
 config.yaml
 client/logs/client.log
 frontend/node_modules
+server/logs/server.log
