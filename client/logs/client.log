@@ -1632,3 +1632,404 @@
 [11:43:39] (INFO) SocketClient.on_message: Received /test message from user 52791: /test: gergrwg
 [11:43:42] (INFO) SocketAPI.on_disconnect: Client disconnected.
 [11:43:42] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:14:58] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:14:58] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:14:58] (INFO) ClientAPI.run: Starting Client API.
+[10:14:58] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:15:00] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:15:00] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:15:00] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:15:00] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:15:03] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:15:03] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:15:03] (INFO) ClientAPI.run: Starting Client API.
+[10:15:03] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:15:03] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:15:03] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:15:03] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:15:04] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:15:04] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:15:04] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:15:04] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:15:07] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:15:07] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:15:07] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:15:07] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:15:07] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:15:07] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:15:07] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:15:07] "GET /socket.io/?transport=polling&EIO=4&t=1701972907.299475 HTTP/1.1" 200 254 0.002012
+[10:15:07] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:15:07] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:15:07] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:15:07] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:15:07] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:15:07] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:15:07] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:15:07] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:15:07] (INFO) Client.handle_peer_connection: Polling User
+[10:15:08] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:15:08] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:15:08] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:15:08] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:15:08] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:15:08] "GET /socket.io/?transport=polling&EIO=4&t=1701972908.6983051 HTTP/1.1" 200 254 0.000215
+[10:15:08] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:15:08] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:15:08] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:15:08] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:15:08] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:15:08] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:15:08] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:15:08] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:15:08] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:15:08] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:15:08] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:15:08] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:15:08] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:15:08] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:15:08] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:15:08] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:15:08] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:15:08] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:15:49] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:16:15] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:16:15] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:16:15] (INFO) ClientAPI.run: Starting Client API.
+[10:16:15] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:16:17] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:16:17] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:16:17] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:16:17] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:16:20] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:16:20] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:16:20] (INFO) ClientAPI.run: Starting Client API.
+[10:16:20] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:16:20] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:16:20] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:16:20] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:16:21] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:16:21] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:16:21] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:16:21] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:16:25] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:16:25] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:16:25] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:16:25] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:16:25] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:16:25] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:16:25] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:16:25] "GET /socket.io/?transport=polling&EIO=4&t=1701972985.544398 HTTP/1.1" 200 254 0.002167
+[10:16:25] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:16:25] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:16:25] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:16:25] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:16:25] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:16:25] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:16:25] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:16:25] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:16:25] (INFO) Client.handle_peer_connection: Polling User
+[10:16:26] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:16:26] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:16:26] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:16:26] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:16:26] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:16:26] "GET /socket.io/?transport=polling&EIO=4&t=1701972986.7637749 HTTP/1.1" 200 254 0.000143
+[10:16:26] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:16:26] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:16:26] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:16:26] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:16:26] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:16:26] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:16:26] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:16:26] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:16:26] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:16:26] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:16:26] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:16:26] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:16:26] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:16:26] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:16:26] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:16:26] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:16:26] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:16:26] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:16:39] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:17:01] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:17:01] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:17:01] (INFO) ClientAPI.run: Starting Client API.
+[10:17:01] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:17:03] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:17:03] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:17:03] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:17:03] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:17:05] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:17:05] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:17:05] (INFO) ClientAPI.run: Starting Client API.
+[10:17:06] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:17:06] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:17:06] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:17:06] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:17:07] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:17:07] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:17:07] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:17:07] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:17:10] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:17:10] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:17:10] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:17:10] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:17:10] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:17:10] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:17:10] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:17:10] "GET /socket.io/?transport=polling&EIO=4&t=1701973030.330576 HTTP/1.1" 200 254 0.001081
+[10:17:10] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:17:10] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:17:10] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:17:10] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:17:10] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:17:10] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:17:10] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:17:10] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:17:10] (INFO) Client.handle_peer_connection: Polling User
+[10:17:11] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:17:11] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:17:11] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:17:11] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:17:11] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:17:11] "GET /socket.io/?transport=polling&EIO=4&t=1701973031.551531 HTTP/1.1" 200 254 0.000138
+[10:17:11] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:17:11] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:17:11] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:17:11] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:17:11] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:17:11] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:17:11] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:17:11] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:17:11] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:17:11] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:17:11] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:17:11] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:17:11] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:17:11] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:17:11] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:17:11] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:17:11] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:17:11] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:17:39] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:19:40] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:19:40] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:19:40] (INFO) ClientAPI.run: Starting Client API.
+[10:19:40] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:19:41] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:19:41] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:19:41] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:19:41] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:19:44] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:19:44] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:19:44] (INFO) ClientAPI.run: Starting Client API.
+[10:19:44] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:19:44] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:19:44] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:19:44] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:19:45] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:19:45] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:19:45] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:19:45] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:19:47] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:19:47] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:19:47] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:19:47] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:19:47] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:19:47] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:19:47] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:19:47] "GET /socket.io/?transport=polling&EIO=4&t=1701973187.851042 HTTP/1.1" 200 254 0.001640
+[10:19:47] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:19:47] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:19:47] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:19:47] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:19:47] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:19:47] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:19:47] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:19:47] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:19:47] (INFO) Client.handle_peer_connection: Polling User
+[10:19:49] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:19:49] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:19:49] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:19:49] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:19:49] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:19:49] "GET /socket.io/?transport=polling&EIO=4&t=1701973189.306884 HTTP/1.1" 200 254 0.000171
+[10:19:49] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:19:49] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:19:49] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:19:49] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:19:49] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:19:49] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:19:49] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:19:49] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:19:49] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:19:49] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:19:49] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:19:49] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:19:49] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:19:49] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:19:49] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:19:49] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:19:49] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:19:49] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:19:54] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:23:50] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:23:50] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:23:50] (INFO) ClientAPI.run: Starting Client API.
+[10:23:50] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:23:51] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:23:51] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:23:51] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:23:51] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:23:54] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:23:54] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:23:54] (INFO) ClientAPI.run: Starting Client API.
+[10:23:54] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:23:54] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:23:54] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:23:54] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:23:55] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:23:55] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:23:55] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:23:55] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:23:58] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:23:58] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:23:58] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:23:58] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:23:58] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:23:58] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:23:58] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:23:58] "GET /socket.io/?transport=polling&EIO=4&t=1701973438.905139 HTTP/1.1" 200 254 0.002501
+[10:23:58] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:23:58] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:23:58] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:23:58] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:23:58] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:23:58] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:23:58] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:23:58] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:23:58] (INFO) Client.handle_peer_connection: Polling User
+[10:24:00] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:24:00] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:24:00] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:24:00] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:24:00] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:24:00] "GET /socket.io/?transport=polling&EIO=4&t=1701973440.163977 HTTP/1.1" 200 254 0.000143
+[10:24:00] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:24:00] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:24:00] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:24:00] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:24:00] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:24:00] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:24:00] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:24:00] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:24:00] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:24:00] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:24:00] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:24:00] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:24:00] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:24:00] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:24:00] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:24:00] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:24:00] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:24:00] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:24:10] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:24:23] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:24:23] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:24:23] (INFO) ClientAPI.run: Starting Client API.
+[10:24:23] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:24:24] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:24:24] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:24:24] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:24:24] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:24:27] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:24:27] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:24:27] (INFO) ClientAPI.run: Starting Client API.
+[10:24:27] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:24:27] (ERROR) ClientAPI.run: Endpoint http://127.0.0.1:4000 in use.
+[10:24:27] (INFO) Client.set_api_endpoint: Setting API endpoint: http://127.0.0.1:4001
+[10:24:27] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4001.
+[10:24:28] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:24:28] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:24:28] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:24:28] (INFO) Client.connect: Received user_id '962b5' and token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:24:30] (INFO) Client.connect_to_peer: Attempting to initiate connection to peer User 52791.
+[10:24:30] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:24:30] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:24:30] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:24:30] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:24:30] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:24:30] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:24:30] "GET /socket.io/?transport=polling&EIO=4&t=1701973470.91409 HTTP/1.1" 200 254 0.001149
+[10:24:30] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:24:30] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:24:30] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:24:30] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:24:30] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:24:30] (INFO) Client.connect_to_peer: Requester's SocketAPI and SocketClient should be ready now.
+[10:24:30] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/peer_connection.
+[10:24:30] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:24:30] (INFO) Client.handle_peer_connection: Polling User
+[10:24:32] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[10:24:32] (INFO) Client.handle_peer_connection: Attempting to connect to peer 962b5 at http://127.0.0.1:3000 with token 'abcdefghijklmnop'.
+[10:24:32] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://127.0.0.1:3000.
+[10:24:32] (INFO) SocketClient.connect: Attempting WebSocket connection to http://127.0.0.1:3000 with connection token 'abcdefghijklmnop'.
+[10:24:32] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-07 10:24:32] "GET /socket.io/?transport=polling&EIO=4&t=1701973472.088646 HTTP/1.1" 200 254 0.000153
+[10:24:32] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:24:32] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:24:32] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:24:32] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[10:24:32] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[10:24:32] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[10:24:32] (INFO) Client.handle_peer_connection: Successfully connected to peer User 962b5.
+[10:24:32] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:24:32] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:24:32] (INFO) SocketClient.on_message: Received message from user 52791: Hello from user 52791
+[10:24:32] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[10:24:32] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[10:24:32] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[10:24:32] (INFO) Client.connect_to_peer: Received response 200 from Server.
+[10:24:32] (INFO) Client.connect_to_peer: Confirmed all users have connected to SocketAPI.
+[10:24:32] (INFO) SocketAPI.on_message: Received message from User 962b5: 'Hello from user 962b5'
+[10:24:32] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:24:32] (INFO) SocketClient.on_message: Received message from user 962b5: Hello from user 962b5
+[10:24:43] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:26:03] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint http://127.0.0.1:3000.
+[10:26:03] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[10:26:03] (INFO) ClientAPI.run: Starting Client API.
+[10:26:03] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[10:26:05] (INFO) Client.set_server_endpoint: Setting server endpoint: http://127.0.0.1:5000
+[10:26:05] (INFO) Client.connect: Attempting to connect to server: http://127.0.0.1:5000.
+[10:26:05] (INFO) Client.contact_server: Contacting Server at http://127.0.0.1:5000/create_user.
+[10:26:05] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
