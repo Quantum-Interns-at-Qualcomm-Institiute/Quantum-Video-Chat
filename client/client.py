@@ -161,7 +161,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 
 #region --- Main Client ---
 from utils import Endpoint
-from api import ClientAPI, SocketAPI, SocketState
+from api import ClientAPI
 import cv2
 class Client:
     def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
@@ -203,13 +203,13 @@ class Client:
         ClientAPI.endpoint = self.api_endpoint
         self.logger.info(f"Setting API endpoint: {self.api_endpoint}")
 
-    def set_websocket_endpoint(self, endpoint):
-        if self.state >= ClientState.LIVE:
-            raise InternalClientError("Cannot change Web Socket endpoint after connection already estbablished.") # TODO: use InvalidState
+    # def set_websocket_endpoint(self, endpoint):
+    #     if self.state >= ClientState.LIVE:
+    #         raise InternalClientError("Cannot change Web Socket endpoint after connection already estbablished.") # TODO: use InvalidState
 
-        self.websocket_endpoint = Endpoint(*endpoint)
-        SocketAPI.endpoint = self.websocket_endpoint
-        self.logger.info(f"Setting Web Socket endpoint: {self.websocket_endpoint}")
+    #     self.websocket_endpoint = Endpoint(*endpoint)
+    #     SocketAPI.endpoint = self.websocket_endpoint
+    #     self.logger.info(f"Setting Web Socket endpoint: {self.websocket_endpoint}")
 
     def display_message(self, user_id, msg):
         print(f"({user_id}): {msg}")
@@ -221,8 +221,12 @@ class Client:
         try: response = requests.post(str(endpoint), json=json)
         except requests.exceptions.ConnectionError as e:
             raise ConnectionRefused(f"Unable to reach Server API at endpoint {endpoint}.")
-        
+
         if response.status_code != 200:
+            try: json = response.json()
+            except requests.exceptions.JSONDecodeError as e:
+                raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.reason}.")
+            
             if 'details' in response.json():
                 raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.json()['details']}.")
             raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.reason}.")
@@ -233,8 +237,8 @@ class Client:
         except Exception: pass
         try: SocketClient.kill()
         except Exception: pass
-        try: SocketAPI.kill()
-        except Exception: pass
+        # try: SocketAPI.kill()
+        # except Exception: pass
         try: requests.delete(str(self.server_endpoint('/remove_user')), json={
             'user_id': self.user_id,
             'sess_token': self.sess_token
@@ -288,14 +292,6 @@ class Client:
         Open Socket API. Contact Server /peer_connection with `conn_token` and await connection from peer (authenticated by `conn_token`).
         """
         self.logger.info(f"Attempting to initiate connection to peer User {peer_id}.")
-        self.start_websocket(users=(self.user_id, peer_id))
-        # Wait until SocketAPI is LIVE
-        self.connect_to_websocket(self.websocket_endpoint, SocketAPI.conn_token)
-        # TODO: Confirm Socket Client connected to WebSocket; else raise error.
-        while True:
-            if SocketClient.is_connected(): break
-
-        self.logger.info(f"Requester's SocketAPI and SocketClient should be ready now.")
 
         print(f"Requesting connection to {peer_id}")
         try:
@@ -303,8 +299,6 @@ class Client:
                 'user_id': self.user_id,
                 'sess_token': self.sess_token,
                 'peer_id': peer_id,
-                'websocket_endpoint': tuple(self.websocket_endpoint),
-                'conn_token': SocketAPI.conn_token
             })
         except ConnectionRefused as e:
             self.logger.error(str(e))
@@ -312,13 +306,12 @@ class Client:
         except UnexpectedResponse as e:
             self.logger.error(str(e))
             raise e
-                
-        self.logger.info(f"Received response {response.status_code} from Server.")
+
+        websocket_endpoint, conn_token = get_parameters(response.json(), 'socket_endpoint', 'conn_token')      
+        self.logger.info(f"Received websocket endpoint '{websocket_endpoint}' and conn_token '{conn_token}' from Server.")
+        self.connect_to_websocket(websocket_endpoint, conn_token)
         while True:
-            if SocketClient.is_connected() and SocketAPI.has_all_users():
-                self.logger.info(f"Confirmed all users have connected to SocketAPI.")
-                break
-        # TODO: Await peer connection?
+            if SocketClient.is_connected(): break
 
     def disconnect_from_server(self):
         pass
@@ -374,12 +367,12 @@ class Client:
 
 
     #region --- Web Socket Interface ---
-    def start_websocket(self, users):
-        if not self.websocket_endpoint:
-            raise InternalClientError(f"Cannot start WebSocket API without defined endpoint.")
+    # def start_websocket(self, users):
+    #     if not self.websocket_endpoint:
+    #         raise InternalClientError(f"Cannot start WebSocket API without defined endpoint.")
 
-        self.websocket_instance = SocketAPI.init(self, users)
-        self.websocket_instance.start()
+    #     self.websocket_instance = SocketAPI.init(self, users)
+    #     self.websocket_instance.start()
 
 
     def connect_to_websocket(self, endpoint, conn_token):
@@ -398,8 +391,7 @@ from gui import InitClientGUI, MainGUI
 from gui import GUIQuit
 
 if __name__ == "__main__":
-    client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT,       
-                    websocket_endpoint=SocketAPI.DEFAULT_ENDPOINT)
+    client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT)
     client.start_api()
     currGUI = None
     alert = None
@@ -447,7 +439,6 @@ if __name__ == "__main__":
             except UnexpectedResponse as e:
                 alert = Alert('Warning', str(e).split(": ")[-1])
                 SocketClient.kill()
-                SocketAPI.kill()
                 continue
 
             if client.state < ClientState.CONNECTED:
