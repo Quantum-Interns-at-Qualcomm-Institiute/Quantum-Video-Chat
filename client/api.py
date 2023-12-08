@@ -40,7 +40,9 @@ class APIState(Enum): #TODO: Make an ordered enum interface kek-dubbers
 
 #region --- Client API ---
 class ClientAPI(Thread):
-    DEFAULT_ENDPOINT = Endpoint('127.0.0.1',4000) # TODO: Read from config, maybe?
+    # 100.80.225.52
+    # 100.80.230.213
+    DEFAULT_ENDPOINT = Endpoint('100.80.225.52',4000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
     http_server = None
