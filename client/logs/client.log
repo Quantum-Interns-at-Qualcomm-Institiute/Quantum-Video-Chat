@@ -218,3 +218,66 @@
 [13:56:41] (INFO) SocketClient.on_token: Received session token 'this is a session token'
 [13:56:41] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
 [13:56:41] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://127.0.0.1:3000
+[15:52:10] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://127.0.0.1:4000,
+                         WebSocket API endpoint None.
+[15:52:10] (INFO) ClientAPI.init: Initializing Client API with endpoint http://127.0.0.1:4000.
+[15:52:10] (INFO) ClientAPI.run: Starting Client API.
+[15:52:11] (INFO) ClientAPI.run: Serving Client API at http://127.0.0.1:4000.
+[15:52:14] (INFO) Client.set_server_endpoint: Setting server endpoint: http://100.80.230.213:5000
+[15:52:14] (INFO) Client.connect: Attempting to connect to server: http://100.80.230.213:5000.
+[15:52:14] (INFO) Client.contact_server: Contacting Server at http://100.80.230.213:5000/create_user.
+[15:52:14] (INFO) Client.connect: Received user_id '52791' and token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[15:54:17] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://100.80.225.52:4000,
+                         WebSocket API endpoint None.
+[15:54:17] (INFO) ClientAPI.init: Initializing Client API with endpoint http://100.80.225.52:4000.
+[15:54:17] (INFO) ClientAPI.run: Starting Client API.
+[15:54:17] (INFO) ClientAPI.run: Serving Client API at http://100.80.225.52:4000.
+[15:54:20] (INFO) Client.set_server_endpoint: Setting server endpoint: http://100.80.230.213:5000
+[15:54:20] (INFO) Client.connect: Attempting to connect to server: http://100.80.230.213:5000.
+[15:54:20] (INFO) Client.contact_server: Contacting Server at http://100.80.230.213:5000/create_user.
+[15:54:20] (INFO) Client.connect: Received user_id '4e4d7' and token '7076b6a554b3cda2b8f18332ee83d67f0817dcb69c0c0ae1d29e473ee63fbb8c'.
+[15:54:36] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 67a40 at http://100.80.224.247:3000 with token 'abcdefghijklmnop'.
+[15:54:36] (INFO) Client.handle_peer_connection: Polling User
+[15:54:38] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[15:54:38] (INFO) Client.handle_peer_connection: Attempting to connect to peer 67a40 at http://100.80.224.247:3000 with token 'abcdefghijklmnop'.
+[15:54:38] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://100.80.224.247:3000.
+[15:54:38] (INFO) SocketClient.connect: Attempting WebSocket connection to http://100.80.224.247:3000 with connection token 'abcdefghijklmnop'.
+[15:54:38] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[15:54:38] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://100.80.224.247:3000
+[15:54:38] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[15:54:38] (INFO) Client.handle_peer_connection: Successfully connected to peer User 67a40.
+[15:54:38] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[15:54:38] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[15:54:38] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[15:54:38] (INFO) SocketClient.on_message: Received message from user 4e4d7: Hello from user 4e4d7
+[15:54:39] (INFO) SocketClient.on_message: Received message from user 67a40: Hello from user 67a40
+[16:00:43] (INFO) Client.__init__: Initializing Client with:
+                         Server endpoint None,
+                         Client API endpoint http://100.80.225.52:4000,
+                         WebSocket API endpoint None.
+[16:00:43] (INFO) ClientAPI.init: Initializing Client API with endpoint http://100.80.225.52:4000.
+[16:00:43] (INFO) ClientAPI.run: Starting Client API.
+[16:00:43] (INFO) ClientAPI.run: Serving Client API at http://100.80.225.52:4000.
+[16:00:47] (INFO) Client.set_server_endpoint: Setting server endpoint: http://100.80.230.213:5000
+[16:00:47] (INFO) Client.connect: Attempting to connect to server: http://100.80.230.213:5000.
+[16:00:47] (INFO) Client.contact_server: Contacting Server at http://100.80.230.213:5000/create_user.
+[16:00:47] (INFO) Client.connect: Received user_id 'f1c34' and token '9a7ee79add8ca2fe8014e6cfd1890bf4d31820483974ca4c0a74de7c35669353'.
+[16:01:09] (INFO) ClientAPI.handle_peer_connection: Received instruction to connect to peer 3735c at http://100.80.224.247:3000 with token 'abcdefghijklmnop'.
+[16:01:09] (INFO) Client.handle_peer_connection: Polling User
+[16:01:10] (INFO) Client.handle_peer_connection: User Accepted Connection.
+[16:01:10] (INFO) Client.handle_peer_connection: Attempting to connect to peer 3735c at http://100.80.224.247:3000 with token 'abcdefghijklmnop'.
+[16:01:10] (INFO) SocketClient.init: Initiailizing Socket Client with WebSocket endpoint http://100.80.224.247:3000.
+[16:01:10] (INFO) SocketClient.connect: Attempting WebSocket connection to http://100.80.224.247:3000 with connection token 'abcdefghijklmnop'.
+[16:01:10] (INFO) SocketClient.on_token: Received session token 'this is a session token'
+[16:01:10] (INFO) SocketClient.set_sess_token: Setting session token 'this is a session token'
+[16:01:10] (INFO) SocketClient.on_connect: Socket connection established to endpoint http://100.80.224.247:3000
+[16:01:10] (INFO) Client.handle_peer_connection: Successfully connected to peer User 3735c.
+[16:01:10] (INFO) Client.handle_peer_connection: Just quit da GUI; returning from client.handle_peer_connection().
+[16:01:10] (INFO) ClientAPI.handle_peer_connection: client.handle_peer_connection() finished.
+[16:01:10] (INFO) ClientAPI.handle_peer_connection: Responding with 200
+[16:01:10] (INFO) SocketClient.on_message: Received message from user f1c34: Hello from user f1c34
+[16:01:10] (INFO) SocketClient.on_message: Received message from user 3735c: Hello from user 3735c

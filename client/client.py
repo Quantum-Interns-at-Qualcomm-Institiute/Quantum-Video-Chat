@@ -140,7 +140,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # Set state
         # SocketClient.sess_token = sess_token
         cls.logger.info(f"Socket connection established to endpoint {SocketClient.endpoint}")
-        for name in cls.namespaces:
+        ns = sorted(list(cls.namespaces.keys()))
+        for name in ns:
             cls.namespaces[name].on_connect()
 
     @sio.on('token')
