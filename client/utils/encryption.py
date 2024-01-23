@@ -79,7 +79,8 @@ class AESEncryption(EncryptionScheme):
     # using AES-CBC
     def encrypt(self, data, key):
         cipher = AES.new(key, AES.MODE_CBC, iv=b'0'*16)
-        cipheredData = cipher.encrypt(pad(data, AES.block_size))
+        data = pad(data, AES.block_size)
+        cipheredData = cipher.encrypt(data)
         result_data = cipheredData
         result_iv = cipher.iv
         return result_data
@@ -151,6 +152,9 @@ class DebugKeyGenerator(KeyGenerator):
             raise ValueError("Error, only bitarray or string allowed")
         self.key = bit_array
         self.length = len(key)
+
+    # def generate_key(self, key_length):
+    #     return self.specified_keylength(key_length)
         
     def generate_key(self, key = None, key_length = 0):
         if key is not None:
@@ -195,7 +199,7 @@ class FileKeyGenerator(KeyGenerator):
             # logger.error(f"Try to make key of length {key_length}")
             raise ValueError("Error, please make key length nonzero")
         self.key = bitarray()
-        self.key.frombytes(self.file.read(key_length))
+        self.key.frombytes(self.file.read((key_length+7)//8))
 
     def get_key(self):
         return self.key
