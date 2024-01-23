@@ -184,3 +184,1692 @@
 [13:56:41] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
 [13:56:41] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
 [13:56:41] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[09:51:11] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[09:51:11] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[09:51:11] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[09:51:22] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[09:51:22] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.80.225.52:44824.
+[09:51:22] (DEBUG) utils.user_manager.generate_token: Generating token for User 32d20.
+[09:51:22] (DEBUG) UserManager.add_user: Added User 32d20 with session token '0d8fbc738ae7c4edcb94a41778aee99efc318176c34b5cca4707985e2888191b'.
+[09:51:22] (INFO) Server.add_user: User 32d20 added with sess_token '0d8fbc738ae7c4edcb94a41778aee99efc318176c34b5cca4707985e2888191b'.
+[09:51:52] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[09:51:52] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.80.225.52:31846.
+[09:51:52] (DEBUG) utils.user_manager.generate_token: Generating token for User b7fd9.
+[09:51:52] (DEBUG) UserManager.add_user: Added User b7fd9 with session token 'ffcfd1b34342c20e97eb77611f8617117b7d9b8bfd518a8c2c03691707a8845e'.
+[09:51:52] (INFO) Server.add_user: User b7fd9 added with sess_token 'ffcfd1b34342c20e97eb77611f8617117b7d9b8bfd518a8c2c03691707a8845e'.
+[09:52:02] (DEBUG) UserManager.get_user: Retrieved user info for User b7fd9.
+[09:52:02] (INFO) Server.get_user: Retrieved user with ID b7fd9.
+[09:52:02] (INFO) ServerAPI.handle_peer_connection: Received request from User b7fd9 to connect with User 32d20.
+[09:52:02] (DEBUG) UserManager.get_user: Retrieved user info for User b7fd9.
+[09:52:02] (INFO) Server.get_user: Retrieved user with ID b7fd9.
+[09:52:02] (DEBUG) UserManager.get_user: Retrieved user info for User 32d20.
+[09:52:02] (INFO) Server.get_user: Retrieved user with ID 32d20.
+[09:52:02] (INFO) Server.handle_peer_connection: Contacting User 32d20 to connect to User b7fd9.
+[09:52:02] (INFO) Server.start_websocket: Starting WebSocket API.
+[09:52:02] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[09:52:02] (INFO) SocketAPI.run: Starting WebSocket API.
+[09:52:02] (DEBUG) UserManager.get_user: Retrieved user info for User 32d20.
+[09:52:02] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[09:52:02] (INFO) Server.get_user: Retrieved user with ID 32d20.
+[09:52:02] (DEBUG) UserManager.get_user: Retrieved user info for User 32d20.
+[09:52:02] (INFO) Server.get_user: Retrieved user with ID 32d20.
+[09:52:02] (INFO) Server.contact_client: Contacting Client API for User 32d20 at http://100.80.225.52:44824/peer_connection.
+[09:52:02] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.80.225.52:44824
+[09:52:16] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[09:52:16] (INFO) ServerAPI.kill: Killing Server API.
+[09:52:16] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:36:36] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:36:36] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:36:36] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:36:41] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:36:41] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:36:41] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:36:41] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:36:41] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:36:46] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:36:46] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:36:46] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:36:46] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:36:46] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:36:54] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:36:54] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:36:54] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:36:54] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:36:54] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:36:54] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:36:54] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:36:54] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:36:54] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:36:54] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:36:54] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:36:54] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:36:54] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:36:54] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:36:54] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:36:54] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:36:54] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:36:54] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:36:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:36:56] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:36:56] "GET /socket.io/?transport=polling&EIO=4&t=1702867016.573079 HTTP/1.1" 200 254 0.000561
+[10:36:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:36:56] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:36:56] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:36:56] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:36:56] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:36:56] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:36:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:36:56] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:36:56] "GET /socket.io/?transport=polling&EIO=4&t=1702867016.582562 HTTP/1.1" 200 254 0.000139
+[10:36:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:36:56] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:36:56] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:36:56] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:36:56] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:36:56] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:36:56] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:36:56] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:36:56] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:36:58] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:36:58] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:37:28] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:37:28] (INFO) ServerAPI.kill: Killing Server API.
+[10:37:28] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:37:28] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:37:28] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:37:28] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:37:28] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:37:31] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:37:31] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:37:32] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:37:32] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:37:32] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:37:36] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:37:36] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:37:36] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:37:36] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:37:36] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:37:40] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:37:40] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:37:40] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:37:40] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:37:40] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:37:44] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:37:44] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:37:44] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:37:44] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:37:44] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:37:44] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:37:44] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:37:44] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:37:44] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:37:44] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:37:44] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:37:44] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:37:44] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:37:44] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:37:44] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:37:44] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:37:44] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:37:44] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:37:45] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:37:45] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:37:45] "GET /socket.io/?transport=polling&EIO=4&t=1702867065.8311942 HTTP/1.1" 200 254 0.001193
+[10:37:45] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:37:45] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:37:45] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:37:45] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:37:45] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:37:45] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:37:45] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:37:45] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:37:45] "GET /socket.io/?transport=polling&EIO=4&t=1702867065.8444018 HTTP/1.1" 200 254 0.000145
+[10:37:45] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:37:45] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:37:45] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:37:45] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:37:45] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:38:21] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:21] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:21] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:21] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:38:21] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:21] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:22] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:38:22] (INFO) ServerAPI.kill: Killing Server API.
+[10:38:22] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:38:22] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:22] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:22] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:22] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:38:25] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:25] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:27] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:38:27] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:38:27] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:38:31] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:38:31] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:38:31] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:38:31] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:38:31] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:38:35] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:38:35] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:38:35] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:38:35] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:38:35] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:38:39] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:38:39] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:38:39] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:38:39] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:38:39] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:38:39] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:38:39] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:38:39] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:38:39] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:38:39] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:38:39] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:38:39] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:38:39] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:38:39] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:38:39] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:38:39] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:38:39] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:38:39] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:38:41] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:38:41] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:38:41] "GET /socket.io/?transport=polling&EIO=4&t=1702867121.0398998 HTTP/1.1" 200 254 0.000377
+[10:38:41] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:38:41] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:38:41] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:38:41] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:38:41] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:38:41] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:38:41] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:38:41] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:38:41] "GET /socket.io/?transport=polling&EIO=4&t=1702867121.048689 HTTP/1.1" 200 254 0.000131
+[10:38:41] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:38:41] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:38:41] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:38:41] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:38:41] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:38:47] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:38:47] (INFO) ServerAPI.kill: Killing Server API.
+[10:38:47] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:38:48] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:48] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:48] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:48] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:48] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:38:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:49] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:38:51] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:51] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:38:51] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:38:51] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:49:35] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:49:35] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:49:35] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:49:39] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:49:39] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:49:39] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:49:39] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:49:39] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:49:43] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:49:43] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:49:43] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:49:43] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:49:43] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:49:48] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:49:48] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:49:48] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:49:48] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:49:48] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:49:48] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:49:48] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:49:48] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:49:48] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:49:48] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:49:48] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:49:48] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:49:48] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:49:48] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:49:48] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:49:48] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:49:48] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:49:48] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:49:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:49:49] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:49:49] "GET /socket.io/?transport=polling&EIO=4&t=1702867789.587637 HTTP/1.1" 200 254 0.001129
+[10:49:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:49:49] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:49:49] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:49:49] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:49:49] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:49:49] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:49:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:49:49] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2023-12-18 10:49:49] "GET /socket.io/?transport=polling&EIO=4&t=1702867789.618195 HTTP/1.1" 200 254 0.000158
+[10:49:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:49:49] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:49:49] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:49:49] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:49:49] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:50:01] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:50:01] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:50:01] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:50:01] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:50:02] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:50:02] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:50:02] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:50:02] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:50:03] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:50:03] (INFO) ServerAPI.kill: Killing Server API.
+[10:50:03] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:50:05] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:50:05] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:50:05] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:50:05] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:13:15] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:13:15] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:13:15] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:14:46] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:14:46] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:14:46] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:14:46] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:14:46] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:15:07] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:15:07] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:15:07] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:15:07] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:15:07] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:15:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:15:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:15:16] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:15:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:15:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:15:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:16] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:15:16] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:15:16] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:15:16] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:15:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:16] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:15:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:15:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:15:16] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:15:16] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:15:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:15:18] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:15:18] "GET /socket.io/?transport=polling&EIO=4&t=1706033718.696341 HTTP/1.1" 200 254 0.000627
+[10:15:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:15:18] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:15:18] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:15:18] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:15:18] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:15:18] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:15:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:15:18] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:15:18] "GET /socket.io/?transport=polling&EIO=4&t=1706033718.706933 HTTP/1.1" 200 254 0.000132
+[10:15:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:15:18] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:15:18] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:15:18] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:15:18] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:15:37] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:15:37] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:15:38] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:15:38] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:15:38] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:15:38] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:15:42] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:15:42] (INFO) ServerAPI.kill: Killing Server API.
+[10:15:42] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:18:05] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:18:05] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:19:49] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:19:49] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:19:49] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:19:54] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:19:54] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:19:54] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:19:54] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:19:54] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:20:06] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:20:06] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:20:06] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:20:06] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:20:06] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:20:15] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:20:15] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:20:15] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:20:15] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:20:15] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:20:15] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:20:15] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:20:15] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:20:15] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:20:15] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:20:15] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:20:15] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:20:15] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:20:15] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:20:15] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:20:15] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:20:15] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:20:15] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:20:16] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:20:16] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:20:16] "GET /socket.io/?transport=polling&EIO=4&t=1706034016.703795 HTTP/1.1" 200 254 0.001073
+[10:20:16] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:20:16] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:20:16] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:20:16] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:20:16] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:20:16] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:20:16] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:20:16] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:20:16] "GET /socket.io/?transport=polling&EIO=4&t=1706034016.714968 HTTP/1.1" 200 254 0.000159
+[10:20:16] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:20:16] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:20:16] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:20:16] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:20:16] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:21:59] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:21:59] (INFO) ServerAPI.kill: Killing Server API.
+[10:21:59] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:21:59] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:21:59] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:21:59] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:21:59] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:22:00] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:22:00] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:22:00] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:22:00] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:22:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:22:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:22:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:22:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:26:59] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:26:59] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:26:59] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:27:04] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:27:04] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:27:04] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:27:04] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:27:04] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:27:11] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:27:11] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:27:11] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:27:11] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:27:11] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:27:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:27:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:27:16] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:27:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:27:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:27:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:27:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:27:16] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:27:16] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:27:16] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:27:16] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:27:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:27:16] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:27:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:27:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:27:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:27:16] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:27:16] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:27:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:27:17] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:27:17] "GET /socket.io/?transport=polling&EIO=4&t=1706034437.1613839 HTTP/1.1" 200 254 0.001110
+[10:27:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:27:17] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:27:17] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:27:17] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:27:17] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:27:17] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:27:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:27:17] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:27:17] "GET /socket.io/?transport=polling&EIO=4&t=1706034437.171198 HTTP/1.1" 200 254 0.000128
+[10:27:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:27:17] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:27:17] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:27:17] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:27:17] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:27:38] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:27:38] (INFO) ServerAPI.kill: Killing Server API.
+[10:27:38] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:27:39] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:27:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:27:39] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:27:40] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:27:40] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:02] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[10:30:02] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[10:30:02] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[10:30:05] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:30:05] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[10:30:05] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[10:30:05] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:30:05] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[10:30:11] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[10:30:11] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[10:30:11] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[10:30:11] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:30:11] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[10:30:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:30:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:30:16] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[10:30:16] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[10:30:16] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[10:30:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:30:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:30:16] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[10:30:16] (INFO) Server.start_websocket: Starting WebSocket API.
+[10:30:16] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[10:30:16] (INFO) SocketAPI.run: Starting WebSocket API.
+[10:30:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:30:16] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[10:30:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:30:16] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[10:30:16] (INFO) Server.get_user: Retrieved user with ID 52791.
+[10:30:16] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[10:30:16] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[10:30:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:30:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:30:17] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:30:17] "GET /socket.io/?transport=polling&EIO=4&t=1706034617.2797608 HTTP/1.1" 200 254 0.001136
+[10:30:17] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:30:17] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:30:17] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:30:17] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:30:17] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[10:30:17] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[10:30:18] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[10:30:18] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[10:30:18] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[10:30:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:30:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:30:18] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 10:30:18] "GET /socket.io/?transport=polling&EIO=4&t=1706034618.311769 HTTP/1.1" 200 254 0.000335
+[10:30:18] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[10:30:18] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[10:30:18] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[10:30:18] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[10:30:18] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[10:30:18] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[10:30:18] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[10:30:32] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[10:30:32] (INFO) ServerAPI.kill: Killing Server API.
+[10:30:32] (INFO) __main__.<module>: Exiting main program execution.
+
+[10:30:32] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:32] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:30:32] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:32] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:30:33] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:33] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:30:33] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:33] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[10:30:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:30:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[10:30:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[10:30:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:34:28] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:34:28] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:34:28] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:34:31] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:34:31] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:34:31] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:34:31] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:34:31] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:34:38] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:34:38] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:34:38] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:34:38] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:34:38] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:34:55] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:34:55] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:34:55] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:34:55] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:34:55] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:34:55] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:34:55] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:34:55] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:34:55] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:34:55] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:34:55] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:34:55] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:34:55] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:34:55] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:34:55] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:34:55] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:34:55] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:34:55] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:34:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:34:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:34:56] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:34:56] "GET /socket.io/?transport=polling&EIO=4&t=1706038496.995374 HTTP/1.1" 200 254 0.001213
+[11:34:56] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:34:56] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:34:56] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:34:56] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:34:57] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:34:57] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:34:58] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:34:58] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:34:58] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:34:58] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:34:58] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:34:58] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:34:58] "GET /socket.io/?transport=polling&EIO=4&t=1706038498.028471 HTTP/1.1" 200 254 0.000424
+[11:34:58] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:34:58] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:34:58] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:34:58] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:34:58] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:34:58] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:34:58] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:36:57] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:36:57] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:36:57] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:37:03] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:37:03] (INFO) ServerAPI.kill: Killing Server API.
+[11:37:03] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:37:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:37:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:37:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:37:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:38:41] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:38:41] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:38:41] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:38:44] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:38:44] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:38:44] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:38:44] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:38:44] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:38:48] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:38:48] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:38:48] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:38:48] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:38:48] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:38:50] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:38:50] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:38:50] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:38:50] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:38:50] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:38:50] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:38:50] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:38:50] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:38:50] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:38:50] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:38:50] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:38:50] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:38:50] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:38:50] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:38:50] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:38:50] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:38:50] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:38:50] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:38:52] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:38:52] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:38:52] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:38:52] "GET /socket.io/?transport=polling&EIO=4&t=1706038732.131094 HTTP/1.1" 200 254 0.001116
+[11:38:52] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:38:52] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:38:52] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:38:52] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:38:52] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:38:52] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:38:53] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:38:53] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:38:53] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:38:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:38:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:38:53] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:38:53] "GET /socket.io/?transport=polling&EIO=4&t=1706038733.160819 HTTP/1.1" 200 254 0.000349
+[11:38:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:38:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:38:53] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:38:53] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:38:53] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:38:53] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:38:53] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:39:06] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:39:06] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:39:06] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:39:06] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:39:06] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:39:07] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:39:07] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:39:07] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:39:07] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:39:08] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:39:08] (INFO) ServerAPI.kill: Killing Server API.
+[11:39:08] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:39:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:39:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:39:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:39:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:41:56] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:41:56] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:41:56] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:41:58] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:41:58] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:41:58] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:41:58] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:41:58] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:42:03] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:42:03] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:42:03] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:42:03] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:42:03] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:42:06] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:42:06] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:42:06] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:42:06] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:42:06] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:42:06] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:06] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:06] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:42:06] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:42:06] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:42:06] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:42:06] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:06] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:42:06] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:06] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:06] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:06] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:42:06] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:42:08] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:08] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:08] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:42:08] "GET /socket.io/?transport=polling&EIO=4&t=1706038928.595448 HTTP/1.1" 200 254 0.001239
+[11:42:08] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:08] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:08] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:42:08] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:42:08] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:42:08] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:42:09] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:42:09] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:42:09] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:42:09] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:09] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:09] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:42:09] "GET /socket.io/?transport=polling&EIO=4&t=1706038929.625461 HTTP/1.1" 200 254 0.000339
+[11:42:09] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:09] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:09] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:42:09] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:42:09] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:42:09] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:42:09] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:42:15] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:42:15] (INFO) ServerAPI.kill: Killing Server API.
+[11:42:15] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:42:37] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:42:37] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:42:37] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:42:40] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:42:40] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:42:40] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:42:40] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:42:40] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:42:44] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:42:44] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:42:44] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:42:44] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:42:44] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:42:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:42:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:42:46] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:42:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:42:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:42:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:46] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:42:46] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:42:46] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:42:46] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:42:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:46] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:42:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:42:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:42:46] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:42:46] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:42:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:48] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:42:48] "GET /socket.io/?transport=polling&EIO=4&t=1706038968.641684 HTTP/1.1" 200 254 0.000407
+[11:42:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:48] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:42:48] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:42:48] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:42:48] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:42:49] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:42:49] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:42:49] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:42:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:49] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:42:49] "GET /socket.io/?transport=polling&EIO=4&t=1706038969.688143 HTTP/1.1" 200 254 0.000306
+[11:42:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:42:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:42:49] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:42:49] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:42:49] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:42:49] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:42:49] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:42:56] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:42:56] (INFO) ServerAPI.kill: Killing Server API.
+[11:42:56] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:47:50] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:47:50] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:47:50] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:47:53] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:47:53] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:47:53] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:47:53] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:47:53] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:47:58] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:47:58] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:47:58] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:47:58] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:47:58] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:48:01] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:48:01] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:48:01] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:48:01] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:48:01] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:48:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:01] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:48:01] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:48:01] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:48:01] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:48:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:01] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:48:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:01] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:01] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:01] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:48:01] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:48:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:03] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:48:03] "GET /socket.io/?transport=polling&EIO=4&t=1706039283.521573 HTTP/1.1" 200 254 0.001201
+[11:48:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:03] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:48:03] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:48:03] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:48:03] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:48:04] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:48:04] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:48:04] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:48:04] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:04] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:04] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:48:04] "GET /socket.io/?transport=polling&EIO=4&t=1706039284.572622 HTTP/1.1" 200 254 0.000240
+[11:48:04] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:04] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:04] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:48:04] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:48:04] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:48:04] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:48:04] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:48:15] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:48:15] (INFO) ServerAPI.kill: Killing Server API.
+[11:48:15] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:16] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:16] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:48:17] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:17] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:17] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:17] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:36] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:48:36] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:48:36] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:48:39] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:48:39] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:48:39] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:48:39] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:48:39] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:48:43] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:48:43] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:48:43] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:48:43] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:48:43] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:48:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:48:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:48:46] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:48:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:48:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:48:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:46] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:48:46] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:48:46] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:48:46] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:48:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:46] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:48:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:48:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:48:46] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:48:46] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:48:47] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:47] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:47] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:48:47] "GET /socket.io/?transport=polling&EIO=4&t=1706039327.89638 HTTP/1.1" 200 254 0.000401
+[11:48:47] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:47] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:47] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:48:47] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:48:47] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:48:47] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:48:48] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:48:48] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:48:48] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:48] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:48:48] "GET /socket.io/?transport=polling&EIO=4&t=1706039328.9226649 HTTP/1.1" 200 254 0.000369
+[11:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:48:48] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:48:48] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:48:48] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:48:53] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:48:53] (INFO) ServerAPI.kill: Killing Server API.
+[11:48:53] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:48:54] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:54] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:54] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:54] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:55] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:48:55] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:23] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:49:23] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:49:23] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:49:27] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:49:27] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:49:27] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:49:27] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:49:27] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:49:30] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:49:30] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:49:30] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:49:30] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:49:30] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:49:33] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:49:33] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:49:33] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:49:33] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:49:33] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:49:33] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:49:33] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:49:33] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:49:33] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:49:33] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:49:33] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:49:33] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:49:33] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:49:33] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:49:33] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:49:33] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:49:33] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:49:33] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:49:34] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:49:34] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:49:34] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:49:34] "GET /socket.io/?transport=polling&EIO=4&t=1706039374.676116 HTTP/1.1" 200 254 0.000354
+[11:49:34] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:49:34] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:49:34] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:49:34] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:49:34] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:49:34] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:49:35] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:49:35] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:49:35] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:49:35] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:49:35] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:49:35] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:49:35] "GET /socket.io/?transport=polling&EIO=4&t=1706039375.701518 HTTP/1.1" 200 254 0.000271
+[11:49:35] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:49:35] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:49:35] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:49:35] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:49:35] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:49:35] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:49:35] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:49:44] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:49:44] (INFO) ServerAPI.kill: Killing Server API.
+[11:49:44] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:46] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:49:46] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:49:46] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:49:47] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:49:47] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:50:10] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:50:10] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:50:10] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:50:13] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:50:13] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:50:13] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:50:13] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:50:13] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:50:17] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:50:17] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:50:17] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:50:17] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:50:17] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:50:20] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:50:20] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:50:20] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:50:20] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:50:20] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:50:20] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:50:20] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:50:20] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:50:20] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:50:20] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:50:20] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:50:20] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:50:20] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:50:20] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:50:20] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:50:20] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:50:20] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:50:20] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:50:21] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:50:21] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:50:21] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:50:21] "GET /socket.io/?transport=polling&EIO=4&t=1706039421.4131 HTTP/1.1" 200 254 0.000366
+[11:50:21] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:50:21] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:50:21] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:50:21] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:50:21] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:50:21] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:50:22] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:50:22] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:50:22] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:50:22] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:50:22] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:50:22] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:50:22] "GET /socket.io/?transport=polling&EIO=4&t=1706039422.443307 HTTP/1.1" 200 254 0.000466
+[11:50:22] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:50:22] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:50:22] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:50:22] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:50:22] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:50:22] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:50:22] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:52:30] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:52:30] (INFO) ServerAPI.kill: Killing Server API.
+[11:52:30] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:52:32] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:52:32] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:32] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:52:32] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:32] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:52:33] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:33] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:52:33] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:33] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:52:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:52:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:52:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:52:37] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:52:37] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:52:37] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:52:40] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:52:40] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:52:40] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:52:40] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:52:40] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:52:44] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:52:44] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:52:44] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:52:44] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:52:44] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:52:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:52:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:52:46] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:52:46] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:52:46] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:52:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:52:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:52:46] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:52:46] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:52:46] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:52:46] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:52:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:52:46] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:52:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:52:46] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:52:46] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:52:46] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:52:46] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:52:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:52:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:52:48] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:52:48] "GET /socket.io/?transport=polling&EIO=4&t=1706039568.1672719 HTTP/1.1" 200 254 0.000403
+[11:52:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:52:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:52:48] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:52:48] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:52:48] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:52:48] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:52:49] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:52:49] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:52:49] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:52:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:52:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:52:49] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:52:49] "GET /socket.io/?transport=polling&EIO=4&t=1706039569.218103 HTTP/1.1" 200 254 0.000323
+[11:52:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:52:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:52:49] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:52:49] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:52:49] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:52:49] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:52:49] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:53:11] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:53:11] (INFO) ServerAPI.kill: Killing Server API.
+[11:53:11] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:12] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:53:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:12] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:53:13] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:53:13] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:53:15] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:53:15] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:53:15] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:53:19] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:53:19] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:53:19] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:53:19] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:53:19] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:53:23] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:53:23] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:53:23] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:53:23] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:53:23] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:53:26] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:26] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:26] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:53:26] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:26] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:26] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:26] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:26] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:53:26] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:53:26] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:53:26] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:53:26] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:26] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:53:26] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:26] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:26] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:26] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:53:26] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:53:28] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 418 93
+[11:53:28] (INFO) ServerAPI.handler_with_exceptions: Peer User 52791 refused connection request.
+[11:53:39] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:39] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:39] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:53:39] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:39] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:39] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:39] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:39] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:53:39] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:53:39] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:53:39] (ERROR) ServerAPI.handler_with_exceptions: Cannot reconfigure WebSocket API during runtime.
+[11:53:42] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:53:42] (INFO) ServerAPI.kill: Killing Server API.
+[11:53:42] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:53:48] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:53:48] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:53:48] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:53:51] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:53:51] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:53:51] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:53:51] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:53:51] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:53:55] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:53:55] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:53:55] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:53:55] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:53:55] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:53:58] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:58] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:58] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:53:58] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:53:58] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:53:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:58] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:53:58] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:53:58] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:53:58] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:53:58] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:53:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:58] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:53:58] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:53:58] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:53:58] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:54:01] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 418 93
+[11:54:01] (INFO) ServerAPI.handler_with_exceptions: Peer User 52791 refused connection request.
+[11:54:05] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:54:05] (INFO) ServerAPI.kill: Killing Server API.
+[11:54:05] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:54:58] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:54:58] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:54:58] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:55:01] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:55:01] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:55:01] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:55:01] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:55:01] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:55:05] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:55:05] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:55:05] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:55:05] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:55:05] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:55:07] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:55:07] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:55:07] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:55:07] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:55:07] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:55:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:07] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:55:07] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:55:07] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:55:07] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:55:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:07] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:55:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:07] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:07] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:07] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:55:07] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:55:09] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:09] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:09] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:55:09] "GET /socket.io/?transport=polling&EIO=4&t=1706039709.323334 HTTP/1.1" 200 254 0.000369
+[11:55:09] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:09] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:09] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:55:09] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:55:09] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:55:09] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:55:10] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:55:10] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:55:10] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:55:10] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:10] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:10] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:55:10] "GET /socket.io/?transport=polling&EIO=4&t=1706039710.3493462 HTTP/1.1" 200 254 0.000308
+[11:55:10] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:10] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:10] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:55:10] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:55:10] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:55:10] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:55:10] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:55:24] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:55:24] (INFO) ServerAPI.kill: Killing Server API.
+[11:55:24] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:55:24] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:24] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:55:24] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:24] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:55:25] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:55:25] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:25] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:25] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:55:25] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:25] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:55:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:55:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:55:42] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:55:42] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:55:42] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:55:45] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:55:45] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:55:45] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:55:45] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:55:45] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:55:48] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:55:48] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:55:48] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:55:48] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:55:48] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:55:51] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:55:51] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:55:51] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:55:51] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:55:51] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:55:51] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:51] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:51] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:55:51] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:55:51] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:55:51] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:55:51] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:51] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:55:51] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:51] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:55:51] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:55:51] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:55:51] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:55:52] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:52] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:52] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:55:52] "GET /socket.io/?transport=polling&EIO=4&t=1706039752.695185 HTTP/1.1" 200 254 0.000430
+[11:55:52] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:52] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:52] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:55:52] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:55:52] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:55:52] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:55:53] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:55:53] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:55:53] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:55:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:53] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:55:53] "GET /socket.io/?transport=polling&EIO=4&t=1706039753.748908 HTTP/1.1" 200 254 0.000301
+[11:55:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:55:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:55:53] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:55:53] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:55:53] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:55:53] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:55:53] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:56:00] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:56:00] (INFO) ServerAPI.kill: Killing Server API.
+[11:56:00] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:56:01] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:01] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:56:01] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:01] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:56:01] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:56:01] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:02] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:02] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:56:02] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:02] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:56:03] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:56:03] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:56:43] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:56:43] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:56:43] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:56:46] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:56:46] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:56:46] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:56:46] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:56:46] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:56:49] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:56:49] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:56:49] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:56:49] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:56:49] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:56:52] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:56:52] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:56:52] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:56:52] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:56:52] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:56:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:56:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:56:52] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:56:52] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:56:52] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:56:52] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:56:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:56:52] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:56:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:56:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:56:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:56:52] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:56:52] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:56:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:56:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:56:53] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:56:53] "GET /socket.io/?transport=polling&EIO=4&t=1706039813.4910889 HTTP/1.1" 200 254 0.000352
+[11:56:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:56:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:56:53] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:56:53] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:56:53] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:56:53] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:56:54] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:56:54] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:56:54] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:56:54] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:56:54] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:56:54] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:56:54] "GET /socket.io/?transport=polling&EIO=4&t=1706039814.509623 HTTP/1.1" 200 254 0.000382
+[11:56:54] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:56:54] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:56:54] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:56:54] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:56:54] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:56:54] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:56:54] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:57:02] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:57:02] (INFO) ServerAPI.kill: Killing Server API.
+[11:57:02] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:57:04] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:57:04] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:57:04] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:58:40] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:58:40] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:58:42] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[11:58:42] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[11:58:42] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[11:58:45] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:58:45] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[11:58:45] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[11:58:45] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:58:45] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[11:58:50] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[11:58:50] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[11:58:50] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[11:58:50] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:58:50] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[11:58:52] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:58:52] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:58:52] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[11:58:52] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[11:58:52] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[11:58:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:58:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:58:52] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[11:58:52] (INFO) Server.start_websocket: Starting WebSocket API.
+[11:58:52] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[11:58:52] (INFO) SocketAPI.run: Starting WebSocket API.
+[11:58:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:58:52] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[11:58:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:58:52] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[11:58:52] (INFO) Server.get_user: Retrieved user with ID 52791.
+[11:58:52] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[11:58:52] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[11:58:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:58:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:58:53] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:58:53] "GET /socket.io/?transport=polling&EIO=4&t=1706039933.888727 HTTP/1.1" 200 254 0.000398
+[11:58:53] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:58:53] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:58:53] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:58:53] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:58:53] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[11:58:53] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[11:58:54] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[11:58:54] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[11:58:54] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[11:58:54] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:58:54] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:58:54] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 11:58:54] "GET /socket.io/?transport=polling&EIO=4&t=1706039934.916656 HTTP/1.1" 200 254 0.000308
+[11:58:54] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[11:58:54] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[11:58:54] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[11:58:54] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[11:58:54] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[11:58:54] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[11:58:54] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[11:59:12] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[11:59:12] (INFO) ServerAPI.kill: Killing Server API.
+[11:59:12] (INFO) __main__.<module>: Exiting main program execution.
+
+[11:59:13] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:59:13] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:59:13] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:59:13] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:59:14] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:59:14] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:59:14] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:59:14] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[11:59:15] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:59:15] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[11:59:15] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[11:59:15] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:01] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[12:00:01] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[12:00:01] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[12:00:05] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[12:00:05] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[12:00:05] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[12:00:05] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[12:00:05] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[12:00:09] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[12:00:09] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[12:00:09] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[12:00:09] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[12:00:09] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[12:00:12] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[12:00:12] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[12:00:12] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[12:00:12] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[12:00:12] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[12:00:12] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:00:12] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:00:12] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[12:00:12] (INFO) Server.start_websocket: Starting WebSocket API.
+[12:00:12] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[12:00:12] (INFO) SocketAPI.run: Starting WebSocket API.
+[12:00:12] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:00:12] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[12:00:12] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:00:12] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:00:12] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:00:12] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[12:00:12] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[12:00:13] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:00:13] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:00:13] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 12:00:13] "GET /socket.io/?transport=polling&EIO=4&t=1706040013.9937549 HTTP/1.1" 200 254 0.000384
+[12:00:13] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:00:13] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:00:13] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[12:00:13] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[12:00:13] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[12:00:13] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[12:00:15] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[12:00:15] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[12:00:15] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[12:00:15] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:00:15] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:00:15] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 12:00:15] "GET /socket.io/?transport=polling&EIO=4&t=1706040015.041636 HTTP/1.1" 200 254 0.000313
+[12:00:15] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:00:15] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:00:15] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[12:00:15] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[12:00:15] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[12:00:15] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[12:00:15] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[12:00:33] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[12:00:33] (INFO) ServerAPI.kill: Killing Server API.
+[12:00:33] (INFO) __main__.<module>: Exiting main program execution.
+
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:34] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:00:34] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:34] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[12:00:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:00:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:00:35] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:00:35] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:19] (INFO) Server.__init__: Intializing server with API Endpoint http://127.0.0.1:5000
+[12:01:19] (INFO) ServerAPI.init: Initializing Server API with endpoint http://127.0.0.1:5000.
+[12:01:19] (INFO) ServerAPI.start: Starting Server API at http://127.0.0.1:5000.
+[12:01:22] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[12:01:22] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4000.
+[12:01:22] (DEBUG) utils.user_manager.generate_token: Generating token for User 52791.
+[12:01:22] (DEBUG) UserManager.add_user: Added User 52791 with session token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[12:01:22] (INFO) Server.add_user: User 52791 added with sess_token '1372831442948d1b3bb6301ed62cbfd7f8987e7104025f8832b9c24879692883'.
+[12:01:25] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[12:01:25] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://127.0.0.1:4001.
+[12:01:25] (DEBUG) utils.user_manager.generate_token: Generating token for User 962b5.
+[12:01:25] (DEBUG) UserManager.add_user: Added User 962b5 with session token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[12:01:25] (INFO) Server.add_user: User 962b5 added with sess_token '5267f389ff6f58d68e2ede8c8790ed80d44b10560848be307e7373aaea3303b2'.
+[12:01:28] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[12:01:28] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[12:01:28] (INFO) ServerAPI.handle_peer_connection: Received request from User 962b5 to connect with User 52791.
+[12:01:28] (DEBUG) UserManager.get_user: Retrieved user info for User 962b5.
+[12:01:28] (INFO) Server.get_user: Retrieved user with ID 962b5.
+[12:01:28] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:01:28] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:01:28] (INFO) Server.handle_peer_connection: Contacting User 52791 to connect to User 962b5.
+[12:01:28] (INFO) Server.start_websocket: Starting WebSocket API.
+[12:01:28] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://127.0.0.1:3000.
+[12:01:28] (INFO) SocketAPI.run: Starting WebSocket API.
+[12:01:28] (INFO) SocketAPI.run: Serving WebSocket API at http://127.0.0.1:3000
+[12:01:28] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:01:28] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:01:28] (DEBUG) UserManager.get_user: Retrieved user info for User 52791.
+[12:01:28] (INFO) Server.get_user: Retrieved user with ID 52791.
+[12:01:28] (INFO) Server.contact_client: Contacting Client API for User 52791 at http://127.0.0.1:4000/peer_connection.
+[12:01:28] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 127.0.0.1:4000
+[12:01:29] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:01:29] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:01:29] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 12:01:29] "GET /socket.io/?transport=polling&EIO=4&t=1706040089.267338 HTTP/1.1" 200 254 0.000357
+[12:01:29] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:01:29] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:01:29] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[12:01:29] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[12:01:29] (INFO) SocketAPI.on_connect: Received Socket connection request from User 52791 with connection token 'abcdefghijklmnop'.
+[12:01:29] (INFO) SocketAPI.on_connect: Socket connection from User 52791 accepted; yielding session token 'this is a session token'
+[12:01:30] (INFO) SocketAPI.on_message: Received message from User 52791: 'Hello from user 52791'
+[12:01:30] (DEBUG) urllib3.connectionpool._make_request: http://127.0.0.1:4000 "POST /peer_connection HTTP/1.1" 200 22
+[12:01:30] (INFO) Server.handle_peer_connection: Peer User 52791 accepted connection request.
+[12:01:30] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:01:30] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:01:30] (INFO) geventwebsocket.handler.log_request: 127.0.0.1 - - [2024-01-23 12:01:30] "GET /socket.io/?transport=polling&EIO=4&t=1706040090.296076 HTTP/1.1" 200 254 0.000285
+[12:01:30] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[12:01:30] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[12:01:30] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[12:01:30] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[12:01:30] (INFO) SocketAPI.on_connect: Received Socket connection request from User 962b5 with connection token 'abcdefghijklmnop'.
+[12:01:30] (INFO) SocketAPI.on_connect: Socket connection from User 962b5 accepted; yielding session token 'this is a session token'
+[12:01:30] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[12:01:52] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[12:01:52] (INFO) ServerAPI.kill: Killing Server API.
+[12:01:52] (INFO) __main__.<module>: Exiting main program execution.
+
+[12:01:52] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:52] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:01:52] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:52] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[12:01:53] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:53] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:01:53] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:53] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[12:01:54] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:01:54] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[12:01:54] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[12:01:54] (DEBUG) geventwebsocket.handler.close: Closed WebSocket

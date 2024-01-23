@@ -442,7 +442,7 @@ class KeyClientNamespace(AVClientNamespace):
             await asyncio.sleep(2)
             print('send_keys')
             while True:
-                self.av.key_gen.generate_key(128)
+                self.av.key_gen.generate_key(key_length=128)
                 key = self.av.key_gen.get_key().tobytes()
 
                 self.send(key)
@@ -604,7 +604,7 @@ class AV:
         '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
-    def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("DEBUG")):
+    def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
         self.cls = cls
 
         self.key_gen = KeyGeneratorFactory().create_key_generator("FILE")

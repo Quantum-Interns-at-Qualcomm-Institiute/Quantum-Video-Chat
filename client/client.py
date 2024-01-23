@@ -6,7 +6,7 @@ import logging
 from utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
-logging.basicConfig(filename='./logs/client.log', level=logging.INFO, 
+logging.basicConfig(filename='./client/logs/client.log', level=logging.INFO, 
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -112,8 +112,9 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # TODO: State Management
         # cls.state = SocketClientState.OPEN
         try:
-            cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(cls.user_id, cls.conn_token), namespaces=['/']+list(cls.namespaces.keys()))
-            for name in cls.namespaces:
+            ns = sorted(list(cls.namespaces.keys()))
+            cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(cls.user_id, cls.conn_token), namespaces=['/']+ns)
+            for name in ns:
                 cls.sio.register_namespace(cls.namespaces[name])
         except socketio.exceptions.ConnectionError as e:
             cls.logger.error(f"Connection failed: {str(e)}")
