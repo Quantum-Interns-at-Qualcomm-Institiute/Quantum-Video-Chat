@@ -1,3 +1,7 @@
+import subprocess
+ip = "127.0.0.1"
+ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
+
 from flask import Flask, jsonify, request
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from server import Server
@@ -126,7 +130,8 @@ def is_type(type_):
 #region --- Server API ---
 from utils import Endpoint
 class ServerAPI: # TODO: Potentially, subclass Thread since server is blocking
-    DEFAULT_ENDPOINT = Endpoint('127.0.0.1', 5000)
+    DEFAULT_ENDPOINT = Endpoint(ip, 5000)
+
 
     app = Flask(__name__)
     http_server = None
@@ -267,7 +272,7 @@ from flask_socketio import SocketIO, send, emit
 from flask_socketio import ConnectionRefusedError
 from threading import Thread
 class SocketAPI(Thread):
-    DEFAULT_ENDPOINT = Endpoint('127.0.0.1',3000) # TODO: Read from config, maybe?
+    DEFAULT_ENDPOINT = Endpoint(ip,3000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
     socketio = SocketIO(app)

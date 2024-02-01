@@ -37,12 +37,13 @@ class APIState(Enum): #TODO: Make an ordered enum interface kek-dubbers
         return NotImplemented
 #endregion
 
-
+import subprocess
 #region --- Client API ---
 class ClientAPI(Thread):
     # ip = '100.80.225.52'
     # 100.80.230.213
     ip = '127.0.0.1'
+    ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
     DEFAULT_ENDPOINT = Endpoint(ip,4000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
