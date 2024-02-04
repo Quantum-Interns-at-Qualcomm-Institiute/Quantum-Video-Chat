@@ -313,7 +313,6 @@ import time
 from bitarray import bitarray
 import io
 
-import sounddevice as sd
 
 import cv2
 import av

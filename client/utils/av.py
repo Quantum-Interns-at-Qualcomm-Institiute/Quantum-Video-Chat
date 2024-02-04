@@ -310,13 +310,9 @@ import math
 import pyaudio
 import platform
 import time
-from bitarray import bitarray
 import io
 
-import sounddevice as sd
-
 import cv2
-import av
 import ffmpeg
 
 import numpy as np
@@ -519,7 +515,7 @@ class VideoClientNamespace(AVClientNamespace):
 
         async def send_video():
             await asyncio.sleep(2)
-            cap = cv2.VideoCapture(1)
+            cap = cv2.VideoCapture(0)
             
             # doesn't work
             # cam.set(cv2.CAP_PROP_FRAME_WIDTH, video_shape[1])
