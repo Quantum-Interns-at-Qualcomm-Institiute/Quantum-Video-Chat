@@ -264,9 +264,8 @@ class ServerAPI: # TODO: Potentially, subclass Thread since server is blocking
     #endregion
 #endregion
 
-
 #region --- Socket API ---
-from client.utils.av import TestFlaskNamespace, generate_flask_namespace
+from utils.av import generate_flask_namespace
 
 from flask_socketio import SocketIO, send, emit
 from flask_socketio import ConnectionRefusedError
