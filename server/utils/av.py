@@ -433,13 +433,15 @@ class KeyClientNamespace(AVClientNamespace):
 
     def on_connect(self):
         super().on_connect()
+        self.key_idx = 0
 
         async def send_keys():
             await asyncio.sleep(2)
             print('send_keys')
             while True:
                 self.av.key_gen.generate_key(key_length=128)
-                key = self.av.key_gen.get_key().tobytes()
+                key = self.key_idx.to_bytes(4, 'big') + self.av.key_gen.get_key().tobytes()
+                self.key_idx += 1
 
                 self.send(key)
 
@@ -537,8 +539,10 @@ class VideoClientNamespace(AVClientNamespace):
                 start = time.time()
 
                 if not self.av.key_queue[self.cls.user_id]["/video_key"].empty():
-                    self.av.key[self.cls.user_id]["/video_key"] = await self.av.key_queue[self.cls.user_id]["/video_key"].get()
-                    self.send_key_idx += 1
+                    key = await self.av.key_queue[self.cls.user_id]["/video_key"].get()
+                    if key != None:
+                        self.av.key[self.cls.user_id]["/video_key"] = key[4:]
+                        self.send_key_idx = int.from_bytes(key[:4], 'big')
 
                 result, image = cap.read()
                 image = cv2.resize(image, (self.av.video_shape[1], self.av.video_shape[0]))
@@ -571,13 +575,20 @@ class VideoClientNamespace(AVClientNamespace):
             # cv2.namedWindow(f"User {user_id}", cv2.WINDOW_NORMAL)
             # cv2.resizeWindow(f"User {user_id}", self.av.display_shape[1], self.av.display_shape[0])
             if not self.av.key_queue[user_id]["/video_key"].empty():
-                self.av.key[user_id]["/video_key"] = await self.av.key_queue[user_id]["/video_key"].get()
-                self.recv_key_idx += 1
+                key = await self.av.key_queue[user_id]["/video_key"].get()
+                if key != None:
+                    self.av.key[user_id]["/video_key"] = key[4:]
+                    self.recv_key_idx = int.from_bytes(key[:4], 'big')
 
-            key_idx =int.from_bytes(msg[:4], 'big')
+            key_idx = int.from_bytes(msg[:4], 'big')
             if (key_idx != self.recv_key_idx): return
             data = msg[4:]
-            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
+            try:
+                data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
+            except ValueError:
+                print(key_idx, self.recv_key_idx)
+                print(len(data))
+                print(data)
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
@@ -601,9 +612,9 @@ class VideoClientNamespace(AVClientNamespace):
 class AV:
     namespaces = {
         '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
         '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
-        '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
+        # '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
