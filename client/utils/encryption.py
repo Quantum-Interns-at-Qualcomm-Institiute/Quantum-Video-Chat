@@ -78,7 +78,7 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # using AES-CBC
     def encrypt(self, data, key):
-        print(len(data))
+        # print(len(data))
         cipher = AES.new(key, AES.MODE_CBC, iv=b'0'*16)
         data = pad(data, AES.block_size)
         cipheredData = cipher.encrypt(data)
