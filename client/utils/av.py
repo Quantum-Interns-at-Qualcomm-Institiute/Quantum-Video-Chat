@@ -465,6 +465,8 @@ class AudioClientNamespace(AVClientNamespace):
         audio = pyaudio.PyAudio()
         self.stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, output=True, frames_per_buffer=self.av.frames_per_buffer)
         self.stream.start_stream()
+        self.send_key_idx = 0
+        self.recv_key_idx = 0
 
         async def send_audio():
             await asyncio.sleep(2)
@@ -474,12 +476,13 @@ class AudioClientNamespace(AVClientNamespace):
             while True:
                 if not self.av.key_queue[self.cls.user_id]["/audio_key"].empty():
                     self.av.key[self.cls.user_id]["/audio_key"] = await self.av.key_queue[self.cls.user_id]["/audio_key"].get()
+                    self.send_key_idx = (self.send_key_idx + 1) % (1<<32)
 
                 data = stream.read(self.av.frames_per_buffer, exception_on_overflow=False)
 
                 if self.av.encryption is not None:
                     data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/audio_key"])
-                self.send(data)
+                self.send(self.send_key_idx.to_bytes(4, 'big') + data)
                 await asyncio.sleep(self.av.audio_wait)
 
         Thread(target=asyncio.run, args=(send_audio(),)).start()
@@ -492,8 +495,11 @@ class AudioClientNamespace(AVClientNamespace):
             
             if not self.av.key_queue[user_id]["/audio_key"].empty():
                 self.av.key[user_id]["/audio_key"] = await self.av.key_queue[user_id]["/audio_key"].get()
+                self.recv_key_idx = (self.recv_key_idx + 1) % (1<<32)
 
-            data = msg
+            key_idx =int.from_bytes(msg[:4], 'big')
+            if (key_idx != self.recv_key_idx): return
+            data = msg[4:]
             data = self.av.encryption.decrypt(data, self.av.key[user_id]["/audio_key"])
             
             self.stream.write(data, num_frames=self.av.frames_per_buffer, exception_on_underflow=False)
@@ -538,7 +544,7 @@ class VideoClientNamespace(AVClientNamespace):
 
                 if not self.av.key_queue[self.cls.user_id]["/video_key"].empty():
                     self.av.key[self.cls.user_id]["/video_key"] = await self.av.key_queue[self.cls.user_id]["/video_key"].get()
-                    self.send_key_idx += 1
+                    self.send_key_idx = (self.send_key_idx + 1) % (1<<32)
 
                 result, image = cap.read()
                 image = cv2.resize(image, (self.av.video_shape[1], self.av.video_shape[0]))
@@ -572,7 +578,7 @@ class VideoClientNamespace(AVClientNamespace):
             # cv2.resizeWindow(f"User {user_id}", self.av.display_shape[1], self.av.display_shape[0])
             if not self.av.key_queue[user_id]["/video_key"].empty():
                 self.av.key[user_id]["/video_key"] = await self.av.key_queue[user_id]["/video_key"].get()
-                self.recv_key_idx += 1
+                self.recv_key_idx = (self.recv_key_idx + 1) % (1<<32)
 
             key_idx =int.from_bytes(msg[:4], 'big')
             if (key_idx != self.recv_key_idx): return
