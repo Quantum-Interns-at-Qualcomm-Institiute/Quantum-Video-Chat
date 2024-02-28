@@ -601,9 +601,9 @@ class VideoClientNamespace(AVClientNamespace):
 class AV:
     namespaces = {
         '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
         '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
-        # '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
+        '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
