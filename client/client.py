@@ -476,6 +476,7 @@ if __name__ == "__main__":
                 cv2.resizeWindow(window_name, SocketClient.av.display_shape[1], SocketClient.av.display_shape[0])
                 cv2.imshow(window_name, SocketClient.video[user_id])
                 cv2.waitKey(1)
+            time.sleep(1/SocketClient.av.frame_rate)
         #endregion
 
     except GUIQuit as e:
