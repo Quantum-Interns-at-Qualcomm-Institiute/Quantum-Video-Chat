@@ -548,7 +548,7 @@ class VideoClientNamespace(AVClientNamespace):
 
                 data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/video_key"])
 
-                self.send(self.send_key_idx.to_bytes(4) + data)
+                self.send(self.send_key_idx.to_bytes(4, 'big') + data)
                 # self.cls.video[self.cls.user_id] = data
 
                 end = time.time()
@@ -574,7 +574,7 @@ class VideoClientNamespace(AVClientNamespace):
                 self.av.key[user_id]["/video_key"] = await self.av.key_queue[user_id]["/video_key"].get()
                 self.recv_key_idx += 1
 
-            key_idx =int.from_bytes(msg[:4])
+            key_idx =int.from_bytes(msg[:4], 'big')
             if (key_idx != self.recv_key_idx): return
             data = msg[4:]
             data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
@@ -601,9 +601,9 @@ class VideoClientNamespace(AVClientNamespace):
 class AV:
     namespaces = {
         '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
         '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
-        # '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
+        '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
