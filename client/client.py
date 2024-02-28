@@ -1,3 +1,5 @@
+import tracemalloc
+
 import time
 import requests
 
@@ -457,6 +459,7 @@ if __name__ == "__main__":
 
         SocketClient.send_message(f"Hello from user {client.user_id}")
         input("Press Enter to continue...")
+        tracemalloc.start()
         while True:
             # msg = input()
             # print([SocketClient.av.key_queue[user_id]['/video_key'].qsize() for user_id in SocketClient.av.key_queue])
@@ -476,6 +479,7 @@ if __name__ == "__main__":
                 cv2.resizeWindow(window_name, SocketClient.av.display_shape[1], SocketClient.av.display_shape[0])
                 cv2.imshow(window_name, SocketClient.video[user_id])
                 cv2.waitKey(1)
+            print("mem", tracemalloc.get_traced_memory())
             time.sleep(1/SocketClient.av.frame_rate)
         #endregion
 

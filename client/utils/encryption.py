@@ -89,7 +89,7 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # data contains iv and encrypted data
     def decrypt(self, data, key):
-        print(len(data))
+        # print(len(data))
         iv = b'0'*16
         cipheredData = data
         cipher = AES.new(key, AES.MODE_CBC, iv)
