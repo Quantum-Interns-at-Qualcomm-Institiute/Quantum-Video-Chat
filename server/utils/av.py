@@ -467,6 +467,8 @@ class AudioClientNamespace(AVClientNamespace):
         audio = pyaudio.PyAudio()
         self.stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, output=True, frames_per_buffer=self.av.frames_per_buffer)
         self.stream.start_stream()
+        self.send_key_idx = 0
+        self.recv_key_idx = 0
 
         async def send_audio():
             await asyncio.sleep(2)
@@ -475,13 +477,17 @@ class AudioClientNamespace(AVClientNamespace):
 
             while True:
                 if not self.av.key_queue[self.cls.user_id]["/audio_key"].empty():
-                    self.av.key[self.cls.user_id]["/audio_key"] = await self.av.key_queue[self.cls.user_id]["/audio_key"].get()
+                    key = await self.av.key_queue[self.cls.user_id]["/audio_key"].get()
+                    if key != None:
+                        self.av.key[self.cls.user_id]["/audio_key"] = key[4:]
+                        self.send_key_idx = int.from_bytes(key[:4], 'big')
+                    
 
                 data = stream.read(self.av.frames_per_buffer, exception_on_overflow=False)
 
                 if self.av.encryption is not None:
                     data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/audio_key"])
-                self.send(data)
+                self.send(self.send_key_idx.to_bytes(4, 'big') + data)
                 await asyncio.sleep(self.av.audio_wait)
 
         Thread(target=asyncio.run, args=(send_audio(),)).start()
@@ -493,9 +499,15 @@ class AudioClientNamespace(AVClientNamespace):
                 return
             
             if not self.av.key_queue[user_id]["/audio_key"].empty():
-                self.av.key[user_id]["/audio_key"] = await self.av.key_queue[user_id]["/audio_key"].get()
+                key = await self.av.key_queue[user_id]["/audio_key"].get()
+                if key != None:
+                    self.av.key[user_id]["/audio_key"] = key[4:]
+                    self.recv_key_idx = int.from_bytes(key[:4], 'big')
 
-            data = msg
+            key_idx = int.from_bytes(msg[:4], 'big')
+            if (key_idx != self.recv_key_idx): return
+            data = msg[4:]
+
             data = self.av.encryption.decrypt(data, self.av.key[user_id]["/audio_key"])
             
             self.stream.write(data, num_frames=self.av.frames_per_buffer, exception_on_underflow=False)
@@ -583,12 +595,8 @@ class VideoClientNamespace(AVClientNamespace):
             key_idx = int.from_bytes(msg[:4], 'big')
             if (key_idx != self.recv_key_idx): return
             data = msg[4:]
-            try:
-                data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
-            except ValueError:
-                print(key_idx, self.recv_key_idx)
-                print(len(data))
-                print(data)
+
+            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
@@ -612,9 +620,9 @@ class VideoClientNamespace(AVClientNamespace):
 class AV:
     namespaces = {
         '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
         '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
-        # '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
+        '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
     def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
