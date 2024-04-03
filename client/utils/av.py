@@ -435,7 +435,7 @@ class KeyClientNamespace(AVClientNamespace):
         super().on_connect()
         self.key_idx = 0
 
-        async def send_keys():
+        async def gen_keys():
             await asyncio.sleep(2)
             print('send_keys')
             while True:
@@ -443,16 +443,14 @@ class KeyClientNamespace(AVClientNamespace):
                 key = self.key_idx.to_bytes(4, 'big') + self.av.key_gen.get_key().tobytes()
                 self.key_idx += 1
 
-                self.send(key)
-
                 await self.av.key_queue[self.cls.user_id][self.namespace].put(key)
                 await asyncio.sleep(1)
         
-        Thread(target=asyncio.run, args=(send_keys(),)).start()
+        Thread(target=asyncio.run, args=(gen_keys(),)).start()
 
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
-        asyncio.run(self.av.key_queue[user_id][self.namespace].put(msg))
+        # asyncio.run(self.av.key_queue[user_id][self.namespace].put(msg))
 
 #endregion
 
@@ -467,8 +465,6 @@ class AudioClientNamespace(AVClientNamespace):
         audio = pyaudio.PyAudio()
         self.stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, output=True, frames_per_buffer=self.av.frames_per_buffer)
         self.stream.start_stream()
-        self.send_key_idx = 0
-        self.recv_key_idx = 0
 
         async def send_audio():
             await asyncio.sleep(2)
@@ -476,18 +472,14 @@ class AudioClientNamespace(AVClientNamespace):
             stream = audio.open(format=pyaudio.paInt16, channels=1, rate=self.av.sample_rate, input=True, frames_per_buffer=self.av.frames_per_buffer)
 
             while True:
-                if not self.av.key_queue[self.cls.user_id]["/audio_key"].empty():
-                    key = await self.av.key_queue[self.cls.user_id]["/audio_key"].get()
-                    if key != None:
-                        self.av.key[self.cls.user_id]["/audio_key"] = key[4:]
-                        self.send_key_idx = int.from_bytes(key[:4], 'big')
+                cur_key_idx, key = self.av.key
                     
 
                 data = stream.read(self.av.frames_per_buffer, exception_on_overflow=False)
 
                 if self.av.encryption is not None:
-                    data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/audio_key"])
-                self.send(self.send_key_idx.to_bytes(4, 'big') + data)
+                    data = self.av.encryption.encrypt(data, key)
+                self.send(cur_key_idx.to_bytes(4, 'big') + data)
                 await asyncio.sleep(self.av.audio_wait)
 
         Thread(target=asyncio.run, args=(send_audio(),)).start()
@@ -498,17 +490,13 @@ class AudioClientNamespace(AVClientNamespace):
             if user_id == self.cls.user_id:
                 return
             
-            if not self.av.key_queue[user_id]["/audio_key"].empty():
-                key = await self.av.key_queue[user_id]["/audio_key"].get()
-                if key != None:
-                    self.av.key[user_id]["/audio_key"] = key[4:]
-                    self.recv_key_idx = int.from_bytes(key[:4], 'big')
+            cur_key_idx, key = self.av.key
 
             key_idx = int.from_bytes(msg[:4], 'big')
-            if (key_idx != self.recv_key_idx): return
+            if (key_idx != cur_key_idx): return
             data = msg[4:]
 
-            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/audio_key"])
+            data = self.av.encryption.decrypt(data, key)
             
             self.stream.write(data, num_frames=self.av.frames_per_buffer, exception_on_underflow=False)
 
@@ -526,8 +514,6 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_connect()
         inpipe = ffmpeg.input('pipe:')
         self.output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgb24')
-        self.send_key_idx = 0
-        self.recv_key_idx = 0
 
         async def send_video():
             await asyncio.sleep(2)
@@ -550,11 +536,7 @@ class VideoClientNamespace(AVClientNamespace):
             while True:
                 start = time.time()
 
-                if not self.av.key_queue[self.cls.user_id]["/video_key"].empty():
-                    key = await self.av.key_queue[self.cls.user_id]["/video_key"].get()
-                    if key != None:
-                        self.av.key[self.cls.user_id]["/video_key"] = key[4:]
-                        self.send_key_idx = int.from_bytes(key[:4], 'big')
+                cur_key_idx, key = self.av.key
 
                 result, image = cap.read()
                 image = cv2.resize(image, (self.av.video_shape[1], self.av.video_shape[0]))
@@ -562,9 +544,9 @@ class VideoClientNamespace(AVClientNamespace):
 
                 data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
-                data = self.av.encryption.encrypt(data, self.av.key[self.cls.user_id]["/video_key"])
+                data = self.av.encryption.encrypt(data, key)
 
-                self.send(self.send_key_idx.to_bytes(4, 'big') + data)
+                self.send(cur_key_idx.to_bytes(4, 'big') + data)
                 # self.cls.video[self.cls.user_id] = data
 
                 end = time.time()
@@ -578,25 +560,21 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_message(user_id, msg)
         async def handle_message():
             if user_id == self.cls.user_id:
-                self.av.key[user_id]["/video_key"] = self.av.key_gen.get_key().tobytes()
-                # return
+                # self.av.key = self.av.key_gen.get_key().tobytes()
+                return
             
             start = time.time()
 
             # the stuff in comments got moved to the main thread because cv2 needs to be in the main thread for macOS
             # cv2.namedWindow(f"User {user_id}", cv2.WINDOW_NORMAL)
             # cv2.resizeWindow(f"User {user_id}", self.av.display_shape[1], self.av.display_shape[0])
-            if not self.av.key_queue[user_id]["/video_key"].empty():
-                key = await self.av.key_queue[user_id]["/video_key"].get()
-                if key != None:
-                    self.av.key[user_id]["/video_key"] = key[4:]
-                    self.recv_key_idx = int.from_bytes(key[:4], 'big')
+            cur_key_idx, key = self.av.key
 
             key_idx = int.from_bytes(msg[:4], 'big')
-            if (key_idx != self.recv_key_idx): return
+            if (key_idx != cur_key_idx): return
             data = msg[4:]
 
-            data = self.av.encryption.decrypt(data, self.av.key[user_id]["/video_key"])
+            data = self.av.encryption.decrypt(data, key)
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
@@ -619,8 +597,8 @@ class VideoClientNamespace(AVClientNamespace):
 
 class AV:
     namespaces = {
-        '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
-        '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        # '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
+        # '/audio_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
         '/video'        : (BroadcastFlaskNamespace, VideoClientNamespace),
         '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
@@ -642,18 +620,23 @@ class AV:
         self.frames_per_buffer = self.sample_rate//6
         self.audio_wait = 1/8
 
-        self.key_queue = defaultdict(lambda: {
-            "/video_key": asyncio.Queue(), 
-            "/audio_key": asyncio.Queue()
-            })
-        self.key = defaultdict(lambda: {
-            "/video_key": self.key_gen.get_key().tobytes(), 
-            "/audio_key": self.key_gen.get_key().tobytes()
-            })
+        self.key = self.key_gen.get_key().tobytes()
 
         self.encryption = encryption
 
         self.client_namespaces = generate_client_namespace(cls, self)
+
+        async def gen_keys():
+            print('send_keys')
+            key_idx = 0
+            while True:
+                self.key_gen.generate_key(key_length=128)
+                self.key = key_idx, self.key_gen.get_key().tobytes()
+                key_idx += 1
+
+                await asyncio.sleep(1)
+        
+        Thread(target=asyncio.run, args=(gen_keys(),)).start()
 
 #endregion
 

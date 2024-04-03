@@ -7509,3 +7509,583 @@
 [15:47:49] (INFO) ServerAPI.kill: Killing Server API.
 [15:47:49] (INFO) __main__.<module>: Exiting main program execution.
 
+[16:22:36] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:22:36] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:22:36] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:23:30] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:23:30] (INFO) ServerAPI.kill: Killing Server API.
+[16:23:30] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:23:49] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:23:49] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:23:49] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:24:02] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:24:02] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[16:24:02] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[16:24:02] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:24:02] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:24:14] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:24:14] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[16:24:14] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[16:24:14] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:24:14] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:24:49] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:24:49] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:24:49] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[16:24:49] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:24:49] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:24:49] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:24:49] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:24:49] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[16:24:49] (INFO) Server.start_websocket: Starting WebSocket API.
+[16:24:49] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[16:24:49] (INFO) SocketAPI.run: Starting WebSocket API.
+[16:24:49] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:24:49] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[16:24:49] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:24:49] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:24:49] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:24:49] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[16:24:49] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[16:24:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:24:51] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:24:51] "GET /socket.io/?transport=polling&EIO=4&t=1712100291.047322 HTTP/1.1" 200 254 0.001482
+[16:24:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:24:51] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[16:24:51] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[16:24:51] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[16:24:51] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[16:24:51] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[16:24:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:24:51] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:24:51] "GET /socket.io/?transport=polling&EIO=4&t=1712100291.060504 HTTP/1.1" 200 254 0.000146
+[16:24:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:24:51] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:24:51] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[16:24:51] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[16:24:51] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[16:25:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:25:16] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:25:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:25:16] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:25:16] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:25:17] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:25:17] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:25:17] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:25:17] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:25:17] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:25:17] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:25:17] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:25:18] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:25:18] (INFO) ServerAPI.kill: Killing Server API.
+[16:25:18] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:25:20] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:25:20] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:48:23] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:48:23] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:48:23] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:48:32] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:48:32] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[16:48:32] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[16:48:32] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:48:32] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:48:39] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:48:39] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[16:48:39] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[16:48:39] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:48:39] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:48:47] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:48:47] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:48:47] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[16:48:47] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:48:47] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:48:47] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:48:47] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:48:47] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[16:48:47] (INFO) Server.start_websocket: Starting WebSocket API.
+[16:48:47] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[16:48:47] (INFO) SocketAPI.run: Starting WebSocket API.
+[16:48:47] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:48:47] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[16:48:47] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:48:47] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:48:47] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:48:47] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[16:48:47] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[16:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:48:48] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:48:48] "GET /socket.io/?transport=polling&EIO=4&t=1712101728.908617 HTTP/1.1" 200 254 0.001264
+[16:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:48:48] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[16:48:48] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[16:48:48] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[16:48:48] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[16:48:48] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[16:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:48:48] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:48:48] "GET /socket.io/?transport=polling&EIO=4&t=1712101728.9204102 HTTP/1.1" 200 254 0.000166
+[16:48:48] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:48:48] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:48:48] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[16:48:48] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[16:48:48] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[16:49:07] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:49:07] (INFO) ServerAPI.kill: Killing Server API.
+[16:49:07] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:08] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:49:08] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:49:08] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:08] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:49:08] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:49:10] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:49:10] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:49:20] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:49:20] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:49:20] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:49:26] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:49:26] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[16:49:26] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[16:49:26] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:49:26] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:49:31] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:49:31] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[16:49:31] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[16:49:31] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:49:31] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:49:38] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:49:38] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:49:38] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[16:49:38] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:49:38] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:49:38] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:49:38] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:49:38] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[16:49:38] (INFO) Server.start_websocket: Starting WebSocket API.
+[16:49:38] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[16:49:38] (INFO) SocketAPI.run: Starting WebSocket API.
+[16:49:38] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:49:38] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[16:49:38] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:49:38] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:49:38] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:49:38] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[16:49:38] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[16:49:39] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:49:39] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:49:39] "GET /socket.io/?transport=polling&EIO=4&t=1712101779.9543092 HTTP/1.1" 200 254 0.000527
+[16:49:39] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:49:39] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[16:49:39] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[16:49:39] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[16:49:39] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[16:49:39] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[16:49:39] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:49:39] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:49:39] "GET /socket.io/?transport=polling&EIO=4&t=1712101779.966371 HTTP/1.1" 200 254 0.000153
+[16:49:39] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:49:39] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:49:39] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[16:49:39] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[16:49:39] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[16:50:11] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:50:11] (INFO) ServerAPI.kill: Killing Server API.
+[16:50:11] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:50:11] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:11] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:50:11] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:11] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:50:11] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:50:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:12] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:50:12] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:12] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:50:12] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:50:13] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:50:13] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:13] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:50:13] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:50:29] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:50:29] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:50:29] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:50:35] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:50:35] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[16:50:35] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[16:50:35] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:50:35] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:50:40] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:50:40] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[16:50:40] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[16:50:40] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:50:40] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:50:50] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:50:50] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:50:50] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[16:50:50] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:50:50] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:50:50] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:50:50] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:50:50] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[16:50:50] (INFO) Server.start_websocket: Starting WebSocket API.
+[16:50:50] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[16:50:50] (INFO) SocketAPI.run: Starting WebSocket API.
+[16:50:50] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:50:50] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[16:50:50] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:50:50] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:50:50] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:50:50] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[16:50:50] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[16:50:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:50:51] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:50:51] "GET /socket.io/?transport=polling&EIO=4&t=1712101851.151826 HTTP/1.1" 200 254 0.000497
+[16:50:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:50:51] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[16:50:51] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[16:50:51] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[16:50:51] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[16:50:51] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[16:50:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:50:51] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:50:51] "GET /socket.io/?transport=polling&EIO=4&t=1712101851.162852 HTTP/1.1" 200 254 0.000150
+[16:50:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:50:51] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:50:51] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[16:50:51] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[16:50:51] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[16:51:19] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:51:19] (INFO) ServerAPI.kill: Killing Server API.
+[16:51:19] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:51:19] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:51:19] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:51:19] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:51:19] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:51:19] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:51:20] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:51:20] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:51:20] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:51:20] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:51:20] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:51:21] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:51:21] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:51:21] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:51:21] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:56:36] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[16:56:36] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[16:56:36] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[16:56:51] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:56:51] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[16:56:51] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[16:56:51] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:56:51] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[16:56:57] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:56:57] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[16:56:57] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[16:56:57] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:56:57] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[16:57:02] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:57:02] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:57:02] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[16:57:02] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[16:57:02] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[16:57:02] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:57:02] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:57:02] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[16:57:02] (INFO) Server.start_websocket: Starting WebSocket API.
+[16:57:02] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[16:57:02] (INFO) SocketAPI.run: Starting WebSocket API.
+[16:57:02] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:57:02] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[16:57:02] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:57:02] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[16:57:02] (INFO) Server.get_user: Retrieved user with ID 41018.
+[16:57:02] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[16:57:02] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[16:57:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:57:03] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:57:03] "GET /socket.io/?transport=polling&EIO=4&t=1712102223.589443 HTTP/1.1" 200 254 0.001402
+[16:57:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:57:03] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[16:57:03] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[16:57:03] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[16:57:03] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[16:57:03] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[16:57:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:57:03] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 16:57:03] "GET /socket.io/?transport=polling&EIO=4&t=1712102223.601193 HTTP/1.1" 200 254 0.000164
+[16:57:03] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[16:57:03] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[16:57:03] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[16:57:03] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[16:57:03] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[16:57:25] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:57:25] (INFO) ServerAPI.kill: Killing Server API.
+[16:57:25] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:57:26] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:57:26] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:57:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[16:57:26] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[16:57:26] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/.conda/lib/python3.10/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+  File "/Users/petergao/Documents/GitHub/Quantum/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[16:57:27] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[16:57:27] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[17:07:18] (INFO) Server.__init__: Intializing server with API Endpoint http://100.83.72.222:5000
+[17:07:18] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.83.72.222:5000.
+[17:07:18] (INFO) ServerAPI.start: Starting Server API at http://100.83.72.222:5000.
+[17:07:32] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[17:07:32] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4000.
+[17:07:32] (DEBUG) utils.user_manager.generate_token: Generating token for User 41018.
+[17:07:32] (DEBUG) UserManager.add_user: Added User 41018 with session token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[17:07:32] (INFO) Server.add_user: User 41018 added with sess_token '552f4faabc0578cdb1fe4e8369274e35c5ade6c8fe75a65e01d562985cae84e5'.
+[17:07:38] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[17:07:38] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.83.72.222:4001.
+[17:07:38] (DEBUG) utils.user_manager.generate_token: Generating token for User 9f429.
+[17:07:38] (DEBUG) UserManager.add_user: Added User 9f429 with session token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[17:07:38] (INFO) Server.add_user: User 9f429 added with sess_token '3fb3bea178597214d952dc0ba679aab7e5a376034edd6d397ca49dd0766f0366'.
+[17:07:42] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[17:07:42] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[17:07:42] (INFO) ServerAPI.handle_peer_connection: Received request from User 9f429 to connect with User 41018.
+[17:07:42] (DEBUG) UserManager.get_user: Retrieved user info for User 9f429.
+[17:07:42] (INFO) Server.get_user: Retrieved user with ID 9f429.
+[17:07:42] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[17:07:42] (INFO) Server.get_user: Retrieved user with ID 41018.
+[17:07:42] (INFO) Server.handle_peer_connection: Contacting User 41018 to connect to User 9f429.
+[17:07:42] (INFO) Server.start_websocket: Starting WebSocket API.
+[17:07:42] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://100.83.72.222:3000.
+[17:07:42] (INFO) SocketAPI.run: Starting WebSocket API.
+[17:07:42] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[17:07:42] (INFO) SocketAPI.run: Serving WebSocket API at http://100.83.72.222:3000
+[17:07:42] (INFO) Server.get_user: Retrieved user with ID 41018.
+[17:07:42] (DEBUG) UserManager.get_user: Retrieved user info for User 41018.
+[17:07:42] (INFO) Server.get_user: Retrieved user with ID 41018.
+[17:07:42] (INFO) Server.contact_client: Contacting Client API for User 41018 at http://100.83.72.222:4000/peer_connection.
+[17:07:42] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 100.83.72.222:4000
+[17:07:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[17:07:43] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 17:07:43] "GET /socket.io/?transport=polling&EIO=4&t=1712102863.300009 HTTP/1.1" 200 254 0.001336
+[17:07:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[17:07:43] (INFO) SocketAPI.on_connect: Received Socket connection request from User 41018 with connection token 'abcdefghijklmnop'.
+[17:07:43] (INFO) SocketAPI.on_connect: Socket connection from User 41018 accepted; yielding session token 'this is a session token'
+[17:07:43] (INFO) SocketAPI.on_message: Received message from User 41018: 'Hello from user 41018'
+[17:07:43] (DEBUG) urllib3.connectionpool._make_request: http://100.83.72.222:4000 "POST /peer_connection HTTP/1.1" 200 22
+[17:07:43] (INFO) Server.handle_peer_connection: Peer User 41018 accepted connection request.
+[17:07:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[17:07:43] (INFO) geventwebsocket.handler.log_request: 100.83.72.222 - - [2024-04-02 17:07:43] "GET /socket.io/?transport=polling&EIO=4&t=1712102863.31121 HTTP/1.1" 200 254 0.000145
+[17:07:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[17:07:43] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[17:07:43] (INFO) SocketAPI.on_connect: Received Socket connection request from User 9f429 with connection token 'abcdefghijklmnop'.
+[17:07:43] (INFO) SocketAPI.on_connect: Socket connection from User 9f429 accepted; yielding session token 'this is a session token'
+[17:07:43] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[17:08:10] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[17:08:10] (INFO) ServerAPI.kill: Killing Server API.
+[17:08:10] (INFO) __main__.<module>: Exiting main program execution.
+
