@@ -301,7 +301,7 @@ import asyncio
 
 from flask_socketio import SocketIO, send, emit
 from flask_socketio.namespace import Namespace as FlaskNamespace
-from utils import ClientState
+from client.utils import ClientState
 from socketio import ClientNamespace, AsyncClientNamespace
 
 import argparse
@@ -320,7 +320,7 @@ import numpy as np
 import sys
 import pathlib
 
-from utils.encryption import AESEncryption, RandomKeyGenerator, KeyGeneratorFactory, EncryptionFactory, EncryptionScheme
+from client.utils.encryption import AESEncryption, RandomKeyGenerator, KeyGeneratorFactory, EncryptionFactory, EncryptionScheme
 
 def display_message(user_id, msg):
     print(f"({user_id}): {msg}")
@@ -404,13 +404,14 @@ class BroadcastFlaskNamespace(FlaskNamespace):
             self.cls.client.state = ClientState.LIVE
 
 
-
+import socket
 class AVClientNamespace(ClientNamespace):
 
-    def __init__(self, namespace, cls, av):
+    def __init__(self, namespace, cls: type, av, frontend_socket: socket.socket):
         super().__init__(namespace)
-        self.cls = cls
+        self.cls: type = cls
         self.av: AV = av
+        self.frontend_socket: socket.socket = frontend_socket
         print("created AVClientNamespace", self.cls, self.av)
 
     def on_connect(self):
@@ -545,7 +546,6 @@ class VideoClientNamespace(AVClientNamespace):
                 data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
                 data = self.av.encryption.encrypt(data, key)
-
                 self.send(cur_key_idx.to_bytes(4, 'big') + data)
                 # self.cls.video[self.cls.user_id] = data
 
@@ -576,11 +576,12 @@ class VideoClientNamespace(AVClientNamespace):
 
             data = self.av.encryption.decrypt(data, key)
 
-            data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
+            super().frontend_socket.emit(data, {'type': 'video-data'})
+            # data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
-            data = np.frombuffer(data, dtype=np.uint8).reshape(self.av.video_shape)
+            # data = np.frombuffer(data, dtype=np.uint8).reshape(self.av.video_shape)
 
-            self.cls.video[user_id] = data
+            # self.cls.video[user_id] = data
             # cv2.imshow(f"User {user_id}", data)
             # cv2.waitKey(1)
 
