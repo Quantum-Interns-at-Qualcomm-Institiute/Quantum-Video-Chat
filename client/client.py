@@ -5,7 +5,7 @@ import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
 import logging
-from utils.av import AV
+from client.utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
 logging.basicConfig(filename='./client/logs/client.log', level=logging.INFO, 
@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 #region --- Utils ---
-from utils import ClientState
-from utils import get_parameters, is_type
-from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
+from client.utils import ClientState
+from client.utils import get_parameters, is_type
+from client.utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
 
 
 class UnexpectedResponse(Exception):
@@ -28,7 +28,7 @@ class ConnectionRefused(UnexpectedResponse):
 class InternalClientError(Exception):
     pass
 
-from gui import Alert, Question
+from client.gui import Alert, Question
 #endregion
 
 
@@ -164,8 +164,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 
 
 #region --- Main Client ---
-from utils import Endpoint
-from api import ClientAPI
+from client.utils import Endpoint
+from client.api import ClientAPI
 import cv2
 class Client:
     def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
@@ -291,7 +291,7 @@ class Client:
         return True
         
 
-    def connect_to_peer(self, peer_id):
+    def connect_to_peer(self, peer_id, frontend_socket):
         """
         Open Socket API. Contact Server /peer_connection with `conn_token` and await connection from peer (authenticated by `conn_token`).
         """
@@ -345,6 +345,7 @@ class Client:
     
         self.logger.info("Polling User")
         print(f"Incoming connection request from {peer_id}.")
+        # ANDY_TODO: Remove the question
         res = self.gui.question('Incoming Peer Connection', f"Peer User {peer_id} has requested to connect to you. Accept?")
         if res == 'yes':
             self.logger.info("User Accepted Connection.")
@@ -391,8 +392,8 @@ class Client:
 
 
 #region --- Main ---
-from gui import InitClientGUI, MainGUI
-from gui import GUIQuit
+from client.gui import InitClientGUI, MainGUI
+from client.gui import GUIQuit
 
 if __name__ == "__main__":
     client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT)
