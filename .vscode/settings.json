@@ -1,6 +1,6 @@
 {
     "files.exclude": {
-        "frontend/": true,
+        "frontend/": false,
         "icebox/": true,
         "old": true,
         "**/__pycache__" : true
