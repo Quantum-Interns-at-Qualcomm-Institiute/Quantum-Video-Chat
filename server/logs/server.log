@@ -8089,3 +8089,6 @@ AttributeError: type object 'SocketAPI' has no attribute 'client'
 [17:08:10] (INFO) ServerAPI.kill: Killing Server API.
 [17:08:10] (INFO) __main__.<module>: Exiting main program execution.
 
+[15:55:11] (INFO) Server.__init__: Intializing server with API Endpoint http://100.64.90.101:5000
+[15:55:11] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.64.90.101:5000.
+[15:55:11] (INFO) ServerAPI.start: Starting Server API at http://100.64.90.101:5000.
