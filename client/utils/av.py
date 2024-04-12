@@ -404,14 +404,15 @@ class BroadcastFlaskNamespace(FlaskNamespace):
             self.cls.client.state = ClientState.LIVE
 
 
-import socket
+import socketio
 class AVClientNamespace(ClientNamespace):
+    # frontend_socket: socketio.
 
-    def __init__(self, namespace, cls: type, av, frontend_socket: socket.socket):
+    def __init__(self, namespace, cls: type, av, frontend_socket: socketio.Client):
         super().__init__(namespace)
         self.cls: type = cls
         self.av: AV = av
-        self.frontend_socket: socket.socket = frontend_socket
+        self.frontend_socket: socketio.Client = frontend_socket
         print("created AVClientNamespace", self.cls, self.av)
 
     def on_connect(self):
@@ -576,9 +577,9 @@ class VideoClientNamespace(AVClientNamespace):
 
             data = self.av.encryption.decrypt(data, key)
 
-            super().frontend_socket.emit(data, {'type': 'video-data'})
-            # data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
+            data = self.output.run(input=data, capture_stdout=True, quiet=True)[0] # Data is now an ISMV format file in memory
 
+            super().frontend_socket.emit(data, {'type': 'video-data'})
             # data = np.frombuffer(data, dtype=np.uint8).reshape(self.av.video_shape)
 
             # self.cls.video[user_id] = data
