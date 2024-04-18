@@ -10,7 +10,7 @@
  */
 import path from 'path';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -37,8 +37,10 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+// const isDebug =
+// process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+
+const isDebug = false;
 
 if (isDebug) {
   require('electron-debug')();
@@ -79,6 +81,8 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
+      nodeIntegration: true, // Required for direct IPC communication
+      contextIsolation: false, // Required for direct IPC communication
     },
   });
 
