@@ -5,7 +5,7 @@ import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
 import logging
-from client.utils.av import AV
+from utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
 logging.basicConfig(filename='./client/logs/client.log', level=logging.INFO, 
@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 #region --- Utils ---
-from client.utils import ClientState
-from client.utils import get_parameters, is_type
-from client.utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
+from utils import ClientState
+from utils import get_parameters, is_type
+from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
 
 
 class UnexpectedResponse(Exception):
@@ -28,7 +28,7 @@ class ConnectionRefused(UnexpectedResponse):
 class InternalClientError(Exception):
     pass
 
-from client.gui import Alert, Question
+from gui import Alert, Question
 #endregion
 
 
@@ -164,8 +164,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 
 
 #region --- Main Client ---
-from client.utils import Endpoint
-from client.api import ClientAPI
+from utils import Endpoint
+from api import ClientAPI
 import cv2
 class Client:
     def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
@@ -392,8 +392,8 @@ class Client:
 
 
 #region --- Main ---
-from client.gui import InitClientGUI, MainGUI
-from client.gui import GUIQuit
+from gui import InitClientGUI, MainGUI
+from gui import GUIQuit
 
 if __name__ == "__main__":
     client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT)

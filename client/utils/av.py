@@ -301,7 +301,7 @@ import asyncio
 
 from flask_socketio import SocketIO, send, emit
 from flask_socketio.namespace import Namespace as FlaskNamespace
-from client.utils import ClientState
+from utils import ClientState
 from socketio import ClientNamespace, AsyncClientNamespace
 
 import argparse
@@ -320,7 +320,7 @@ import numpy as np
 import sys
 import pathlib
 
-from client.utils.encryption import AESEncryption, RandomKeyGenerator, KeyGeneratorFactory, EncryptionFactory, EncryptionScheme
+from utils.encryption import AESEncryption, RandomKeyGenerator, KeyGeneratorFactory, EncryptionFactory, EncryptionScheme
 
 def display_message(user_id, msg):
     print(f"({user_id}): {msg}")
@@ -579,7 +579,7 @@ class VideoClientNamespace(AVClientNamespace):
 
             data = self.output.run(input=data, capture_stdout=True, quiet=True)[0] # Data is now an ISMV format file in memory
 
-            super().frontend_socket.emit(data, {'type': 'video-data'})
+            super().frontend_socket.emit(data, {'type': 'stream'})
             # data = np.frombuffer(data, dtype=np.uint8).reshape(self.av.video_shape)
 
             # self.cls.video[user_id] = data
