@@ -5,7 +5,7 @@ from threading import Thread
 # TODO: Look into usage for gevent
 from gevent.pywsgi import WSGIServer # For asynchronous handling
 
-from client.utils.av import TestFlaskNamespace, generate_flask_namespace
+from utils.av import TestFlaskNamespace, generate_flask_namespace
 
 #region --- Logging ---
 import logging
@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 #region --- Utils ---
-from client.utils import ClientState
-from client.utils import Endpoint
-from client.utils import get_parameters, is_type, remove_last_period
-from client.utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
+from utils import ClientState
+from utils import Endpoint
+from utils import get_parameters, is_type, remove_last_period
+from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
 
 from enum import Enum
 from functools import total_ordering
