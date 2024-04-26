@@ -37,4 +37,6 @@ if __name__ == "__main__":
   @frontend_socket.on('connect_to_peer')
   def handle_conenct_to_peer(data):
     # data is peer's id
-    client.connect_to_peer(data, frontend_socket)
+    print(f"Received peer_id {data}.")
+    # print(f"Attempting to connect_to_peer().")
+    # client.connect_to_peer(data, frontend_socket)

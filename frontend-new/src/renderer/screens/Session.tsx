@@ -88,14 +88,20 @@ export default function Session(props) {
     },[])
 
     useEffect(() => {
-      if (props.host) {
-        // Is a host
-        ;
-      } else {
-        // Is client
-        console.log(`sent peer id ${code}`)
-        window.electronAPI.setPeerId(code);
-      }
+        window.electronAPI.ipcListen('frame', (event, frame) => {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext('2d');
+            context.drawImage(frame, 0, 0, canvas.width, canvas.height);
+        })
+
+        if (props.host) {
+            // Is a host
+            ;
+        } else {
+            // Is client
+            console.log(`sent peer id ${code}`)
+            window.electronAPI.setPeerId(code);
+        }
     })
 
     return (
