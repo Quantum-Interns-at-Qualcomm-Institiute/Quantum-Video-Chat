@@ -45,7 +45,7 @@ class ClientAPI(Thread):
 
     for prop in psutil.net_if_addrs()['en0']:
         if prop.family == 2:
-            ip = prop.addr
+            ip = prop.address
 
     # TODO: Aaron commented this out because it was breaking stuff when testing python subprocesses of frontend main. Uncomment and fix later?
     # ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
