@@ -50,7 +50,7 @@ const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
   const extensions = ['REACT_DEVELOPER_TOOLS'];
-  
+
   return installer
   .default(
     extensions.map((name) => installer[name]),
@@ -60,19 +60,19 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
-  
+
   if (isDebug) {
     await installExtensions();
   }
-  
+
   const RESOURCES_PATH = app.isPackaged
   ? path.join(process.resourcesPath, 'assets')
   : path.join(__dirname, '../../assets');
-  
+
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
   };
-  
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
@@ -86,9 +86,9 @@ const createWindow = async () => {
       contextIsolation: true, // Required for direct IPC communication
     },
   });
-  
+
   mainWindow.loadURL(resolveHtmlPath('index.html'));
-  
+
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -99,20 +99,20 @@ const createWindow = async () => {
       mainWindow.show();
     }
   });
-  
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-  
+
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
-  
+
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
-  
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
@@ -123,58 +123,57 @@ const createWindow = async () => {
 const spawnPythonProcess = () => {
   const PORT = 5001;
   const io = require('socket.io')(PORT);
-  
+
   console.log('Spawning Python Child Process...')
   const { spawn } = require('child_process');
   const python = spawn('python3', [`src/middleware/video_chat.py`, [PORT]]);
-  
+
   python.stdout.on('data', function (data) {
     // console.log(data);
     console.log(`(py stdout): ${data.toString()}`);
     console.log();
     // dataToSend = data.toString();
   });
-  
+
   python.stderr.on('data', function (data) {
     // console.log(data);
     console.log(`(py stderr): ${data.toString()}`);
     console.log();
     // dataToSend = data.toString();
   });
-  
+
   // in close event we are sure that stream from child process is closed
   python.on('close', (code) => {
     console.log(`child process close all stdio with code ${code}`);
     // socket.destroy();
     // send data to browser
   });
-  
+
   io.on('connection', (socket) => {
     console.log('Received a socket connection from the python child');
     const user_id = socket.handshake.headers['user_id'];
     console.log(user_id);
-    
-    // Transmit peer_id entered by user (client only) on frontend to the backend
-    // IPC.on('has_peer_id' , (peer_id) => {
-    // socket.emit('connect_to_peer', data=peer_id)
-    // })
+
+    socket.on('message', (message) => {
+      console.log(`(py message): ${message}`);
+    })
 
     ipcMain.on('set_peer_id', (event, peer_id) => {
       console.log(`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`);
       socket.emit('connect_to_peer', peer_id);
-    }); 
-    
+    });
+
     // 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
     socket.on('stream', (frame) => {
       // Convert bytes to blob
       const frameBlob = new Blob(frame, { type: 'plain/text' });
-      
+
       // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
       frameBlob
       .arrayBuffer()
       .then((frameBuffer) => {
         const videoFrame = new VideoFrame(frameBuffer);
-        
+
         // Send this frame to the other window
         win.webContents.send('frame', videoFrame);
       })

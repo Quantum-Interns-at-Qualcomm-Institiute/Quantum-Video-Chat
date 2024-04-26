@@ -80,10 +80,10 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 
     #region --- External Interface ---
     @classmethod
-    def init(cls, endpoint, conn_token, user_id, display_message): # TODO: Unsure if client needed.
+    def init(cls, endpoint, conn_token, user_id, display_message, frontend_socket): # TODO: Unsure if client needed.
         cls.logger.info(f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
-        cls.av = AV(cls)
+        cls.av = AV(cls, frontend_socket)
         cls.namespaces = cls.av.client_namespaces
 
         # if cls.state == SocketClientState.OPEN:
@@ -168,7 +168,7 @@ from client.utils import Endpoint
 from client.api import ClientAPI
 import cv2
 class Client:
-    def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
+    def __init__(self, frontend_socket, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
         self.logger = logging.getLogger('Client')
         self.logger.info(f"""Initializing Client with:
                          Server endpoint {server_endpoint},
@@ -177,7 +177,7 @@ class Client:
         self.user_id = None
         self.sess_token = None
         self.state = ClientState.NEW
-
+        self.frontend_socket = frontend_socket
         self.server_endpoint = server_endpoint
         self.api_endpoint = api_endpoint
         self.websocket_endpoint = websocket_endpoint
@@ -381,7 +381,7 @@ class Client:
 
 
     def connect_to_websocket(self, endpoint, conn_token):
-        sio = SocketClient.init(endpoint, conn_token, self.user_id, self.display_message)
+        sio = SocketClient.init(endpoint, conn_token, self.user_id, self.display_message, self.frontend_socket)
         try:
             sio.start()
         except Exception as e:

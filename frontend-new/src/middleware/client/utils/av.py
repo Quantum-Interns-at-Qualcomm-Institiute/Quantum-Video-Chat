@@ -596,7 +596,7 @@ class VideoClientNamespace(AVClientNamespace):
 
 
 #region --- AV ---
-
+from socketio import Client
 class AV:
     namespaces = {
         # '/video_key'    : (BroadcastFlaskNamespace, KeyClientNamespace),
@@ -605,7 +605,7 @@ class AV:
         '/audio'        : (BroadcastFlaskNamespace, AudioClientNamespace),
         }
 
-    def __init__(self, cls, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
+    def __init__(self, cls, frontend_socket: Client, encryption: EncryptionScheme=EncryptionFactory().create_encryption_scheme("AES")):
         self.cls = cls
 
         self.key_gen = KeyGeneratorFactory().create_key_generator("FILE")
@@ -626,7 +626,7 @@ class AV:
 
         self.encryption = encryption
 
-        self.client_namespaces = generate_client_namespace(cls, self)
+        self.client_namespaces = generate_client_namespace(cls, self, frontend_socket)
 
         async def gen_keys():
             print('send_keys')
