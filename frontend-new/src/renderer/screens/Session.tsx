@@ -18,13 +18,13 @@ import './Session.css';
 *      - bad
 *      - good
 */
-export default function Session2(props) {
+export default function Session(props) {
     const { ipcRenderer } = window.require('electron');
     const canvasRef = useRef(null);
-    
+
     ipcRenderer.on('frame', (event, frame) => {
         const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');        
+        const context = canvas.getContext('2d');
         context.drawImage(frame, 0, 0, canvas.width, canvas.height);
     })
 
@@ -86,6 +86,14 @@ export default function Session2(props) {
         console.log('Session: Running useEffect()')
         getOutStream()
     },[])
+
+    useEffect(() => {
+      if (props.host) {
+        // Is a host
+      } else {
+        // Is client
+      }
+    })
 
     return (
         <>
