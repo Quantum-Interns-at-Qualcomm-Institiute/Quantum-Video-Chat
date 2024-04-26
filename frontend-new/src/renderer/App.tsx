@@ -17,7 +17,7 @@ export default function App() {
                 </Route>
 
                 {/* Client Video Session */}
-                <Route path="/session/client/*" element={<Session client status={status}/>}>
+                <Route path="/session/client/*" element={<Session status={status}/>}>
                 </Route>
 
                 {/* Join Session Prompt */}
@@ -27,7 +27,7 @@ export default function App() {
                 {/* Home Page */}
                 <Route path="/*" element={<Start />}>
                 </Route>
-                
+
             </Routes>
         </Router>
     )
