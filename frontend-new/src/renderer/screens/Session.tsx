@@ -19,14 +19,14 @@ import './Session.css';
 *      - good
 */
 export default function Session(props) {
-    const { ipcRenderer } = window.require('electron');
+    // const { ipcRenderer } = require('electron');
     const canvasRef = useRef(null);
 
-    ipcRenderer.on('frame', (event, frame) => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        context.drawImage(frame, 0, 0, canvas.width, canvas.height);
-    })
+    // ipcRenderer.on('frame', (event, frame) => {
+    //     const canvas = canvasRef.current;
+    //     const context = canvas.getContext('2d');
+    //     context.drawImage(frame, 0, 0, canvas.width, canvas.height);
+    // })
 
     const location = useLocation();
     const code = location.pathname.slice(-8);
@@ -90,8 +90,11 @@ export default function Session(props) {
     useEffect(() => {
       if (props.host) {
         // Is a host
+        ;
       } else {
         // Is client
+        console.log(`sent peer id ${code}`)
+        window.electronAPI.setPeerId(code);
       }
     })
 

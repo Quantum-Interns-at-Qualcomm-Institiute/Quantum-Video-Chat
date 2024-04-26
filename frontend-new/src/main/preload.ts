@@ -2,28 +2,35 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example';
+// NOTE: Nicer IPC Boilerplate with typescript
 
-const electronHandler = {
-  ipcRenderer: {
-    sendMessage(channel: Channels, ...args: unknown[]) {
-      ipcRenderer.send(channel, ...args);
-    },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-        func(...args);
-      ipcRenderer.on(channel, subscription);
+// export type Channels = 'ipc-example';
 
-      return () => {
-        ipcRenderer.removeListener(channel, subscription);
-      };
-    },
-    once(channel: Channels, func: (...args: unknown[]) => void) {
-      ipcRenderer.once(channel, (_event, ...args) => func(...args));
-    },
-  },
-};
+// const electronHandler = {
+//   ipcRenderer: {
+//     sendMessage(channel: Channels, ...args: unknown[]) {
+//       ipcRenderer.send(channel, ...args);
+//     },
+//     on(channel: Channels, func: (...args: unknown[]) => void) {
+//       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
+//         func(...args);
+//       ipcRenderer.on(channel, subscription);
 
-contextBridge.exposeInMainWorld('electron', electronHandler);
+//       return () => {
+//         ipcRenderer.removeListener(channel, subscription);
+//       };
+//     },
+//     once(channel: Channels, func: (...args: unknown[]) => void) {
+//       ipcRenderer.once(channel, (_event, ...args) => func(...args));
+//     },
+//   },
+// };
 
-export type ElectronHandler = typeof electronHandler;
+// contextBridge.exposeInMainWorld('electron', electronHandler);
+
+// export type ElectronHandler = typeof electronHandler;
+
+// My version just needs to work
+contextBridge.exposeInMainWorld('electronAPI', {
+    setPeerId: (peer_id) => ipcRenderer.send('set_peer_id', peer_id)
+})
