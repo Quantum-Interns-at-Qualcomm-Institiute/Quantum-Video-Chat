@@ -60,6 +60,33 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
+  const PORT = 5001;
+  const io = require('socket.io')(PORT);
+
+  const { spawn } = require('child_process');
+  const python = spawn('python3', [`src/middleware/video_chat.py`, [PORT]]);
+
+  // python.stdout.on('data', function (data) {
+  //   console.log(data);
+  //   console.log(data.toString());
+  //   console.log();
+  //   // dataToSend = data.toString();
+  // });
+
+  // python.stderr.on('data', function (data) {
+  //   console.log(data);
+  //   console.log(data.toString());
+  //   console.log();
+  //   // dataToSend = data.toString();
+  // });
+
+  // // in close event we are sure that stream from child process is closed
+  // python.on('close', (code) => {
+  //   console.log(`child process close all stdio with code ${code}`);
+  //   // socket.destroy();
+  //   // send data to browser
+  // });
+
   if (isDebug) {
     await installExtensions();
   }
@@ -115,6 +142,35 @@ const createWindow = async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
+
+  io.on('connection', (socket) => {
+    console.log('Received a socket connection from the python child');
+    const user_id = socket.handshake.headers['user_id'];
+    console.log(user_id);
+
+    // IPC.on('has_peer_id' , (peer_id) => {
+      // socket.emit('connect_to_peer', data=peer_id)
+    // })
+
+    // 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
+    socket.on('stream', (frame) => {
+      // Convert bytes to blob
+      const frameBlob = new Blob(frame, { type: 'plain/text' });
+
+      // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
+      frameBlob
+        .arrayBuffer()
+        .then((frameBuffer) => {
+          const videoFrame = new VideoFrame(frameBuffer);
+
+          // Send this frame to the other window
+          win.webContents.send('frame', videoFrame);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+  });
 };
 
 /**

@@ -5,10 +5,10 @@ import requests
 
 #region --- Logging --- # TODO: Add internal logger to Client class
 import logging
-from utils.av import AV
+from client.utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
-logging.basicConfig(filename='./client/logs/client.log', level=logging.INFO, 
+logging.basicConfig(filename='./src/middleware/logs/client.log', level=logging.INFO,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 #region --- Utils ---
-from utils import ClientState
-from utils import get_parameters, is_type
-from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
+from client.utils import ClientState
+from client.utils import get_parameters, is_type
+from client.utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
 
 
 class UnexpectedResponse(Exception):
@@ -28,7 +28,7 @@ class ConnectionRefused(UnexpectedResponse):
 class InternalClientError(Exception):
     pass
 
-from gui import Alert, Question
+from client.gui import Alert, Question
 #endregion
 
 
@@ -36,7 +36,7 @@ from gui import Alert, Question
 from threading import Thread
 import socketio
 class SocketClient(): # Not threaded because sio.connect() is not blocking
-    
+
     sio = socketio.Client()
     user_id = None
     endpoint = None
@@ -65,7 +65,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
     def HandleExceptions(endpoint_handler):
         """
         Decorator to handle commonly encountered exceptions at Socket Client endpoints.
-        
+
         NOTE: This should never be called explicitly
         """
         def handler_with_exceptions(*args, **kwargs):
@@ -95,7 +95,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # cls.state = SocketClientState.INIT
         cls.instance = cls()
         return cls.instance
-    
+
     def start(self):
         self.run()
 
@@ -129,7 +129,7 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
         # Make sure to update state, delete instance if necessary, etc.
 
     @classmethod
-    def kill(cls): 
+    def kill(cls):
         cls.logger.info(f"Killing Socket Client")
         cls.disconnect()
         # Make sure to update state, delete instance if necessary, etc.
@@ -164,8 +164,8 @@ class SocketClient(): # Not threaded because sio.connect() is not blocking
 
 
 #region --- Main Client ---
-from utils import Endpoint
-from api import ClientAPI
+from client.utils import Endpoint
+from client.api import ClientAPI
 import cv2
 class Client:
     def __init__(self, server_endpoint=None, api_endpoint=None, websocket_endpoint=None):
@@ -230,7 +230,7 @@ class Client:
             try: json = response.json()
             except requests.exceptions.JSONDecodeError as e:
                 raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.reason}.")
-            
+
             if 'details' in response.json():
                 raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.json()['details']}.")
             raise UnexpectedResponse(f"Unexpected Server response at {endpoint}: {response.reason}.")
@@ -267,7 +267,7 @@ class Client:
         if(self.state >= ClientState.LIVE):
             logger.error(f"Cannot connect to {self.server_endpoint}; already connected.")
             raise InternalClientError(f"Cannot connect to {self.server_endpoint}; already connected.")
-    
+
         try:
             response = self.contact_server('/create_user', json={
                 'api_endpoint': tuple(self.api_endpoint)
@@ -278,18 +278,18 @@ class Client:
         except UnexpectedResponse as e:
             self.logger.error(str(e))
             raise e
-        
+
         try:
             self.user_id, self.sess_token = get_parameters(response.json(), 'user_id', 'sess_token')
             self.logger.info(f"Received user_id '{self.user_id}' and token '{self.sess_token}'.")
         except ParameterError as e:
             self.logger.error(f"Server response did not contain both user_id and sess_token at {self.server_endpoint('/create_user')}.")
             raise UnexpectedResponse(f"Server response did not contain both user_id and sess_token at {self.server_endpoint('/create_user')}.")
-        
+
         self.state = ClientState.LIVE
         print(f"Received user_id {self.user_id} and sess_token '{self.sess_token}'")
         return True
-        
+
 
     def connect_to_peer(self, peer_id, frontend_socket):
         """
@@ -311,7 +311,7 @@ class Client:
             self.logger.error(str(e))
             raise e
 
-        websocket_endpoint, conn_token = get_parameters(response.json(), 'socket_endpoint', 'conn_token')      
+        websocket_endpoint, conn_token = get_parameters(response.json(), 'socket_endpoint', 'conn_token')
         self.logger.info(f"Received websocket endpoint '{websocket_endpoint}' and conn_token '{conn_token}' from Server.")
         self.connect_to_websocket(websocket_endpoint, conn_token)
         while True:
@@ -341,31 +341,31 @@ class Client:
 
         """
         if self.state == ClientState.CONNECTED:
-            raise InternalClientError(f"Cannot attempt peer websocket connection while {self.state}.")   
-    
-        # self.logger.info("Polling User")
-        # print(f"Incoming connection request from {peer_id}.")
-        # ANDY_TODO: Remove the question
-        # res = self.gui.question('Incoming Peer Connection', f"Peer User {peer_id} has requested to connect to you. Accept?")
-        # if res == 'yes':
-        # self.logger.info("User Accepted Connection.")
-        self.logger.info(f"Attempting to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
+            raise InternalClientError(f"Cannot attempt peer websocket connection while {self.state}.")
 
-        try:
-            self.connect_to_websocket(socket_endpoint, conn_token)
-        except Exception as e:
-            self.gui.alert('Warning', f"Connection to incoming peer User {peer_id} failed.")
+        self.logger.info("Polling User")
+        print(f"Incoming connection request from {peer_id}.")
+        # ANDY_TODO: Remove the question
+        res = self.gui.question('Incoming Peer Connection', f"Peer User {peer_id} has requested to connect to you. Accept?")
+        if res == 'yes':
+            self.logger.info("User Accepted Connection.")
+            self.logger.info(f"Attempting to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
+
+            try:
+                self.connect_to_websocket(socket_endpoint, conn_token)
+            except Exception as e:
+                self.gui.alert('Warning', f"Connection to incoming peer User {peer_id} failed.")
+                return False
+            self.logger.info(f"Successfully connected to peer User {peer_id}.")
+            # XXX: WHY THE FUCK IS THIS BLOCKING????
+            self.gui.quit('User accepted an incoming connection request.')
+            self.logger.info(f"Just quit da GUI; returning from client.handle_peer_connection().")
+            return True
+        else:
+            self.logger.info("User Refused Connection.")
             return False
-        self.logger.info(f"Successfully connected to peer User {peer_id}.")
-        # XXX: WHY THE FUCK IS THIS BLOCKING????
-        self.gui.quit('User accepted an incoming connection request.')
-        self.logger.info(f"Just quit da GUI; returning from client.handle_peer_connection().")
-        return True
-        # else:
-        #     self.logger.info("User Refused Connection.")
-        #     return False
-        # return False
-        
+        return False
+
     def disconnect_from_peer(self):
         pass
     #endregion
@@ -392,8 +392,8 @@ class Client:
 
 
 #region --- Main ---
-from gui import InitClientGUI, MainGUI
-from gui import GUIQuit
+from client.gui import InitClientGUI, MainGUI
+from client.gui import GUIQuit
 
 if __name__ == "__main__":
     client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT)
@@ -413,7 +413,7 @@ if __name__ == "__main__":
             server_endpoint = Endpoint(*currGUI.server_endpoint)
             try:
                 client.set_server_endpoint(server_endpoint)
-                client.connect() 
+                client.connect()
             except UnexpectedResponse as e:
                 alert = alert('Warning', str(e), lambda x: print('hi'))
 
@@ -428,10 +428,10 @@ if __name__ == "__main__":
         while True:
             mainGUI = currGUI = MainGUI(client.user_id)
             client.gui = currGUI
-            if alert: 
+            if alert:
                 alert.show()
                 alert = None
-            
+
             try:
                 mainGUI.run()
             except GUIQuit as e:
