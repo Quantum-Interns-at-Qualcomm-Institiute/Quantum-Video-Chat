@@ -1,3 +1,0 @@
-audio:
-  delay: 5 # Delay in milliseconds
-  samplerate: 44100 # Sample rate in Hz
