@@ -38,15 +38,17 @@ class APIState(Enum): #TODO: Make an ordered enum interface kek-dubbers
 #endregion
 
 import subprocess
+import psutil
 #region --- Client API ---
 class ClientAPI(Thread):
-    # ip = '100.80.225.52'
-    # 100.80.230.213
     ip = '127.0.0.1'
-    # ip = '100.91.70.90'
+
+    for prop in psutil.net_if_addrs()['en0']:
+        if prop.family == 2:
+            ip = prop.addr
 
     # TODO: Aaron commented this out because it was breaking stuff when testing python subprocesses of frontend main. Uncomment and fix later?
-    ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
+    # ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
     DEFAULT_ENDPOINT = Endpoint(ip,4000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
