@@ -32,5 +32,6 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 // My version just needs to work
 contextBridge.exposeInMainWorld('electronAPI', {
-    setPeerId: (peer_id) => ipcRenderer.send('set_peer_id', peer_id)
+    setPeerId: (peer_id) => ipcRenderer.send('set_peer_id', peer_id),
+    ipcListen: (eventName, callback) => ipcRenderer.on(eventName, callback)
 })

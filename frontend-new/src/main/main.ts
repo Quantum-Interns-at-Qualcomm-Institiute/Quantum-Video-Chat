@@ -129,15 +129,15 @@ const spawnPythonProcess = () => {
   const python = spawn('python3', [`src/middleware/video_chat.py`, [PORT]]);
   
   python.stdout.on('data', function (data) {
-    console.log(data);
-    console.log(data.toString());
+    // console.log(data);
+    console.log(`(py stdout): ${data.toString()}`);
     console.log();
     // dataToSend = data.toString();
   });
   
   python.stderr.on('data', function (data) {
-    console.log(data);
-    console.log(data.toString());
+    // console.log(data);
+    console.log(`(py stderr): ${data.toString()}`);
     console.log();
     // dataToSend = data.toString();
   });
@@ -158,9 +158,10 @@ const spawnPythonProcess = () => {
     // IPC.on('has_peer_id' , (peer_id) => {
     // socket.emit('connect_to_peer', data=peer_id)
     // })
-    
+
     ipcMain.on('set_peer_id', (event, peer_id) => {
-      console.log(peer_id);
+      console.log(`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`);
+      socket.emit('connect_to_peer', peer_id);
     }); 
     
     // 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
