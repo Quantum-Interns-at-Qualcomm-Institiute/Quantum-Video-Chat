@@ -1,16 +1,19 @@
-from dotenv import dotenv_values
 from client.client import Client, SocketClient
 from client.api import ClientAPI
 from client.utils import Endpoint
 import socket
-
+import json
 import sys
 
 import time
 
-config = dotenv_values(".env")
+CONFIG = 'python_config.json'
 
 if __name__ == "__main__":
+  config = None
+  with open(CONFIG) as json_data:
+    config = json.load(json_data)
+
   client = Client(api_endpoint=ClientAPI.DEFAULT_ENDPOINT)
   client.start_api()
   try:
