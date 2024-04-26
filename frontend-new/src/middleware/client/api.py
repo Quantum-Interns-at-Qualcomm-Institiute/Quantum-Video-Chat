@@ -46,7 +46,7 @@ class ClientAPI(Thread):
     # ip = '100.91.70.90'
 
     # TODO: Aaron commented this out because it was breaking stuff when testing python subprocesses of frontend main. Uncomment and fix later?
-    # ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
+    ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
     DEFAULT_ENDPOINT = Endpoint(ip,4000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
