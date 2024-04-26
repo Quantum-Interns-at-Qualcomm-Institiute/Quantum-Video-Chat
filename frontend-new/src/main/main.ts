@@ -108,8 +108,8 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
-      nodeIntegration: true, // Required for direct IPC communication
-      contextIsolation: false, // Required for direct IPC communication
+      nodeIntegration: false, // Required for direct IPC communication
+      contextIsolation: true, // Required for direct IPC communication
     },
   });
 
@@ -148,9 +148,14 @@ const createWindow = async () => {
     const user_id = socket.handshake.headers['user_id'];
     console.log(user_id);
 
+    // Transmit peer_id entered by user (client only) on frontend to the backend
     // IPC.on('has_peer_id' , (peer_id) => {
       // socket.emit('connect_to_peer', data=peer_id)
     // })
+
+    // ipcMain.on('set_peer_id', (event, peer_id) => {
+    //     console.log(peer_id);
+    // });
 
     // 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
     socket.on('stream', (frame) => {
@@ -188,6 +193,10 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    ipcMain.on('set_peer_id', (event, peer_id) => {
+        console.log(peer_id);
+    });
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
