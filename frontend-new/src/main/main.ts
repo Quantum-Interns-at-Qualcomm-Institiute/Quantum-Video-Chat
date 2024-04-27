@@ -128,20 +128,6 @@ const spawnPythonProcess = () => {
   const { spawn } = require('child_process');
   const python = spawn('python3', [`src/middleware/video_chat.py`, [PORT]]);
 
-  python.stdout.on('data', function (data) {
-    // console.log(data);
-    console.log(`(py stdout): ${data.toString()}`);
-    console.log();
-    // dataToSend = data.toString();
-  });
-
-  python.stderr.on('data', function (data) {
-    // console.log(data);
-    console.log(`(py stderr): ${data.toString()}`);
-    console.log();
-    // dataToSend = data.toString();
-  });
-
   // in close event we are sure that stream from child process is closed
   python.on('close', (code) => {
     console.log(`child process close all stdio with code ${code}`);
@@ -150,13 +136,7 @@ const spawnPythonProcess = () => {
   });
 
   io.on('connection', (socket) => {
-    console.log('Received a socket connection from the python child');
     const user_id = socket.handshake.headers['user_id'];
-    console.log(user_id);
-
-    socket.on('message', (message) => {
-      console.log(`(py message): ${message}`);
-    })
 
     ipcMain.on('set_peer_id', (event, peer_id) => {
       console.log(`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`);
@@ -170,9 +150,9 @@ const spawnPythonProcess = () => {
 
       // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
       frameBlob
-      .arrayBuffer()
-      .then((frameBuffer) => {
-        const videoFrame = new VideoFrame(frameBuffer);
+        .arrayBuffer()
+        .then((frameBuffer) => {
+          const videoFrame = new VideoFrame(frameBuffer);
 
         // Send this frame to the other window
         win.webContents.send('frame', videoFrame);
