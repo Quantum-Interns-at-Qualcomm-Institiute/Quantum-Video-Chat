@@ -186,6 +186,9 @@ class Client:
         self.websocket_instance = None
 
         self.gui = None
+        self.start_api()
+        self.connect()
+
 
     #region --- Utils ---
     def authenticate_server(self, sess_token):
@@ -291,7 +294,7 @@ class Client:
         return True
 
 
-    def connect_to_peer(self, peer_id, frontend_socket):
+    def connect_to_peer(self, peer_id):
         """
         Open Socket API. Contact Server /peer_connection with `conn_token` and await connection from peer (authenticated by `conn_token`).
         """
