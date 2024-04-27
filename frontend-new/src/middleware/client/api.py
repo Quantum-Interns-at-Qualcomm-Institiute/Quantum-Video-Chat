@@ -47,8 +47,6 @@ class ClientAPI(Thread):
         if prop.family == 2:
             ip = prop.address
 
-    # TODO: Aaron commented this out because it was breaking stuff when testing python subprocesses of frontend main. Uncomment and fix later?
-    # ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
     DEFAULT_ENDPOINT = Endpoint(ip,4000) # TODO: Read from config, maybe?
 
     app = Flask(__name__)
