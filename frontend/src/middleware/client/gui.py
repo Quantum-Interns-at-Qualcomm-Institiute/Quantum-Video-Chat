@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import tkinter as tk
 from typing import Callable, Any
 from threading import Frame, messagebox, Label, Entry, Button, TOP, BOTTOM, LEFT, RIGHT, END, YES, X
 
@@ -38,16 +39,16 @@ class Question:
 # region --- GUI Interface ---
 
 
-class GUIInterface(ABC):  # TODO: Potentially subclass Thread if necessary to avoid blocking
+class GUIInterface(ABC):  # TODO: Potentially subclass Thread to avoid blocking
 
     def __init__(self):
-        self.root = Tk()
+        self.root = tk()
         self.root.protocol("WM_DELETE_WINDOW", self.quit)
         self.quit_message = None
         self.quit_flag = False
         self.ready_flag = False
 
-        # Resolves bug in which Tk can only take focus after alt-tabbing if an Alert is displayed.
+        # Resolves bug where Tk can only focus after alt-tab if Alert displayed
         self.root.update_idletasks()
 
     def set_ready_flag(self, state: bool):
