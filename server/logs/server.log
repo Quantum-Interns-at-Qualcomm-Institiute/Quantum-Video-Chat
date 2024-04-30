@@ -8092,3 +8092,61 @@ AttributeError: type object 'SocketAPI' has no attribute 'client'
 [15:55:11] (INFO) Server.__init__: Intializing server with API Endpoint http://100.64.90.101:5000
 [15:55:11] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.64.90.101:5000.
 [15:55:11] (INFO) ServerAPI.start: Starting Server API at http://100.64.90.101:5000.
+[15:50:54] (INFO) Server.__init__: Intializing server with API Endpoint http://100.82.16.190:5000
+[15:50:54] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.82.16.190:5000.
+[15:50:54] (INFO) ServerAPI.start: Starting Server API at http://100.82.16.190:5000.
+[15:52:15] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:52:15] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.82.16.190:4000.
+[15:52:15] (DEBUG) utils.user_manager.generate_token: Generating token for User 4f43a.
+[15:52:15] (DEBUG) UserManager.add_user: Added User 4f43a with session token '82361ab97baed8fbfe18de9667255367e6176c4542db004632a9f0174522b553'.
+[15:52:15] (INFO) Server.add_user: User 4f43a added with sess_token '82361ab97baed8fbfe18de9667255367e6176c4542db004632a9f0174522b553'.
+[15:55:22] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:55:22] (INFO) ServerAPI.kill: Killing Server API.
+[15:55:22] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:03:08] (INFO) Server.__init__: Intializing server with API Endpoint http://100.82.16.190:5000
+[16:03:08] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.82.16.190:5000.
+[16:03:08] (INFO) ServerAPI.start: Starting Server API at http://100.82.16.190:5000.
+[16:03:44] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:03:44] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.82.16.190:4001.
+[16:03:44] (DEBUG) utils.user_manager.generate_token: Generating token for User ef2b5.
+[16:03:44] (DEBUG) UserManager.add_user: Added User ef2b5 with session token '0bfd8936ab8406bb66fcf880837038f7fc86cf57ee79625508a50b5ff8870d45'.
+[16:03:44] (INFO) Server.add_user: User ef2b5 added with sess_token '0bfd8936ab8406bb66fcf880837038f7fc86cf57ee79625508a50b5ff8870d45'.
+[16:03:53] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[16:03:53] (INFO) ServerAPI.kill: Killing Server API.
+[16:03:53] (INFO) __main__.<module>: Exiting main program execution.
+
+[17:00:48] (INFO) Server.__init__: Intializing server with API Endpoint http://100.82.16.190:5000
+[17:00:48] (INFO) ServerAPI.init: Initializing Server API with endpoint http://100.82.16.190:5000.
+[17:00:48] (INFO) ServerAPI.start: Starting Server API at http://100.82.16.190:5000.
+[17:08:33] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[17:08:33] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.82.16.190:4000.
+[17:08:33] (DEBUG) utils.user_manager.generate_token: Generating token for User 4f43a.
+[17:08:33] (DEBUG) UserManager.add_user: Added User 4f43a with session token '82361ab97baed8fbfe18de9667255367e6176c4542db004632a9f0174522b553'.
+[17:08:33] (INFO) Server.add_user: User 4f43a added with sess_token '82361ab97baed8fbfe18de9667255367e6176c4542db004632a9f0174522b553'.
+[17:08:48] (DEBUG) UserManager.get_user: Retrieved user info for User 4f43a.
+[17:08:48] (INFO) Server.get_user: Retrieved user with ID 4f43a.
+[17:08:48] (INFO) ServerAPI.handle_peer_connection: Received request from User 4f43a to connect with User 12345678.
+[17:08:48] (DEBUG) UserManager.get_user: Retrieved user info for User 4f43a.
+[17:08:48] (INFO) Server.get_user: Retrieved user with ID 4f43a.
+[17:08:48] (ERROR) UserManager.get_user: Cannot get user 12345678: User does not exist.
+[17:08:48] (ERROR) Server.get_user: Cannot get user 12345678: User does not exist.
+[17:08:48] (INFO) ServerAPI.handler_with_exceptions: User 12345678 does not exist.
+[17:08:49] (DEBUG) UserManager.get_user: Retrieved user info for User 4f43a.
+[17:08:49] (INFO) Server.get_user: Retrieved user with ID 4f43a.
+[17:08:49] (INFO) ServerAPI.handle_peer_connection: Received request from User 4f43a to connect with User 12345678.
+[17:08:49] (DEBUG) UserManager.get_user: Retrieved user info for User 4f43a.
+[17:08:49] (INFO) Server.get_user: Retrieved user with ID 4f43a.
+[17:08:49] (ERROR) UserManager.get_user: Cannot get user 12345678: User does not exist.
+[17:08:49] (ERROR) Server.get_user: Cannot get user 12345678: User does not exist.
+[17:08:49] (INFO) ServerAPI.handler_with_exceptions: User 12345678 does not exist.
+[17:15:10] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[17:15:10] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.82.16.190:4000.
+[17:15:10] (DEBUG) utils.user_manager.generate_token: Generating token for User b0331.
+[17:15:10] (DEBUG) UserManager.add_user: Added User b0331 with session token 'e0fcce8aac2d5fc492d58461d79db1dda8f05c56bc48785aebb39421afe920e3'.
+[17:15:10] (INFO) Server.add_user: User b0331 added with sess_token 'e0fcce8aac2d5fc492d58461d79db1dda8f05c56bc48785aebb39421afe920e3'.
+[17:22:27] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[17:22:27] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://100.82.16.190:4000.
+[17:22:27] (DEBUG) utils.user_manager.generate_token: Generating token for User ff166.
+[17:22:27] (DEBUG) UserManager.add_user: Added User ff166 with session token '590a016a640d7c9c7417985ea8ee18c98925a77a6a5484f4cdefd1a640869b43'.
+[17:22:27] (INFO) Server.add_user: User ff166 added with sess_token '590a016a640d7c9c7417985ea8ee18c98925a77a6a5484f4cdefd1a640869b43'.
