@@ -2,21 +2,12 @@ from abc import ABC, abstractmethod
 from bitarray import bitarray
 import os
 import string
-import logging
-import secrets
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
-from Crypto.Random import get_random_bytes
-
-# Initialize logging
-# logging.basicConfig(filename='encryption.log', level=logging.DEBUG,
-#                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# Kill logging
-# logging.basicConfig(filename='/dev/null', level=logging.DEBUG,
-#                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# logger = logging.getLogger(__name__)
 
 # Encryption Schemes
+
+
 class EncryptionScheme(ABC):
     @abstractmethod
     def encrypt(self, data, key):
@@ -27,14 +18,15 @@ class EncryptionScheme(ABC):
     def decrypt(self, data, key):
         """Decrypt the data using the provided key."""
         pass
-    
+
     @abstractmethod
     def get_name(self):
         """Returns the Encryption Scheme's name."""
         pass
 
+
 class XOREncryption(EncryptionScheme):
-    
+
     def __init__(self):
         self.name = "XOR"
 
@@ -44,37 +36,38 @@ class XOREncryption(EncryptionScheme):
         for bit1, bit2 in zip(data, key):
             result.append(bit1 ^ bit2)
         return result
-    
+
     # data and key are bit arrays with same length
     def decrypt(self, data, key):
         result = bitarray()
         for bit1, bit2 in zip(data, key):
             result.append(bit1 ^ bit2)
         return result
-    
+
     def get_name(self):
         return self.name
+
 
 class DebugEncryption(EncryptionScheme):
     def __init__(self):
         self.name = "Debug"
-        
+
     def encrypt(self, data, key):
         return data
-    
+
     def decrypt(self, data, key):
         return data
-    
+
     def get_name(self):
         return self.name
-    
-import numpy as np
+
+
 class AESEncryption(EncryptionScheme):
     def __init__(self, bits=128):
         self.bits = bits
         self.name = f"AES-{bits}"
         self.results = []
-        
+
     # data and key are bit arrays
     # using AES-CBC
     def encrypt(self, data, key):
@@ -83,9 +76,8 @@ class AESEncryption(EncryptionScheme):
         data = pad(data, AES.block_size)
         cipheredData = cipher.encrypt(data)
         result_data = cipheredData
-        result_iv = cipher.iv
         return result_data
-    
+
     # data and key are bit arrays
     # data contains iv and encrypted data
     def decrypt(self, data, key):
@@ -97,9 +89,10 @@ class AESEncryption(EncryptionScheme):
         decrypted = unpad(decrypted, AES.block_size)
         result = decrypted
         return result
-    
+
     def get_name(self):
         return self.name
+
 
 class EncryptionFactory:
     def create_encryption_scheme(self, type) -> EncryptionScheme:
@@ -114,13 +107,14 @@ class EncryptionFactory:
 
     def __enter__(self):
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 # Key Generation
 
+
 class KeyGenerator(ABC):
-    
+
     @abstractmethod
     def generate_key(self, *args, **kwargs):
         """Generate a key, either randomly or preset."""
@@ -130,23 +124,24 @@ class KeyGenerator(ABC):
     def get_key(self):
         """Return the generated key."""
         pass
-    
+
+
 class DebugKeyGenerator(KeyGenerator):
     def __init__(self):
-            self.key: bitarray = bitarray()
-            self.key_length = 0
-            
+        self.key: bitarray = bitarray()
+        self.key_length = 0
+
     def speficied_keylength(self, length):
         self.key_length = length
         # Default debug key is alternating 1 and 0
         self.key = bitarray([i % 2 for i in range(self.key_length)])
-        
+
     def specified_key(self, key):
         bit_array = bitarray()
-        if type(key) == bitarray:
+        if isinstance(key, bitarray):
             bit_array = key
             # logger.log(f"Now using key ${key}")
-        elif type(key) == string:
+        elif isinstance(key, string):
             encoded_bytes = key.encode('utf-8')
             bit_array.frombytes(encoded_bytes)
         else:
@@ -157,44 +152,50 @@ class DebugKeyGenerator(KeyGenerator):
 
     # def generate_key(self, key_length):
     #     return self.specified_keylength(key_length)
-        
-    def generate_key(self, key = None, key_length = 0):
+
+    def generate_key(self, key=None, key_length=0):
         if key is not None:
             self.specified_key(self, key)
-            
+
         elif key_length != 0:
             self.speficied_keylength(key_length)
-        
+
         else:
             raise ValueError("Invalid parameters")
-        
+
     def get_key(self):
         return self.key
-    
+
+
 class RandomKeyGenerator(KeyGenerator):
-    def __init__(self, key_length = 0):
+    def __init__(self, key_length=0):
         self.key_length = key_length
         self.key: bitarray = None
-        
-    def generate_key(self, key_length = 0):
+
+    def generate_key(self, key_length=0):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
             # logger.error(f"Try to make key of length {key_length}")
             raise ValueError("Error, please make key length nonzero")
-        self.key = bitarray([int(b) for b in format(int.from_bytes(os.urandom((self.key_length + 7) // 8), 'big'), f'0{self.key_length}b')[:self.key_length]])
+        self.key = bitarray([int(b) for b in format(int.from_bytes(os.urandom(
+            (self.key_length + 7) // 8), 'big'),
+            f'0{self.key_length}b')[:self.key_length]])
 
     def get_key(self):
         return self.key
-    
+
+
 class FileKeyGenerator(KeyGenerator):
-    def __init__(self, file_name = os.path.dirname(__file__) + "/key.bin", key_length = 0):
+    def __init__(self,
+                 file_name=os.path.dirname(__file__) + "/key.bin",
+                 key_length=0):
         self.key_length = key_length
         self.key: bitarray = None
         self.file_name = file_name
         self.file = open(self.file_name, "rb")
-        
-    def generate_key(self, key_length = 0):
+
+    def generate_key(self, key_length=0):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
@@ -205,6 +206,7 @@ class FileKeyGenerator(KeyGenerator):
 
     def get_key(self):
         return self.key
+
 
 class KeyGeneratorFactory:
 
@@ -220,9 +222,10 @@ class KeyGeneratorFactory:
 
     def __enter__(self):
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
 
 class KeyExchange(ABC):
 
@@ -230,9 +233,8 @@ class KeyExchange(ABC):
     def get_key(self):
         """Generate a key for exchange."""
         pass
-    
+
     @abstractmethod
     def send_key(self):
         """Send the generated key."""
         pass
-        
