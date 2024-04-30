@@ -85,7 +85,6 @@ class BroadcastFlaskNamespace(FlaskNamespace):
 
 
 class AVClientNamespace(ClientNamespace):
-    # frontend_socket: socketio.
 
     def __init__(self, namespace, cls: type, av,
                  frontend_socket: socketio.Client):
@@ -96,7 +95,7 @@ class AVClientNamespace(ClientNamespace):
         print("created AVClientNamespace", self.cls, self.av)
 
     def on_connect(self):
-        print("on_connect")
+        pass
 
     def on_message(self, user_id, msg):
         pass
@@ -117,7 +116,6 @@ class KeyClientNamespace(AVClientNamespace):
 
         async def gen_keys():
             await asyncio.sleep(2)
-            print('send_keys')
             while True:
                 self.av.key_gen.generate_key(key_length=128)
                 key = self.key_idx.to_bytes(
@@ -178,8 +176,7 @@ class AudioClientNamespace(AVClientNamespace):
 
             cur_key_idx, key = self.av.key
 
-            key_idx = int.from_bytes(msg[:4], 'big')
-            if (key_idx != cur_key_idx):
+            if (int.from_bytes(msg[:4], 'big') != cur_key_idx):
                 return
             data = msg[4:]
 
@@ -253,8 +250,9 @@ class VideoClientNamespace(AVClientNamespace):
 
             data = self.av.encryption.decrypt(data, key)
 
-            data = self.output.run(input=data, capture_stdout=True, quiet=True)[
-                0]  # Data is now an ISMV format file in memory
+            # Data is now an ISMV format file in memory
+            data = self.output.run(input=data, capture_stdout=True,
+                                   quiet=True)[0]
 
             super().frontend_socket.emit(data, {'type': 'stream'})
 
@@ -274,7 +272,8 @@ class AV:
         '/audio': (BroadcastFlaskNamespace, AudioClientNamespace),
     }
 
-    def __init__(self, cls, frontend_socket: socketio.Client, encryption: EncryptScheme = EncryptionFactory().create_encryption_scheme("AES")):
+    def __init__(self, cls, frontend_socket: socketio.Client,
+                 encryption: EncryptScheme = EncryptionFactory().create_encryption_scheme("AES")):
         self.cls = cls
 
         self.key_gen = KeyGenFactory().create_key_generator("FILE")
@@ -300,7 +299,6 @@ class AV:
             cls, self, frontend_socket)
 
         async def gen_keys():
-            print('send_keys')
             key_idx = 0
             while True:
                 self.key_gen.generate_key(key_length=128)

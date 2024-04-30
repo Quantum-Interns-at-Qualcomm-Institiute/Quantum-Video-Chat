@@ -71,7 +71,6 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # using AES-CBC
     def encrypt(self, data, key):
-        # print(len(data))
         cipher = AES.new(key, AES.MODE_CBC, iv=b'0'*16)
         data = pad(data, AES.block_size)
         cipheredData = cipher.encrypt(data)
@@ -81,7 +80,6 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # data contains iv and encrypted data
     def decrypt(self, data, key):
-        # print(len(data))
         iv = b'0'*16
         cipheredData = data
         cipher = AES.new(key, AES.MODE_CBC, iv)
@@ -140,18 +138,13 @@ class DebugKeyGenerator(KeyGenerator):
         bit_array = bitarray()
         if isinstance(key, bitarray):
             bit_array = key
-            # logger.log(f"Now using key ${key}")
         elif isinstance(key, string):
             encoded_bytes = key.encode('utf-8')
             bit_array.frombytes(encoded_bytes)
         else:
-            # logger.error("")
             raise ValueError("Error, only bitarray or string allowed")
         self.key = bit_array
         self.length = len(key)
-
-    # def generate_key(self, key_length):
-    #     return self.specified_keylength(key_length)
 
     def generate_key(self, key=None, key_length=0):
         if key is not None:
@@ -176,7 +169,6 @@ class RandomKeyGenerator(KeyGenerator):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
-            # logger.error(f"Try to make key of length {key_length}")
             raise ValueError("Error, please make key length nonzero")
         self.key = bitarray([int(b) for b in format(int.from_bytes(os.urandom(
             (self.key_length + 7) // 8), 'big'),
@@ -199,7 +191,6 @@ class FileKeyGenerator(KeyGenerator):
         if key_length:
             self.key_length = key_length
         elif self.key_length < 1:
-            # logger.error(f"Try to make key of length {key_length}")
             raise ValueError("Error, please make key length nonzero")
         self.key = bitarray()
         self.key.frombytes(self.file.read((key_length+7)//8))
