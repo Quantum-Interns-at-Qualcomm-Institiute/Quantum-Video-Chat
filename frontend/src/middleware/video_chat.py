@@ -1,8 +1,9 @@
 from client.client import Client
 from client.api import ClientAPI
-from client.utils import Endpoint
+from client.endpoint import Endpoint
 import socketio
 import json
+import sys
 
 DEV = True
 CONFIG = f'src/middleware/{'dev_' if DEV else ''}python_config.json'

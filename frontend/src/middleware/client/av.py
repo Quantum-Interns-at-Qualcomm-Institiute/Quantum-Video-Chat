@@ -4,17 +4,13 @@ import pyaudio
 import ffmpeg
 import cv2
 
-from client.utils import ClientState
 from flask_socketio import send
 from flask_socketio.namespace import Namespace as FlaskNamespace
 from socketio import ClientNamespace
 from threading import Thread
 
-from client.utils.encryption import KeyGenerators, KeyGenFactory, EncryptSchemes, EncryptFactory
-
-
-def display_message(user_id, msg):
-    print(f"({user_id}): {msg}")
+from client.encryption import KeyGenerators, KeyGenFactory, EncryptSchemes, EncryptFactory
+from client.util import ClientState, display_message
 
 # region --- Tests ---
 
