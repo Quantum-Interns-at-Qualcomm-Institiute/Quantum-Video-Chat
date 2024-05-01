@@ -9,7 +9,7 @@ from gevent.pywsgi import WSGIServer  # For asynchronous handling
 
 # region --- Logging ---
 import logging
-logging.basicConfig(filename='./client/logs/api.log', level=logging.DEBUG,
+logging.basicConfig(filename='src/middleware/logs/api.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
