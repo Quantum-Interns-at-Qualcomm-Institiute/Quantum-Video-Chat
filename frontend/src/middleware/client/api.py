@@ -1,4 +1,5 @@
 import psutil
+import platform
 from functools import total_ordering
 from enum import Enum
 from client.utils import Errors, get_parameters, Endpoint
@@ -38,7 +39,9 @@ class APIState(Enum):
 
 class ClientAPI(Thread):
     # Try to get default en0 address to start client API endpoint on
-    for prop in psutil.net_if_addrs()['en0']:
+    key = 'Wi-Fi' if platform.system() == 'Windows' else 'en0'
+
+    for prop in psutil.net_if_addrs()[key]:
         if prop.family == 2:
             ip = prop.address
 
@@ -59,7 +62,8 @@ class ClientAPI(Thread):
     def verify_server(cls, sess_token):
         if type(sess_token) is str:
             return True
-        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{sess_token}' from server.")
+        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{
+                                             sess_token}' from server.")
 
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
@@ -132,9 +136,11 @@ class ClientAPI(Thread):
 
         cls.logger.info("Starting Client API.")
         if cls.state == APIState.NEW:
-            raise Errors.SERVERERROR.value("Cannot start API before initialization.")
+            raise Errors.SERVERERROR.value(
+                "Cannot start API before initialization.")
         if cls.state == APIState.LIVE:
-            raise Errors.SERVERERROR.value("Cannot start API: already running.")
+            raise Errors.SERVERERROR.value(
+                "Cannot start API: already running.")
 
         while True:
             try:

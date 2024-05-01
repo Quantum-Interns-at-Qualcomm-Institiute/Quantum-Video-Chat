@@ -125,11 +125,11 @@ const spawnPythonProcess = () => {
 	const { spawn } = require("node:child_process");
 	const python = spawn("python3", ['src/middleware/video_chat.py', [PORT]]);
 
-	// in close event we are sure that stream from child process is closed
-	python.on("close", (code: string | null) => {
-		console.log(`child process close all stdio with code ${code}`);
-		// send data to browser
-	});
+	// // in close event we are sure that stream from child process is closed
+	// python.on("close", (code: string | null) => {
+	// 	console.log(`child process close all stdio with code ${code}`);
+	// 	// send data to browser
+	// });
 
 	io.on("connection", (socket: Socket) => {
 		const user_id = socket.handshake.headers.user_id;
