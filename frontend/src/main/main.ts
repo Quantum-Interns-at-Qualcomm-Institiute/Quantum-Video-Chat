@@ -121,9 +121,9 @@ const spawnPythonProcess = () => {
 	const PORT = 5001;
 	const io = new Server(PORT);
 
-	console.log("Spawning Python Child Process...");
-	const { spawn } = require("node:child_process");
-	const python = spawn("python3", ['src/middleware/video_chat.py', [PORT]]);
+	// console.log("Spawning Python Child Process...");
+	// const { spawn } = require("node:child_process");
+	// const python = spawn("python3", ['src/middleware/video_chat.py', [PORT]]);
 
 	// // in close event we are sure that stream from child process is closed
 	// python.on("close", (code: string | null) => {

@@ -29,7 +29,7 @@ export default function Session(props) {
     // })
 
     const location = useLocation();
-    const code = location.pathname.slice(-8);
+    const code = location.pathname.slice(-5);
 
     // const startedSession = useRef(false);
     const [selfSrc, setSelfSrc] = useState(null);

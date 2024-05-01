@@ -201,10 +201,10 @@ class ClientAPI(Thread):
         try:
             res = cls.client.handle_peer_connection(
                 peer_id, socket_endpoint, conn_token)
-        except Exception:
+        except Exception as e:
             # TODO: Why did the connection fail?
             # TODO: Move into init
-            cls.logger.info("Responding with 500")
+            cls.logger.info(e)
             return jsonify({"error_code": "500",
                             "error_message": "Internal Server Error",
                             "details": "Connectioned failed"}), 500
