@@ -1,14 +1,15 @@
-from abc import ABC, abstractmethod
-from bitarray import bitarray
 import os
 import string
+from abc import ABC, abstractmethod
+from bitarray import bitarray
+from enum import Enum
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
 # Encryption Schemes
 
 
-class EncryptionScheme(ABC):
+class AbstractEncryptionScheme(ABC):
     @abstractmethod
     def encrypt(self, data, key):
         """Encrypt the data using the provided key."""
@@ -25,7 +26,7 @@ class EncryptionScheme(ABC):
         pass
 
 
-class XOREncryption(EncryptionScheme):
+class XOREncryption(AbstractEncryptionScheme):
 
     def __init__(self):
         self.name = "XOR"
@@ -48,7 +49,7 @@ class XOREncryption(EncryptionScheme):
         return self.name
 
 
-class DebugEncryption(EncryptionScheme):
+class DebugEncryption(AbstractEncryptionScheme):
     def __init__(self):
         self.name = "Debug"
 
@@ -62,7 +63,7 @@ class DebugEncryption(EncryptionScheme):
         return self.name
 
 
-class AESEncryption(EncryptionScheme):
+class AESEncryption(AbstractEncryptionScheme):
     def __init__(self, bits=128):
         self.bits = bits
         self.name = f"AES-{bits}"
@@ -71,7 +72,7 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # using AES-CBC
     def encrypt(self, data, key):
-        cipher = AES.new(key, AES.MODE_CBC, iv=b'0'*16)
+        cipher = AES.new(key, AES.MODE_CBC, iv=b'0' * 16)
         data = pad(data, AES.block_size)
         cipheredData = cipher.encrypt(data)
         result_data = cipheredData
@@ -80,7 +81,7 @@ class AESEncryption(EncryptionScheme):
     # data and key are bit arrays
     # data contains iv and encrypted data
     def decrypt(self, data, key):
-        iv = b'0'*16
+        iv = b'0' * 16
         cipheredData = data
         cipher = AES.new(key, AES.MODE_CBC, iv)
         decrypted = cipher.decrypt(cipheredData)
@@ -92,14 +93,17 @@ class AESEncryption(EncryptionScheme):
         return self.name
 
 
-class EncryptionFactory:
-    def create_encryption_scheme(self, type) -> EncryptionScheme:
-        if type == "AES":
-            return AESEncryption()
-        elif type == "XOR":
-            return XOREncryption()
-        elif type == "DEBUG":
-            return DebugEncryption()
+class EncryptSchemes(Enum):
+    ABSTRACT = AbstractEncryptionScheme
+    AES = AESEncryption
+    DEBUG = DebugEncryption
+    XOR = XOREncryption
+
+
+class EncryptFactory:
+    def create_encrypt_scheme(self, type) -> AbstractEncryptionScheme:
+        if type in EncryptSchemes:
+            return EncryptSchemes[type]()
         else:
             raise ValueError("Invalid encryption scheme type")
 
@@ -111,7 +115,7 @@ class EncryptionFactory:
 # Key Generation
 
 
-class KeyGenerator(ABC):
+class AbstractKeyGenerator(ABC):
 
     @abstractmethod
     def generate_key(self, *args, **kwargs):
@@ -124,7 +128,7 @@ class KeyGenerator(ABC):
         pass
 
 
-class DebugKeyGenerator(KeyGenerator):
+class DebugKeyGenerator(AbstractKeyGenerator):
     def __init__(self):
         self.key: bitarray = bitarray()
         self.key_length = 0
@@ -160,7 +164,7 @@ class DebugKeyGenerator(KeyGenerator):
         return self.key
 
 
-class RandomKeyGenerator(KeyGenerator):
+class RandomKeyGenerator(AbstractKeyGenerator):
     def __init__(self, key_length=0):
         self.key_length = key_length
         self.key: bitarray = None
@@ -178,7 +182,7 @@ class RandomKeyGenerator(KeyGenerator):
         return self.key
 
 
-class FileKeyGenerator(KeyGenerator):
+class FileKeyGenerator(AbstractKeyGenerator):
     def __init__(self,
                  file_name=os.path.dirname(__file__) + "/key.bin",
                  key_length=0):
@@ -193,21 +197,24 @@ class FileKeyGenerator(KeyGenerator):
         elif self.key_length < 1:
             raise ValueError("Error, please make key length nonzero")
         self.key = bitarray()
-        self.key.frombytes(self.file.read((key_length+7)//8))
+        self.key.frombytes(self.file.read((key_length + 7) // 8))
 
     def get_key(self):
         return self.key
 
 
-class KeyGeneratorFactory:
+class KeyGenerators(Enum):
+    ABSTRACT = AbstractKeyGenerator
+    FILE = FileKeyGenerator
+    RANDOM = RandomKeyGenerator
+    DEBUG = DebugKeyGenerator
 
-    def create_key_generator(self, type) -> KeyGenerator:
-        if type == "DEBUG":
-            return DebugKeyGenerator()
-        elif type == "RANDOM":
-            return RandomKeyGenerator()
-        elif type == "FILE":
-            return FileKeyGenerator()
+
+class KeyGenFactory:
+
+    def create_key_generator(self, type) -> AbstractKeyGenerator:
+        if type in KeyGenerators:
+            return KeyGenerators[type]()
         else:
             raise ValueError("Invalid encryption scheme type")
 
@@ -218,7 +225,7 @@ class KeyGeneratorFactory:
         pass
 
 
-class KeyExchange(ABC):
+class AbstractKeyExchange(ABC):
 
     @abstractmethod
     def get_key(self):
