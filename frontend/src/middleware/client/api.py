@@ -1,7 +1,7 @@
 import psutil
 from functools import total_ordering
 from enum import Enum
-from client.utils import ServerError, BadGateway, BadRequest, BadAuthentication, get_parameters, remove_last_period, Endpoint
+from client.utils import Errors, get_parameters, Endpoint
 from flask import Flask, jsonify, request
 from threading import Thread
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
@@ -37,13 +37,12 @@ class APIState(Enum):
 
 
 class ClientAPI(Thread):
-    ip = '127.0.0.1'
-
+    # Try to get default en0 address to start client API endpoint on
     for prop in psutil.net_if_addrs()['en0']:
         if prop.family == 2:
             ip = prop.address
 
-    DEFAULT_ENDPOINT = Endpoint(ip, 4000)
+    DEFAULT_ENDPOINT = Endpoint(ip if ip else '127.0.0.1', 4000)
 
     app = Flask(__name__)
     http_server = None
@@ -60,8 +59,10 @@ class ClientAPI(Thread):
     def verify_server(cls, sess_token):
         if type(sess_token) is str:
             return True
-        raise BadAuthentication(f"Unrecognized session token '{
-                                sess_token}' from server.")
+        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{sess_token}' from server.")
+
+    def remove_last_period(text: str):
+        return text[0:-1] if text[-1] == "." else text
 
     def HandleAuthentication(endpoint_handler):
         """
@@ -77,7 +78,7 @@ class ClientAPI(Thread):
         def handler_with_authentication(cls, *args, **kwargs):
             sess_token, = get_parameters(request.json, 'sess_token')
             if not cls.verify_server(sess_token):
-                raise BadAuthentication(
+                raise Errors.BADAUTHENTICATION.value(
                     f"Authentication failed for server with token '{sess_token}'.")
 
             return endpoint_handler(cls, *args, **kwargs)
@@ -94,27 +95,18 @@ class ClientAPI(Thread):
             cls = ClientAPI
             try:
                 return endpoint_handler(cls, *args, **kwargs)
-            except BadAuthentication as e:
-                cls.logger.info(f"Authentication failed for server at {
-                                endpoint_handler.__name__}:\n\t{str(e)}")
-                return jsonify({"error_code": "403",
-                                "error_message": "Forbidden",
-                                "details": remove_last_period(e)}), 403
-            except BadRequest as e:
-                cls.logger.info(str(e))
-                return jsonify({"error_code": "400",
-                                "error_message": "Bad Request",
-                                "details": remove_last_period(e)}), 400
-            except ServerError as e:
-                cls.logger.error(str(e))
-                return jsonify({"error_code": "500",
-                                "error_message": "Interal Server Error",
-                                "details": remove_last_period(e)}), 500
-            except BadGateway as e:
-                cls.logger.info(str(e))
-                return jsonify({"error_code": "502",
-                                "error_message": "Bad Gateway",
-                                "details": remove_last_period(e)}), 502
+            except Errors.BADAUTHENTICATION.value as e:
+                return Errors.BADAUTHENTICATION.value.info(cls.remove_last_period(e))
+            except Errors.BADREQUEST.value as e:
+                return Errors.BADREQUEST.value.info(cls.remove_last_period(e))
+            except Errors.SERVERERROR.value as e:
+                return Errors.SERVERERROR.value.info(cls.remove_last_period(e))
+            except Errors.BADGATEWAY.value as e:
+                return Errors.BADGATEWAY.value.info(cls.remove_last_period(e))
+            except Exception as e:
+                return Errors.UNKNOWNERROR.value.info(cls.remove_last_period(e))
+
+        # Makes it to trace is correct
         handler_with_exceptions.__name__ = endpoint_handler.__name__
         return handler_with_exceptions
     # endregion
@@ -126,7 +118,8 @@ class ClientAPI(Thread):
         cls.logger.info(f"Initializing Client API with endpoint {
                         client.api_endpoint}.")
         if cls.state == APIState.LIVE:
-            raise ServerError("Cannot reconfigure API during server runtime.")
+            raise Errors.SERVERERROR.value(
+                "Cannot reconfigure API during server runtime.")
 
         cls.client = client
         cls.endpoint = client.api_endpoint
@@ -139,9 +132,9 @@ class ClientAPI(Thread):
 
         cls.logger.info("Starting Client API.")
         if cls.state == APIState.NEW:
-            raise ServerError("Cannot start API before initialization.")
+            raise Errors.SERVERERROR.value("Cannot start API before initialization.")
         if cls.state == APIState.LIVE:
-            raise ServerError("Cannot start API: already running.")
+            raise Errors.SERVERERROR.value("Cannot start API: already running.")
 
         while True:
             try:
@@ -194,7 +187,7 @@ class ClientAPI(Thread):
         peer_id, socket_endpoint, conn_token = get_parameters(
             request.json, 'peer_id', 'socket_endpoint', 'conn_token')
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Received instruction to connect to peer {peer_id} at {
+        cls.logger.info(f"Instructied to connect to peer {peer_id} at {
                         socket_endpoint} with token '{conn_token}'.")
 
         try:
@@ -202,6 +195,7 @@ class ClientAPI(Thread):
                 peer_id, socket_endpoint, conn_token)
         except Exception:
             # TODO: Why did the connection fail?
+            # TODO: Move into init
             cls.logger.info("Responding with 500")
             return jsonify({"error_code": "500",
                             "error_message": "Internal Server Error",
@@ -218,23 +212,4 @@ class ClientAPI(Thread):
         cls.logger.info("Responding with 200")
         return jsonify({'status_code': '200'}), 200
     # endregion
-# endregion
-
-
-# region --- Main ---
-# TODO: Add Socket API; need a way to choose one or the other or both.
-if __name__ == '__main__':
-    from client import Client
-    try:
-        client = Client()
-        client.sess_token = 'abcdefg'
-    except KeyboardInterrupt as e:
-        logger.info("Intercepted Keyboard Interrupt.")
-        ClientAPI.kill()
-        logger.info("Exiting main program execution.\n")
-        exit()
-    except Exception as e:
-        ClientAPI.kill()
-        logger.error("Encountered unexpected exception.\n")
-        raise e
 # endregion
