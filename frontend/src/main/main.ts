@@ -142,7 +142,7 @@ const spawnPythonProcess = () => {
 		});
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		socket.on("stream", (frame: ArrayBuffer) => {
+		socket.on("stream", (frame) => {
 			// TODO: Make linter happy when we convert bytes to blob
 			const frameBlob = new Blob(frame, { type: "plain/text" });
 
