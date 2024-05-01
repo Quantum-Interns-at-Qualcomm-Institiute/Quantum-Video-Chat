@@ -3,7 +3,6 @@ from client.api import ClientAPI
 from client.utils import Endpoint
 import socketio
 import json
-import sys
 
 DEV = True
 CONFIG = f'src/middleware/{'dev_' if DEV else ''}python_config.json'
@@ -24,8 +23,10 @@ if __name__ == "__main__":
             headers={'user_id': client.user_id},
             retry=True)
 
-        handle_conenct_to_peer = frontend_socket.on('connect_to_peer')(
-            lambda data: client.connect_to_peer(data))
+        # TODO: convert back to lambda or not
+        @frontend_socket.on('connect_to_peer')
+        def handle_conenct_to_peer(data):
+            client.connect_to_peer(data)
 
         while True:
             pass
