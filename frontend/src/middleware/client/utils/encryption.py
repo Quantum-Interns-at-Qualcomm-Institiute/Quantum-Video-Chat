@@ -103,7 +103,7 @@ class EncryptSchemes(Enum):
 class EncryptFactory:
     def create_encrypt_scheme(self, type) -> AbstractEncryptionScheme:
         if type in EncryptSchemes:
-            return EncryptSchemes[type]()
+            return EncryptSchemes[type].value()
         else:
             raise ValueError("Invalid encryption scheme type")
 
@@ -214,7 +214,7 @@ class KeyGenFactory:
 
     def create_key_generator(self, type) -> AbstractKeyGenerator:
         if type in KeyGenerators:
-            return KeyGenerators[type]()
+            return KeyGenerators[type].value()
         else:
             raise ValueError("Invalid encryption scheme type")
 
