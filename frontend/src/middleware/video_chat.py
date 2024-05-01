@@ -5,7 +5,7 @@ import socketio
 import json
 import sys
 
-DEV = False
+DEV = True
 CONFIG = f'src/middleware/{'dev_' if DEV else ''}python_config.json'
 
 if __name__ == "__main__":
