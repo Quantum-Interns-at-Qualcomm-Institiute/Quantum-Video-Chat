@@ -1,11 +1,13 @@
 from client.api import ClientAPI
-from client.utils import Endpoint, Errors, get_parameters, ClientState
+from client.endpoint import Endpoint
+from client.errors import Errors
+from client.util import get_parameters, ClientState
+from client.av import AV
 import requests
 import socketio
 
 # region --- Logging --- # TODO: Add internal logger to Client class
 import logging
-from client.utils.av import AV
 
 # XXX: Switch back to level=logging.DEBUG
 logging.basicConfig(filename='./src/middleware/logs/client.log',

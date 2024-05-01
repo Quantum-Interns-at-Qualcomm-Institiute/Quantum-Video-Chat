@@ -2,7 +2,9 @@ import psutil
 import platform
 from functools import total_ordering
 from enum import Enum
-from client.utils import Errors, get_parameters, Endpoint
+from client.errors import Errors
+from client.endpoint import Endpoint
+from client.util import get_parameters
 from flask import Flask, jsonify, request
 from threading import Thread
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
