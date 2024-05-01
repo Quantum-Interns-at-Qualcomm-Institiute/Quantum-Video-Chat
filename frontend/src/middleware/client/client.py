@@ -1,5 +1,5 @@
 from client.api import ClientAPI
-from client.utils import Endpoint, ParameterError, get_parameters, ClientState
+from client.utils import Endpoint, Errors, get_parameters, ClientState
 import requests
 import socketio
 
@@ -16,25 +16,6 @@ logger = logging.getLogger(__name__)
 # endregion
 
 # TODO: Trim down this file
-
-# region --- Utils ---
-
-
-class UnexpectedResponse(Exception):
-    pass
-
-
-class ConnectionRefused(UnexpectedResponse):
-    pass
-
-
-class InternalClientError(Exception):
-    pass
-
-
-# endregion
-
-
 # region --- Socket Client ---
 
 
@@ -112,11 +93,12 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
 
     @classmethod
     def connect(cls):
-        cls.logger.info(f"Attempting WebSocket connection to {cls.endpoint} with connection token '{cls.conn_token}'.")
+        cls.logger.info(f"Attempting WebSocket connection to {
+                        cls.endpoint} with connection token '{cls.conn_token}'.")
         try:
             ns = sorted(list(cls.namespaces.keys()))
             cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(
-                cls.user_id, cls.conn_token), namespaces=['/']+ns)
+                cls.user_id, cls.conn_token), namespaces=['/'] + ns)
             for name in ns:
                 cls.sio.register_namespace(cls.namespaces[name])
         except socketio.exceptions.ConnectionError as e:
@@ -198,7 +180,7 @@ class Client:
     def set_server_endpoint(self, endpoint):
         if self.state >= ClientState.LIVE:
             # TODO: use InvalidState
-            raise InternalClientError(
+            raise Errors.INTERNALCLIENTERROR.value(
                 "Cannot change server endpoint after connection already established.")
 
         self.server_endpoint = Endpoint(*endpoint)
@@ -207,7 +189,7 @@ class Client:
     def set_api_endpoint(self, endpoint):
         if self.state >= ClientState.LIVE:
             # TODO: use InvalidState
-            raise InternalClientError(
+            raise Errors.INTERNALCLIENTERROR.value(
                 "Cannot change API endpoint after connection already established.")
 
         self.api_endpoint = Endpoint(*endpoint)
@@ -224,21 +206,21 @@ class Client:
         try:
             response = requests.post(str(endpoint), json=json)
         except requests.exceptions.ConnectionError as e:
-            raise ConnectionRefused(
+            raise Errors.CONNECTIONREFUSED.value(
                 f"Unable to reach Server API at endpoint {endpoint}.")
 
         if response.status_code != 200:
             try:
                 json = response.json()
             except requests.exceptions.JSONDecodeError as e:
-                raise UnexpectedResponse(f"Unexpected Server response at {
-                                         endpoint}: {response.reason}.")
+                raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {
+                    endpoint}: {response.reason}.")
 
             if 'details' in response.json():
-                raise UnexpectedResponse(f"Unexpected Server response at {
-                                         endpoint}: {response.json()['details']}.")
-            raise UnexpectedResponse(f"Unexpected Server response at {
-                                     endpoint}: {response.reason}.")
+                raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {
+                    endpoint}: {response.json()['details']}.")
+            raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {
+                endpoint}: {response.reason}.")
         return response
 
     def kill(self):
@@ -278,17 +260,17 @@ class Client:
         if (self.state >= ClientState.LIVE):
             logger.error(f"Cannot connect to {
                          self.server_endpoint}; already connected.")
-            raise InternalClientError(
+            raise Errors.INTERNALCLIENTERROR.value(
                 f"Cannot connect to {self.server_endpoint}; already connected.")
 
         try:
             response = self.contact_server('/create_user', json={
                 'api_endpoint': tuple(self.api_endpoint)
             })
-        except ConnectionRefused as e:
+        except Errors.CONNECTIONREFUSED.value as e:
             self.logger.error(str(e))
             return False
-        except UnexpectedResponse as e:
+        except Errors.UNEXPECTEDRESPONSE.value as e:
             self.logger.error(str(e))
             raise e
 
@@ -297,11 +279,11 @@ class Client:
                 response.json(), 'user_id', 'sess_token')
             self.logger.info(f"Received user_id '{
                              self.user_id}' and token '{self.sess_token}'.")
-        except ParameterError as e:
+        except Errors.PARAMETERERROR.value as e:
             self.logger.error(f"Server response did not contain both user_id and sess_token at {
                               self.server_endpoint('/create_user')}.")
-            raise UnexpectedResponse(f"Server response did not contain both user_id and sess_token at {
-                                     self.server_endpoint('/create_user')}.")
+            raise Errors.UNEXPECTEDRESPONSE.value(f"Server response did not contain both user_id and sess_token at {
+                self.server_endpoint('/create_user')}.")
 
         self.state = ClientState.LIVE
         print(f"Received user_id {
@@ -323,10 +305,10 @@ class Client:
                 'sess_token': self.sess_token,
                 'peer_id': peer_id,
             })
-        except ConnectionRefused as e:
+        except Errors.CONNECTIONREFUSED.value as e:
             self.logger.error(str(e))
             raise e
-        except UnexpectedResponse as e:
+        except Errors.UNEXPECTEDRESPONSE.value as e:
             self.logger.error(str(e))
             raise e
 
@@ -347,7 +329,7 @@ class Client:
 
     def start_api(self):
         if not self.api_endpoint:
-            raise InternalClientError(
+            raise Errors.INTERNALCLIENTERROR.value(
                 "Cannot start Client API without defined endpoint.")
 
         self.api_instance = ClientAPI.init(self)
@@ -365,7 +347,7 @@ class Client:
 
         """
         if self.state == ClientState.CONNECTED:
-            raise InternalClientError(
+            raise Errors.INTERNALCLIENTERROR.value(
                 f"Cannot attempt peer websocket connection while {self.state}.")
 
         self.logger.info("Polling User")

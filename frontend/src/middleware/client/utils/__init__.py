@@ -1,5 +1,8 @@
 from enum import Enum
 from functools import total_ordering
+from typing import Callable, Union
+
+from flask import jsonify
 
 
 @total_ordering
@@ -16,15 +19,32 @@ class ClientState(Enum):
         return NotImplemented
 
 
-class ServerError(Exception):
+class CustomException(Exception):
+    code = -1
+    message = ""
+
+    def info(cls, details: str):
+        return jsonify({"error_code": cls.code,
+                        "error_message": cls.message,
+                        "details": details
+                        }), cls.code
+
+
+class ServerError(CustomException):
+    code = 500
+    message = "Internal Server Error"
     pass
 
 
-class BadGateway(Exception):
+class BadGateway(CustomException):
+    code = 502
+    message = "Bad Gateway"
     pass
 
 
-class BadRequest(Exception):
+class BadRequest(CustomException):
+    code = 400
+    message = "Bad Request"
     pass
 
 
@@ -36,7 +56,9 @@ class InvalidParameter(ParameterError):
     pass
 
 
-class BadAuthentication(Exception):
+class BadAuthentication(CustomException):
+    code = 403
+    message = "Forbidden"
     pass
 
 
@@ -44,14 +66,40 @@ class UserNotFound(BadAuthentication):
     pass
 
 
-def remove_last_period(string):
-    string = str(string)
-    if string[-1] == ".":
-        return string[0:-1]
-    return string
+class UnexpectedResponse(CustomException):
+    pass
 
 
-def get_parameters(data, *args):
+class ConnectionRefused(UnexpectedResponse):
+    pass
+
+
+class InternalClientError(CustomException):
+    pass
+
+
+class UnknownError(CustomException):
+    code = 0
+    message = "Unknown Exception"
+    pass
+
+
+class Errors(Enum):
+    # TODO: move error codes and messages into here
+    BADREQUEST = BadRequest
+    BADAUTHENTICATION = BadAuthentication
+    SERVERERROR = ServerError
+    BADGATEWAY = BadGateway
+    PARAMETERERROR = ParameterError
+    INVALIDPARAMETER = InvalidParameter
+    USERNOTFOUND = UserNotFound
+    UNEXPECTEDRESPONSE = UnexpectedResponse
+    CONNECTIONREFUSED = ConnectionRefused
+    INTERNALCLIENTERROR = InternalClientError
+    UNKNOWNERROR = UnknownError
+
+
+def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple[str, Callable], None]):
     """
     Returns desired parameters from a collection with optional data validation.
     Validator functions return true iff associated data is valid.
@@ -66,77 +114,72 @@ def get_parameters(data, *args):
     arg : tuple(str, func), optional
         If `data` is a dict
     """
+    def get_from_iterable(data: Union[list, tuple], validators: Union[list, tuple, None]):
+        """
+        Returns desired data from a list or or tuple with optional data validation.
+        Validator functions return true iff associated data is valid.
+
+        Parameters
+        ----------
+        data : list, tuple
+        validators : list, tuple, optional
+            Contains validator functions (or `None`) which return true iff
+            associated data is acceptable. Must match order and length of `data`.
+        """
+        if len(validators) == 0:
+            return (*data,)
+        if len(data) != len(validators):
+            raise Errors.PARAMETERERROR(
+                f"Expected {len(validators)} parameters but received {len(data)}.")
+
+        param_vals = ()
+        for param, validator in zip(data, validators):
+            if not validator:
+                validator = lambda x: not not x
+
+            if not validator(param):
+                raise InvalidParameter("Parameter failed validation.")
+            param_vals += (*param_vals, param)
+        return param_vals
+
+    def get_from_dict(data: dict, *args: Union[str, tuple[str, callable], None]):
+        """
+        Returns desired data from a dict with optional data validation.
+        Validator functions return true iff associated data is valid.
+
+        Parameters
+        ----------
+        data : dict
+        arg : str, optional
+            Key of desired data
+        arg : tuple(str, func), optional
+        """
+        param_vals = ()
+        for arg in args:
+            if isinstance(arg, tuple):
+                param, validator = arg
+            else:
+                param = arg
+                # Truthy/Falsy coersion to bool
+                validator = lambda x: not not x
+
+            if param in data:
+                param_val = data.get(param)
+            else:
+                raise Errors.PARAMETERERROR(f"Expected parameter '{
+                                            param}' not received.")
+
+            if not validator(param_val):
+                raise InvalidParameter(
+                    f"Parameter '{param}' failed validation.")
+
+            param_vals = (*param_vals, param_val)
+        return param_vals
+
     if isinstance(data, list) or isinstance(data, tuple):
-        if len(args == 0):
-            return get_parameters_from_sequence(data)
-        return get_parameters_from_sequence(data, args[0])
-    if data.isinstance(dict):
-        return get_parameters_from_dict(data, *args)
-    raise NotImplementedError
-
-
-def get_parameters_from_sequence(data, validators=[]):
-    """
-    Returns desired data from a list or or tuple with optional data validation.
-    Validator functions return true iff associated data is valid.
-
-    Parameters
-    ----------
-    data : list, tuple
-    validators : list, tuple, optional
-        Contains validator functions (or `None`) which return true iff
-        associated data is acceptable. Must match order and length of `data`.
-    """
-    if len(validators) == 0:
-        return (*data,)
-    if len(data) != len(validators):
-        raise ParameterError(
-            f"Expected {len(validators)} parameters but received {len(data)}.")
-
-    param_vals = ()
-    for i in range(len(data)):
-        param_val = data[i]
-        validator = validators[i]
-        if not validator:
-            def validator(x): return True
-
-        if not validator(param_val):
-            raise InvalidParameter(f"Parameter {i+1} failed validation.")
-        param_vals += (*param_vals, param_val)
-    return param_vals
-
-
-def get_parameters_from_dict(data, *args):
-    """
-    Returns desired data from a dict with optional data validation.
-    Validator functions return true iff associated data is valid.
-
-    Parameters
-    ----------
-    data : dict
-    arg : str, optional
-        Key of desired data
-    arg : tuple(str, func), optional
-    """
-    param_vals = ()
-    for arg in args:
-        if isinstance(arg, tuple):
-            param, validator = arg
-        else:
-            param = arg
-            # Truthy/Falsy coersion to bool
-            validator = (lambda x: not not x)
-
-        if param in data:
-            param_val = data.get(param)
-        else:
-            raise ParameterError(f"Expected parameter '{param}' not received.")
-
-        if not validator(param_val):
-            raise InvalidParameter(f"Parameter '{param}' failed validation.")
-
-        param_vals = (*param_vals, param_val)
-    return param_vals
+        return get_from_iterable(data, args if len(args == 0) else args[0])
+    if isinstance(data, dict):
+        return get_from_dict(data, *args)
 
 
 class Endpoint:

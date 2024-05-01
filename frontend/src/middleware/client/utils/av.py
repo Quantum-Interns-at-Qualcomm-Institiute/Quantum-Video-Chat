@@ -1,16 +1,16 @@
 import socketio
-from threading import Thread
 import asyncio
+import pyaudio
+import ffmpeg
+import cv2
+
+from client.utils import ClientState
 from flask_socketio import send
 from flask_socketio.namespace import Namespace as FlaskNamespace
-from client.utils import ClientState
 from socketio import ClientNamespace
-import pyaudio
+from threading import Thread
 
-import cv2
-import ffmpeg
-
-from client.utils.encryption import KeyGenFactory, EncryptionFactory, EncryptScheme
+from client.utils.encryption import KeyGenerators, KeyGenFactory, EncryptSchemes, EncryptFactory
 
 
 def display_message(user_id, msg):
@@ -215,7 +215,8 @@ class VideoClientNamespace(AVClientNamespace):
             )
 
             output = ffmpeg.output(
-                inpipe, 'pipe:', vcodec='libx264', f='ismv', preset='ultrafast', tune='zerolatency')
+                inpipe, 'pipe:', vcodec='libx264', f='ismv',
+                preset='ultrafast', tune='zerolatency')
 
             while True:
                 cur_key_idx, key = self.av.key
@@ -231,7 +232,7 @@ class VideoClientNamespace(AVClientNamespace):
                 data = self.av.encryption.encrypt(data, key)
                 self.send(cur_key_idx.to_bytes(4, 'big') + data)
 
-                await asyncio.sleep(1/self.av.frame_rate/5)
+                await asyncio.sleep(1 / self.av.frame_rate / 5)
 
         Thread(target=asyncio.run, args=(send_video(),)).start()
 
@@ -243,12 +244,10 @@ class VideoClientNamespace(AVClientNamespace):
                 return
             cur_key_idx, key = self.av.key
 
-            key_idx = int.from_bytes(msg[:4], 'big')
-            if (key_idx != cur_key_idx):
+            if (int.from_bytes(msg[:4], 'big') != cur_key_idx):
                 return
-            data = msg[4:]
 
-            data = self.av.encryption.decrypt(data, key)
+            data = self.av.encryption.decrypt(msg[4:], key)
 
             # Data is now an ISMV format file in memory
             data = self.output.run(input=data, capture_stdout=True,
@@ -273,10 +272,11 @@ class AV:
     }
 
     def __init__(self, cls, frontend_socket: socketio.Client,
-                 encryption: EncryptScheme = EncryptionFactory().create_encryption_scheme("AES")):
+                 encryption: EncryptSchemes.ABSTRACT = EncryptFactory().create_encrypt_scheme(EncryptSchemes.AES)):
+
         self.cls = cls
 
-        self.key_gen = KeyGenFactory().create_key_generator("FILE")
+        self.key_gen = KeyGenFactory().create_key_generator(KeyGenerators.FILE)
         self.key_gen.generate_key(key_length=128)
 
         display_shapes = [(720, 960, 3), (720, 1280, 3)]
@@ -288,12 +288,12 @@ class AV:
 
         sample_rates = [8196, 44100]
         self.sample_rate = sample_rates[0]
-        self.frames_per_buffer = self.sample_rate//6
-        self.audio_wait = 1/8
+        self.frames_per_buffer = self.sample_rate // 6
+        self.audio_wait = 1 / 8
 
         self.key = self.key_gen.get_key().tobytes()
 
-        self.encryption = encryption
+        self.encryption: EncryptSchemes.ABSTRACT = encryption
 
         self.client_namespaces = generate_client_namespace(
             cls, self, frontend_socket)
