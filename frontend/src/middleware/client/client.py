@@ -354,29 +354,17 @@ class Client:
 
         self.logger.info("Polling User")
         print(f"Incoming connection request from {peer_id}.")
-        # ANDY_TODO: Remove the question
-        res = self.gui.question('Incoming Peer Connection',
-                                f"Peer User {peer_id} has requested to connect to you. Accept?")
-        if res == 'yes':
-            self.logger.info("User Accepted Connection.")
-            self.logger.info(f"Attempting to connect to peer {peer_id} at {
-                             socket_endpoint} with token '{conn_token}'.")
+        self.logger.info("User Accepted Connection.")
+        self.logger.info(f"Attempting to connect to peer {peer_id} at {
+            socket_endpoint} with token '{conn_token}'.")
 
-            try:
-                self.connect_to_websocket(socket_endpoint, conn_token)
-            except Exception as e:
-                self.gui.alert('Warning', f"Connection to incoming peer User {
-                               peer_id} failed.")
-                return False
-            self.logger.info(f"Successfully connected to peer User {peer_id}.")
-            self.gui.quit('User accepted an incoming connection request.')
-            self.logger.info(
-                "Just quit da GUI; returning from client.handle_peer_connection().")
+        try:
+            self.connect_to_websocket(socket_endpoint, conn_token)
             return True
-        else:
-            self.logger.info("User Refused Connection.")
+        except Exception as e:
+            self.gui.alert('Warning', f"Connection to incoming peer User {
+                peer_id} failed.")
             return False
-        return False
 
     def disconnect_from_peer(self):
         pass
