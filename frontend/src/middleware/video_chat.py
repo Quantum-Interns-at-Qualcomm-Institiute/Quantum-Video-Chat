@@ -20,13 +20,15 @@ if __name__ == "__main__":
                                                  config["SERVER_PORT"]))
 
         frontend_socket.connect(
-            f"http://localhost:{sys.argv[1]}",
+            # f"http://localhost:{sys.argv[1]}",
+            f"http://localhost:{5001}",
             headers={'user_id': client.user_id},
             retry=True)
 
         # TODO: convert back to lambda or not
         @frontend_socket.on('connect_to_peer')
         def handle_conenct_to_peer(data):
+            print(f"got {data} from server")
             client.connect_to_peer(data)
 
         while True:
