@@ -129,7 +129,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
         if len(validators) == 0:
             return (*data,)
         if len(data) != len(validators):
-            raise Errors.PARAMETERERROR(
+            raise Errors.PARAMETERERROR.value(
                 f"Expected {len(validators)} parameters but received {len(data)}.")
 
         param_vals = ()
@@ -166,7 +166,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
             if param in data:
                 param_val = data.get(param)
             else:
-                raise Errors.PARAMETERERROR(f"Expected parameter '{
+                raise Errors.PARAMETERERROR.value(f"Expected parameter '{
                                             param}' not received.")
 
             if not validator(param_val):
