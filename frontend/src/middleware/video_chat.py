@@ -6,7 +6,7 @@ import json
 import sys
 
 DEV = True
-CONFIG = f'src/middleware/{'dev_' if DEV else ''}python_config.json'
+CONFIG = f"src/middleware/{'dev_' if DEV else ''}python_config.json"
 
 if __name__ == "__main__":
     with open(CONFIG) as json_data:

@@ -151,5 +151,6 @@ class Server:
 #region --- Main ---
 if __name__ == "__main__":
     from api import ServerAPI
+    # NOTE: This doesn't have the correct arguments now; not important, though
     server = Server(ServerAPI.DEFAULT_ENDPOINT)
 #endregion
