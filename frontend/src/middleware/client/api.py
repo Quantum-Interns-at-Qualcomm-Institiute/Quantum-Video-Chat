@@ -41,7 +41,7 @@ class APIState(Enum):
 
 class ClientAPI(Thread):
     # Try to get default en0 address to start client API endpoint on
-    key = 'Wi-Fi' if platform.system() == 'Windows' else 'en0'
+    key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
 
     for prop in psutil.net_if_addrs()[key]:
         if prop.family == 2:
@@ -64,8 +64,7 @@ class ClientAPI(Thread):
     def verify_server(cls, sess_token):
         if type(sess_token) is str:
             return True
-        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{
-                                             sess_token}' from server.")
+        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{sess_token}' from server.")
 
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
@@ -121,8 +120,7 @@ class ClientAPI(Thread):
 
     @classmethod
     def init(cls, client):
-        cls.logger.info(f"Initializing Client API with endpoint {
-                        client.api_endpoint}.")
+        cls.logger.info(f"Initializing Client API with endpoint {client.api_endpoint}.")
         if cls.state == APIState.LIVE:
             raise Errors.SERVERERROR.value(
                 "Cannot reconfigure API during server runtime.")
@@ -167,8 +165,7 @@ class ClientAPI(Thread):
     def kill(cls):
         cls.logger.info("Killing Client API.")
         if cls.state != APIState.LIVE:
-            cls.logger.error(f"Cannot kill Client API when not {
-                             APIState.LIVE}.")
+            cls.logger.error(f"Cannot kill Client API when not {APIState.LIVE}.")
             return
         cls.http_server.stop()
         cls.state = APIState.INIT
@@ -195,8 +192,7 @@ class ClientAPI(Thread):
         peer_id, socket_endpoint, conn_token = get_parameters(
             request.json, 'peer_id', 'socket_endpoint', 'conn_token')
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Instructied to connect to peer {peer_id} at {
-                        socket_endpoint} with token '{conn_token}'.")
+        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
 
         try:
             res = cls.client.handle_peer_connection(
