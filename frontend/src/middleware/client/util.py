@@ -90,8 +90,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
             if param in data:
                 param_val = data.get(param)
             else:
-                raise Errors.PARAMETERERROR.value(f"Expected parameter '{
-                    param}' not received.")
+                raise Errors.PARAMETERERROR.value(f"Expected parameter '{param}' not received.")
 
             if not validator(param_val):
                 raise Errors.INVALIDPARAMETER.value(
