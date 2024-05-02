@@ -11,9 +11,13 @@ import logging
 from server import Server
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from flask import Flask, jsonify, request
-import subprocess
-ip = "127.0.0.1"
-ip = subprocess.check_output(['ipconfig', 'getifaddr', 'en0']).strip().decode()
+import psutil
+import platform
+key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
+
+for prop in psutil.net_if_addrs()[key]:
+    if prop.family == 2:
+        ip = prop.address
 
 
 # region --- Logging --- # TODO: Add internal logger to API class
