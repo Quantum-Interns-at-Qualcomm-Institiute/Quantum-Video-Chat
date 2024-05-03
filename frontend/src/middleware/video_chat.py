@@ -21,12 +21,16 @@ if __name__ == "__main__":
                         api_endpoint=ClientAPI.DEFAULT_ENDPOINT,
                         server_endpoint=Endpoint(config["SERVER_IP"],
                                                  config["SERVER_PORT"]))
-        logger.info(f'Connecting to frontend socket at {5001}')
+        logger.info(f'Attempting to connect to frontend socket at {5001}')
         frontend_socket.connect(
             # f"http://localhost:{sys.argv[1]}",
             f"http://localhost:{5001}",
             headers={'user_id': client.user_id},
             retry=True)
+
+        @frontend_socket.on('successfully_connected')
+        def handle_successful_connection(data):
+            logger.info(f'Successfully connected to frontend {data}')
 
         # TODO: convert back to lambda or not
         @frontend_socket.on('connect_to_peer')

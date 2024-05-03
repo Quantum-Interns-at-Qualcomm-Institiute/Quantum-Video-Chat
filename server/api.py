@@ -12,7 +12,7 @@ from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from flask import Flask, jsonify, request
 import psutil
 import platform
-key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
+key = 'WiFi 2' if platform.system() == 'Windows' else 'en11' #TODO: add support for ad hoc and wifi without manually changing
 
 for prop in psutil.net_if_addrs()[key]:
     if prop.family == 2:
@@ -229,9 +229,9 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         api_endpoint : tuple
         """
 
-        api_endpoint = get_parameters(request.json, 'api_endpoint')
-        cls.logger.info(f"Received request to create a user ID: {api_endpoint}")
-        user_id = server.add_user(Endpoint(*api_endpoint))
+        # api_endpoint = get_parameters(request.json, 'api_endpoint')
+        user_id = server.add_user()
+        cls.logger.info(f"Created a user with ID: {user_id}")
 
         return jsonify({'user_id': user_id}), 200
 

@@ -28,11 +28,10 @@ class Server:
             self.user_manager = UserManager(storage=storage)
         self.qber_manager = None  # QBERManager
 
-    def add_user(self, endpoint):
+    def add_user(self):
         try:
-            user_id = self.user_manager.add_user(endpoint)
-            logger.info(
-                f"User {user_id} added.")
+            user_id = self.user_manager.add_user()
+            logger.info(f"User {user_id} added.")
             return user_id
         except DuplicateUser as e:
             logger.error(str(e))

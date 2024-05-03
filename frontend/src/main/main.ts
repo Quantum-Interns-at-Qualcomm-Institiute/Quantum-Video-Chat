@@ -132,8 +132,11 @@ const spawnPythonProcess = () => {
 	// });
 
 	let has_peer_id = false;
+  console.log('made it')
 	io.on("connection", (socket: Socket) => {
 		const user_id = socket.handshake.headers.user_id;
+    console.log('made it 2')
+    socket.emit('successfully_connected', 'Hello world!')
 
 		ipcMain.on("set_peer_id", (event, peer_id) => {
 			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
