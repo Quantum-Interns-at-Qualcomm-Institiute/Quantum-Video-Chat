@@ -19,6 +19,7 @@ class ClientState(Enum):
 
 
 def display_message(user_id, msg):
+    # TODO: duplicate method with one in client.py
     print(f"({user_id}): {msg}")
 
 
@@ -90,7 +91,8 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
             if param in data:
                 param_val = data.get(param)
             else:
-                raise Errors.PARAMETERERROR.value(f"Expected parameter '{param}' not received.")
+                raise Errors.PARAMETERERROR.value(
+                    f"Expected parameter '{param}' not received.")
 
             if not validator(param_val):
                 raise Errors.INVALIDPARAMETER.value(

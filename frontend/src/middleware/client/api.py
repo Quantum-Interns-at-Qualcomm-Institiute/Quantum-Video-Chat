@@ -1,22 +1,16 @@
 import psutil
 import platform
-from functools import total_ordering
+
 from enum import Enum
+from flask import Flask, jsonify, request
+from functools import total_ordering
+from gevent.pywsgi import WSGIServer  # For asynchronous handling
+from threading import Thread
+
 from client.errors import Errors
 from client.endpoint import Endpoint
 from client.util import get_parameters
-from flask import Flask, jsonify, request
-from threading import Thread
-from gevent.pywsgi import WSGIServer  # For asynchronous handling
-
-
-# region --- Logging ---
-import logging
-logging.basicConfig(filename='src/middleware/logs/api.log', level=logging.DEBUG,
-                    format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
-                    datefmt='%H:%M:%S')
-logger = logging.getLogger(__name__)
-# endregion
+from custom_logging import logger
 
 
 # region --- Utils ---
@@ -117,14 +111,12 @@ class ClientAPI(Thread):
 
         while True:
             try:
-                print(f"Serving Client API at {cls.endpoint}.")
                 cls.logger.info(f"Serving Client API at {cls.endpoint}.")
 
                 cls.state = APIState.LIVE
                 cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
                 cls.http_server.serve_forever()
             except OSError as e:
-                print(f"Listener endpoint {cls.endpoint} in use.")
                 cls.logger.error(f"Endpoint {cls.endpoint} in use.")
 
                 cls.state = APIState.INIT
