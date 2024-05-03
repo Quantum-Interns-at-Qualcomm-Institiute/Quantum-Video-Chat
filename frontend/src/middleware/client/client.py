@@ -50,7 +50,7 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
     # TODO: Unsure if client needed.
     def init(cls, endpoint, user_id,
              display_message, frontend_socket):
-        cls.logger.info(
+        logger.info(
             f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
         cls.av = AV(cls, frontend_socket)
@@ -74,7 +74,7 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
 
     @classmethod
     def connect(cls):
-        cls.logger.info(f"Attempting WebSocket connection to {cls.endpoint}.")
+        logger.info(f"Attempting WebSocket connection to {cls.endpoint}.")
         try:
             ns = sorted(list(cls.namespaces.keys()))
             cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(
@@ -82,18 +82,18 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
             for name in ns:
                 cls.sio.register_namespace(cls.namespaces[name])
         except socketio.exceptions.ConnectionError as e:
-            cls.logger.error(f"Connection failed: {str(e)}")
+            logger.error(f"Connection failed: {str(e)}")
 
     @classmethod
     def disconnect(cls):
         # Check to make sure we're actually connected
-        cls.logger.info("Disconnecting Socket Client from Websocket API.")
+        logger.info("Disconnecting Socket Client from Websocket API.")
         cls.sio.disconnect()
         # Make sure to update state, delete instance if necessary, etc.
 
     @classmethod
     def kill(cls):
-        cls.logger.info("Killing Socket Client")
+        logger.info("Killing Socket Client")
         cls.disconnect()
         # Make sure to update state, delete instance if necessary, etc.
     # endregion
@@ -103,7 +103,7 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
     @sio.on('connect')
     @HandleExceptions
     def on_connect(cls):
-        cls.logger.info(f"Socket connection established to endpoint {
+        logger.info(f"Socket connection established to endpoint {
                         SocketClient.endpoint}")
         ns = sorted(list(cls.namespaces.keys()))
         for name in ns:
@@ -112,7 +112,7 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
     @sio.on('message')
     @HandleExceptions
     def on_message(cls, user_id, msg):
-        cls.logger.info(f"Received message from user {user_id}: {msg}")
+        logger.info(f"Received message from user {user_id}: {msg}")
         SocketClient.display_message(user_id, msg)
 
     # endregion

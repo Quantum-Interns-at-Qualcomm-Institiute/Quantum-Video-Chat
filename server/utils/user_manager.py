@@ -2,6 +2,8 @@
 
 # region --- Logging ---
 import hashlib
+from random import choice
+from string import ascii_letters, digits
 from abc import ABC, abstractmethod
 from .user import User
 from .user import UserState
@@ -111,17 +113,16 @@ class UserManager:
         self.storage = storage
 
     # I would personally just generate a completely random string every time, but we do this in Andy's interest of having perfect reproducibility during testing
-    def generate_user_id(self, endpoint: str):
-        logger.debug(
-            f"Generating User ID for user with API Endpoint {endpoint}.")
-        hash_object = hashlib.sha256(endpoint.encode())
-        user_id = hash_object.hexdigest()[:5]
+    def generate_user_id(self):
+        # logger.debug(f"Generating User ID for user with API Endpoint {endpoint}.")
+        # hash_object = hashlib.sha256(endpoint.encode())
+        # user_id = hash_object.hexdigest()[:5]
 
-        while self.storage.has_user(user_id):
-            hash_object = hashlib.sha256(hash_object.hexdigest().encode())
-            user_id = hash_object.hexdigest()[:5]
+        # while self.storage.has_user(user_id):
+        #     hash_object = hashlib.sha256(hash_object.hexdigest().encode())
+        #     user_id = hash_object.hexdigest()[:5]
 
-        return user_id
+        return ''.join(choice(ascii_letters + digits) for _ in range(5)).lower()
 
     # See note for generate_user_id(); the particular choice of seed here is a bit AIDS, though.
     # Also note uniqueness is not strictly necessary for tokens, so I've omitted it.
@@ -132,11 +133,11 @@ class UserManager:
 
         return token
 
-    def add_user(self, endpoint):
-        user_id = self.generate_user_id(str(endpoint))
-        user_info = User(endpoint)
+    def add_user(self):
+        user_id = self.generate_user_id()
+        # user_info = User(endpoint)
         try:
-            self.storage.add_user(user_id, user_info)
+            self.storage.add_user(user_id, None)
             logger.debug(f"Added User {user_id}'.")
             return user_id
         except DuplicateUser as e:

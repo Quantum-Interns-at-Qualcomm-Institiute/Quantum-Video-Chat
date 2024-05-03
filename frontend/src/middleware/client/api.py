@@ -35,7 +35,7 @@ class APIState(Enum):
 
 class ClientAPI(Thread):
     # Try to get default en0 address to start client API endpoint on
-    key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
+    key = 'WiFi 2' if platform.system() == 'Windows' else 'en11'  # TODO: Ad-hoc support
 
     for prop in psutil.net_if_addrs()[key]:
         if prop.family == 2:
@@ -52,7 +52,6 @@ class ClientAPI(Thread):
     instance = None
 
     # region --- Utils ---
-    logger = logging.getLogger('ClientAPI')
 
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
@@ -87,7 +86,8 @@ class ClientAPI(Thread):
 
     @classmethod
     def init(cls, client):
-        cls.logger.info(f"Initializing Client API with endpoint {client.api_endpoint}.")
+        logger.info(f"Initializing Client API with endpoint {
+                        client.api_endpoint}.")
         if cls.state == APIState.LIVE:
             raise Errors.SERVERERROR.value(
                 "Cannot reconfigure API during server runtime.")
@@ -101,7 +101,7 @@ class ClientAPI(Thread):
     def run(self):
         cls = self.__class__
 
-        cls.logger.info("Starting Client API.")
+        logger.info("Starting Client API.")
         if cls.state == APIState.NEW:
             raise Errors.SERVERERROR.value(
                 "Cannot start API before initialization.")
@@ -111,26 +111,27 @@ class ClientAPI(Thread):
 
         while True:
             try:
-                cls.logger.info(f"Serving Client API at {cls.endpoint}.")
+                logger.info(f"Serving Client API at {cls.endpoint}.")
 
                 cls.state = APIState.LIVE
                 cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
                 cls.http_server.serve_forever()
             except OSError as e:
-                cls.logger.error(f"Endpoint {cls.endpoint} in use.")
+                logger.error(f"Endpoint {cls.endpoint} in use.")
 
                 cls.state = APIState.INIT
                 cls.client.set_api_endpoint(
                     Endpoint(cls.endpoint.ip, cls.endpoint.port + 1))
                 continue
-            cls.logger.info("Client API terminated.")
+            logger.info("Client API terminated.")
             break
 
     @classmethod
     def kill(cls):
-        cls.logger.info("Killing Client API.")
+        logger.info("Killing Client API.")
         if cls.state != APIState.LIVE:
-            cls.logger.error(f"Cannot kill Client API when not {APIState.LIVE}.")
+            logger.error(f"Cannot kill Client API when not {
+                             APIState.LIVE}.")
             return
         cls.http_server.stop()
         cls.state = APIState.INIT
@@ -155,7 +156,8 @@ class ClientAPI(Thread):
         peer_id, socket_endpoint = get_parameters(
             request.json, 'peer_id', 'socket_endpoint')
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint}.")
+        logger.info(f"Instructied to connect to peer {
+                        peer_id} at {socket_endpoint}.")
 
         try:
             res = cls.client.handle_peer_connection(
@@ -163,12 +165,12 @@ class ClientAPI(Thread):
         except Exception as e:
             # TODO: Why did the connection fail?
             # TODO: Move into init
-            cls.logger.info(e)
+            logger.info(e)
             return jsonify({"error_code": "500",
                             "error_message": "Internal Server Error",
                             "details": "Connectioned failed"}), 500
 
-        cls.logger.info("client.handle_peer_connection() finished.")
+        logger.info("client.handle_peer_connection() finished.")
         if not res:
             # User Refused
             logger.info("Responding with 418")
@@ -176,7 +178,7 @@ class ClientAPI(Thread):
                             "error_message": "I'm a teapot",
                             "details": "Peer User refused connection"}), 418
         # TODO: What should we return?
-        cls.logger.info("Responding with 200")
+        logger.info("Responding with 200")
         return jsonify({'status_code': '200'}), 200
     # endregion
 # endregion
