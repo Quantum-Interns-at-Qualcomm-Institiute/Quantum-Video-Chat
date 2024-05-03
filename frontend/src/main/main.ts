@@ -131,14 +131,14 @@ const spawnPythonProcess = () => {
 	// 	// send data to browser
 	// });
 
-    var has_peer_id = false
+	let has_peer_id = false;
 	io.on("connection", (socket: Socket) => {
 		const user_id = socket.handshake.headers.user_id;
 
 		ipcMain.on("set_peer_id", (event, peer_id) => {
-            // bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
-            if(has_peer_id) return;
-            has_peer_id = true;
+			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
+			if (has_peer_id) return;
+			has_peer_id = true;
 			console.log(
 				`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
 			);
