@@ -33,3 +33,5 @@ npm-debug.log.*
 
 # Project specific exclusions
 **/dev_python_config.json
+.vscode
+**/.vscode
