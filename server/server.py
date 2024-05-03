@@ -1,24 +1,16 @@
 import requests
-import logging
+
 from exceptions import InvalidState
+
+from custom_logging import logger
 from utils import ServerError, BadGateway, BadRequest, Endpoint
 from utils.user_manager import UserManager, UserStorageFactory, UserState
 from utils.user_manager import DuplicateUser, UserNotFound
 
-# region --- Logging --- # TODO: Add internal logger to Server class
-logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
-                    format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
-                    datefmt='%H:%M:%S')
-logger = logging.getLogger(__name__)
-# endregion
-
-
-# region --- Utils ---
-# endregion
-
 
 # region --- Server ---
 class Server:
+    # TODO: make user storage type pull from config file
     def __init__(self, api_endpoint, SocketAPI, SocketState, user_storage="DICT"):
         # TODO: GET RID OF THIS AND FIX IT LATER OMG THIS IS DISGUSTING
         # the socket api should start in main with the server api...
@@ -26,9 +18,8 @@ class Server:
         self.SocketState = SocketState
 
         self.api_endpoint = Endpoint(*api_endpoint)
-        self.logger = logging.getLogger('Server')
-        self.logger.info(f"Intializing server with API Endpoint {
-                         self.api_endpoint}")
+        logger.info(f"Intializing server with API Endpoint {
+            self.api_endpoint}")
 
         self.websocket_endpoint = SocketAPI.DEFAULT_ENDPOINT
 
@@ -40,48 +31,48 @@ class Server:
     def add_user(self, endpoint):
         try:
             user_id = self.user_manager.add_user(endpoint)
-            self.logger.info(
+            logger.info(
                 f"User {user_id} added.")
             return user_id
         except DuplicateUser as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def get_user(self, user_id):
         try:
             user_info = self.user_manager.get_user(user_id)
-            self.logger.info(f"Retrieved user with ID {user_id}.")
+            logger.info(f"Retrieved user with ID {user_id}.")
             return user_info
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def remove_user(self, user_id):
         try:
             self.user_manager.remove_user(user_id)
-            self.logger.info(f"User {user_id} removed successfully.")
+            logger.info(f"User {user_id} removed successfully.")
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def set_user_state(self, user_id, state: UserState, peer=None):
         try:
             self.user_manager.set_user_state(user_id, state, peer)
-            self.logger.info(f"Updated User {user_id} state: {
-                             state} ({peer}).")
+            logger.info(f"Updated User {user_id} state: {
+                state} ({peer}).")
         except (UserNotFound, InvalidState) as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def contact_client(self, user_id, route, json):
         endpoint = self.get_user(user_id).api_endpoint(route)
-        self.logger.info(f"Contacting Client API for User {
-                         user_id} at {endpoint}.")
+        logger.info(f"Contacting Client API for User {
+            user_id} at {endpoint}.")
         try:
             response = requests.post(str(endpoint), json=json)
         except Exception as e:
-            self.logger.error(f"Unable to reach Client API for User {
-                              user_id} at endpoint {endpoint}.")
+            logger.error(f"Unable to reach Client API for User {
+                user_id} at endpoint {endpoint}.")
             # TODO: Figure out specifically what exception is raised so I can catch only that, and then handle it instead of re-raising (or maybe re-raise different exception and then caller can handle)
             raise e
         return response
@@ -92,11 +83,11 @@ class Server:
 
         self.websocket_endpoint = Endpoint(*endpoint)
         self.SocketAPI.endpoint = self.websocket_endpoint
-        self.logger.info(f"Setting Web Socket endpoint: {
-                         self.websocket_endpoint}")
+        logger.info(f"Setting Web Socket endpoint: {
+            self.websocket_endpoint}")
 
     def start_websocket(self, users):
-        self.logger.info(f"Starting WebSocket API.")
+        logger.info(f"Starting WebSocket API.")
         if not self.websocket_endpoint:
             raise ServerError(
                 f"Cannot start WebSocket API without defined endpoint.")
@@ -127,8 +118,8 @@ class Server:
             raise InvalidState(f"Cannot connect User {
                                user_id} to peer: User must be IDLE.")
 
-        self.logger.info(f"Contacting User {
-                         peer_id} to connect to User {user_id}.")
+        logger.info(f"Contacting User {
+            peer_id} to connect to User {user_id}.")
 
         self.start_websocket(users=(user_id, peer_id))
 
@@ -141,10 +132,10 @@ class Server:
             raise BadGateway(f"Unable to reach peer User {peer_id}.")
 
         if response.status_code != 200:
-            f"Peer User {peer_id} refused connection request."
+            logger.error(f"Peer User {peer_id} refused connection request.")
             raise BadGateway(
                 f"Peer User {peer_id} refused connection request.")
-        self.logger.info(f"Peer User {peer_id} accepted connection request.")
+        logger.info(f"Peer User {peer_id} accepted connection request.")
         return self.websocket_endpoint
 
 # endregion
