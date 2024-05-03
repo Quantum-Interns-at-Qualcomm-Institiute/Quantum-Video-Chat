@@ -1,11 +1,10 @@
 from threading import Thread
-from flask_socketio import ConnectionRefusedError
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send
 from utils.av import generate_flask_namespace
 from utils import Endpoint
 from functools import total_ordering
 from enum import Enum
-from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
+from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication
 from utils import remove_last_period
 import logging
 from server import Server
@@ -163,18 +162,6 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
     # region --- Utils ---
     logger = logging.getLogger('ServerAPI')
 
-    def HandleAuthentication(endpoint_handler):
-        """Decorator to handle commonly encountered exceptions in the API"""
-        def handler_with_authentication(cls, *args, **kwargs):
-            user_id, sess_token = get_parameters(
-                request.json, 'user_id', 'sess_token')
-            if not cls.server.verify_user(user_id, sess_token):
-                raise BadAuthentication(f"Authentication failed for user {user_id} with session token '{sess_token}'.")
-
-            return endpoint_handler(cls, *args, **kwargs)
-        handler_with_authentication.__name__ = endpoint_handler.__name__
-        return handler_with_authentication
-
     def HandleExceptions(endpoint_handler):
         """Decorator to handle commonly encountered exceptions in the API"""
         def handler_with_exceptions(*args, **kwargs):
@@ -182,7 +169,8 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
             try:
                 return endpoint_handler(cls, *args, **kwargs)
             except BadAuthentication as e:
-                cls.logger.info(f"Authentication failed for server at {endpoint_handler.__name__}:\n\t{str(e)}")
+                cls.logger.info(f"Authentication failed for server at {
+                                endpoint_handler.__name__}:\n\t{str(e)}")
                 return jsonify({"error_code": "403", "error_message": "Forbidden", "details": remove_last_period(e)}), 403
             except BadRequest as e:
                 cls.logger.info(str(e))
@@ -199,7 +187,8 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
     @classmethod
     def init(cls, server: Server):
-        cls.logger.info(f"Initializing Server API with endpoint {server.api_endpoint}.")
+        cls.logger.info(f"Initializing Server API with endpoint {
+                        server.api_endpoint}.")
         if cls.state == APIState.LIVE:
             raise ServerError(f"Cannot reconfigure API during server runtime.")
         cls.server = server
@@ -234,7 +223,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
     @HandleExceptions
     def create_user(cls):
         """
-        Create and store a user with unique `user_id` and `sess_token` for authentication. Return both.
+        Create and store a user with unique `user_id` for authentication. Returns `user_ud`
 
         Parameters
         ----------
@@ -244,45 +233,29 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
         api_endpoint, = get_parameters(request.json, 'api_endpoint')
         print(api_endpoint)
-        user_id, sess_token = server.add_user(Endpoint(*api_endpoint))
+        user_id = server.add_user(Endpoint(*api_endpoint))
 
-        return jsonify({'sess_token': sess_token, 'user_id': user_id}), 200
-
-    # @app.route('/remove_user', methods=['DELETE'])
-    # async def remove_user(user_id, token):
-    #     cls.logger.info("Received request to remove a user ID.")
-    #     if not server.verify_identity(user_id,token):
-    #         return jsonify({"error_code": "403", "error_message": "Forbidden", "details": "Identity Mismatch"}), 403
-
-    #     try:
-    #         server.remove_user(user_id)
-    #         return jsonify({"error": "Not Implemented"}), 501
-    #     except Exception as e:
-    #         cls.logger.error(f"An error occurred while removing user ID: {e}")
-    #         return jsonify({"error_code": "500", "error_message": "Internal Server Error", "details": str(e)}), 500
+        return jsonify({'user_id': user_id}), 200
 
     @app.route('/peer_connection', methods=['POST'])
     @HandleExceptions
-    @HandleAuthentication
     def handle_peer_connection(cls):
         """
-        Instruct peer to connect to user's provided socket endpoint and self-validate
-        with `conn_token` received from requester.
+        Instruct peer to connect to user's provided socket endpoint
 
         Request Parameters
         ------------------
         user_id : str
         peer_id : str
         socket_endpoint : tuple(str, int)
-        conn_token : str
         """
         user_id, peer_id = get_parameters(request.json, 'user_id', 'peer_id')
-        cls.logger.info(f"Received request from User {user_id} to connect with User {peer_id}.")
+        cls.logger.info(f"Received request from User {
+                        user_id} to connect with User {peer_id}.")
 
-        endpoint, conn_token = cls.server.handle_peer_connection(
-            user_id, peer_id)
+        endpoint = cls.server.handle_peer_connection(user_id, peer_id)
 
-        return jsonify({'socket_endpoint': tuple(endpoint), 'conn_token': conn_token}), 200
+        return jsonify({'socket_endpoint': tuple(endpoint)}), 200
 
     # endregion
 # endregion
@@ -301,8 +274,6 @@ class SocketAPI(Thread):
     endpoint = None
     state = SocketState.NEW
     namespaces = None
-
-    conn_token = None
     users = {}
 
     # region --- Utils ---
@@ -316,62 +287,13 @@ class SocketAPI(Thread):
         return True
 
     @classmethod
-    def generate_conn_token(cls):
-        return 'abcdefghijklmnop'
-
-    @classmethod
-    def generate_sess_token(cls, user_id):
-        return 'this is a session token'
-
-    @classmethod
-    def verify_conn_token(cls, conn_token):
-        return conn_token == cls.conn_token
-
-    @classmethod
-    def verify_sess_token(cls, user_id, sess_token):
-        if user_id not in cls.users:
-            raise UserNotFound(f"User {user_id} not found.")
-        return sess_token == cls.users[user_id]
-
-    @classmethod
-    def verify_connection(cls, auth):
+    def verify_connection(cls, user_id):
         """
         Parameters
         ----------
-        auth : tuple
-            (user_id, conn_token)
+        user_id : str
         """
-        user_id, conn_token = auth
-        if user_id not in cls.users:
-            return False
-        if conn_token != cls.conn_token:
-            return False
-        return True
-
-    def HandleAuthentication(endpoint_handler):
-        """
-        Decorator to handle authentication for existing users.
-        Pass `cls` and `user_id` to handler function.
-
-        NOTE: Assumes `cls` has been passed by @HandleExceptions
-        NOTE: This should never be called explicitly
-
-        Parameters
-        ----------
-        auth : (user_id, sess_token)
-            user_id : str,
-            sess_token : str
-        """
-        def handler_with_authentication(cls, auth, *args, **kwargs):
-            user_id, sess_token = get_parameters(auth)
-            try:
-                if not cls.verify_sess_token(user_id, sess_token):
-                    raise BadAuthentication(f"Authentication failed for User {user_id} with token '{sess_token}'.")
-            except UserNotFound as e:
-                raise BadAuthentication(f"Authentication failed for User {user_id} with token '{sess_token}': {str(e)}.")
-
-            endpoint_handler(cls, user_id)
-        return handler_with_authentication
+        return user_id in cls.users
 
     def HandleExceptions(endpoint_handler):
         """
@@ -403,14 +325,14 @@ class SocketAPI(Thread):
         users : tuple, list
             User IDs
         """
-        cls.logger.info(f"Initializing WebSocket API with endpoint {server.websocket_endpoint}.")
+        cls.logger.info(f"Initializing WebSocket API with endpoint {
+                        server.websocket_endpoint}.")
         if cls.state >= SocketState.LIVE:
             raise ServerError(
                 f"Cannot reconfigure WebSocket API during runtime.")
 
         cls.server = server
         cls.endpoint = server.websocket_endpoint
-        cls.conn_token = cls.generate_conn_token()
         cls.state = SocketState.INIT
         for user in users:
             cls.users[user] = None
@@ -457,7 +379,8 @@ class SocketAPI(Thread):
     def kill(cls):
         cls.logger.info("Killing WebSocket API.")
         if not (cls.state == SocketState.LIVE or cls.state == SocketState.OPEN):
-            raise ServerError(f"Cannot kill Socket API when not {SocketState.LIVE} or {SocketState.OPEN}.")
+            raise ServerError(f"Cannot kill Socket API when not {
+                              SocketState.LIVE} or {SocketState.OPEN}.")
         # "This method must be called from a HTTP or SocketIO handler function."
         cls.socketio.stop()
         cls.state = SocketState.INIT
@@ -467,41 +390,33 @@ class SocketAPI(Thread):
 
     @socketio.on('connect')  # TODO: Keep track of connection number.
     @HandleExceptions
-    def on_connect(cls, auth):
-        user_id, conn_token = auth
-        cls.logger.info(f"Received Socket connection request from User {user_id} with connection token '{conn_token}'.")
+    def on_connect(cls, user_id):
+        cls.logger.info(
+            f"Received Socket connection request from User {user_id}.")
         if cls.state != SocketState.LIVE:
-            cls.logger.info(f"Cannot accept connection when already {SocketState.OPEN}.")
+            cls.logger.info(f"Cannot accept connection when already {
+                            SocketState.OPEN}.")
             # raise UnknownRequester( ... ) # TODO: Maybe different name?
             # or
             # raise ConnectionRefusedError( ... )
             return False
-        if not cls.verify_connection(auth):
+        if not cls.verify_connection(user_id):
             cls.logger.info(f"Socket connection failed authentication.")
             # raise UnknownRequester( ... ) # TODO: Maybe different name?
             # or
             # raise ConnectionRefusedError( ... )
             return False
 
-        sess_token = cls.generate_sess_token(user_id)
-        cls.users[user_id] = sess_token
-        cls.logger.info(f"Socket connection from User {user_id} accepted; yielding session token '{sess_token}'")
-        emit('token', sess_token)
+        cls.logger.info(f"Socket connection from User {user_id} accepted")
 
         if cls.has_all_users():
-            cls.logger.info(f"Socket API acquired all expected users.")
+            cls.logger.info("Socket API acquired all expected users.")
             cls.state = SocketState.OPEN
 
     @socketio.on('message')
     @HandleExceptions
-    def on_message(cls, auth, msg):
-        user_id, sess_token = auth
-        user_id = user_id
+    def on_message(cls, user_id, msg):
         cls.logger.info(f"Received message from User {user_id}: '{msg}'")
-        if not cls.verify_sess_token(*auth):
-            cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message.")
-            return
-
         send((user_id, msg), broadcast=True)
 
     @socketio.on('disconnect')

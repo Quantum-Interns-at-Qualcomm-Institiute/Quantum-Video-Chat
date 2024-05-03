@@ -60,35 +60,8 @@ class ClientAPI(Thread):
     # region --- Utils ---
     logger = logging.getLogger('ClientAPI')
 
-    @classmethod
-    def verify_server(cls, sess_token):
-        if type(sess_token) is str:
-            return True
-        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{sess_token}' from server.")
-
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
-
-    def HandleAuthentication(endpoint_handler):
-        """
-        Decorator to handle authentication for server.
-
-        NOTE: Assumes `cls` has been passed by @HandleExceptions
-        NOTE: This should never be called explicitly
-
-        Parameters
-        ----------
-        sess_token : str
-        """
-        def handler_with_authentication(cls, *args, **kwargs):
-            sess_token, = get_parameters(request.json, 'sess_token')
-            if not cls.verify_server(sess_token):
-                raise Errors.BADAUTHENTICATION.value(
-                    f"Authentication failed for server with token '{sess_token}'.")
-
-            return endpoint_handler(cls, *args, **kwargs)
-        handler_with_authentication.__name__ = endpoint_handler.__name__
-        return handler_with_authentication
 
     def HandleExceptions(endpoint_handler):
         """
@@ -175,7 +148,6 @@ class ClientAPI(Thread):
 
     @app.route('/peer_connection', methods=['POST'])
     @HandleExceptions
-    @HandleAuthentication
     def handle_peer_connection(cls):
         """
         Receive incoming peer connection request.
@@ -187,16 +159,15 @@ class ClientAPI(Thread):
         ------------------
         peer_id : str
         socket_endpoint : tuple
-        conn_token : string
         """
-        peer_id, socket_endpoint, conn_token = get_parameters(
-            request.json, 'peer_id', 'socket_endpoint', 'conn_token')
+        peer_id, socket_endpoint = get_parameters(
+            request.json, 'peer_id', 'socket_endpoint')
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
+        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint}.")
 
         try:
             res = cls.client.handle_peer_connection(
-                peer_id, socket_endpoint, conn_token)
+                peer_id, socket_endpoint)
         except Exception as e:
             # TODO: Why did the connection fail?
             # TODO: Move into init

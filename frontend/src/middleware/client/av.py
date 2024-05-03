@@ -24,12 +24,7 @@ class TestFlaskNamespace(FlaskNamespace):
     def on_connect(self):
         pass
 
-    def on_message(self, auth, msg):
-        user_id, sess_token = auth
-        user_id = user_id
-        if not self.cls.verify_sess_token(*auth):
-            return
-
+    def on_message(self, user_id, msg):
         send((user_id, msg), broadcast=True)
 
     def on_disconnect(self):
@@ -67,12 +62,7 @@ class BroadcastFlaskNamespace(FlaskNamespace):
     def on_connect(self):
         pass
 
-    def on_message(self, auth, msg):
-        user_id, sess_token = auth
-        user_id = user_id
-        if not self.cls.verify_sess_token(*auth):
-            return
-
+    def on_message(self, user_id, msg):
         send((user_id, msg), broadcast=True, include_self=False)
 
     def on_disconnect(self):
