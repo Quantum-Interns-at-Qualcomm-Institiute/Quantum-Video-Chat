@@ -26,8 +26,6 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
     sio = socketio.Client()
     user_id = None
     endpoint = None
-    conn_token = None
-    sess_token = None
     instance = None
     namespaces = None
     av = None
@@ -36,11 +34,6 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
 
     # region --- Utils ---
     logger = logging.getLogger('SocketClient')
-
-    @classmethod
-    def set_sess_token(cls, sess_token):
-        cls.logger.info(f"Setting session token '{sess_token}'")
-        cls.sess_token = sess_token
 
     @classmethod
     def is_connected(cls):
@@ -67,15 +60,13 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
 
     @classmethod
     # TODO: Unsure if client needed.
-    def init(cls, endpoint, conn_token, user_id,
+    def init(cls, endpoint, user_id,
              display_message, frontend_socket):
         cls.logger.info(
             f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
         cls.av = AV(cls, frontend_socket)
         cls.namespaces = cls.av.client_namespaces
-
-        cls.conn_token = conn_token
         cls.endpoint = Endpoint(*endpoint)
         cls.user_id = user_id
         cls.display_message = display_message
@@ -90,16 +81,16 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
 
     @classmethod
     def send_message(cls, msg: str, namespace='/'):
-        cls.sio.send(((str(cls.user_id), cls.sess_token), msg),
+        cls.sio.send(((str(cls.user_id), ), msg),
                      namespace=namespace)
 
     @classmethod
     def connect(cls):
-        cls.logger.info(f"Attempting WebSocket connection to {cls.endpoint} with connection token '{cls.conn_token}'.")
+        cls.logger.info(f"Attempting WebSocket connection to {cls.endpoint}.")
         try:
             ns = sorted(list(cls.namespaces.keys()))
             cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(
-                cls.user_id, cls.conn_token), namespaces=['/'] + ns)
+                cls.user_id), namespaces=['/'] + ns)
             for name in ns:
                 cls.sio.register_namespace(cls.namespaces[name])
         except socketio.exceptions.ConnectionError as e:
@@ -124,16 +115,11 @@ class SocketClient():  # Not threaded because sio.connect() is not blocking
     @sio.on('connect')
     @HandleExceptions
     def on_connect(cls):
-        cls.logger.info(f"Socket connection established to endpoint {SocketClient.endpoint}")
+        cls.logger.info(f"Socket connection established to endpoint {
+                        SocketClient.endpoint}")
         ns = sorted(list(cls.namespaces.keys()))
         for name in ns:
             cls.namespaces[name].on_connect()
-
-    @sio.on('token')
-    @HandleExceptions
-    def on_token(cls, sess_token):
-        cls.logger.info(f"Received session token '{sess_token}'")
-        SocketClient.set_sess_token(sess_token)
 
     @sio.on('message')
     @HandleExceptions
@@ -157,7 +143,6 @@ class Client:
                          Client API endpoint {api_endpoint},
                          WebSocket API endpoint {websocket_endpoint}.""")
         self.user_id = None
-        self.sess_token = None
         self.state = ClientState.NEW
         self.frontend_socket = frontend_socket
         self.server_endpoint = server_endpoint
@@ -172,9 +157,6 @@ class Client:
         self.connect()
 
     # region --- Utils ---
-
-    def authenticate_server(self, sess_token):
-        return sess_token == self.sess_token
 
     # TODO: All endpoint functions should take a single endpoint obj.
     def set_server_endpoint(self, endpoint):
@@ -213,11 +195,13 @@ class Client:
             try:
                 json = response.json()
             except requests.exceptions.JSONDecodeError as e:
-                raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {endpoint}: {response.reason}.")
+                raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {
+                                                      endpoint}: {response.reason}.")
 
-            if 'details' in response.json():
-                raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {endpoint}: {response.json()['details']}.")
-            raise Errors.UNEXPECTEDRESPONSE.value(f"Unexpected Server response at {endpoint}: {response.reason}.")
+            context = response.json(
+            )['details']if 'details' in response.json() else response.reason
+            raise Errors.UNEXPECTEDRESPONSE.value(
+                f"Unexpected Server response at {endpoint}: {context}.")
         return response
 
     def kill(self):
@@ -231,8 +215,7 @@ class Client:
             pass
         try:
             requests.delete(str(self.server_endpoint('/remove_user')), json={
-                'user_id': self.user_id,
-                'sess_token': self.sess_token
+                'user_id': self.user_id
             })
         except Exception:
             pass
@@ -252,9 +235,11 @@ class Client:
         Expects token and user_id in return.
         Return `True` iff successful.
         """
-        self.logger.info(f"Attempting to connect to server: {self.server_endpoint}.")
+        self.logger.info(f"Attempting to connect to server: {
+                         self.server_endpoint}.")
         if (self.state >= ClientState.LIVE):
-            logger.error(f"Cannot connect to {self.server_endpoint}; already connected.")
+            logger.error(f"Cannot connect to {
+                         self.server_endpoint}; already connected.")
             raise Errors.INTERNALCLIENTERROR.value(
                 f"Cannot connect to {self.server_endpoint}; already connected.")
 
@@ -270,21 +255,22 @@ class Client:
             raise e
 
         try:
-            self.user_id, self.sess_token = get_parameters(
-                response.json(), 'user_id', 'sess_token')
-            self.logger.info(f"Received user_id '{self.user_id}' and token '{self.sess_token}'.")
+            self.user_id = get_parameters(
+                response.json(), 'user_id')
+            self.logger.info(f"Received user_id '{self.user_id}'.")
         except Errors.PARAMETERERROR.value as e:
-            self.logger.error(f"Server response did not contain both user_id and sess_token at {self.server_endpoint('/create_user')}.")
-            raise Errors.UNEXPECTEDRESPONSE.value(f"Server response did not contain both user_id and sess_token at {self.server_endpoint('/create_user')}.")
+            context = f"Server response did not contain user_id at {
+                self.server_endpoint('/create_user')}."
+            self.logger.error(context)
+            raise Errors.UNEXPECTEDRESPONSE.value(context)
 
         self.state = ClientState.LIVE
-        print(f"Received user_id {self.user_id} and sess_token '{self.sess_token}'")
+        print(f"Received user_id {self.user_id}")
         return True
 
     def connect_to_peer(self, peer_id):
         """
-        Open Socket API. Contact Server /peer_connection with `conn_token`
-        and await connection from peer (authenticated by `conn_token`).
+        Open Socket API. Contact Server /peer_connection and await connection from peer
         """
         self.logger.info(
             f"Attempting to initiate connection to peer User {peer_id}.")
@@ -293,7 +279,6 @@ class Client:
         try:
             response = self.contact_server('/peer_connection', json={
                 'user_id': self.user_id,
-                'sess_token': self.sess_token,
                 'peer_id': peer_id,
             })
         except Errors.CONNECTIONREFUSED.value as e:
@@ -303,10 +288,11 @@ class Client:
             self.logger.error(str(e))
             raise e
 
-        websocket_endpoint, conn_token = get_parameters(
-            response.json(), 'socket_endpoint', 'conn_token')
-        self.logger.info(f"Received websocket endpoint '{websocket_endpoint}' and conn_token '{conn_token}' from Server.")
-        self.connect_to_websocket(websocket_endpoint, conn_token)
+        websocket_endpoint = get_parameters(
+            response.json(), 'socket_endpoint')
+        self.logger.info(f"Received websocket endpoint '{
+                         websocket_endpoint}'.")
+        self.connect_to_websocket(websocket_endpoint)
         while True:
             if SocketClient.is_connected():
                 break
@@ -326,7 +312,7 @@ class Client:
         self.api_instance.start()
 
     # TODO: Return case for failed connections
-    def handle_peer_connection(self, peer_id, socket_endpoint, conn_token):
+    def handle_peer_connection(self, peer_id, socket_endpoint):
         """
         Initialize Socket Client and attempt
         connection to specified Socket API endpoint.
@@ -343,13 +329,15 @@ class Client:
         self.logger.info("Polling User")
         print(f"Incoming connection request from {peer_id}.")
         self.logger.info("User Accepted Connection.")
-        self.logger.info(f"Attempting to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
+        self.logger.info(f"Attempting to connect to peer {
+                         peer_id} at {socket_endpoint}.")
 
         try:
-            self.connect_to_websocket(socket_endpoint, conn_token)
+            self.connect_to_websocket(socket_endpoint)
             return True
         except Exception as e:
-            self.gui.alert('Warning', f"Connection to incoming peer User {peer_id} failed.")
+            self.gui.alert('Warning', f"Connection to incoming peer User {
+                           peer_id} failed.")
             return False
 
     def disconnect_from_peer(self):
@@ -357,14 +345,14 @@ class Client:
     # endregion
 
     # region --- Web Socket Interface ---
-    def connect_to_websocket(self, endpoint, conn_token):
+    def connect_to_websocket(self, endpoint):
         sio = SocketClient.init(
-            endpoint, conn_token, self.user_id,
+            endpoint, self.user_id,
             self.display_message, self.frontend_socket)
         try:
             sio.start()
         except Exception as e:
-            self.logger.error(f"Failed to connect to WebSocket at {endpoint} with conn_token '{conn_token}'.")
+            self.logger.error(f"Failed to connect to WebSocket at {endpoint}.")
             raise e
     # endregion
 # endregion
