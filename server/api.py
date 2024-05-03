@@ -203,7 +203,6 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         if cls.state == APIState.LIVE:
             raise ServerError(f"Cannot start API: already running.")
 
-        print(f"Serving Server API on {cls.endpoint}")
         cls.state = APIState.LIVE
         cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
         cls.http_server.serve_forever()
@@ -229,10 +228,9 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         ----------
         api_endpoint : tuple
         """
-        cls.logger.info("Received request to create a user ID.")
 
-        api_endpoint, = get_parameters(request.json, 'api_endpoint')
-        print(api_endpoint)
+        api_endpoint = get_parameters(request.json, 'api_endpoint')
+        cls.logger.info(f"Received request to create a user ID: {api_endpoint}")
         user_id = server.add_user(Endpoint(*api_endpoint))
 
         return jsonify({'user_id': user_id}), 200
@@ -358,14 +356,12 @@ class SocketAPI(Thread):
 
         while True:
             try:
-                print(f"Serving WebSocket API at {cls.endpoint}")
                 cls.logger.info(f"Serving WebSocket API at {cls.endpoint}")
 
                 cls.state = SocketState.LIVE
                 cls.socketio.run(cls.app, host=cls.endpoint.ip,
                                  port=cls.endpoint.port)
             except OSError as e:
-                print(f"Listener endpoint {cls.endpoint} in use.")
                 cls.logger.error(f"Endpoint {cls.endpoint} in use.")
 
                 cls.state = SocketState.INIT

@@ -14,6 +14,7 @@ from client.util import ClientState, display_message
 
 # region --- Tests ---
 
+# TODO: add logging to this file for critical errors
 
 class TestFlaskNamespace(FlaskNamespace):
     def __init__(self, namespace, cls):
@@ -78,7 +79,7 @@ class AVClientNamespace(ClientNamespace):
         self.cls: type = cls
         self.av: AV = av
         self.frontend_socket: socketio.Client = frontend_socket
-        print("created AVClientNamespace", self.cls, self.av)
+        #logger.info("created AVClientNamespace", self.cls, self.av)
 
     def on_connect(self):
         pass

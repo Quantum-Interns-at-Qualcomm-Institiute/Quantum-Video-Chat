@@ -5,11 +5,7 @@ import hashlib
 from abc import ABC, abstractmethod
 from .user import User
 from .user import UserState
-import logging
-logging.basicConfig(filename='./server/logs/server.log', level=logging.DEBUG,
-                    format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
-                    datefmt='%H:%M:%S')
-logger = logging.getLogger(__name__)
+from custom_logging import logger
 # endregion
 
 
@@ -113,11 +109,10 @@ class UserManager:
 
     def __init__(self, storage: UserStorageInterface):
         self.storage = storage
-        self.logger = logging.getLogger("UserManager")
 
     # I would personally just generate a completely random string every time, but we do this in Andy's interest of having perfect reproducibility during testing
     def generate_user_id(self, endpoint: str):
-        self.logger.debug(
+        logger.debug(
             f"Generating User ID for user with API Endpoint {endpoint}.")
         hash_object = hashlib.sha256(endpoint.encode())
         user_id = hash_object.hexdigest()[:5]
@@ -142,10 +137,10 @@ class UserManager:
         user_info = User(endpoint)
         try:
             self.storage.add_user(user_id, user_info)
-            self.logger.debug(f"Added User {user_id}'.")
+            logger.debug(f"Added User {user_id}'.")
             return user_id
         except DuplicateUser as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def set_user_state(self, user_id, state: UserState, peer=None):
@@ -158,25 +153,25 @@ class UserManager:
             user_info.state = state
             user_info.peer = peer
             self.storage.update_user(user_id, user_info)
-            self.logger.debug(f"Updated User {user_id} state: {
-                              state} ({peer}).")
+            logger.debug(f"Updated User {user_id} state: {
+                state} ({peer}).")
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def get_user(self, user_id) -> User:
         try:
             user_info = self.storage.get_user(user_id)
-            self.logger.debug(f"Retrieved user info for User {user_id}.")
+            logger.debug(f"Retrieved user info for User {user_id}.")
             return User(*user_info)
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def remove_user(self, user_id):
         try:
             self.storage.remove_user(user_id)
-            self.logger.debug(f"Removed User {user_id}.")
+            logger.debug(f"Removed User {user_id}.")
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
 # endregion

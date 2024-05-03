@@ -88,7 +88,7 @@ class AVClientNamespace(ClientNamespace):
         super().__init__(namespace)
         self.cls = cls
         self.av: AV = av
-        print("created AVClientNamespace", self.cls, self.av)
+        #logger.info("created AVClientNamespace", self.cls, self.av)
 
     def on_connect(self):
         print("on_connect")

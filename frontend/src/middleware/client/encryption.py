@@ -183,6 +183,7 @@ class RandomKeyGenerator(AbstractKeyGenerator):
 
 
 class FileKeyGenerator(AbstractKeyGenerator):
+    # TODO: handle if we don't have a key file
     def __init__(self,
                  file_name=os.path.dirname(__file__) + "/key.bin",
                  key_length=0):
