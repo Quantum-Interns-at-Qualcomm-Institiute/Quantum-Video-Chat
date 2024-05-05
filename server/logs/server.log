@@ -8150,3 +8150,672 @@ AttributeError: type object 'SocketAPI' has no attribute 'client'
 [17:22:27] (DEBUG) utils.user_manager.generate_token: Generating token for User ff166.
 [17:22:27] (DEBUG) UserManager.add_user: Added User ff166 with session token '590a016a640d7c9c7417985ea8ee18c98925a77a6a5484f4cdefd1a640869b43'.
 [17:22:27] (INFO) Server.add_user: User ff166 added with sess_token '590a016a640d7c9c7417985ea8ee18c98925a77a6a5484f4cdefd1a640869b43'.
+[14:39:28] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[14:39:28] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[14:39:28] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[14:39:38] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[14:39:38] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[14:39:38] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[14:39:58] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:39:58] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[14:39:58] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[14:39:58] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:39:58] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:40:06] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:40:06] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[14:40:06] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[14:40:06] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:40:06] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:40:25] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[14:40:25] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[14:40:25] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[14:40:25] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[14:40:25] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[14:40:25] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:40:25] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:40:25] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[14:40:25] (INFO) Server.start_websocket: Starting WebSocket API.
+[14:40:25] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[14:40:25] (INFO) SocketAPI.run: Starting WebSocket API.
+[14:40:25] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:40:25] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:40:25] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[14:40:25] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:40:25] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:40:25] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[14:40:25] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[14:40:25] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 500 93
+[14:40:25] (INFO) ServerAPI.handler_with_exceptions: Peer User 4abf6 refused connection request.
+[14:43:38] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[14:43:38] (INFO) ServerAPI.kill: Killing Server API.
+[14:43:38] (INFO) __main__.<module>: Exiting main program execution.
+
+[14:43:42] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[14:43:42] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[14:43:42] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[14:44:10] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:44:10] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[14:44:10] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[14:44:10] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:44:10] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:45:04] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:45:04] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[14:45:04] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[14:45:04] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:45:04] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:45:20] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[14:45:20] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[14:45:20] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[14:45:20] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:45:20] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:45:20] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[14:45:20] (INFO) Server.start_websocket: Starting WebSocket API.
+[14:45:20] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[14:45:20] (INFO) SocketAPI.run: Starting WebSocket API.
+[14:45:20] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:45:20] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[14:45:20] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:45:20] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:45:20] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:45:20] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[14:45:20] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[14:45:20] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 500 93
+[14:45:20] (INFO) ServerAPI.handler_with_exceptions: Peer User 4abf6 refused connection request.
+[14:45:30] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[14:45:30] (INFO) ServerAPI.kill: Killing Server API.
+[14:45:30] (INFO) __main__.<module>: Exiting main program execution.
+
+[14:51:51] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[14:51:51] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[14:51:51] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[14:52:09] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:52:09] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[14:52:09] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[14:52:09] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:52:09] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:52:33] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:52:33] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[14:52:33] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[14:52:33] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:52:33] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:52:48] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[14:52:48] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[14:52:48] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[14:52:48] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:52:48] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:52:48] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[14:52:48] (INFO) Server.start_websocket: Starting WebSocket API.
+[14:52:48] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[14:52:48] (INFO) SocketAPI.run: Starting WebSocket API.
+[14:52:48] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[14:52:48] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:52:48] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:52:48] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:52:48] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:52:48] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[14:52:48] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[14:52:48] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 418 93
+[14:52:48] (INFO) ServerAPI.handler_with_exceptions: Peer User 4abf6 refused connection request.
+[14:56:52] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:56:52] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[14:56:52] (DEBUG) utils.user_manager.generate_token: Generating token for User 60401.
+[14:56:52] (DEBUG) UserManager.add_user: Added User 60401 with session token '318b6f84f3b53f5ffada5a0398ad9b486d1a3f891dee375a31121712da45fc48'.
+[14:56:52] (INFO) Server.add_user: User 60401 added with sess_token '318b6f84f3b53f5ffada5a0398ad9b486d1a3f891dee375a31121712da45fc48'.
+[14:57:23] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:57:23] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[14:57:23] (DEBUG) utils.user_manager.generate_token: Generating token for User e17ff.
+[14:57:23] (DEBUG) UserManager.add_user: Added User e17ff with session token '4787d4bef2e1a076a6f2890351eca7e5ed78d2d8a37fa7a3626cd49b57444bf0'.
+[14:57:23] (INFO) Server.add_user: User e17ff added with sess_token '4787d4bef2e1a076a6f2890351eca7e5ed78d2d8a37fa7a3626cd49b57444bf0'.
+[14:57:52] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[14:57:52] (INFO) ServerAPI.kill: Killing Server API.
+[14:57:52] (INFO) __main__.<module>: Exiting main program execution.
+
+[14:57:54] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[14:57:54] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[14:57:54] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[14:58:26] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:58:26] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[14:58:26] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[14:58:26] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:58:26] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[14:58:37] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[14:58:37] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[14:58:37] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[14:58:37] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:58:37] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[14:58:49] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[14:58:49] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[14:58:49] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[14:58:49] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:58:49] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:58:49] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[14:58:49] (INFO) Server.start_websocket: Starting WebSocket API.
+[14:58:49] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[14:58:49] (INFO) SocketAPI.run: Starting WebSocket API.
+[14:58:49] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[14:58:49] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:58:49] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:58:49] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[14:58:49] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[14:58:49] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[14:58:49] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[14:58:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[14:58:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[14:58:49] (INFO) geventwebsocket.handler.log_request: 10.0.0.20 - - [2024-05-03 14:58:49] "GET /socket.io/?transport=polling&EIO=4&t=1714773529.809003 HTTP/1.1" 200 254 0.000580
+[14:58:49] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[14:58:49] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[14:58:49] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[14:58:49] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[14:58:50] (INFO) SocketAPI.on_connect: Received Socket connection request from User 4abf6 with connection token 'abcdefghijklmnop'.
+[14:58:50] (INFO) SocketAPI.on_connect: Socket connection from User 4abf6 accepted; yielding session token 'this is a session token'
+[14:58:50] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 200 22
+[14:58:50] (INFO) Server.handle_peer_connection: Peer User 4abf6 accepted connection request.
+[14:58:50] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[14:58:50] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[14:58:50] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 14:58:50] "GET /socket.io/?transport=polling&EIO=4&t=1714773531.6770766 HTTP/1.1" 200 254 0.000385
+[14:58:51] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[14:58:51] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[14:58:51] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[14:58:51] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[14:58:52] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[14:58:52] (INFO) SocketAPI.on_connect: Socket connection from User 34a2a accepted; yielding session token 'this is a session token'
+[14:58:52] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[15:00:53] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:00:53] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:00:53] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:00:53] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:00:53] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:00:54] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:00:54] (INFO) ServerAPI.kill: Killing Server API.
+[15:00:54] (INFO) __main__.<module>: Exiting main program execution.
+
+[15:00:54] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:00:54] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:01:04] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[15:01:04] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[15:01:04] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[15:01:24] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:01:24] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[15:01:24] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[15:01:24] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:01:24] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:03:31] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:03:31] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[15:03:31] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[15:03:31] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:03:31] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:03:42] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[15:03:42] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[15:03:42] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[15:03:42] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:03:42] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:03:42] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[15:03:42] (INFO) Server.start_websocket: Starting WebSocket API.
+[15:03:42] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[15:03:42] (INFO) SocketAPI.run: Starting WebSocket API.
+[15:03:42] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:03:42] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[15:03:42] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:03:42] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:03:42] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:03:42] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[15:03:42] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[15:03:42] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:03:42] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:03:42] (INFO) geventwebsocket.handler.log_request: 10.0.0.20 - - [2024-05-03 15:03:42] "GET /socket.io/?transport=polling&EIO=4&t=1714773822.293325 HTTP/1.1" 200 254 0.000635
+[15:03:42] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:03:42] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:03:42] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:03:42] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:03:42] (INFO) SocketAPI.on_connect: Received Socket connection request from User 4abf6 with connection token 'abcdefghijklmnop'.
+[15:03:42] (INFO) SocketAPI.on_connect: Socket connection from User 4abf6 accepted; yielding session token 'this is a session token'
+[15:03:43] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 200 22
+[15:03:43] (INFO) Server.handle_peer_connection: Peer User 4abf6 accepted connection request.
+[15:03:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:03:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:03:43] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:03:43] "GET /socket.io/?transport=polling&EIO=4&t=1714773824.2306907 HTTP/1.1" 200 254 0.000366
+[15:03:43] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:03:43] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:03:43] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:03:43] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:03:45] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:03:45] (INFO) SocketAPI.on_connect: Socket connection from User 34a2a accepted; yielding session token 'this is a session token'
+[15:03:45] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[15:04:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:04:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:04:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:04:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:04:49] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:04:49] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:04:50] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:04:50] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:06:19] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:06:19] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:06:19] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:06:19] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:06:19] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:06:49] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:06:49] (INFO) ServerAPI.kill: Killing Server API.
+[15:06:49] (INFO) __main__.<module>: Exiting main program execution.
+
+[15:06:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:06:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:07:19] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[15:07:19] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[15:07:19] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[15:07:36] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:07:36] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[15:07:36] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[15:07:36] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:07:36] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:07:40] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:07:40] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[15:07:40] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[15:07:40] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:07:40] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:07:59] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[15:07:59] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[15:07:59] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[15:07:59] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:07:59] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:07:59] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[15:07:59] (INFO) Server.start_websocket: Starting WebSocket API.
+[15:07:59] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[15:07:59] (INFO) SocketAPI.run: Starting WebSocket API.
+[15:07:59] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:07:59] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:07:59] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[15:07:59] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:07:59] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:07:59] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[15:07:59] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[15:07:59] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:07:59] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:07:59] (INFO) geventwebsocket.handler.log_request: 10.0.0.20 - - [2024-05-03 15:07:59] "GET /socket.io/?transport=polling&EIO=4&t=1714774079.462154 HTTP/1.1" 200 254 0.000489
+[15:07:59] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:07:59] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:07:59] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:07:59] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:07:59] (INFO) SocketAPI.on_connect: Received Socket connection request from User 4abf6 with connection token 'abcdefghijklmnop'.
+[15:07:59] (INFO) SocketAPI.on_connect: Socket connection from User 4abf6 accepted; yielding session token 'this is a session token'
+[15:08:00] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 200 22
+[15:08:00] (INFO) Server.handle_peer_connection: Peer User 4abf6 accepted connection request.
+[15:08:00] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:08:00] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:08:00] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:08:00] "GET /socket.io/?transport=polling&EIO=4&t=1714774081.2130613 HTTP/1.1" 200 254 0.000353
+[15:08:00] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:08:00] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:08:00] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:08:00] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:08:01] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:08:01] (INFO) SocketAPI.on_connect: Socket connection from User 34a2a accepted; yielding session token 'this is a session token'
+[15:08:01] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[15:19:29] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:19:29] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:19:29] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:19:39] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:19:39] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:19:39] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:19:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:19:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:19:49] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:19:49] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:19:57] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:19:57] (INFO) ServerAPI.kill: Killing Server API.
+[15:19:57] (INFO) __main__.<module>: Exiting main program execution.
+
+[15:20:09] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:20:09] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:20:09] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:20:09] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:08] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:08] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:08] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:21:08] "GET /socket.io/?transport=polling&EIO=4&t=1714774864.8464165 HTTP/1.1" 200 254 0.000418
+[15:21:09] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:09] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:09] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:21:09] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:21:09] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:21:09] (INFO) SocketAPI.on_connect: Cannot accept connection when already SocketState.OPEN.
+[15:21:11] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:11] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:11] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:11] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:21:13] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:13] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:13] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:21:13] "GET /socket.io/?transport=polling&EIO=4&t=1714774873.982785 HTTP/1.1" 200 254 0.000460
+[15:21:13] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:13] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:13] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:21:13] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:21:15] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:21:15] (INFO) SocketAPI.on_connect: Cannot accept connection when already SocketState.OPEN.
+[15:21:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:16] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:16] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:16] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:16] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:21:20] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:20] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:20] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:21:20] "GET /socket.io/?transport=polling&EIO=4&t=1714774880.9117668 HTTP/1.1" 200 254 0.000363
+[15:21:20] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:21:20] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:21:20] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:21:20] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:21:23] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:21:23] (INFO) SocketAPI.on_connect: Cannot accept connection when already SocketState.OPEN.
+[15:21:24] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:24] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:24] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:24] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:21:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:21:26] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:21:26] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:22:33] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[15:22:33] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[15:22:33] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[15:22:51] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:22:51] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[15:22:51] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[15:22:51] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:22:51] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:23:14] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:23:14] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.10:4000.
+[15:23:14] (DEBUG) utils.user_manager.generate_token: Generating token for User 34a2a.
+[15:23:14] (DEBUG) UserManager.add_user: Added User 34a2a with session token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:23:14] (INFO) Server.add_user: User 34a2a added with sess_token 'c518291e64c92f39224d145cac2fb779e4eac7631c678d8ef1ca92a29d443dad'.
+[15:23:28] (INFO) ServerAPI.handle_peer_connection: Received request from User 34a2a to connect with User 4abf6.
+[15:23:28] (DEBUG) UserManager.get_user: Retrieved user info for User 34a2a.
+[15:23:28] (INFO) Server.get_user: Retrieved user with ID 34a2a.
+[15:23:28] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:23:28] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:23:28] (INFO) Server.handle_peer_connection: Contacting User 4abf6 to connect to User 34a2a.
+[15:23:28] (INFO) Server.start_websocket: Starting WebSocket API.
+[15:23:28] (INFO) SocketAPI.init: Initializing WebSocket API with endpoint http://10.0.0.20:3000.
+[15:23:28] (INFO) SocketAPI.run: Starting WebSocket API.
+[15:23:28] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:23:28] (INFO) SocketAPI.run: Serving WebSocket API at http://10.0.0.20:3000
+[15:23:28] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:23:28] (DEBUG) UserManager.get_user: Retrieved user info for User 4abf6.
+[15:23:28] (INFO) Server.get_user: Retrieved user with ID 4abf6.
+[15:23:28] (INFO) Server.contact_client: Contacting Client API for User 4abf6 at http://10.0.0.20:4000/peer_connection.
+[15:23:28] (DEBUG) urllib3.connectionpool._new_conn: Starting new HTTP connection (1): 10.0.0.20:4000
+[15:23:28] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:23:28] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:23:28] (INFO) geventwebsocket.handler.log_request: 10.0.0.20 - - [2024-05-03 15:23:28] "GET /socket.io/?transport=polling&EIO=4&t=1714775008.558182 HTTP/1.1" 200 254 0.000578
+[15:23:28] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:23:28] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:23:28] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:23:28] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:23:29] (INFO) SocketAPI.on_connect: Received Socket connection request from User 4abf6 with connection token 'abcdefghijklmnop'.
+[15:23:29] (INFO) SocketAPI.on_connect: Socket connection from User 4abf6 accepted; yielding session token 'this is a session token'
+[15:23:29] (DEBUG) urllib3.connectionpool._make_request: http://10.0.0.20:4000 "POST /peer_connection HTTP/1.1" 200 22
+[15:23:29] (INFO) Server.handle_peer_connection: Peer User 4abf6 accepted connection request.
+[15:23:29] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:23:29] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:23:29] (INFO) geventwebsocket.handler.log_request: 10.0.0.10 - - [2024-05-03 15:23:29] "GET /socket.io/?transport=polling&EIO=4&t=1714775009.9935868 HTTP/1.1" 200 254 0.000418
+[15:23:29] (DEBUG) geventwebsocket.handler.run_application: Initializing WebSocket
+[15:23:29] (DEBUG) geventwebsocket.handler.upgrade_websocket: Validating WebSocket request
+[15:23:29] (DEBUG) geventwebsocket.handler.upgrade_connection: Attempting to upgrade connection
+[15:23:29] (DEBUG) geventwebsocket.handler.upgrade_connection: WebSocket request accepted, switching protocols
+[15:23:30] (INFO) SocketAPI.on_connect: Received Socket connection request from User 34a2a with connection token 'abcdefghijklmnop'.
+[15:23:30] (INFO) SocketAPI.on_connect: Socket connection from User 34a2a accepted; yielding session token 'this is a session token'
+[15:23:30] (INFO) SocketAPI.on_connect: Socket API acquired all expected users.
+[15:24:03] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:24:03] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:24:03] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:24:03] (INFO) SocketAPI.on_disconnect: Client disconnected.
+[15:24:03] (ERROR) engineio.server.run_handler: disconnect handler error
+Traceback (most recent call last):
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/engineio/server.py", line 434, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 658, in _handle_eio_disconnect
+    self._handle_disconnect(eio_sid, n)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 564, in _handle_disconnect
+    self._trigger_event('disconnect', namespace, sid)
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/socketio/server.py", line 615, in _trigger_event
+    return handler.trigger_event(event, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/namespace.py", line 25, in trigger_event
+    return self.socketio._handle_event(handler, event, self.namespace,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/miniconda3/lib/python3.12/site-packages/flask_socketio/__init__.py", line 827, in _handle_event
+    ret = handler(*args)
+          ^^^^^^^^^^^^^^
+  File "/Users/andrewpeterson/Desktop/VideoChat/POC-Audio-Server/server/utils/av.py", line 403, in on_disconnect
+    if self.cls.client.state == ClientState.CONNECTED:
+       ^^^^^^^^^^^^^^^
+AttributeError: type object 'SocketAPI' has no attribute 'client'
+[15:24:05] (DEBUG) geventwebsocket.handler.close: Failed to write closing frame -> closing socket
+[15:24:05] (DEBUG) geventwebsocket.handler.close: Closed WebSocket
+[15:24:06] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:24:06] (INFO) ServerAPI.kill: Killing Server API.
+[15:24:06] (INFO) __main__.<module>: Exiting main program execution.
+
+[15:24:12] (INFO) Server.__init__: Intializing server with API Endpoint http://10.0.0.20:5000
+[15:24:12] (INFO) ServerAPI.init: Initializing Server API with endpoint http://10.0.0.20:5000.
+[15:24:12] (INFO) ServerAPI.start: Starting Server API at http://10.0.0.20:5000.
+[15:24:50] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[15:24:50] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://10.0.0.20:4000.
+[15:24:50] (DEBUG) utils.user_manager.generate_token: Generating token for User 4abf6.
+[15:24:50] (DEBUG) UserManager.add_user: Added User 4abf6 with session token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:24:50] (INFO) Server.add_user: User 4abf6 added with sess_token '8ab242f62b17066144c07aa4bc749ef2a7c63fa68f4ccf0dd6810b95df611b85'.
+[15:31:26] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[15:31:26] (INFO) ServerAPI.kill: Killing Server API.
+[15:31:26] (INFO) __main__.<module>: Exiting main program execution.
+
+[16:08:10] (INFO) Server.__init__: Intializing server with API Endpoint http://192.168.1.13:5000
+[16:08:10] (INFO) ServerAPI.init: Initializing Server API with endpoint http://192.168.1.13:5000.
+[16:08:10] (INFO) ServerAPI.start: Starting Server API at http://192.168.1.13:5000.
+[16:14:54] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:14:54] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:4000.
+[16:14:54] (DEBUG) utils.user_manager.generate_token: Generating token for User a2465.
+[16:14:54] (DEBUG) UserManager.add_user: Added User a2465 with session token 'b5f03d8303ae5902779c40e519fa7935bb6cd394e5a62a901a2370314fa09a2c'.
+[16:14:54] (INFO) Server.add_user: User a2465 added with sess_token 'b5f03d8303ae5902779c40e519fa7935bb6cd394e5a62a901a2370314fa09a2c'.
+[16:27:19] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:27:19] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:4000.
+[16:27:19] (DEBUG) utils.user_manager.generate_token: Generating token for User 01d4d.
+[16:27:19] (DEBUG) UserManager.add_user: Added User 01d4d with session token '7e7905c02ce4832895bec03c9409b3caf5d4f5ee10106753a69cda6120944083'.
+[16:27:19] (INFO) Server.add_user: User 01d4d added with sess_token '7e7905c02ce4832895bec03c9409b3caf5d4f5ee10106753a69cda6120944083'.
+[16:34:26] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[16:34:26] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:4000.
+[16:34:26] (DEBUG) utils.user_manager.generate_token: Generating token for User 154df.
+[16:34:26] (DEBUG) UserManager.add_user: Added User 154df with session token '092880d8cfa1060051c959103a3a227f43b64b7765fe59aa1c4afd270b4c1bec'.
+[16:34:26] (INFO) Server.add_user: User 154df added with sess_token '092880d8cfa1060051c959103a3a227f43b64b7765fe59aa1c4afd270b4c1bec'.
+[21:37:24] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[21:37:24] (INFO) ServerAPI.kill: Killing Server API.
+[21:37:24] (INFO) __main__.<module>: Exiting main program execution.
+
+[21:37:28] (INFO) Server.__init__: Intializing server with API Endpoint http://192.168.1.13:5000
+[21:37:28] (INFO) ServerAPI.init: Initializing Server API with endpoint http://192.168.1.13:5000.
+[21:37:28] (INFO) ServerAPI.start: Starting Server API at http://192.168.1.13:5000.
+[22:10:35] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[22:10:35] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:5000.
+[22:10:35] (DEBUG) utils.user_manager.generate_token: Generating token for User 50894.
+[22:10:35] (DEBUG) UserManager.add_user: Added User 50894 with session token '99204b904c798404ba476ff04cf555b917ddc6233ad14beb838e62e253647682'.
+[22:10:35] (INFO) Server.add_user: User 50894 added with sess_token '99204b904c798404ba476ff04cf555b917ddc6233ad14beb838e62e253647682'.
+[22:13:45] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[22:13:45] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:5000.
+[22:13:45] (DEBUG) utils.user_manager.generate_token: Generating token for User c7151.
+[22:13:45] (DEBUG) UserManager.add_user: Added User c7151 with session token 'd159652372d53d96ba6a0e913b03b8ade5237221aee6cfc9cac012a22bc92734'.
+[22:13:45] (INFO) Server.add_user: User c7151 added with sess_token 'd159652372d53d96ba6a0e913b03b8ade5237221aee6cfc9cac012a22bc92734'.
+[22:18:46] (INFO) ServerAPI.create_user: Received request to create a user ID.
+[22:18:46] (DEBUG) UserManager.generate_user_id: Generating User ID for user with API Endpoint http://192.168.1.13:5000.
+[22:18:46] (DEBUG) utils.user_manager.generate_token: Generating token for User f1984.
+[22:18:46] (DEBUG) UserManager.add_user: Added User f1984 with session token '37b9ec5a15b5e1040ec9ecaadf768bb5f25a741cbb19f8a950734d01d52e2448'.
+[22:18:46] (INFO) Server.add_user: User f1984 added with sess_token '37b9ec5a15b5e1040ec9ecaadf768bb5f25a741cbb19f8a950734d01d52e2448'.
+[22:21:30] (INFO) __main__.<module>: Intercepted Keyboard Interrupt.
+[22:21:30] (INFO) ServerAPI.kill: Killing Server API.
+[22:21:30] (INFO) __main__.<module>: Exiting main program execution.
+

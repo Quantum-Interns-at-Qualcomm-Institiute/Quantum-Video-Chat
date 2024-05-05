@@ -1,5 +1,4 @@
-import psutil
-import platform
+from typing import Optional
 from functools import total_ordering
 from enum import Enum
 from client.errors import Errors
@@ -40,31 +39,31 @@ class APIState(Enum):
 
 
 class ClientAPI(Thread):
-    # Try to get default en0 address to start client API endpoint on
-    key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
 
-    for prop in psutil.net_if_addrs()[key]:
-        if prop.family == 2:
-            ip = prop.address
+    # TODO: needed for flask, but is this the best way?
+    app: Flask = Flask(__name__)
 
-    DEFAULT_ENDPOINT = Endpoint(ip if ip else '127.0.0.1', 4000)
+    def __init__(self, endpoint: Optional[Endpoint] = None):
+        super().__init__()
+        self.logger = logging.getLogger('ClientAPI')
+        self.state = APIState.INIT
 
-    app = Flask(__name__)
-    http_server = None
-    client = None
-    endpoint = None
-    state = APIState.NEW
+        self.http_server: WSGIServer = None
+        # self.instance = None #TODO: what is this?
 
-    instance = None
+        # TODO: config file should have wifi or ad hoc mode
 
-    # region --- Utils ---
-    logger = logging.getLogger('ClientAPI')
+        self.endpoint: Endpoint = endpoint if endpoint else Endpoint(
+            '127.0.0.1', 4000)
+
+        self.logger.info(f"Created new ClientAPI at {self.endpoint}")
 
     @classmethod
     def verify_server(cls, sess_token):
         if type(sess_token) is str:
             return True
-        raise Errors.BADAUTHENTICATION.value(f"Unrecognized session token '{sess_token}' from server.")
+        raise Errors.BADAUTHENTICATION(f"Unrecognized session token '{
+                                       sess_token}' from server.")
 
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
@@ -83,7 +82,7 @@ class ClientAPI(Thread):
         def handler_with_authentication(cls, *args, **kwargs):
             sess_token, = get_parameters(request.json, 'sess_token')
             if not cls.verify_server(sess_token):
-                raise Errors.BADAUTHENTICATION.value(
+                raise Errors.BADAUTHENTICATION(
                     f"Authentication failed for server with token '{sess_token}'.")
 
             return endpoint_handler(cls, *args, **kwargs)
@@ -100,16 +99,16 @@ class ClientAPI(Thread):
             cls = ClientAPI
             try:
                 return endpoint_handler(cls, *args, **kwargs)
-            except Errors.BADAUTHENTICATION.value as e:
-                return Errors.BADAUTHENTICATION.value.info(cls.remove_last_period(e))
-            except Errors.BADREQUEST.value as e:
-                return Errors.BADREQUEST.value.info(cls.remove_last_period(e))
-            except Errors.SERVERERROR.value as e:
-                return Errors.SERVERERROR.value.info(cls.remove_last_period(e))
-            except Errors.BADGATEWAY.value as e:
-                return Errors.BADGATEWAY.value.info(cls.remove_last_period(e))
+            except Errors.BADAUTHENTICATION as e:
+                return Errors.BADAUTHENTICATION.info(cls.remove_last_period(e))
+            except Errors.BADREQUEST as e:
+                return Errors.BADREQUEST.info(cls.remove_last_period(e))
+            except Errors.SERVERERROR as e:
+                return Errors.SERVERERROR.info(cls.remove_last_period(e))
+            except Errors.BADGATEWAY as e:
+                return Errors.BADGATEWAY.info(cls.remove_last_period(e))
             except Exception as e:
-                return Errors.UNKNOWNERROR.value.info(cls.remove_last_period(e))
+                return Errors.UNKNOWNERROR.info(cls.remove_last_period(e))
 
         # Makes it to trace is correct
         handler_with_exceptions.__name__ = endpoint_handler.__name__
@@ -118,57 +117,45 @@ class ClientAPI(Thread):
 
     # region --- External 'Instance' Interface ---
 
-    @classmethod
-    def init(cls, client):
-        cls.logger.info(f"Initializing Client API with endpoint {client.api_endpoint}.")
-        if cls.state == APIState.LIVE:
-            raise Errors.SERVERERROR.value(
-                "Cannot reconfigure API during server runtime.")
-
-        cls.client = client
-        cls.endpoint = client.api_endpoint
-        cls.state = APIState.INIT
-        cls.instance = cls()
-        return cls.instance
-
     def run(self):
         cls = self.__class__
 
-        cls.logger.info("Starting Client API.")
-        if cls.state == APIState.NEW:
-            raise Errors.SERVERERROR.value(
+        self.logger.info("Starting Client API.")
+        if self.state == APIState.NEW:
+            raise Errors.SERVERERROR(
                 "Cannot start API before initialization.")
-        if cls.state == APIState.LIVE:
-            raise Errors.SERVERERROR.value(
+        if self.state == APIState.LIVE:
+            raise Errors.SERVERERROR(
                 "Cannot start API: already running.")
 
         while True:
             try:
-                print(f"Serving Client API at {cls.endpoint}.")
-                cls.logger.info(f"Serving Client API at {cls.endpoint}.")
+                print(f"Serving Client API at {self.endpoint}.")
+                self.logger.info(f"Serving Client API at {self.endpoint}.")
 
-                cls.state = APIState.LIVE
-                cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
-                cls.http_server.serve_forever()
+                self.state = APIState.LIVE
+                self.http_server = WSGIServer(tuple(self.endpoint), self.app)
+                self.http_server.serve_forever()
             except OSError as e:
                 print(f"Listener endpoint {cls.endpoint} in use.")
-                cls.logger.error(f"Endpoint {cls.endpoint} in use.")
+                self.logger.error(f"Endpoint {cls.endpoint} in use.")
 
-                cls.state = APIState.INIT
+                self.state = APIState.INIT
                 cls.client.set_api_endpoint(
                     Endpoint(cls.endpoint.ip, cls.endpoint.port + 1))
                 continue
-            cls.logger.info("Client API terminated.")
+            self.logger.info("Client API terminated.")
             break
 
     @classmethod
     def kill(cls):
-        cls.logger.info("Killing Client API.")
-        if cls.state != APIState.LIVE:
-            cls.logger.error(f"Cannot kill Client API when not {APIState.LIVE}.")
+        self.logger.info("Killing Client API.")
+        if self.state != APIState.LIVE:
+            self.logger.error(f"Cannot kill Client API when not {
+                APIState.LIVE}.")
             return
         cls.http_server.stop()
-        cls.state = APIState.INIT
+        self.state = APIState.INIT
     # endregion
 
     # region --- API Endpoints ---
@@ -192,7 +179,8 @@ class ClientAPI(Thread):
         peer_id, socket_endpoint, conn_token = get_parameters(
             request.json, 'peer_id', 'socket_endpoint', 'conn_token')
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
+        self.logger.info(f"Instructied to connect to peer {peer_id} at {
+            socket_endpoint} with token '{conn_token}'.")
 
         try:
             res = cls.client.handle_peer_connection(
@@ -200,12 +188,12 @@ class ClientAPI(Thread):
         except Exception as e:
             # TODO: Why did the connection fail?
             # TODO: Move into init
-            cls.logger.info(e)
+            self.logger.info(e)
             return jsonify({"error_code": "500",
                             "error_message": "Internal Server Error",
                             "details": "Connectioned failed"}), 500
 
-        cls.logger.info("client.handle_peer_connection() finished.")
+        self.logger.info("client.handle_peer_connection() finished.")
         if not res:
             # User Refused
             logger.info("Responding with 418")
@@ -213,7 +201,7 @@ class ClientAPI(Thread):
                             "error_message": "I'm a teapot",
                             "details": "Peer User refused connection"}), 418
         # TODO: What should we return?
-        cls.logger.info("Responding with 200")
+        self.logger.info("Responding with 200")
         return jsonify({'status_code': '200'}), 200
     # endregion
 # endregion

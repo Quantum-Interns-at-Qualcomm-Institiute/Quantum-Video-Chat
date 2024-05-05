@@ -33,6 +33,7 @@ class TestFlaskNamespace(FlaskNamespace):
         send((user_id, msg), broadcast=True)
 
     def on_disconnect(self):
+        # TODO: use client.set_state()
         if self.cls.client.state == ClientState.CONNECTED:
             self.cls.client.state = ClientState.LIVE
 
@@ -76,6 +77,7 @@ class BroadcastFlaskNamespace(FlaskNamespace):
         send((user_id, msg), broadcast=True, include_self=False)
 
     def on_disconnect(self):
+        # TODO: use client.set_state
         if self.cls.client.state == ClientState.CONNECTED:
             self.cls.client.state = ClientState.LIVE
 
@@ -204,7 +206,7 @@ class VideoClientNamespace(AVClientNamespace):
             inpipe = ffmpeg.input(
                 'pipe:',
                 format='rawvideo',
-                pix_fmt='rgbx',
+                pix_fmt='rgb24',
                 s='{}x{}'.format(
                     self.av.video_shape[1], self.av.video_shape[0]),
                 r=self.av.frame_rate,
@@ -218,9 +220,10 @@ class VideoClientNamespace(AVClientNamespace):
                 cur_key_idx, key = self.av.key
 
                 _, image = cap.read()
+                print(image.size)
                 image = cv2.resize(
                     image, (self.av.video_shape[1], self.av.video_shape[0]))
-                data = image.tobytes("hex", "rgb")
+                data = image.tobytes()
 
                 data = output.run(
                     input=data, capture_stdout=True, quiet=True)[0]
@@ -272,7 +275,7 @@ class AV:
 
         self.cls = cls
 
-        self.key_gen = KeyGenFactory().create_key_generator(KeyGenerators.FILE)
+        self.key_gen = KeyGenFactory().create_key_generator(KeyGenerators.DEBUG)
         self.key_gen.generate_key(key_length=128)
 
         display_shapes = [(720, 960, 3), (720, 1280, 3)]

@@ -8,13 +8,14 @@ from client.errors import Errors
 class ClientState(Enum):
     NEW = 'NEW'  # Uninitialized
     INIT = 'INIT'  # Initialized
+    CONNECTING = 'CONNECTING'
     LIVE = 'LIVE'  # Connected to server
     CONNECTED = 'CONNECTED'  # Connected to peer
 
-    def __lt__(self, other):
-        if self.__class__ is other.__class__:
-            arr = list(self.__class__)
-            return arr.index(self) < arr.index(other)
+    def __lt__(cls, other):
+        if cls.__class__ is other.__class__:
+            arr = list(cls.__class__)
+            return arr.index(cls) < arr.index(other)
         return NotImplemented
 
 
@@ -52,7 +53,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
         if len(validators) == 0:
             return (*data,)
         if len(data) != len(validators):
-            raise Errors.PARAMETERERROR.value(
+            raise Errors.PARAMETERERROR(
                 f"Expected {len(validators)} parameters but received {len(data)}.")
 
         param_vals = ()
@@ -61,7 +62,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
                 validator = lambda x: not not x
 
             if not validator(param):
-                raise Errors.INVALIDPARAMETER.value(
+                raise Errors.INVALIDPARAMETER(
                     "Parameter failed validation.")
             param_vals += (*param_vals, param)
         return param_vals
@@ -90,10 +91,10 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
             if param in data:
                 param_val = data.get(param)
             else:
-                raise Errors.PARAMETERERROR.value(f"Expected parameter '{param}' not received.")
+                raise Errors.PARAMETERERROR(f"Expected parameter '{param}' not received.")
 
             if not validator(param_val):
-                raise Errors.INVALIDPARAMETER.value(
+                raise Errors.INVALIDPARAMETER(
                     f"Parameter '{param}' failed validation.")
 
             param_vals = (*param_vals, param_val)

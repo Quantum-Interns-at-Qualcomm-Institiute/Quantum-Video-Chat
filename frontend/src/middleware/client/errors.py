@@ -80,3 +80,6 @@ class Errors(Enum):
     CONNECTIONREFUSED = ConnectionRefused
     INTERNALCLIENTERROR = InternalClientError
     UNKNOWNERROR = UnknownError
+
+    def __call__(cls, message: str):
+        return cls.value(message)
