@@ -1,8 +1,8 @@
 from client.client import Client
-from client.api import ClientAPI
 from client.endpoint import Endpoint
-import socketio
 import json
+import psutil
+import platform
 import sys
 
 DEV = True
@@ -12,27 +12,43 @@ if __name__ == "__main__":
     with open(CONFIG) as json_data:
         config = json.load(json_data)
 
-    try:
-        frontend_socket = socketio.Client()
-        client = Client(frontend_socket,
-                        api_endpoint=ClientAPI.DEFAULT_ENDPOINT,
-                        server_endpoint=Endpoint(config["SERVER_IP"],
-                                                 config["SERVER_PORT"]))
+    # TODO: This is hacky, may change in the future
+    api_port = config["API_ENDPOINT_PORT"]
+    api_address = "localhost"
 
-        frontend_socket.connect(
-            # f"http://localhost:{sys.argv[1]}",
-            f"http://localhost:{5001}",
-            headers={'user_id': client.user_id},
-            retry=True)
+    for prop in psutil.net_if_addrs()['WiFi 2' if platform.system() == 'Windows' else 'en0']:
+        if prop.family == 2:
+            api_address = prop.address
 
-        # TODO: convert back to lambda or not
-        @frontend_socket.on('connect_to_peer')
-        def handle_conenct_to_peer(data):
-            print(f"got {data} from server")
-            client.connect_to_peer(data)
+    def create_client():
+        global api_port
+        global api_address
+        client = Client()
 
-        while True:
-            pass
+        try:
+            api_endpoint = Endpoint(api_address, api_port)
+            client.start_api(api_endpoint)
+        except OSError:
+            print(f"Port {api_port} in use, trying {api_port + 1}")
+            api_port += 1
+            create_client()
 
-    except Exception as f:
-        raise f
+        server_endpoint = Endpoint(config["SERVER_IP"], config["SERVER_PORT"])
+        client.set_server_endpoint(server_endpoint)
+
+        frontend_socket_endpoint = Endpoint("localhost", 5001)
+        client.set_frontend_socket(frontend_socket_endpoint)
+
+        @client.frontend_socket.on('connect_to_peer')
+        def handle_conenct_to_peer(peer_id: str):
+            print(f"Frontend reports peer ID {peer_id}")
+            # client.connect_to_peer(peer_id)
+
+        return client
+
+    client = create_client()
+
+    # TODO: this is a bit hacky, find a more elegant solution
+    # This prevents the python process from terminating and closing the socket
+    while True:
+        pass

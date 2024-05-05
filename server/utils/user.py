@@ -1,10 +1,13 @@
+from . import Endpoint
 from enum import Enum
+
+
 class UserState(Enum):
     IDLE = 'IDLE'
     AWAITING_CONNECTION = 'AWAITING CONNECTION'
     CONNECTED = 'CONNECTED'
 
-from . import Endpoint
+
 class User:
     def __init__(self, api_endpoint: Endpoint, sess_token: str, state=UserState.IDLE, peer=None):
         self.api_endpoint = Endpoint(*api_endpoint)
