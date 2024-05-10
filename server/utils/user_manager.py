@@ -145,7 +145,7 @@ class UserManager:
     def add_user(self, endpoint: Endpoint):
         user_id = self.generate_user_id(str(endpoint))
         sess_token = self.generate_token(user_id)
-        user = User(user_id, endpoint, sess_token)
+        user = User(user_id, sess_token, endpoint)
         try:
             self.storage.add_user(user_id, user)
             self.logger.debug(
@@ -156,7 +156,7 @@ class UserManager:
             raise e
 
     def set_user_state(self, user_id, state: UserState, peer=None):
-        if (state == UserState.IDLE) ^ (peer == None):
+        if (state == UserState.IDLE) ^ (peer is None):
             raise InvalidState(f"Cannot set state {state} ({peer}) for User {
                                user_id}: Invalid state.")
 

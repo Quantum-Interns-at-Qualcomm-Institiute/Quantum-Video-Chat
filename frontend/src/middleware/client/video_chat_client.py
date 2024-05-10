@@ -193,7 +193,7 @@ class VideoChatClient:
             self.logger.info(f"Attempting to connect to server: {
                 self.server_endpoint}.")
             response = self.contact_server('/create_user', json={
-                'api_endpoint': tuple(self.server_endpoint)
+                'api_endpoint': tuple(self.api_instance.endpoint)
             })
         except Exception as e:
             self.server_endpoint = None  # Reset endpoint before exiting
