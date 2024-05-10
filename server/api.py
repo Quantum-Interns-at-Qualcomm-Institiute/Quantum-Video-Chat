@@ -2,8 +2,9 @@ from threading import Thread
 import hashlib
 from typing import Tuple
 from flask_socketio import SocketIO, send, emit
-from utils.user import User
-from utils.av import generate_flask_namespace
+
+from utils.namespaces.av_controller import generate_flask_namespace
+from user import User
 from utils import Endpoint
 from enum import Enum
 from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
@@ -172,16 +173,27 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
             except BadAuthentication as e:
                 cls.logger.info(f"Authentication failed for server at {
                                 endpoint_handler.__name__}:\n\t{str(e)}")
-                return jsonify({"error_code": "403", "error_message": "Forbidden", "details": remove_last_period(e)}), 403
+                return jsonify({"error_code": "403",
+                                "error_message": "Forbidden",
+                                "details": remove_last_period(e)}),
+                403
             except BadRequest as e:
                 cls.logger.info(str(e))
-                return jsonify({"error_code": "400", "error_message": "Bad Request", "details": remove_last_period(e)}), 400
+                return jsonify({"error_code": "400",
+                                "error_message": "Bad Request",
+                                "details": remove_last_period(e)}),
+                400
             except ServerError as e:
                 cls.logger.error(str(e))
-                return jsonify({"error_code": "500", "error_message": "Interal Server Error", "details": remove_last_period(e)}), 500
+                return jsonify({"error_code": "500",
+                                "error_message": "Interal Server Error",
+                                "details": remove_last_period(e)}), 500
             except BadGateway as e:
                 cls.logger.info(str(e))
-                return jsonify({"error_code": "502", "error_message": "Bad Gateway", "details": remove_last_period(e)}), 502
+                return jsonify({"error_code": "502",
+                                "error_message": "Bad Gateway",
+                                "details": remove_last_period(e)}),
+                502
         handler_with_exceptions.__name__ = endpoint_handler.__name__
         return handler_with_exceptions
     # endregion
@@ -435,7 +447,7 @@ class SocketAPI(Thread):
                 cls.state = SocketState.LIVE
                 cls.socketio.run(cls.app, host=cls.endpoint.ip,
                                  port=cls.endpoint.port)
-            except OSError as e:
+            except OSError:
                 print(f"Listener endpoint {cls.endpoint} in use.")
                 cls.logger.error(f"Endpoint {cls.endpoint} in use.")
 
@@ -523,7 +535,7 @@ if __name__ == '__main__':
         # server.set_host()
         ServerAPI.init(server)
         ServerAPI.start()  # Blocking
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         logger.info("Intercepted Keyboard Interrupt.")
         ServerAPI.kill()
         logger.info("Exiting main program execution.\n")

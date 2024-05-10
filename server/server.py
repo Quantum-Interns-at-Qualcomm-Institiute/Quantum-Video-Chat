@@ -1,7 +1,7 @@
 from enum import Enum
 from functools import total_ordering
 from typing import Tuple
-from utils.user import User
+from user import User
 from utils import ServerError, BadGateway, BadRequest
 from utils import Endpoint
 import requests
@@ -106,14 +106,13 @@ class Server:
         except Exception as e:
             self.logger.error(f"Unable to reach Client API for User {
                               user_id} at endpoint {endpoint}.")
-            # TODO: Figure out specifically what exception is raised so I can catch only that, and then handle it instead of re-raising (or maybe re-raise different exception and then caller can handle)
+            # TODO: Figure out specifically what exception is raised so I can catch only that,
+            # and then handle it instead of re-raising
+            # (or maybe re-raise different exception and then caller can handle)
             raise e
         return response
 
     def set_websocket_endpoint(self, endpoint):
-        # if self.state >= ClientState.LIVE:
-        #     raise InternalClientError("Cannot change Web Socket endpoint after connection already estbablished.") # TODO: use InvalidState
-
         self.websocket_endpoint = Endpoint(*endpoint)
         self.SocketAPI.endpoint = self.websocket_endpoint
         self.logger.info(f"Setting Web Socket endpoint: {

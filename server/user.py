@@ -1,5 +1,5 @@
 from typing import Optional
-from . import Endpoint
+from utils import Endpoint
 from enum import Enum
 
 

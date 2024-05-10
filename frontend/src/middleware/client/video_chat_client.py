@@ -3,7 +3,7 @@ from client.api import ClientAPI
 from client.endpoint import Endpoint
 from client.errors import Errors
 from client.util import get_parameters, ClientState
-from client.av import AV
+from client.namespaces.av_controller import AVController
 # from client.decorators import HandleExceptions as HandleClientExceptions
 import requests
 from socketio import Client
@@ -16,7 +16,6 @@ logging.basicConfig(filename='./src/middleware/logs/client.log',
                     level=logging.INFO,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
-logger = logging.getLogger(__name__)
 # endregion
 
 # TODO: Trim down this file
@@ -77,7 +76,7 @@ class SocketClient():
         cls.logger.info(
             f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
-        cls.av = AV(cls, frontend_socket)
+        cls.av = AVController(cls, frontend_socket)
         cls.namespaces = cls.av.client_namespaces
 
         cls.conn_token = conn_token  # TODO: remove
