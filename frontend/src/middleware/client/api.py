@@ -55,9 +55,7 @@ class ClientAPI(Thread):
         cls.client = client
         cls.instance = cls()
 
-        # self.instance = None #TODO: what is this?
         # TODO: config file should have wifi or ad hoc mode
-
         cls.endpoint = endpoint if endpoint else Endpoint(
             '127.0.0.1', 4000)
 
@@ -104,8 +102,9 @@ class ClientAPI(Thread):
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
 
-    def authenticate(self, sess_token: str):
-        if not self.sess_token == sess_token:
+    @classmethod
+    def authenticate(cls, sess_token: str):
+        if not cls.client.sess_token == sess_token:
             raise Errors.BADAUTHENTICATION(
                 f"Authentication failed for server with token '{sess_token}'.")
 
