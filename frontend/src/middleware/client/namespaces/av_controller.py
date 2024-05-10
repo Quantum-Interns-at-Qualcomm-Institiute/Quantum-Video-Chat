@@ -49,7 +49,7 @@ class AVController:
         self.client_namespaces = generate_client_namespace(
             cls, self, frontend_socket)
 
-        self.keys = [(0, self.key_gen.get_key().tobytes())]
+        self.keys = [(0, self.key_gen.get_key().tobytes()), (1, self.key_gen.get_key().tobytes())]
         async def gen_keys():
             while True:
                 self.key_gen.generate_key(key_length=128)
