@@ -1,5 +1,8 @@
 from threading import Thread
+import hashlib
+from typing import Tuple
 from flask_socketio import SocketIO, send, emit
+from utils.user import User
 from utils.av import generate_flask_namespace
 from utils import Endpoint
 from enum import Enum
@@ -11,7 +14,7 @@ from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from flask import Flask, jsonify, request
 import psutil
 import platform
-key = 'WiFi 2' if platform.system() == 'Windows' else 'en0'
+key = 'Ethernet 2' if platform.system() == 'Windows' else 'en11'
 
 for prop in psutil.net_if_addrs()[key]:
     if prop.family == 2:
@@ -147,18 +150,18 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
     # region --- Utils ---
     logger = logging.getLogger('ServerAPI')
 
-    def HandleAuthentication(endpoint_handler):
+    def HandleAuthentication(func: callable):
         """Decorator to handle commonly encountered exceptions in the API"""
-        def handler_with_authentication(cls, *args, **kwargs):
+        def wrapper(cls, *args, **kwargs):
             user_id, sess_token = get_parameters(
                 request.json, 'user_id', 'sess_token')
             if not cls.server.verify_user(user_id, sess_token):
                 raise BadAuthentication(f"Authentication failed for user {
                                         user_id} with session token '{sess_token}'.")
 
-            return endpoint_handler(cls, *args, **kwargs)
-        handler_with_authentication.__name__ = endpoint_handler.__name__
-        return handler_with_authentication
+            return func(cls, *args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
 
     def HandleExceptions(endpoint_handler):
         """Decorator to handle commonly encountered exceptions in the API"""
@@ -250,7 +253,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
     @app.route('/peer_connection', methods=['POST'])
     @HandleExceptions
-    # @HandleAuthentication
+    @HandleAuthentication
     def handle_peer_connection(cls):
         """
         Instruct peer to connect to user's provided socket endpoint and self-validate
@@ -304,8 +307,8 @@ class SocketAPI(Thread):
         return True
 
     @classmethod
-    def generate_conn_token(cls):
-        return 'abcdefghijklmnop'
+    def generate_conn_token(cls, users: Tuple[User, User]):
+        return hashlib.sha256(bytes(a ^ b for a, b in zip(users[0].id.encode(), users[1].id.encode()))).hexdigest()
 
     @classmethod
     def generate_sess_token(cls, user_id):
@@ -385,13 +388,12 @@ class SocketAPI(Thread):
     # region --- External 'Instance' Interface ---
 
     @classmethod
-    def init(cls, server, users):
+    def init(cls, server, users: Tuple[User, User]):
         """
         Parameters
         ----------
         server : Server
-        users : tuple, list
-            User IDs
+        users : tuple (requester_id, host_id)
         """
         cls.logger.info(f"Initializing WebSocket API with endpoint {
                         server.websocket_endpoint}.")
@@ -401,10 +403,10 @@ class SocketAPI(Thread):
 
         cls.server = server
         cls.endpoint = server.websocket_endpoint
-        cls.conn_token = cls.generate_conn_token()
+        cls.conn_token = cls.generate_conn_token(users)
         cls.state = SocketState.INIT
         for user in users:
-            cls.users[user] = None
+            cls.users[user.id] = User(*user)
         cls.instance = cls()
         return cls.instance
 
@@ -483,9 +485,10 @@ class SocketAPI(Thread):
                         user_id} accepted; yielding session token '{sess_token}'")
         emit('token', sess_token)
 
-        if cls.has_all_users():
-            cls.logger.info("Socket API acquired all expected users.")
-            cls.state = SocketState.OPEN
+        # TODO: What is this block?
+        # if cls.has_all_users():
+        #     cls.logger.info("Socket API acquired all expected users.")
+        #     cls.state = SocketState.OPEN
 
     @socketio.on('message')
     @HandleExceptions

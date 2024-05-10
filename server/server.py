@@ -1,5 +1,7 @@
 from enum import Enum
 from functools import total_ordering
+from typing import Tuple
+from utils.user import User
 from utils import ServerError, BadGateway, BadRequest
 from utils import Endpoint
 import requests
@@ -52,11 +54,11 @@ class Server:
 
         self.qber_manager = None  # QBERManager
 
-    def verify_user(self, user_id, sess_token):
+    def verify_user(self, user_id: str, sess_token: str):
         try:
-            user_info = self.get_user(user_id)
-            return user_info.sess_token == sess_token
-        except UserNotFound as e:
+            user = self.get_user(user_id)
+            return user.sess_token == sess_token
+        except UserNotFound:
             return False
 
     def add_user(self, endpoint):
@@ -117,7 +119,7 @@ class Server:
         self.logger.info(f"Setting Web Socket endpoint: {
                          self.websocket_endpoint}")
 
-    def start_websocket(self, users):
+    def start_websocket(self, users: Tuple[User, User]):
         self.logger.info("Starting WebSocket API.")
         if not self.websocket_endpoint:
             raise ServerError(
@@ -126,7 +128,7 @@ class Server:
         self.websocket_instance = self.SocketAPI.init(self, users)
         self.websocket_instance.start()
 
-    def handle_peer_connection(self, user_id, peer_id):
+    def handle_peer_connection(self, user_id: str, peer_id: str):
         if user_id == peer_id:
             raise BadRequest(f"Cannot intermediate connection between User {
                              user_id} and self.")
@@ -134,34 +136,34 @@ class Server:
         # TODO: Validate state(s)
         # if peer is not IDLE, reject
         try:
-            user = self.get_user(user_id)
-        except UserNotFound as e:
+            requester = self.get_user(user_id)
+        except UserNotFound:
             raise BadRequest(f"User {user_id} does not exist.")
         try:
-            peer = self.get_user(peer_id)
-        except UserNotFound as e:
+            host = self.get_user(peer_id)
+        except UserNotFound:
             raise BadRequest(f"User {peer_id} does not exist.")
 
-        if peer.state != UserState.IDLE:
+        if host.state != UserState.IDLE:
             raise InvalidState(f"Cannot connect to peer User {
                                peer_id}: peer must be IDLE.")
-        if user.state != UserState.IDLE:
+        if requester.state != UserState.IDLE:
             raise InvalidState(f"Cannot connect User {
                                user_id} to peer: User must be IDLE.")
 
         self.logger.info(f"Contacting User {
                          peer_id} to connect to User {user_id}.")
 
-        self.start_websocket(users=(user_id, peer_id))
+        self.start_websocket(users=(requester, host))
 
         try:
             response = self.contact_client(peer_id, '/peer_connection', json={
-                'sess_token': self.get_user(peer_id).sess_token,
-                'peer_id': user_id,
+                'sess_token': host.sess_token,
+                'peer_id': host.id,
                 'socket_endpoint': tuple(self.websocket_endpoint),
                 'conn_token': self.SocketAPI.conn_token
             })
-        except Exception as e:
+        except Exception:
             raise BadGateway(f"Unable to reach peer User {peer_id}.")
         print(f"Status code: {response.status_code}")
         if response.status_code != 200:

@@ -1,3 +1,4 @@
+from typing import Optional
 from . import Endpoint
 from enum import Enum
 
@@ -9,10 +10,18 @@ class UserState(Enum):
 
 
 class User:
-    def __init__(self, api_endpoint: Endpoint, sess_token: str, state=UserState.IDLE, peer=None):
-        self.api_endpoint = Endpoint(*api_endpoint)
-        self.sess_token = sess_token
+    def __init__(self, id: str, api_endpoint: Endpoint, sess_token: str):
+        self.api_endpoint: Endpoint = Endpoint(*api_endpoint)
+        self.sess_token: str = sess_token
+        self.id: str = id
+        self.state: UserState = UserState.IDLE
+        self.peer: User = None
+
+    def set_state(self, state: UserState):
+        # TODO: checks
         self.state = state
+
+    def set_peer(self, peer: 'User'):
         self.peer = peer
 
     def __iter__(self):
