@@ -4,7 +4,7 @@ from client.endpoint import Endpoint
 from client.errors import Errors
 from client.util import get_parameters, ClientState
 from client.av import AV
-from client.decorators import HandleExceptions
+# from client.decorators import HandleExceptions as HandleClientExceptions
 import requests
 from socketio import Client
 
@@ -28,16 +28,16 @@ logger = logging.getLogger(__name__)
 class SocketClient():
     sio: Client = Client()
 
-    def __init__(self):
-        self.user_id: str = None
-        self.endpoint: Endpoint = None
-        self.conn_token = None
-        self.sess_token = None
-        self.instance = None
-        self.namespaces = None
-        self.av = None
-        self.video = {}
-        self.display_message = None
+    # def __init__(self):
+    #     self.user_id: str = None
+    #     self.endpoint: Endpoint = None
+    #     self.conn_token = None
+    #     self.sess_token = None
+    #     self.instance = None
+    #     self.namespaces = None
+    #     self.av = None
+    #     self.video = {}
+    #     self.display_message = None
 
     # region --- Utils ---
     logger = logging.getLogger('SocketClient')
@@ -85,9 +85,13 @@ class SocketClient():
         cls.user_id = user_id
         cls.display_message = display_message
         cls.instance = cls()
+        cls.sess_token = None
         return cls.instance
 
     def start(self):
+        self.run()
+
+    def run(self):
         SocketClient.connect()
 
     @classmethod
@@ -96,7 +100,7 @@ class SocketClient():
                      namespace=namespace)
 
     @classmethod
-    @HandleExceptions
+    # @HandleExceptions
     def connect(cls):
         cls.logger.info(f"Attempting WebSocket connection to {
                         cls.endpoint} with connection token '{cls.conn_token}'.")
@@ -123,8 +127,9 @@ class SocketClient():
     # region --- Event Endpoints ---
 
     @sio.on('connect')
-    @HandleExceptions
-    def on_connect(cls):
+    # @HandleExceptions
+    def on_connect():
+        cls = SocketClient
         cls.logger.info(f"Socket connection established to endpoint {
                         SocketClient.endpoint}")
         ns = sorted(list(cls.namespaces.keys()))
@@ -132,13 +137,14 @@ class SocketClient():
             cls.namespaces[name].on_connect()
 
     @sio.on('token')
-    @HandleExceptions
-    def on_token(cls, sess_token):
+    # @HandleExceptions
+    def on_token(sess_token):
+        cls = SocketClient
         cls.logger.info(f"Received session token '{sess_token}'")
-        SocketClient.set_sess_token(sess_token)
+        cls.set_sess_token(sess_token)
 
     @sio.on('message')
-    @HandleExceptions
+    # @HandleExceptions
     def on_message(cls, user_id, msg):
         cls.logger.info(f"Received message from user {user_id}: {msg}")
         SocketClient.display_message(user_id, msg)
@@ -160,7 +166,7 @@ class VideoChatClient:
         self.user_id = None
         self.sess_token = None  # TODO: Remove
 
-        self.api_instance = ClientAPI()
+        self.api_instance = ClientAPI.init(self)
 
         self.websocket_endpoint = None
         self.websocket_instance = None
@@ -170,8 +176,24 @@ class VideoChatClient:
         self.server_endpoint = None
         self.peer_endpoint = None
 
+    def HandleClientExceptions(endpoint_handler: callable):
+        """
+        Decorator to handle commonly encountered
+        exceptions at Socket Client endpoints.
+
+        NOTE: This should never be called explicitly
+        """
+        def handler_with_exceptions(*args, **kwargs):
+            cls = SocketClient
+
+            try:
+                return endpoint_handler(cls, *args, **kwargs)
+            except Exception as e:  # TODO: Add excpetions
+                raise e
+        return handler_with_exceptions
+
     # region --- Utils ---
-    @HandleExceptions
+    # @HandleClientExceptions
     def start_api(self, endpoint: Optional[Endpoint]):
         if endpoint:
             self.api_instance.set_endpoint(endpoint)
@@ -180,7 +202,7 @@ class VideoChatClient:
         self.api_instance.start()  # Start the API thread
         self.logger.info("Bound API endpoint to Client")
 
-    @HandleExceptions
+    # @HandleClientExceptions
     def set_server_endpoint(self, endpoint: Endpoint):
         if not endpoint:
             raise Errors.INTERNALCLIENTERROR(
@@ -207,7 +229,7 @@ class VideoChatClient:
                          self.user_id}' with session token '{self.sess_token}'.")
         self.set_state(ClientState.LIVE)
 
-    @HandleExceptions
+    # @HandleClientExceptions
     def set_frontend_socket(self, endpoint: Endpoint):
         if not endpoint:
             raise Errors.INTERNALCLIENTERROR(
@@ -221,13 +243,14 @@ class VideoChatClient:
 
         self.logger.info(f"Bound frontend socket to {endpoint}")
 
-    @HandleExceptions
+    # @HandleClientExceptions
     def connect_to_websocket(self, endpoint, conn_token):
         try:
             # TODO: figure out where to bubble down to
-            SocketClient.init(
+            sio = SocketClient.init(
                 endpoint, conn_token, self.user_id,
-                self.display_message, self.frontend_socket).start()
+                self.display_message, self.frontend_socket)
+            sio.start()
         except Exception as e:
             self.logger.error(f"Failed to connect to WebSocket at {
                               endpoint} with conn_token '{conn_token}'.")
@@ -255,7 +278,7 @@ class VideoChatClient:
     def display_message(self, user_id, msg):
         print(f"({user_id}): {msg}")
 
-    @HandleExceptions
+    # @HandleClientExceptions
     def contact_server(self, route: str, json=None):
         endpoint = self.server_endpoint(route)
         self.logger.info(f"Contacting Server at {endpoint}.")
@@ -298,7 +321,7 @@ class VideoChatClient:
     # region --- Server Interface ---
     # TODO: connect_to_server() returns a bool, but we never use it
 
-    @HandleExceptions
+    # @HandleClientExceptions
     def connect_to_peer(self, peer_id: str):
         """
         Open Socket API. Contact Server /peer_connection with `conn_token`
