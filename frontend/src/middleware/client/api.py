@@ -11,7 +11,7 @@ from gevent.pywsgi import WSGIServer  # For asynchronous handling
 
 # region --- Logging ---
 import logging
-logging.basicConfig(filename='src/middleware/logs/api.log', level=logging.DEBUG,
+logging.basicConfig(filename='logs/api.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class ClientAPI(Thread):
     def __init__(self, endpoint: Optional[Endpoint] = None):
         super().__init__()
         self.logger = logging.getLogger('ClientAPI')
-        self.state = APIState.INIT
+        self.state = APIState.NEW
 
         self.http_server: WSGIServer = None
         # self.instance = None #TODO: what is this?
@@ -58,17 +58,46 @@ class ClientAPI(Thread):
 
         self.logger.info(f"Created new ClientAPI at {self.endpoint}")
 
-    @classmethod
-    def verify_server(cls, sess_token):
-        if type(sess_token) is str:
-            return True
-        raise Errors.BADAUTHENTICATION(f"Unrecognized session token '{
-                                       sess_token}' from server.")
+    def set_endpoint(self, endpoint: Endpoint):
+        self.endpoint = endpoint
+        self.state = APIState.INIT
+
+    def run(self):
+        self.logger.info("Starting Client API.")
+        if self.state == APIState.NEW:
+            raise Errors.SERVERERROR(
+                "Cannot start API before initialization.")
+        if self.state == APIState.LIVE:
+            raise Errors.SERVERERROR(
+                "Cannot start API: already running.")
+
+        # TODO: this is probably preventing clean teardown
+        while True:
+            try:
+                # print(f"Serving Client API at {self.endpoint}.")
+                self.logger.info(f"Serving Client API at {self.endpoint}.")
+
+                self.state = APIState.LIVE
+                self.http_server = WSGIServer(tuple(self.endpoint), self.app)
+                self.http_server.serve_forever()
+            except OSError:
+                print(f"Listener endpoint {self.endpoint} in use.")
+                self.logger.error(f"Endpoint {self.endpoint} in use.")
+
+                self.state = APIState.INIT
+                self.set_api_endpoint(
+                    Endpoint(self.endpoint.ip, self.endpoint.port + 1))
+                continue
+            self.logger.info("Client API terminated.")
+            break
+
+    def verify_server(sess_token: str):
+        return self.s
 
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
 
-    def HandleAuthentication(endpoint_handler):
+    def HandleAuthentication(func: callable):
         """
         Decorator to handle authentication for server.
 
@@ -79,82 +108,53 @@ class ClientAPI(Thread):
         ----------
         sess_token : str
         """
-        def handler_with_authentication(cls, *args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             sess_token, = get_parameters(request.json, 'sess_token')
-            if not cls.verify_server(sess_token):
+            if not self.verify_server(sess_token):
                 raise Errors.BADAUTHENTICATION(
                     f"Authentication failed for server with token '{sess_token}'.")
 
-            return endpoint_handler(cls, *args, **kwargs)
-        handler_with_authentication.__name__ = endpoint_handler.__name__
-        return handler_with_authentication
+            return func(self, *args, **kwargs)
+        wrapper.__name__ = func.__name__
+        return wrapper
 
-    def HandleExceptions(endpoint_handler):
+    def HandleExceptions(func: callable):
         """
         Decorator to handle commonly encountered exceptions in the Client API
 
         NOTE: This should never be called explicitly
         """
-        def handler_with_exceptions(*args, **kwargs):
-            cls = ClientAPI
+        def wrapper(self, *args, **kwargs):
             try:
-                return endpoint_handler(cls, *args, **kwargs)
+                return func(self, *args, **kwargs)
             except Errors.BADAUTHENTICATION as e:
-                return Errors.BADAUTHENTICATION.info(cls.remove_last_period(e))
+                return Errors.BADAUTHENTICATION.info(self.remove_last_period(e))
             except Errors.BADREQUEST as e:
-                return Errors.BADREQUEST.info(cls.remove_last_period(e))
+                return Errors.BADREQUEST.info(self.remove_last_period(e))
             except Errors.SERVERERROR as e:
-                return Errors.SERVERERROR.info(cls.remove_last_period(e))
+                return Errors.SERVERERROR.info(self.remove_last_period(e))
             except Errors.BADGATEWAY as e:
-                return Errors.BADGATEWAY.info(cls.remove_last_period(e))
+                return Errors.BADGATEWAY.info(self.remove_last_period(e))
             except Exception as e:
-                return Errors.UNKNOWNERROR.info(cls.remove_last_period(e))
+                return Errors.UNKNOWNERROR.info(self.remove_last_period(e))
 
         # Makes it to trace is correct
-        handler_with_exceptions.__name__ = endpoint_handler.__name__
-        return handler_with_exceptions
+        wrapper.__name__ = func.__name__
+        return wrapper
     # endregion
 
     # region --- External 'Instance' Interface ---
+    def set_api_endpoint(self, endpoint: Endpoint):
+        self.endpoint = endpoint
+        self.run()
 
-    def run(self):
-        cls = self.__class__
-
-        self.logger.info("Starting Client API.")
-        if self.state == APIState.NEW:
-            raise Errors.SERVERERROR(
-                "Cannot start API before initialization.")
-        if self.state == APIState.LIVE:
-            raise Errors.SERVERERROR(
-                "Cannot start API: already running.")
-
-        while True:
-            try:
-                print(f"Serving Client API at {self.endpoint}.")
-                self.logger.info(f"Serving Client API at {self.endpoint}.")
-
-                self.state = APIState.LIVE
-                self.http_server = WSGIServer(tuple(self.endpoint), self.app)
-                self.http_server.serve_forever()
-            except OSError as e:
-                print(f"Listener endpoint {cls.endpoint} in use.")
-                self.logger.error(f"Endpoint {cls.endpoint} in use.")
-
-                self.state = APIState.INIT
-                cls.client.set_api_endpoint(
-                    Endpoint(cls.endpoint.ip, cls.endpoint.port + 1))
-                continue
-            self.logger.info("Client API terminated.")
-            break
-
-    @classmethod
-    def kill(cls):
+    def kill(self):
         self.logger.info("Killing Client API.")
         if self.state != APIState.LIVE:
             self.logger.error(f"Cannot kill Client API when not {
                 APIState.LIVE}.")
             return
-        cls.http_server.stop()
+        self.http_server.stop()
         self.state = APIState.INIT
     # endregion
 
@@ -163,7 +163,7 @@ class ClientAPI(Thread):
     @app.route('/peer_connection', methods=['POST'])
     @HandleExceptions
     @HandleAuthentication
-    def handle_peer_connection(cls):
+    def handle_peer_connection(self):
         """
         Receive incoming peer connection request.
         Poll client user. Instruct client to attempt socket
@@ -183,7 +183,7 @@ class ClientAPI(Thread):
             socket_endpoint} with token '{conn_token}'.")
 
         try:
-            res = cls.client.handle_peer_connection(
+            res = self.client.handle_peer_connection(
                 peer_id, socket_endpoint, conn_token)
         except Exception as e:
             # TODO: Why did the connection fail?
