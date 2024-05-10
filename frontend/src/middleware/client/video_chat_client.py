@@ -1,3 +1,4 @@
+from typing import Optional
 from client.api import ClientAPI
 from client.endpoint import Endpoint
 from client.errors import Errors
@@ -5,7 +6,7 @@ from client.util import get_parameters, ClientState
 from client.av import AV
 from client.decorators import HandleExceptions
 import requests
-import socketio
+from socketio import Client
 
 # region --- Logging --- # TODO: Add internal logger to Client class
 import logging
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class SocketClient():
-    sio: socketio.Client = socketio.Client()
+    sio: Client = Client()
 
     def __init__(self):
         self.user_id: str = None
@@ -50,7 +51,7 @@ class SocketClient():
     def is_connected(cls):
         return cls.sio.connected
 
-    def HandleExceptions(endpoint_handler):
+    def HandleExceptions(endpoint_handler: callable):
         """
         Decorator to handle commonly encountered
         exceptions at Socket Client endpoints.
@@ -71,8 +72,8 @@ class SocketClient():
 
     @classmethod
     # TODO: Unsure if client needed.
-    def init(cls, endpoint, conn_token, user_id,
-             display_message, frontend_socket):
+    def init(cls, endpoint: Endpoint, conn_token: str, user_id: str,
+             display_message: callable, frontend_socket: Client):
         cls.logger.info(
             f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
@@ -148,8 +149,8 @@ class SocketClient():
 
 # region --- Main Client ---
 
-
-class Client:
+# TODO: consdier renaming to avoid confusion with Client
+class VideoChatClient:
     # TODO: Remove websocket endpoint?
     def __init__(self):
         self.logger = logging.getLogger('Client')
@@ -159,7 +160,7 @@ class Client:
         self.user_id = None
         self.sess_token = None  # TODO: Remove
 
-        self.api_instance = None
+        self.api_instance = ClientAPI()
 
         self.websocket_endpoint = None
         self.websocket_instance = None
@@ -171,12 +172,11 @@ class Client:
 
     # region --- Utils ---
     @HandleExceptions
-    def start_api(self, endpoint: Endpoint):
-        if not endpoint:
-            raise Errors.INTERNALCLIENTERROR(
-                "Cannot start Client API without an endpoint.")
-
-        self.api_instance = ClientAPI(endpoint)
+    def start_api(self, endpoint: Optional[Endpoint]):
+        if endpoint:
+            self.api_instance.set_endpoint(endpoint)
+        elif self.api_instance.endpoint is None:
+            raise Errors.INTERNALCLIENTERROR("Endpoint needed before starting API")
         self.api_instance.start()  # Start the API thread
         self.logger.info("Bound API endpoint to Client")
 
@@ -193,10 +193,10 @@ class Client:
             self.logger.info(f"Attempting to connect to server: {
                 self.server_endpoint}.")
             response = self.contact_server('/create_user', json={
-                'api_endpoint': tuple(endpoint)
+                'api_endpoint': tuple(self.server_endpoint)
             })
         except Exception as e:
-            self.server_endpoint = None
+            self.server_endpoint = None  # Reset endpoint before exiting
             raise e
 
         # Makes sure response doesn't produce an error before setting the endpoint
@@ -213,7 +213,7 @@ class Client:
             raise Errors.INTERNALCLIENTERROR(
                 "Cannot connect to frontend without an endpoint")
 
-        self.frontend_socket: Endpoint = socketio.Client()
+        self.frontend_socket: Endpoint = Client()
         self.frontend_socket.connect(
             str(endpoint),
             headers={'user_id': self.user_id},
@@ -313,9 +313,9 @@ class Client:
             f"Attempting to initiate connection to peer User {peer_id}.")
 
         response = self.contact_server('/peer_connection', json={
-            'user_id': self.user_id,
-            'sess_token': self.sess_token,
-            'peer_id': peer_id,
+            'user_id': self.user_id,  # Requester's id
+            'sess_token': self.sess_token,  # Requester's token
+            'peer_id': peer_id,  # Host's id
         })
 
         # TODO: remove conn_token
@@ -351,9 +351,6 @@ class Client:
             raise Errors.INTERNALCLIENTERROR(
                 f"Cannot attempt peer websocket connection while {self.state}.")
 
-        self.logger.info("Polling User")
-        print(f"Incoming connection request from {peer_id}.")
-        self.logger.info("User Accepted Connection.")
         self.logger.info(f"Attempting to connect to peer {peer_id} at {
                          socket_endpoint} with token '{conn_token}'.")
 
