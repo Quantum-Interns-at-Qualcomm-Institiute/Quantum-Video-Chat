@@ -28,7 +28,7 @@ class AVController:
         self.cls = cls
 
         self.key_gen = KeyGenFactory().create_key_generator(KeyGenerators.DEBUG)
-        self.key_gen.generate_key(key_length=128)
+        # self.key_gen.generate_key(key_length=128)
 
         display_shapes = [(720, 960, 3), (720, 1280, 3)]
         self.display_shape = display_shapes[0]
@@ -42,18 +42,19 @@ class AVController:
         self.frames_per_buffer = self.sample_rate // 6
         self.audio_wait = 1 / 8
 
-        self.key = self.key_gen.get_key().tobytes()
+        # self.key = self.key_gen.get_key().tobytes()
 
         self.encryption: EncryptSchemes.ABSTRACT = encryption
 
         self.client_namespaces = generate_client_namespace(
             cls, self, frontend_socket)
 
+        self.keys = []
         async def gen_keys():
             key_idx = 0
             while True:
                 self.key_gen.generate_key(key_length=128)
-                self.key = key_idx, self.key_gen.get_key().tobytes()
+                self.keys += (key_idx, self.key_gen.get_key().tobytes())
                 key_idx += 1
 
                 await asyncio.sleep(1)
