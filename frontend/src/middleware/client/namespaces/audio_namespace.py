@@ -35,7 +35,6 @@ class AudioClientNamespace(AVClientNamespace):
 
                 if self.av.encryption is not None:
                     data = self.av.encryption.encrypt(data, key)
-                # print(f"Sending audio packet of size {len(data)}")
                 self.send(key_idx.to_bytes(4, 'big') + data)
                 await asyncio.sleep(self.av.audio_wait)
 
@@ -53,7 +52,6 @@ class AudioClientNamespace(AVClientNamespace):
             data = msg[4:]
 
             data = self.av.encryption.decrypt(data, key)
-            print(f"Received audio packet of size {len(data)}")
             self.stream.write(
                 data, num_frames=self.av.frames_per_buffer,
                 exception_on_underflow=False)
