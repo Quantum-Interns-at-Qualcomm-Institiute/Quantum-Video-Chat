@@ -169,7 +169,7 @@ class ClientAPI(Thread):
     # region --- API Endpoints ---
 
     @app.route('/peer_connection', methods=['POST'])
-    @HandleExceptions
+    # @HandleExceptions
     # @HandleAuthentication
     def handle_peer_connection(cls):
         """
