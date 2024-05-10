@@ -158,7 +158,7 @@ class Server:
         try:
             response = self.contact_client(peer_id, '/peer_connection', json={
                 'sess_token': host.sess_token,
-                'peer_id': host.id,
+                'peer_id': requester.id,
                 'socket_endpoint': tuple(self.websocket_endpoint),
                 'conn_token': self.SocketAPI.conn_token
             })

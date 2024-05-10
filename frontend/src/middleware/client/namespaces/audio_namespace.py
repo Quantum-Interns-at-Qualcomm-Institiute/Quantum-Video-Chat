@@ -35,7 +35,7 @@ class AudioClientNamespace(AVClientNamespace):
 
                 if self.av.encryption is not None:
                     data = self.av.encryption.encrypt(data, key)
-                print(f"Sending audio packet of size {len(data)}")
+                # print(f"Sending audio packet of size {len(data)}")
                 self.send(cur_key_idx.to_bytes(4, 'big') + data)
                 await asyncio.sleep(self.av.audio_wait)
 
@@ -51,6 +51,7 @@ class AudioClientNamespace(AVClientNamespace):
             cur_key_idx, key = self.av.key
 
             if (int.from_bytes(msg[:4], 'big') != cur_key_idx):
+                print(f" Audio key index mismatch: expected {cur_key_idx} and got {msg[:4]}. Dropping frame")
                 return
             data = msg[4:]
 
