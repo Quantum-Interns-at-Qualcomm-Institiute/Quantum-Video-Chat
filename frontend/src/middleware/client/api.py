@@ -91,32 +91,13 @@ class ClientAPI(Thread):
             self.logger.info("Client API terminated.")
             break
 
-    def verify_server(sess_token: str):
-        return self.s
-
     def remove_last_period(text: str):
         return text[0:-1] if text[-1] == "." else text
 
-    def HandleAuthentication(func: callable):
-        """
-        Decorator to handle authentication for server.
-
-        NOTE: Assumes `cls` has been passed by @HandleExceptions
-        NOTE: This should never be called explicitly
-
-        Parameters
-        ----------
-        sess_token : str
-        """
-        def wrapper(self, *args, **kwargs):
-            sess_token, = get_parameters(request.json, 'sess_token')
-            if not self.verify_server(sess_token):
-                raise Errors.BADAUTHENTICATION(
-                    f"Authentication failed for server with token '{sess_token}'.")
-
-            return func(self, *args, **kwargs)
-        wrapper.__name__ = func.__name__
-        return wrapper
+    def authenticate(self, sess_token: str):
+        if not self.sess_token == sess_token:
+            raise Errors.BADAUTHENTICATION(
+                f"Authentication failed for server with token '{sess_token}'.")
 
     def HandleExceptions(func: callable):
         """
@@ -124,6 +105,7 @@ class ClientAPI(Thread):
 
         NOTE: This should never be called explicitly
         """
+
         def wrapper(self, *args, **kwargs):
             try:
                 return func(self, *args, **kwargs)
@@ -162,7 +144,6 @@ class ClientAPI(Thread):
 
     @app.route('/peer_connection', methods=['POST'])
     @HandleExceptions
-    @HandleAuthentication
     def handle_peer_connection(self):
         """
         Receive incoming peer connection request.
@@ -176,8 +157,9 @@ class ClientAPI(Thread):
         socket_endpoint : tuple
         conn_token : string
         """
-        peer_id, socket_endpoint, conn_token = get_parameters(
-            request.json, 'peer_id', 'socket_endpoint', 'conn_token')
+        session_token, peer_id, socket_endpoint, conn_token = get_parameters(
+            request.json, 'session_token', 'peer_id', 'socket_endpoint', 'conn_token')
+        self.authenticate(session_token)
         socket_endpoint = Endpoint(*socket_endpoint)
         self.logger.info(f"Instructied to connect to peer {peer_id} at {
             socket_endpoint} with token '{conn_token}'.")
