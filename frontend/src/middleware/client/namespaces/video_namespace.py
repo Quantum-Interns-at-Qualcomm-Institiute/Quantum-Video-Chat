@@ -38,7 +38,7 @@ class VideoClientNamespace(AVClientNamespace):
                 preset='ultrafast', tune='zerolatency')
 
             while True:
-                cur_key_idx, key = self.av.key
+                key_idx, key = self.av.keys[-1]
 
                 _, image = cap.read()
                 image = cv2.resize(
@@ -49,8 +49,8 @@ class VideoClientNamespace(AVClientNamespace):
                     input=data, capture_stdout=True, quiet=True)[0]
 
                 data = self.av.encryption.encrypt(data, key)
-                print(f"Sending video frame with key index {cur_key_idx}")
-                self.send(cur_key_idx.to_bytes(4, 'big') + data)
+                print(f"Sending video frame with key index {key_idx}")
+                self.send(key_idx.to_bytes(4, 'big') + data)
 
                 await asyncio.sleep(1 / self.av.frame_rate / 5)
 
@@ -62,11 +62,9 @@ class VideoClientNamespace(AVClientNamespace):
         async def handle_message():
             if user_id == self.cls.user_id:
                 return
-            cur_key_idx, key = self.av.key
-
-            if (int.from_bytes(msg[:4], 'big') != cur_key_idx):
-                print(f"Video key index mismatch: expected {cur_key_idx} and got {int(msg[:4], 10)}. Dropping frame")
-                return
+            
+            key_idx = int.from_bytes(msg[:4], 'big')
+            key = self.av.keys[key_idx][1]
 
             data = self.av.encryption.decrypt(msg[4:], key)
 
