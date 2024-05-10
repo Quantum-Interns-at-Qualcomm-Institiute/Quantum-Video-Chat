@@ -49,7 +49,7 @@ class VideoClientNamespace(AVClientNamespace):
                     input=data, capture_stdout=True, quiet=True)[0]
 
                 data = self.av.encryption.encrypt(data, key)
-                print(f"Sending video frame of size {len(data)}")
+                print(f"Sending video frame with key index {cur_key_idx}")
                 self.send(cur_key_idx.to_bytes(4, 'big') + data)
 
                 await asyncio.sleep(1 / self.av.frame_rate / 5)
@@ -65,7 +65,7 @@ class VideoClientNamespace(AVClientNamespace):
             cur_key_idx, key = self.av.key
 
             if (int.from_bytes(msg[:4], 'big') != cur_key_idx):
-                print("Key mismatch, dropping frame")
+                print(f"Video key index mismatch: expected {cur_key_idx} and got {int(msg[:4], 10)}. Dropping frame")
                 return
 
             data = self.av.encryption.decrypt(msg[4:], key)
