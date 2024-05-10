@@ -53,7 +53,7 @@ class ClientAPI(Thread):
         cls.logger = logging.getLogger('ClientAPI')
         cls.state = APIState.NEW
         cls.client = client
-        cls.instance =cls()
+        cls.instance = cls()
 
         # self.instance = None #TODO: what is this?
         # TODO: config file should have wifi or ad hoc mode
@@ -61,7 +61,8 @@ class ClientAPI(Thread):
         cls.endpoint = endpoint if endpoint else Endpoint(
             '127.0.0.1', 4000)
 
-        cls.logger.info(f"Created new ClientAPI{ f" at {cls.endpoint}" if endpoint else ""}")
+        cls.logger.info(f"Created new ClientAPI{
+                        f" at {cls.endpoint}" if endpoint else ""}")
         return cls.instance
 
     @classmethod
