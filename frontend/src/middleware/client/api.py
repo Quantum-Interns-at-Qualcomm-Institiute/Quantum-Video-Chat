@@ -170,9 +170,9 @@ class ClientAPI(Thread):
         conn_token : string
         """
         cls = ClientAPI
-        session_token, peer_id, socket_endpoint, conn_token = get_parameters(
-            request.json, 'session_token', 'peer_id', 'socket_endpoint', 'conn_token')
-        cls.authenticate(session_token)
+        sess_token, peer_id, socket_endpoint, conn_token = get_parameters(
+            request.json, 'sess_token', 'peer_id', 'socket_endpoint', 'conn_token')
+        cls.authenticate(sess_token)
         socket_endpoint = Endpoint(*socket_endpoint)
         cls.logger.info(f"Instructied to connect to peer {peer_id} at {
             socket_endpoint} with token '{conn_token}'.")
