@@ -100,7 +100,6 @@ class SocketClient():
                      namespace=namespace)
 
     @classmethod
-    # @HandleExceptions
     def connect(cls):
         cls.logger.info(f"Attempting WebSocket connection to {
                         cls.endpoint} with connection token '{cls.conn_token}'.")
@@ -243,7 +242,6 @@ class VideoChatClient:
 
         self.logger.info(f"Bound frontend socket to {endpoint}")
 
-    # @HandleClientExceptions
     def connect_to_websocket(self, endpoint, conn_token):
         try:
             # TODO: figure out where to bubble down to
@@ -321,7 +319,6 @@ class VideoChatClient:
     # region --- Server Interface ---
     # TODO: connect_to_server() returns a bool, but we never use it
 
-    # @HandleClientExceptions
     def connect_to_peer(self, peer_id: str):
         """
         Open Socket API. Contact Server /peer_connection with `conn_token`
