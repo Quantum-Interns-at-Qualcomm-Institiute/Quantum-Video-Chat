@@ -195,15 +195,15 @@ class VideoClientNamespace(AVClientNamespace):
 
     def on_connect(self):
         super().on_connect()
-        inpipe = ffmpeg.input('pipe:')
-        self.output = ffmpeg.output(
+        inpipe = ffmpeg.FFmpeg().input('pipe:')
+        self.output = ffmpeg.FFmpeg().output(
             inpipe, 'pipe:', format='rawvideo', pix_fmt='rgbx')
 
         async def send_video():
             await asyncio.sleep(2)
             cap = cv2.VideoCapture(0)
 
-            inpipe = ffmpeg.input(
+            inpipe = ffmpeg.FFmpeg().input(
                 'pipe:',
                 format='rawvideo',
                 pix_fmt='rgb24',
@@ -212,7 +212,7 @@ class VideoClientNamespace(AVClientNamespace):
                 r=self.av.frame_rate,
             )
 
-            output = ffmpeg.output(
+            output = ffmpeg.FFmpeg().output(
                 inpipe, 'pipe:', vcodec='libx264', f='ismv',
                 preset='ultrafast', tune='zerolatency')
 

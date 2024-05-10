@@ -312,7 +312,7 @@ class SocketAPI(Thread):
 
     @classmethod
     def generate_sess_token(cls, user_id):
-        return 'this is a session token'
+        return hashlib.sha256(user_id.encode()).hexdigest()
 
     @classmethod
     def verify_conn_token(cls, conn_token):
