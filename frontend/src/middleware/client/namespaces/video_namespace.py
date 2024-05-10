@@ -38,7 +38,7 @@ class VideoClientNamespace(AVClientNamespace):
                 preset='ultrafast', tune='zerolatency')
 
             while True:
-                key_idx, key = self.av.keys[-1]
+                key_idx, key = self.av.keys[-2]
 
                 _, image = cap.read()
                 image = cv2.resize(
