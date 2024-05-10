@@ -5,7 +5,7 @@ import hashlib
 from abc import ABC, abstractmethod
 
 from utils import Endpoint
-from .user import User, UserState
+from user import User, UserState
 import logging
 logging.basicConfig(filename='./server/logs/server.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
@@ -116,7 +116,8 @@ class UserManager:
         self.storage = storage
         self.logger = logging.getLogger("UserManager")
 
-    # I would personally just generate a completely random string every time, but we do this in Andy's interest of having perfect reproducibility during testing
+    # I would personally just generate a completely random string every time, but#
+    # we do this in Andy's interest of having perfect reproducibility during testing
     def generate_user_id(self, endpoint: str):
         self.logger.debug(
             f"Generating User ID for user with API Endpoint {endpoint}.")
