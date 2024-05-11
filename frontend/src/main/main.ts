@@ -149,15 +149,15 @@ const spawnPythonProcess = () => {
     // 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
     socket.on("stream", (frame) => {
       // TODO: Make linter happy when we convert bytes to blob
-      console.log(`Received data from socket: ${frame}`)
       const frameBlob = new Blob(frame, { type: "plain/text" });
+      console.log(`Received data from socket of size ${frameBlob.size}`)
 
       // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
       frameBlob
         .arrayBuffer()
         .then((frameBuffer) => {
           const videoFrame = new VideoFrame(frameBuffer, {
-            format: "RGBX",
+            format: "NV12",
             displayWidth: 640,
             displayHeight: 480,
           });
