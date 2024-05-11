@@ -28,7 +28,7 @@ class AudioClientNamespace(AVClientNamespace):
                                 frames_per_buffer=self.av.frames_per_buffer)
 
             while True:
-                key_idx, key = self.av.keys[-2]
+                key_idx, key = self.av.keys[-self.av.key_buffer_size]
 
                 data = stream.read(self.av.frames_per_buffer,
                                    exception_on_overflow=False)
