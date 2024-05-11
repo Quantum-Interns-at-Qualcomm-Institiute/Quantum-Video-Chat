@@ -59,8 +59,7 @@ class ClientAPI(Thread):
         cls.endpoint = endpoint if endpoint else Endpoint(
             '127.0.0.1', 4000)
 
-        cls.logger.info(f"Created new ClientAPI{
-                        f" at {cls.endpoint}" if endpoint else ""}")
+        cls.logger.info(f"Created new ClientAPI at{cls.endpoint if endpoint else ''}")
         return cls.instance
 
     @classmethod
@@ -143,8 +142,7 @@ class ClientAPI(Thread):
     def kill(cls):
         cls.logger.info("Killing Client API.")
         if cls.state != APIState.LIVE:
-            cls.logger.error(f"Cannot kill Client API when not {
-                APIState.LIVE}.")
+            cls.logger.error(f"Cannot kill Client API when not {APIState.LIVE}.")
             return
         cls.http_server.stop()
         cls.state = APIState.INIT
@@ -173,8 +171,7 @@ class ClientAPI(Thread):
             request.json, 'sess_token', 'peer_id', 'socket_endpoint', 'conn_token')
         cls.authenticate(sess_token)
         socket_endpoint = Endpoint(*socket_endpoint)
-        cls.logger.info(f"Instructied to connect to peer {peer_id} at {
-            socket_endpoint} with token '{conn_token}'.")
+        cls.logger.info(f"Instructied to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
 
         try:
             res = cls.client.handle_peer_connection(

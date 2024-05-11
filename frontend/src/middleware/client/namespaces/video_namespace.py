@@ -18,7 +18,7 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_connect()
         inpipe = ffmpeg.input('pipe:')
         self.output = ffmpeg.output(
-            inpipe, 'pipe:', format='rawvideo', pix_fmt='rgbx')
+            inpipe, 'pipe:', format='rawvideo', pix_fmt='rgb24')
 
         async def send_video():
             await asyncio.sleep(2)
@@ -38,12 +38,13 @@ class VideoClientNamespace(AVClientNamespace):
                 preset='ultrafast', tune='zerolatency')
 
             while True:
-                key_idx, key = self.av.keys[-2]
+                key_idx, key = self.av.keys[-self.av.key_buffer_size]
 
                 _, image = cap.read()
                 image = cv2.resize(
                     image, (self.av.video_shape[1], self.av.video_shape[0]))
                 data = image.tobytes()
+                print(f"Pre-sending video frame with key index {key_idx}")
 
                 data = output.run(
                     input=data, capture_stdout=True, quiet=True)[0]
@@ -72,6 +73,6 @@ class VideoClientNamespace(AVClientNamespace):
             data = self.output.run(input=data, capture_stdout=True,
                                    quiet=True)[0]
             print(f"Sending frame of size {len(data)} to frontend")
-            super().frontend_socket.emit(data, {'type': 'stream'})
+            self.frontend_socket.emit(data, {'type': 'stream'})
 
         asyncio.run(handle_message())
