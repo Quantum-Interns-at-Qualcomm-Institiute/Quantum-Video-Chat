@@ -16,7 +16,7 @@ if __name__ == "__main__":
     api_port = config["API_ENDPOINT_PORT"]
     api_address = "localhost"
 
-    for prop in psutil.net_if_addrs()['Ethernet 2' if platform.system() == 'Windows' else 'en11']:
+    for prop in psutil.net_if_addrs()['Ethernet 2' if platform.system() == 'Windows' else 'en0']:
         if prop.family == 2:
             api_address = prop.address
 

@@ -100,8 +100,7 @@ class SocketClient():
 
     @classmethod
     def connect(cls):
-        cls.logger.info(f"Attempting WebSocket connection to {
-                        cls.endpoint} with connection token '{cls.conn_token}'.")
+        cls.logger.info(f"Attempting WebSocket connection to {cls.endpoint} with connection token '{cls.conn_token}'.")
         ns = sorted(list(cls.namespaces.keys()))
         cls.sio.connect(str(cls.endpoint), wait_timeout=5, auth=(
             cls.user_id, cls.conn_token), namespaces=['/'] + ns)
@@ -128,8 +127,7 @@ class SocketClient():
     # @HandleExceptions
     def on_connect():
         cls = SocketClient
-        cls.logger.info(f"Socket connection established to endpoint {
-                        SocketClient.endpoint}")
+        cls.logger.info(f"Socket connection established to endpoint {SocketClient.endpoint}")
         ns = sorted(list(cls.namespaces.keys()))
         for name in ns:
             cls.namespaces[name].on_connect()
@@ -210,8 +208,7 @@ class VideoChatClient:
         self.set_state(ClientState.CONNECTING)
         self.server_endpoint = endpoint
         try:
-            self.logger.info(f"Attempting to connect to server: {
-                self.server_endpoint}.")
+            self.logger.info(f"Attempting to connect to server: {self.server_endpoint}.")
             response = self.contact_server('/create_user', json={
                 'api_endpoint': tuple(self.api_instance.endpoint)
             })
@@ -223,8 +220,7 @@ class VideoChatClient:
         self.server_endpoint = endpoint
         self.user_id, self.sess_token = get_parameters(
             response.json(), 'user_id', 'sess_token')
-        self.logger.info(f"Successfully connected to {self.server_endpoint} as ID '{
-                         self.user_id}' with session token '{self.sess_token}'.")
+        self.logger.info(f"Successfully connected to {self.server_endpoint} as ID '{self.user_id}' with session token '{self.sess_token}'.")
         self.set_state(ClientState.LIVE)
 
     # @HandleClientExceptions
@@ -233,11 +229,10 @@ class VideoChatClient:
             raise Errors.INTERNALCLIENTERROR(
                 "Cannot connect to frontend without an endpoint")
 
-        self.frontend_socket: Endpoint = Client()
+        self.frontend_socket = Client()
         self.frontend_socket.connect(
             str(endpoint),
-            headers={'user_id': self.user_id},
-            retry=True)
+            headers={'user_id': self.user_id})
 
         self.logger.info(f"Bound frontend socket to {endpoint}")
 
@@ -249,8 +244,7 @@ class VideoChatClient:
                 self.display_message, self.frontend_socket)
             sio.start()
         except Exception as e:
-            self.logger.error(f"Failed to connect to WebSocket at {
-                              endpoint} with conn_token '{conn_token}'.")
+            self.logger.error(f"Failed to connect to WebSocket at {endpoint} with conn_token '{conn_token}'.")
             raise e
 
     def set_websocket_endpoint(self, endpoint: Endpoint):
@@ -283,8 +277,7 @@ class VideoChatClient:
         response = requests.post(url=str(endpoint), json=json)
 
         if response.status_code != 200:
-            raise Errors.UNEXPECTEDRESPONSE(f"Unexpected Server response at {
-                endpoint}: {response.json()['details'] if 'details' in response.json() else response.reason}.")
+            raise Errors.UNEXPECTEDRESPONSE(f"Unexpected Server response at {endpoint}: {response.json()['details'] if 'details' in response.json() else response.reason}.")
 
         return response
 
@@ -340,8 +333,7 @@ class VideoChatClient:
         # TODO: remove conn_token
         websocket_endpoint, conn_token = get_parameters(
             response.json(), 'socket_endpoint', 'conn_token')
-        self.logger.info(f"Received websocket endpoint '{
-                         websocket_endpoint}' and conn_token '{conn_token}' from Server.")
+        self.logger.info(f"Received websocket endpoint '{websocket_endpoint}' and conn_token '{conn_token}' from Server.")
 
         self.connect_to_websocket(websocket_endpoint, conn_token)
         while True:
@@ -370,15 +362,13 @@ class VideoChatClient:
             raise Errors.INTERNALCLIENTERROR(
                 f"Cannot attempt peer websocket connection while {self.state}.")
 
-        self.logger.info(f"Attempting to connect to peer {peer_id} at {
-                         socket_endpoint} with token '{conn_token}'.")
+        self.logger.info(f"Attempting to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
 
         try:
             self.connect_to_websocket(socket_endpoint, conn_token)
             return True
         except Exception as e:
-            self.logger.info('Warning', f"Connection to incoming peer User {
-                             peer_id} failed because {e}")
+            self.logger.info('Warning', f"Connection to incoming peer User {peer_id} failed because {e}")
             return False
 
     def disconnect_from_peer(self):
