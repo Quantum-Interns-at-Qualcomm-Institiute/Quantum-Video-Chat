@@ -158,8 +158,8 @@ const spawnPythonProcess = () => {
         .then((frameBuffer) => {
           const videoFrame = new VideoFrame(frameBuffer, {
             format: "RGBX",
-            displayWidth: 480,
-            displayHeight: 640,
+            displayWidth: 640,
+            displayHeight: 480,
           });
 
           // Send this frame to the other window
