@@ -18,7 +18,7 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_connect()
         inpipe = ffmpeg.input('pipe:')
         self.output = ffmpeg.output(
-            inpipe, 'pipe:', format='rawvideo', pix_fmt='rgb24')
+            inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
 
         async def send_video():
             await asyncio.sleep(2)
@@ -27,7 +27,7 @@ class VideoClientNamespace(AVClientNamespace):
             inpipe = ffmpeg.input(
                 'pipe:',
                 format='rawvideo',
-                pix_fmt='rgb24',
+                pix_fmt='nv12',
                 s='{}x{}'.format(
                     self.av.video_shape[1], self.av.video_shape[0]),
                 r=self.av.frame_rate,
