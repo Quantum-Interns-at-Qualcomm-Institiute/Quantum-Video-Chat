@@ -63,7 +63,7 @@ class VideoClientNamespace(AVClientNamespace):
         async def handle_message():
             if user_id == self.cls.user_id:
                 return
-            
+
             key_idx = int.from_bytes(msg[:4], 'big')
             key = self.av.keys[key_idx][1]
 
@@ -73,6 +73,6 @@ class VideoClientNamespace(AVClientNamespace):
             data = self.output.run(input=data, capture_stdout=True,
                                    quiet=True)[0]
             print(f"Sending frame of size {len(data)} to frontend")
-            self.frontend_socket.emit(data, {'type': 'stream'})
+            self.frontend_socket.emit('stream', data)
 
         asyncio.run(handle_message())
