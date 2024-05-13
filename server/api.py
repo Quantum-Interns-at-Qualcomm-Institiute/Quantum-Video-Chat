@@ -15,9 +15,10 @@ from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from flask import Flask, jsonify, request
 import psutil
 import platform
-key = 'Ethernet 2' if platform.system() == 'Windows' else 'en0'
 
-for prop in psutil.net_if_addrs()[key]:
+AD_HOC = True
+search_string = ('Ethernet 2', 'en11') if AD_HOC else ('Wi-Fi', 'en0')
+for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
     if prop.family == 2:
         ip = prop.address
 

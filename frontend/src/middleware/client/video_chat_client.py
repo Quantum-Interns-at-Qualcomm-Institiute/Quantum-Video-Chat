@@ -2,6 +2,7 @@ from typing import Optional
 from client.api import ClientAPI
 from client.endpoint import Endpoint
 from client.errors import Errors
+from client.encryption import EncryptSchemes, KeyGenerators
 from client.util import get_parameters, ClientState
 from client.namespaces.av_controller import AVController
 # from client.decorators import HandleExceptions as HandleClientExceptions
@@ -71,15 +72,19 @@ class SocketClient():
 
     @classmethod
     # TODO: Unsure if client needed.
-    def init(cls, endpoint: Endpoint, conn_token: str, user_id: str,
-             display_message: callable, frontend_socket: Client):
+    def init(cls,
+             endpoint: Endpoint,
+             conn_token: str, user_id: str,
+             display_message: callable,
+             frontend_socket: Client,
+             encryption_type: EncryptSchemes.ABSTRACT, key_source: KeyGenerators.ABSTRACT):
         cls.logger.info(
             f"Initiailizing Socket Client with WebSocket endpoint {endpoint}.")
 
-        cls.av = AVController(cls, frontend_socket)
+        cls.av = AVController(client_socket=cls, frontend_socket=frontend_socket, encryption_type=encryption_type, key_source=key_source)
         cls.namespaces = cls.av.client_namespaces
 
-        cls.conn_token = conn_token  # TODO: remove
+        cls.conn_token = conn_token
         cls.endpoint = Endpoint(*endpoint)
         cls.user_id = user_id
         cls.display_message = display_message
@@ -172,6 +177,17 @@ class VideoChatClient:
         self.server_endpoint = None
         self.peer_endpoint = None
 
+        self.encryption_type = EncryptSchemes.DEBUG
+        self.key_source = KeyGenerators.DEBUG
+
+    def set_encryption_type(self, encryption_type: EncryptSchemes):
+        self.encryption_type = encryption_type
+        return self
+
+    def set_key_source(self, key_source: KeyGenerators):
+        self.key_source = key_source
+        return self
+
     def HandleClientExceptions(endpoint_handler: callable):
         """
         Decorator to handle commonly encountered
@@ -240,8 +256,8 @@ class VideoChatClient:
         try:
             # TODO: figure out where to bubble down to
             sio = SocketClient.init(
-                endpoint, conn_token, self.user_id,
-                self.display_message, self.frontend_socket)
+                endpoint=endpoint, conn_token=conn_token, user_id=self.user_id,
+                display_message=self.display_message, frontend_socket=self.frontend_socket, encryption_type=self.encryption_type, key_source=self.key_source)
             sio.start()
         except Exception as e:
             self.logger.error(f"Failed to connect to WebSocket at {endpoint} with conn_token '{conn_token}'.")

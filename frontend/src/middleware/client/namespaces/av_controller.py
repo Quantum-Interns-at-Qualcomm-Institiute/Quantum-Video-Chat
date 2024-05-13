@@ -22,14 +22,14 @@ class AVController:
         '/audio': (BroadcastFlaskNamespace, AudioClientNamespace),
     }
 
-    def __init__(self, cls, frontend_socket: SocketIOClient,
-                 encryption: EncryptSchemes.ABSTRACT = EncryptFactory().create_encrypt_scheme(EncryptSchemes.AES)):
+    def __init__(self, client_socket, frontend_socket: SocketIOClient,
+                 encryption_type: EncryptSchemes.ABSTRACT,
+                 key_source: KeyGenerators.ABSTRACT):
 
-        self.cls = cls
+        self.client_socket = client_socket
+        self.client_namespaces = generate_client_namespace(client_socket=client_socket, av_controller=self, frontend_socket=frontend_socket)
 
-        self.key_gen = KeyGenFactory().create_key_generator(KeyGenerators.DEBUG)
-        self.key_gen.generate_key(key_length=128)
-
+        # Video
         display_shapes = [(720, 960, 3), (720, 1280, 3)]
         self.display_shape = display_shapes[0]
         video_shapes = [(120, 160, 3), (240, 320, 3),
@@ -37,28 +37,27 @@ class AVController:
         self.video_shape = video_shapes[2]
         self.frame_rate = 15
 
+        # Audio
         sample_rates = [8196, 44100]
         self.sample_rate = sample_rates[0]
         self.frames_per_buffer = self.sample_rate // 6
         self.audio_wait = 1 / 8
 
-        # self.key = self.key_gen.get_key().tobytes()
+        # Encryption
+        self.encryption: EncryptSchemes.ABSTRACT.value = EncryptFactory().create_encrypt_scheme(type=encryption_type)
+        self.key_gen: KeyGenerators.ABSTRACT.value = KeyGenFactory().create_key_generator(type=key_source).set_key_length(length=128)
+        self.key_buffer_size: int = 100
+        self.keys: list[bytes] = []
 
-        self.encryption: EncryptSchemes.ABSTRACT = encryption
-
-        self.client_namespaces = generate_client_namespace(
-            cls, self, frontend_socket)
-
-        self.key_buffer_size = 100
-        self.keys = []
         async def gen_keys():
+            # TODO: these look the same, why do it like this?
             for i in range(self.key_buffer_size):
-                self.key_gen.generate_key(key_length=128)
-                self.keys.append((len(self.keys), self.key_gen.get_key().tobytes()))
-                
+                self.key_gen.generate_key()
+                self.keys.append((len(self.keys), self.key_gen.get_key()))
+
             while True:
-                self.key_gen.generate_key(key_length=128)
-                self.keys.append((len(self.keys), self.key_gen.get_key().tobytes()))
+                self.key_gen.generate_key()
+                self.keys.append((len(self.keys), self.key_gen.get_key()))
 
                 await asyncio.sleep(1)
 
@@ -72,11 +71,11 @@ test_namespaces = {
 }
 
 
-def generate_flask_namespace(cls):
+def generate_flask_namespace(client_socket):
     namespaces = test_namespaces if testing else AVController.namespaces
-    return {name: namespaces[name][0](name, cls) for name in namespaces}
+    return {name: namespaces[name][0](namespace=name, client_socket=client_socket) for name in namespaces}
 
 
-def generate_client_namespace(cls, *args):
+def generate_client_namespace(client_socket, av_controller, frontend_socket):
     namespaces = test_namespaces if testing else AVController.namespaces
-    return {name: namespaces[name][1](name, cls, *args) for name in namespaces}
+    return {name: namespaces[name][1](namespace=name, client_socket=client_socket, av_controller=av_controller, frontend_socket=frontend_socket) for name in namespaces}
