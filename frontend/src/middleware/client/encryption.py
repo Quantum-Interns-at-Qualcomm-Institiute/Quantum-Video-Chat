@@ -33,17 +33,11 @@ class XOREncryption(AbstractEncryptionScheme):
 
     # data and key are bit arrays with same length
     def encrypt(self, data, key):
-        result = bitarray()
-        for bit1, bit2 in zip(data, key):
-            result.append(bit1 ^ bit2)
-        return result
+        return bytes(d ^ k for d, k in zip(data, key))
 
     # data and key are bit arrays with same length
     def decrypt(self, data, key):
-        result = bitarray()
-        for bit1, bit2 in zip(data, key):
-            result.append(bit1 ^ bit2)
-        return result
+        return bytes(d ^ k for d, k in zip(data, key))
 
     def get_name(self):
         return self.name

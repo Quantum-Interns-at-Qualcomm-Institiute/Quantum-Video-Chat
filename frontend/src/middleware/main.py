@@ -17,12 +17,12 @@ if __name__ == "__main__":
     api_port = config["API_ENDPOINT_PORT"]
     api_address = "localhost"
 
-    search_string = ('Ethernet 2', 'en11') if config["AD_HOC"] else ('Wi-Fi', 'en0')
+    search_string = ('Ethernet 2', 'en7') if config["AD_HOC"] else ('Wi-Fi', 'en0')
     for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
         if prop.family == 2:
             api_address = prop.address
 
-    client = VideoChatClient().set_encryption_type(encryption_type=EncryptSchemes.XOR).set_key_source(key_source=KeyGenerators.DEBUG)
+    client = VideoChatClient().set_encryption_type(encryption_type=EncryptSchemes.AES).set_key_source(key_source=KeyGenerators.DEBUG)
 
     api_endpoint = Endpoint(ip=api_address, port=api_port)
     client.start_api(endpoint=api_endpoint)
@@ -42,4 +42,5 @@ if __name__ == "__main__":
     # TODO: this is a bit hacky, find a more elegant solution
     # This prevents the python process from terminating and closing the socket
     while True:
+        # print("here")
         pass

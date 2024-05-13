@@ -29,8 +29,8 @@ class VideoClientNamespace(AVClientNamespace):
                 format='rawvideo',
                 pix_fmt='nv12',
                 s='{}x{}'.format(
-                    self.av.video_shape[1], self.av.video_shape[0]),
-                r=self.av.frame_rate,
+                    self.av_controller.video_shape[1], self.av_controller.video_shape[0]),
+                r=self.av_controller.frame_rate,
             )
 
             output = ffmpeg.output(
@@ -38,22 +38,22 @@ class VideoClientNamespace(AVClientNamespace):
                 preset='ultrafast', tune='zerolatency')
 
             while True:
-                key_idx, key = self.av.keys[-self.av.key_buffer_size]
+                key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
 
                 _, image = cap.read()
                 image = cv2.resize(
-                    image, (self.av.video_shape[1], self.av.video_shape[0]))
+                    image, (self.av_controller.video_shape[1], self.av_controller.video_shape[0]))
                 data = image.tobytes()
                 print(f"Pre-sending video frame with key index {key_idx}")
 
                 data = output.run(
                     input=data, capture_stdout=True, quiet=True)[0]
 
-                data = self.av.encryption.encrypt(data, key)
+                data = self.av_controller.encryption.encrypt(data, key)
                 print(f"Sending video frame with key index {key_idx}")
                 self.send(key_idx.to_bytes(4, 'big') + data)
 
-                await asyncio.sleep(1 / self.av.frame_rate / 5)
+                await asyncio.sleep(1 / self.av_controller.frame_rate / 5)
 
         Thread(target=asyncio.run, args=(send_video(),)).start()
 
@@ -61,13 +61,13 @@ class VideoClientNamespace(AVClientNamespace):
         super().on_message(user_id, msg)
 
         async def handle_message():
-            if user_id == self.cls.user_id:
+            if user_id == self.client_socket.user_id:
                 return
 
             key_idx = int.from_bytes(msg[:4], 'big')
-            key = self.av.keys[key_idx][1]
+            key = self.av_controller.keys[key_idx][1]
 
-            data = self.av.encryption.decrypt(msg[4:], key)
+            data = self.av_controller.encryption.decrypt(msg[4:], key)
 
             # Data is now an ISMV format file in memory
             data = self.output.run(input=data, capture_stdout=True,
