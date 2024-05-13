@@ -1,6 +1,6 @@
 import os
-import string
 from abc import ABC, abstractmethod
+from typing import Union
 from bitarray import bitarray
 from enum import Enum
 from Crypto.Cipher import AES
@@ -99,6 +99,11 @@ class EncryptSchemes(Enum):
     DEBUG = DebugEncryption
     XOR = XOREncryption
 
+    # def __call__(cls, *args, **kwargs):
+    #     if cls.value is AbstractEncryptionScheme:
+    #         raise ValueError("Abstract scheme cannot be instantiated")
+    #     return cls.value(*args, **kwargs)
+
 
 class EncryptFactory:
     def create_encrypt_scheme(self, type) -> AbstractEncryptionScheme:
@@ -118,49 +123,62 @@ class EncryptFactory:
 class AbstractKeyGenerator(ABC):
 
     @abstractmethod
-    def generate_key(self, *args, **kwargs):
+    def generate_key(self) -> "AbstractKeyGenerator":
         """Generate a key, either randomly or preset."""
         pass
 
     @abstractmethod
-    def get_key(self):
+    def get_key(self) -> bytes:
         """Return the generated key."""
+        pass
+
+    @abstractmethod
+    def set_key_length(self, length: int) -> "AbstractKeyGenerator":
+        """Sets the length of the key to be generated"""
         pass
 
 
 class DebugKeyGenerator(AbstractKeyGenerator):
     def __init__(self):
-        self.key: bitarray = bitarray()
-        self.key_length = 0
+        self.key: bytes = None
+        self.key_length: int = 0
+        self.initialized: bool = False
+        self.generated: bool = False
 
-    def speficied_keylength(self, length):
+    def set_key_length(self, length: int) -> "DebugKeyGenerator":
+        if length <= 0:
+            raise ValueError("Key length must be greater than 1")
+
         self.key_length = length
-        # Default debug key is alternating 1 and 0
-        self.key = bitarray([i % 2 for i in range(self.key_length)])
+        self.initialized = True
 
-    def specified_key(self, key):
-        bit_array = bitarray()
-        if isinstance(key, bitarray):
-            bit_array = key
-        elif isinstance(key, string):
-            encoded_bytes = key.encode('utf-8')
-            bit_array.frombytes(encoded_bytes)
-        else:
-            raise ValueError("Error, only bitarray or string allowed")
-        self.key = bit_array
-        self.length = len(key)
+        return self
 
-    def generate_key(self, key=None, key_length=0):
-        if key is not None:
-            self.specified_key(self, key)
+    def set_key(self, key: Union[bitarray, str]) -> "DebugKeyGenerator":
+        if key is None or len(key) == 0:
+            raise ValueError("Key must not be empty")
 
-        elif key_length != 0:
-            self.speficied_keylength(key_length)
+        self.key = key.encode('utf-8') if isinstance(key,
+                                                     str) else key.tobytes()
+        self.key_length = len(self.key)
+        self.initialized = True
+        self.generated = True
 
-        else:
-            raise ValueError("Invalid parameters")
+        return self
+
+    def generate_key(self) -> "DebugKeyGenerator":
+        if not self.initialized:
+            raise ValueError("A key or a length must be set to generate a key")
+        if not self.generated:
+            self.key = bitarray(
+                [i % 2 for i in range(self.key_length)]).tobytes()
+            self.generated = True
+        return self
 
     def get_key(self):
+        if not self.generated:
+            raise ValueError(
+                "A key must be specified or generated before usage")
         return self.key
 
 
