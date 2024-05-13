@@ -19,12 +19,12 @@ class KeyClientNamespace(AVClientNamespace):
         async def gen_keys():
             await asyncio.sleep(2)
             while True:
-                self.av.key_gen.generate_key(key_length=128)
+                self.av_controller.key_gen.generate_key(key_length=128)
                 key = self.key_idx.to_bytes(
-                    4, 'big') + self.av.key_gen.get_key().tobytes()
+                    4, 'big') + self.av_controller.key_gen.get_key().tobytes()
                 self.key_idx += 1
 
-                await self.av.key_queue[self.cls.user_id]
+                await self.av_controller.key_queue[self.client_socket.user_id]
                 [self.namespace].put(key)
 
                 await asyncio.sleep(1)
