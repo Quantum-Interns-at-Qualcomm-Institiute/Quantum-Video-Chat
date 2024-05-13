@@ -17,7 +17,7 @@ import psutil
 import platform
 
 AD_HOC = True
-search_string = ('Ethernet 2', 'en11') if AD_HOC else ('Wi-Fi', 'en0')
+search_string = ('Ethernet 2', 'en7') if AD_HOC else ('Wi-Fi', 'en0')
 for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
     if prop.family == 2:
         ip = prop.address
@@ -158,8 +158,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
             user_id, sess_token = get_parameters(
                 request.json, 'user_id', 'sess_token')
             if not cls.server.verify_user(user_id, sess_token):
-                raise BadAuthentication(f"Authentication failed for user {
-                                        user_id} with session token '{sess_token}'.")
+                raise BadAuthentication(f"Authentication failed for user {user_id} with session token '{sess_token}'.")
 
             return func(cls, *args, **kwargs)
         wrapper.__name__ = func.__name__
@@ -172,8 +171,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
             try:
                 return endpoint_handler(cls, *args, **kwargs)
             except BadAuthentication as e:
-                cls.logger.info(f"Authentication failed for server at {
-                                endpoint_handler.__name__}:\n\t{str(e)}")
+                cls.logger.info(f"Authentication failed for server at {endpoint_handler.__name__}:\n\t{str(e)}")
                 return jsonify({"error_code": "403",
                                 "error_message": "Forbidden",
                                 "details": remove_last_period(e)}),
@@ -201,8 +199,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
     @classmethod
     def init(cls, server: Server):
-        cls.logger.info(f"Initializing Server API with endpoint {
-                        server.api_endpoint}.")
+        cls.logger.info(f"Initializing Server API with endpoint {server.api_endpoint}.")
         if cls.state == APIState.LIVE:
             raise ServerError("Cannot reconfigure API during server runtime.")
         cls.server = server
@@ -280,8 +277,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         conn_token : str
         """
         user_id, peer_id = get_parameters(request.json, 'user_id', 'peer_id')
-        cls.logger.info(f"Received request from User {
-                        user_id} to connect with User {peer_id}.")
+        cls.logger.info(f"Received request from User {user_id} to connect with User {peer_id}.")
 
         endpoint, conn_token = cls.server.handle_peer_connection(
             user_id, peer_id)
@@ -370,11 +366,9 @@ class SocketAPI(Thread):
             user_id, sess_token = get_parameters(auth)
             try:
                 if not cls.verify_sess_token(user_id, sess_token):
-                    raise BadAuthentication(f"Authentication failed for User {
-                                            user_id} with token '{sess_token}'.")
+                    raise BadAuthentication(f"Authentication failed for User {user_id} with token '{sess_token}'.")
             except UserNotFound as e:
-                raise BadAuthentication(f"Authentication failed for User {
-                                        user_id} with token '{sess_token}': {str(e)}.")
+                raise BadAuthentication(f"Authentication failed for User {user_id} with token '{sess_token}': {str(e)}.")
 
             endpoint_handler(cls, user_id)
         return handler_with_authentication
@@ -408,8 +402,7 @@ class SocketAPI(Thread):
         server : Server
         users : tuple (requester_id, host_id)
         """
-        cls.logger.info(f"Initializing WebSocket API with endpoint {
-                        server.websocket_endpoint}.")
+        cls.logger.info(f"Initializing WebSocket API with endpoint {server.websocket_endpoint}.")
         if cls.state >= SocketState.LIVE:
             raise ServerError(
                 "Cannot reconfigure WebSocket API during runtime.")
@@ -463,8 +456,7 @@ class SocketAPI(Thread):
     def kill(cls):
         cls.logger.info("Killing WebSocket API.")
         if not (cls.state == SocketState.LIVE or cls.state == SocketState.OPEN):
-            raise ServerError(f"Cannot kill Socket API when not {
-                              SocketState.LIVE} or {SocketState.OPEN}.")
+            raise ServerError(f"Cannot kill Socket API when not {SocketState.LIVE} or {SocketState.OPEN}.")
         # "This method must be called from a HTTP or SocketIO handler function."
         cls.socketio.stop()
         cls.state = SocketState.INIT
@@ -476,11 +468,9 @@ class SocketAPI(Thread):
     @HandleExceptions
     def on_connect(cls, auth):
         user_id, conn_token = auth
-        cls.logger.info(f"Received Socket connection request from User {
-                        user_id} with connection token '{conn_token}'.")
+        cls.logger.info(f"Received Socket connection request from User {user_id} with connection token '{conn_token}'.")
         if cls.state != SocketState.LIVE:
-            cls.logger.info(f"Cannot accept connection when already {
-                            SocketState.OPEN}.")
+            cls.logger.info(f"Cannot accept connection when already {SocketState.OPEN}.")
             # raise UnknownRequester( ... ) # TODO: Maybe different name?
             # or
             # raise ConnectionRefusedError( ... )
@@ -494,8 +484,7 @@ class SocketAPI(Thread):
 
         sess_token = cls.generate_sess_token(user_id)
         cls.users[user_id] = sess_token
-        cls.logger.info(f"Socket connection from User {
-                        user_id} accepted; yielding session token '{sess_token}'")
+        cls.logger.info(f"Socket connection from User {user_id} accepted; yielding session token '{sess_token}'")
         emit('token', sess_token)
 
         # TODO: What is this block?
@@ -510,8 +499,7 @@ class SocketAPI(Thread):
         user_id = user_id
         cls.logger.info(f"Received message from User {user_id}: '{msg}'")
         if not cls.verify_sess_token(*auth):
-            cls.logger.info(f"Authentication failed for User {
-                            user_id} with token '{sess_token}' at on_message.")
+            cls.logger.info(f"Authentication failed for User {user_id} with token '{sess_token}' at on_message.")
             return
 
         send((user_id, msg), broadcast=True)
