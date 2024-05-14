@@ -177,7 +177,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         def wrapper(cls, *args, **kwargs):
             user_id, sess_token = get_parameters(
                 request.json, 'user_id', 'sess_token')
-            if not cls.server.verify_user(user_id, sess_token):
+            if not cls.video_chat_server.verify_user(user_id, sess_token):
                 raise BadAuthentication(f"Authentication failed for user {user_id} with session token '{sess_token}'.")
 
             return func(cls, *args, **kwargs)
@@ -405,7 +405,7 @@ class SocketAPI(Thread):
             raise ServerError(
                 "Cannot reconfigure WebSocket API during runtime.")
 
-        cls.server = server
+        cls.video_chat_server = server
         cls.endpoint = server.websocket_endpoint
         cls.conn_token = cls.generate_conn_token(users)
         cls.state = SocketState.INIT
@@ -444,7 +444,7 @@ class SocketAPI(Thread):
                 cls.logger.error(f"Endpoint {cls.endpoint} in use.")
 
                 cls.state = SocketState.INIT
-                cls.server.set_websocket_endpoint(
+                cls.video_chat_server.set_websocket_endpoint(
                     Endpoint(cls.endpoint.ip, cls.endpoint.port + 1))
                 continue
             cls.logger.info("WebSocket API terminated.")
