@@ -65,14 +65,16 @@ export default function Session(props) {
     }
     console.log("Session: Running useEffect()");
     getOutStream();
+    const canvas = document.getElementById("peer-stream");
+    const context = canvas.getContext("2d");
+    context.fillstyle = "rgb(0,0,0)"
+    context.fillRect(0, 0, canvas.width, canvas.height)
   }, []);
 
   useEffect(() => {
     window.electronAPI.ipcListen("frame", (event: IpcMainEvent, frame: VideoFrame) => {
       const canvas = document.getElementById("peer-stream");
       const context = canvas.getContext("2d");
-      context.fillstyle = "rgb(0,0,0)"
-      context.fillRect(0, 0, canvas.width, canvas.height)
       /*
         `image`: An element to draw into the context.
           The specification permits any canvas image source, specifically, an `HTMLImageElement`,
@@ -105,7 +107,7 @@ export default function Session(props) {
         <div className="top">
           <div className="video-wrapper" id="left-video">
             {/* Make this come from the backend code so it's the same size*/}
-            <canvas id="peer-stream" width="640" height="480" />
+            <canvas id="peer-stream" width="640" height="480"> Please wait... </canvas>
           </div>
           <div className="vert-spacer" />
           <div className="video-wrapper" id="right-video">
