@@ -36,7 +36,7 @@ class SocketState(Enum):
 # region --- Server ---
 
 
-class Server:
+class VideoChatServer:
     def __init__(self, api_endpoint: Endpoint, SocketAPI, SocketState: SocketState, user_storage="DICT"):
         # TODO: GET RID OF THIS AND FIX IT LATER OMG THIS IS DISGUSTING
         # the socket api should start in main with the server api...
@@ -170,5 +170,5 @@ class Server:
 if __name__ == "__main__":
     from api import ServerAPI
     # NOTE: This doesn't have the correct arguments now; not important, though
-    server = Server(ServerAPI.DEFAULT_ENDPOINT)
+    server = VideoChatServer(ServerAPI.DEFAULT_ENDPOINT)
 # endregion
