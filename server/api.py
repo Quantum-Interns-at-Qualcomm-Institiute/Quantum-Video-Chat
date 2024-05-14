@@ -10,14 +10,14 @@ from enum import Enum
 from utils import ServerError, BadGateway, BadRequest, ParameterError, InvalidParameter, BadAuthentication, UserNotFound
 from utils import remove_last_period
 import logging
-from server import Server, SocketState
+from server import VideoChatServer, SocketState
 from gevent.pywsgi import WSGIServer  # For asynchronous handling
 from flask import Flask, jsonify, request
 import psutil
 import platform
 
 AD_HOC = True
-search_string = ('Ethernet 2', 'en7') if AD_HOC else ('Wi-Fi', 'en0')
+search_string = ('Ethernet 2', 'en11') if AD_HOC else ('Wi-Fi', 'en0')
 for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
     if prop.family == 2:
         ip = prop.address
@@ -145,12 +145,32 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
     app = Flask(__name__)
     http_server = None
-    server = None
+    video_chat_server = None
     endpoint = None
     state = APIState.INIT
-
-    # region --- Utils ---
     logger = logging.getLogger('ServerAPI')
+
+    @classmethod
+    def init(cls, server: VideoChatServer):
+        cls.logger.info(f"Initializing Server API with endpoint {server.api_endpoint}.")
+        if cls.state == APIState.LIVE:
+            raise ServerError("Cannot reconfigure API during server runtime.")
+        cls.video_chat_server = server
+        cls.endpoint = server.api_endpoint
+        cls.state = APIState.IDLE
+
+    @classmethod
+    def start(cls):
+        cls.logger.info(f"Starting Server API at {cls.endpoint}.")
+        if cls.state == APIState.INIT:
+            raise ServerError("Cannot start API before initialization.")
+        if cls.state == APIState.LIVE:
+            raise ServerError("Cannot start API: already running.")
+
+        print(f"Serving Server API on {cls.endpoint}")
+        cls.state = APIState.LIVE
+        cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
+        cls.http_server.serve_forever()
 
     def HandleAuthentication(func: callable):
         """Decorator to handle commonly encountered exceptions in the API"""
@@ -198,28 +218,6 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
     # endregion
 
     @classmethod
-    def init(cls, server: Server):
-        cls.logger.info(f"Initializing Server API with endpoint {server.api_endpoint}.")
-        if cls.state == APIState.LIVE:
-            raise ServerError("Cannot reconfigure API during server runtime.")
-        cls.server = server
-        cls.endpoint = server.api_endpoint
-        cls.state = APIState.IDLE
-
-    @classmethod
-    def start(cls):
-        cls.logger.info(f"Starting Server API at {cls.endpoint}.")
-        if cls.state == APIState.INIT:
-            raise ServerError("Cannot start API before initialization.")
-        if cls.state == APIState.LIVE:
-            raise ServerError("Cannot start API: already running.")
-
-        print(f"Serving Server API on {cls.endpoint}")
-        cls.state = APIState.LIVE
-        cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
-        cls.http_server.serve_forever()
-
-    @classmethod
     def kill(cls):
         cls.logger.info("Killing Server API.")
         if cls.state != APIState.LIVE:
@@ -244,7 +242,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
 
         api_endpoint, = get_parameters(request.json, 'api_endpoint')
         print(api_endpoint)
-        user_id, sess_token = server.add_user(Endpoint(*api_endpoint))
+        user_id, sess_token = cls.video_chat_server.add_user(Endpoint(*api_endpoint))
 
         return jsonify({'sess_token': sess_token, 'user_id': user_id}), 200
 
@@ -279,7 +277,7 @@ class ServerAPI:  # TODO: Potentially, subclass Thread since server is blocking
         user_id, peer_id = get_parameters(request.json, 'user_id', 'peer_id')
         cls.logger.info(f"Received request from User {user_id} to connect with User {peer_id}.")
 
-        endpoint, conn_token = cls.server.handle_peer_connection(
+        endpoint, conn_token = cls.video_chat_server.handle_peer_connection(
             user_id, peer_id)
 
         return jsonify({'socket_endpoint': tuple(endpoint), 'conn_token': conn_token}), 200
@@ -399,7 +397,7 @@ class SocketAPI(Thread):
         """
         Parameters
         ----------
-        server : Server
+        server : VideoChatServer
         users : tuple (requester_id, host_id)
         """
         cls.logger.info(f"Initializing WebSocket API with endpoint {server.websocket_endpoint}.")
@@ -514,19 +512,4 @@ class SocketAPI(Thread):
         # State returns to INIT
 
     # endregion
-# endregion
-
-
-# region --- Main ---
-if __name__ == '__main__':
-    try:
-        server = Server(ServerAPI.DEFAULT_ENDPOINT, SocketAPI, SocketState)
-        # server.set_host()
-        ServerAPI.init(server)
-        ServerAPI.start()  # Blocking
-    except KeyboardInterrupt:
-        logger.info("Intercepted Keyboard Interrupt.")
-        ServerAPI.kill()
-        logger.info("Exiting main program execution.\n")
-        exit()
 # endregion
