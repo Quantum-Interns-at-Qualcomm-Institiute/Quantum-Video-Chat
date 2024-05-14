@@ -1,6 +1,6 @@
 import logging 
-from .api import ServerAPI, SocketAPI
-from .server import SocketState, VideoChatServer
+from api import ServerAPI, SocketAPI
+from server import SocketState, VideoChatServer
 
 logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',

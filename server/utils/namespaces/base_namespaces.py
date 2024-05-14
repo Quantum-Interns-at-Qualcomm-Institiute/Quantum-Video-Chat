@@ -25,8 +25,8 @@ class BroadcastFlaskNamespace(FlaskNamespace):
     def on_disconnect(self):
         # TODO: these lines were erroring, this fix isn't optimal
         for client in self.cls.users:
-            if client.state == ClientState.CONNECTED:
-                client.state = ClientState.LIVE
+            if client.state == ClientState.CONNECTED.value:
+                client.state = ClientState.LIVE.value
 
 
 class AVClientNamespace(ClientNamespace):
