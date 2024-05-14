@@ -3,6 +3,7 @@ import logging
 from threading import Thread
 import cv2
 import ffmpeg
+from PIL import Image
 
 from .base_namespaces import AVClientNamespace
 
@@ -72,6 +73,10 @@ class VideoClientNamespace(AVClientNamespace):
             # Data is now an ISMV format file in memory
             data = self.output.run(input=data, capture_stdout=True,
                                    quiet=True)[0]
+            
+            image = Image.frombytes(mode="YCbCr", size=(480, 640), data=data).convert('RGBA')
+            data = image.tobytes()
+            
             print(f"Sending frame of size {len(data)} to frontend")
             self.frontend_socket.emit('stream', data)
 

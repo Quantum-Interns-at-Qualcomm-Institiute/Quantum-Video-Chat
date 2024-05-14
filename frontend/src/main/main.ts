@@ -155,10 +155,10 @@ const spawnPythonProcess = () => {
 				codedHeight: 480,
 				timestamp: 0,
 				colorSpace: {
-					primaries: "bt709",
-					transfer: "bt709",
-					matrix: "rgb",
-					fullRange: false,
+					primaries: "smpte170m",
+					transfer: "smpte170m",
+					matrix: "smpte170m",
+					fullRange: true,
 				},
 			});
 
