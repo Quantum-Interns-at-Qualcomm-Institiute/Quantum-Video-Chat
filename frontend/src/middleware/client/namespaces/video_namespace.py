@@ -17,9 +17,9 @@ class VideoClientNamespace(AVClientNamespace):
 
     def on_connect(self):
         super().on_connect()
-        inpipe = ffmpeg.input('pipe:')
+        inpipe1 = ffmpeg.input('pipe:')
         self.output = ffmpeg.output(
-            inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
+            inpipe1, 'pipe:', format='rawvideo', pix_fmt='nv12')
 
         async def send_video():
             await asyncio.sleep(2)
@@ -73,10 +73,11 @@ class VideoClientNamespace(AVClientNamespace):
             # Data is now an ISMV format file in memory
             data = self.output.run(input=data, capture_stdout=True,
                                    quiet=True)[0]
-            
-            image = Image.frombytes(mode="YCbCr", size=(480, 640), data=data).convert('RGBA')
+
+            image = Image.frombytes(mode="YCbCr", size=(self.av_controller.video_shape[1], self.av_controller.video_shape[0]), data=data).convert('RGBA')
             data = image.tobytes()
-            
+            image.show()
+
             print(f"Sending frame of size {len(data)} to frontend")
             self.frontend_socket.emit('stream', data)
 

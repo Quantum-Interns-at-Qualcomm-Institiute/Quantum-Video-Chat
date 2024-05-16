@@ -148,25 +148,25 @@ const spawnPythonProcess = () => {
 			const frameArray = frame as Uint8Array;
 			console.log(`Received data from socket of size ${frameArray.length}`);
 
-			// Use promise-based .arrayBuffer() method so we can bypass having a FileReader
-			const videoFrame = new VideoFrame(frameArray, {
-				format: "NV12",
-				codedWidth: 640,
-				codedHeight: 480,
-				timestamp: 0,
-				colorSpace: {
-					primaries: "smpte170m",
-					transfer: "smpte170m",
-					matrix: "smpte170m",
-					fullRange: true,
-				},
-			});
+			// // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
+			// const videoFrame = new VideoFrame(frameArray, {
+			// 	format: "NV12",
+			// 	codedWidth: 640,
+			// 	codedHeight: 480,
+			// 	timestamp: 0,
+			// 	colorSpace: {
+			// 		primaries: "smpte170m",
+			// 		transfer: "smpte170m",
+			// 		matrix: "smpte170m",
+			// 		fullRange: true,
+			// 	},
+			// });
 
-			// Send this frame to the other window
-			if (mainWindow !== null) {
-				console.log(`Sending video frame ${videoFrame} to renderer`);
-				mainWindow.webContents.send("frame", videoFrame);
-			} else throw new Error("main window is null");
+			// // Send this frame to the other window
+			// if (mainWindow !== null) {
+			// 	console.log(`Sending video frame ${videoFrame} to renderer`);
+			// 	mainWindow.webContents.send("frame", videoFrame);
+			// } else throw new Error("main window is null");
 		});
 	});
 };
