@@ -53,41 +53,44 @@ def start_client(ipaddress, port, interval, length, height):
             self.sio: socketio.Client = sio
             self._stop_event = Event()
             self.cap = cv2.VideoCapture(0)
-
-        def run(self):
-            eventlet.sleep(interval)
-            count = 0
-            FRAMERATE = 15
-
-            inpipe = ffmpeg.input(
+            self.framerate = 15
+            self.inpipe = ffmpeg.input(
                 filename='pipe:',
                 format='rawvideo',
                 pix_fmt='nv12',
                 s=f'{height}x{length}',
-                r=FRAMERATE,
+                r=self.framerate,
             )
-            output = ffmpeg.output(
-                inpipe, 'pipe:', vcodec='libx264', f='ismv',
+            self.output = ffmpeg.output(
+                self.inpipe, 'pipe:', vcodec='libx264', f='ismv',
                 preset='ultrafast', tune='zerolatency')
 
+        def send_frame(self, count):
+            print(f"Starting image processing at {right_now()}")
+            ret, frame = self.cap.read()
+
+            if not ret:
+                print("Failed to capture image")
+                return
+
+            image = cv2.resize(frame, dsize=(length, height))
+            processed = self.output.run(
+                input=image.tobytes(), capture_stdout=True, quiet=True)[0]
+
+            print(f"Frame #{count} processing completed at {right_now()}! Sending...")
+            self.sio.emit('send_frame', data={
+                'count': count,
+                'frame': processed,
+                'hash': get_hash(processed)
+            })  # emit 'send_frame' event
+
+        def run(self):
+            count = 0
+            eventlet.sleep(interval)
+
             while not self._stop_event.is_set():
-                print(f"Starting image processing at {right_now()}")
-                ret, frame = self.cap.read()
-                if not ret:
-                    print("Failed to capture image")
-                    continue
-
                 count += 1
-                image = cv2.resize(frame, dsize=(length, height))
-                processed = output.run(
-                    input=image.tobytes(), capture_stdout=True, quiet=True)[0]
-
-                print(f"Frame #{count} processing completed at {right_now()}! Sending...")
-                self.sio.emit('send_frame', data={
-                    'count': count,
-                    'frame': processed,
-                    'hash': get_hash(processed)
-                })  # emit 'send_frame' event
+                self.send_frame(count)
                 eventlet.sleep(interval)
 
         def stop(self):
