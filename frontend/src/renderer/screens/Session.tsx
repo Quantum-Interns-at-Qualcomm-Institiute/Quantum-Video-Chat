@@ -72,17 +72,23 @@ export default function Session(props) {
   }, []);
 
   useEffect(() => {
-    window.electronAPI.ipcListen("frame", (event: IpcMainEvent, frame: VideoFrame) => {
+    window.electronAPI.ipcListen("frame", (event: IpcMainEvent, frameURL: string) => {
+      console.log("I've made it to the rendering process!")
       const canvas = document.getElementById("peer-stream");
       const context = canvas.getContext("2d");
-      /*
-        `image`: An element to draw into the context.
-          The specification permits any canvas image source, specifically, an `HTMLImageElement`,
-          an `SVGImageElement`, an `HTMLVideoElement`, an `HTMLCanvasElement`, an `ImageBitmap`,
-          an `OffscreenCanvas`, or a `VideoFrame`.
-        [See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage]
-      */
-      context.drawImage(frame, 0, 0, canvas.width, canvas.height);
+      const img = new Image;
+      img.onload = () => {
+        /*
+          `image`: An element to draw into the context.
+            The specification permits any canvas image source, specifically, an `HTMLImageElement`,
+            an `SVGImageElement`, an `HTMLVideoElement`, an `HTMLCanvasElement`, an `ImageBitmap`,
+            an `OffscreenCanvas`, or a `VideoFrame`.
+          [See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage]
+        */
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = frameURL
+
     });
 
     if (props.host) {

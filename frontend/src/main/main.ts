@@ -133,40 +133,45 @@ const spawnPythonProcess = () => {
 
 	io.on("connection", (socket: Socket) => {
 		console.log("Connected to backend python code");
-		const user_id = socket.handshake.headers.user_id;
-		ipcMain.once("set_peer_id", (event, peer_id) => {
-			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
-			console.log(
-				`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
-			);
-			socket.emit("connect_to_peer", peer_id);
-		});
+		// const user_id = socket.handshake.headers.user_id;
+		// ipcMain.once("set_peer_id", (event, peer_id) => {
+		// 	// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
+		// 	console.log(
+		// 		`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
+		// 	);
+		// 	socket.emit("connect_to_peer", peer_id);
+		// });
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		socket.on("stream", (frame) => {
-			// const frameBlob = new Blob(frame, { type: "plain/text" });
-			const frameArray = frame as Uint8Array;
-			console.log(`Received data from socket of size ${frameArray.length}`);
+		socket.on("stream", (data) => {
+      const frameArray = data.frame as Uint8Array
+      console.log(`Frame #${data.count} (received from backend)`)
 
 			// // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
-			// const videoFrame = new VideoFrame(frameArray, {
-			// 	format: "NV12",
-			// 	codedWidth: 640,
-			// 	codedHeight: 480,
-			// 	timestamp: 0,
-			// 	colorSpace: {
-			// 		primaries: "smpte170m",
-			// 		transfer: "smpte170m",
-			// 		matrix: "smpte170m",
-			// 		fullRange: true,
-			// 	},
-			// });
+      try {
+        // const videoFrame = new VideoFrame(frameArray, {
+        //   format: "NV12",
+        //   codedWidth: 640,
+        //   codedHeight: 480,
+        //   timestamp: 0,
+        //   colorSpace: {
+        //     primaries: "smpte170m",
+        //     transfer: "smpte170m",
+        //     matrix: "smpte170m",
+        //     fullRange: true,
+        //   },
+        // });
+        const frameBlob = new Blob([frameArray], {type: "image/jpeg"})
+        const frameURL = URL.createObjectURL(frameBlob)
+        // Send this frame to the other window
+        if (mainWindow !== null) {
+          console.log(`Sending video frame ${frameURL} to renderer`);
+          mainWindow.webContents.send("frame", frameURL);
+        } else throw new Error("main window is null");
+      } catch (error) {
+        console.log(`Error: ${error}`)
+      }
 
-			// // Send this frame to the other window
-			// if (mainWindow !== null) {
-			// 	console.log(`Sending video frame ${videoFrame} to renderer`);
-			// 	mainWindow.webContents.send("frame", videoFrame);
-			// } else throw new Error("main window is null");
 		});
 	});
 };

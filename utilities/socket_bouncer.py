@@ -1,10 +1,11 @@
 import argparse
 from asyncio import Event
+# import base64
 import hashlib
 import signal
 from threading import Thread
 from datetime import datetime
-from PIL import Image
+# from PIL import Image
 import cv2
 import ffmpeg
 import socketio
@@ -40,7 +41,7 @@ def start_server(ipaddress, port):
 
     @sio.on('disconnect')
     def disconnect(sid):
-        print(f'Socket disconnected at {right_now()}')
+        print(f'Socket disconnected at {right_now}')
 
     eventlet.wsgi.server(eventlet.listen((ipaddress, port)), app)
 
@@ -54,28 +55,32 @@ def start_client(ipaddress, port, interval, length, height):
             self._stop_event = Event()
             self.cap = cv2.VideoCapture(0)
             self.framerate = 15
-            self.inpipe = ffmpeg.input(
+
+        def send_frame(self, count):
+            print(f"Starting image processing at {right_now()}")
+            ret, frame_bgr = self.cap.read()  # Pixels are represented in BGR format (Blue, Green, Red) by default in OpenCV
+
+            if not ret:
+                print("Failed to capture image")
+                return
+
+            frame_bgr = cv2.resize(frame_bgr, dsize=(length, height))
+            frame_yuv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2YUV)
+
+            inpipe = ffmpeg.input(
                 filename='pipe:',
                 format='rawvideo',
                 pix_fmt='nv12',
                 s=f'{height}x{length}',
                 r=self.framerate,
             )
-            self.output = ffmpeg.output(
-                self.inpipe, 'pipe:', vcodec='libx264', f='ismv',
+
+            output = ffmpeg.output(
+                inpipe, 'pipe:', vcodec='libx264', f='ismv',
                 preset='ultrafast', tune='zerolatency')
 
-        def send_frame(self, count):
-            print(f"Starting image processing at {right_now()}")
-            ret, frame = self.cap.read()
-
-            if not ret:
-                print("Failed to capture image")
-                return
-
-            image = cv2.resize(frame, dsize=(length, height))
-            processed = self.output.run(
-                input=image.tobytes(), capture_stdout=True, quiet=True)[0]
+            processed = output.run(
+                input=frame_yuv.tobytes(), capture_stdout=True, quiet=True)[0]
 
             print(f"Frame #{count} processing completed at {right_now()}! Sending...")
             self.sio.emit('send_frame', data={
@@ -102,39 +107,50 @@ def start_client(ipaddress, port, interval, length, height):
         print(f'You pressed Ctrl+C! Stopping thread at {right_now()}...')
         client_thread.stop()
         print('Disconnecting...')
-        if sio is not None:
-            sio.disconnect()
+        if server_sio is not None:
+            server_sio.disconnect()
         print('Exiting!')
         sys.exit(0)
 
-    sio = socketio.Client()
-    client_thread = ClientThread(sio)
+    server_sio = socketio.Client()
+    frontend_sio = socketio.Client()
+    client_thread = ClientThread(server_sio)
 
-    @sio.on('connect')
+    @server_sio.on('connect')
     def connect():
         print(f'Connected to server at {right_now()}')
         client_thread.start()
         print(f'Thread started at {right_now()}!')
+        frontend_sio.connect('http://localhost:5001', namespaces='/')
 
-    @sio.on('disconnect')
+    @server_sio.on('disconnect')
     def disconnect():
         print(f'Disconnected from server at {right_now()}')
 
-    @sio.on('ret_frame')
+    @server_sio.on('ret_frame')
     def ret_frame(data):
         unmodified = get_hash(data['frame']) == data['hash']
         print(f'I received {'an unmodified' if unmodified else 'modified'} frame #{data['count']} at {right_now()}!')
         if unmodified:
-            inpipe1 = ffmpeg.input('pipe:')
-            output = ffmpeg.output(inpipe1, 'pipe:', format='rawvideo', pix_fmt='nv12')
+            inpipe = ffmpeg.input('pipe:')
+            output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
             processed = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
-            image = Image.frombytes(mode="YCbCr", size=(length, height), data=processed).convert('RGBA')
-            image.show()
+            # image = Image.frombytes(mode="YCbCr", size=(length, height), data=processed).convert('RGBA')
+            # serialized_image = base64.b64encode(image.tobytes())
+            # image.show()
+            print(f"Sending frontend image of size {len(processed)}")
+            # frontend_sio.emit("stream", data={
+            #     'frame': serialized_image
+            # })
+            frontend_sio.emit("stream", data={
+                'count': data['count'],
+                'frame': processed
+            })
 
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+c leads to a clean teardown
 
-    sio.connect(f'http://{ipaddress}:{port}', namespaces='/')
-    sio.wait()
+    server_sio.connect(f'http://{ipaddress}:{port}', namespaces='/')
+    server_sio.wait()
 
 
 if __name__ == '__main__':
