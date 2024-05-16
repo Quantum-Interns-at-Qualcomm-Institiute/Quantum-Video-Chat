@@ -163,7 +163,7 @@ def start_server(ipaddress, port):
     eventlet.wsgi.server(eventlet.listen((ipaddress, port)), app)
 
 
-def start_client(ipaddress, port, interval):
+def start_client(ipaddress, port, interval, length, height):
 
     class ClientThread(Thread):
         def __init__(self, sio):
@@ -175,15 +175,13 @@ def start_client(ipaddress, port, interval):
         def run(self):
             eventlet.sleep(interval)
             count = 0
-            LENGTH = 640
-            WIDTH = 480
             FRAMERATE = 15
 
             inpipe = ffmpeg.input(
                 filename='pipe:',
                 format='rawvideo',
                 pix_fmt='nv12',
-                s=f'{LENGTH}x{WIDTH}',
+                s=f'{height}x{length}',
                 r=FRAMERATE,
             )
             output = ffmpeg.output(
@@ -198,7 +196,7 @@ def start_client(ipaddress, port, interval):
                     continue
 
                 count += 1
-                image = cv2.resize(frame, (LENGTH, WIDTH))
+                image = cv2.resize(frame, dsize=(length, height))
                 processed = output.run(
                     input=image.tobytes(), capture_stdout=True, quiet=True)[0]
 
@@ -245,7 +243,7 @@ def start_client(ipaddress, port, interval):
             inpipe1 = ffmpeg.input('pipe:')
             output = ffmpeg.output(inpipe1, 'pipe:', format='rawvideo', pix_fmt='nv12')
             processed = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
-            image = Image.frombytes(mode="YCbCr", size=(640, 480), data=processed).convert('RGBA')
+            image = Image.frombytes(mode="YCbCr", size=(length, height), data=processed).convert('RGBA')
             image.show()
 
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+c leads to a clean teardown
@@ -266,7 +264,9 @@ if __name__ == '__main__':
     mode_group.add_argument('-s', '--server', action='store_true', help="Start server mode")
     mode_group.add_argument('-c', '--client', action='store_true', help="Start client mode")
 
-    parser.add_argument('--interval', type=float, default=5, help='Interval between pings in seconds (default: 5)')
+    parser.add_argument('--interval', type=float, default=5, help='Interval between frames in seconds (default: 5)')
+    parser.add_argument('--length', type=int, default=640, help="Desired horizontal size of the frame")
+    parser.add_argument('--height', type=int, default=480, help="Desired vertical size of the frame")
 
     args = parser.parse_args()
 
@@ -281,4 +281,4 @@ if __name__ == '__main__':
     if args.server:
         start_server(ip, args.port)
     elif args.client:
-        start_client(ip, args.port, args.interval)
+        start_client(ip, args.port, args.interval, args.length, args.height)
