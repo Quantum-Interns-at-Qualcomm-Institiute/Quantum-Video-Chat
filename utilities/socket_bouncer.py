@@ -1,3 +1,5 @@
+# import io
+# import numpy as np
 import argparse
 from asyncio import Event
 # import base64
@@ -5,7 +7,7 @@ import hashlib
 import signal
 from threading import Thread
 from datetime import datetime
-# from PIL import Image
+from PIL import Image
 import cv2
 import ffmpeg
 import socketio
@@ -46,7 +48,8 @@ def start_server(ipaddress, port):
     eventlet.wsgi.server(eventlet.listen((ipaddress, port)), app)
 
 
-def start_client(ipaddress, port, interval, length, height):
+def start_client(ipaddress, port, interval, width, height, frontend_port):
+    frontend_enabled = frontend_port > 0
 
     class ClientThread(Thread):
         def __init__(self, sio):
@@ -64,14 +67,14 @@ def start_client(ipaddress, port, interval, length, height):
                 print("Failed to capture image")
                 return
 
-            frame_bgr = cv2.resize(frame_bgr, dsize=(length, height))
-            frame_yuv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2YUV)
+            frame_bgr = cv2.resize(frame_bgr, dsize=(width, height))
+            frame_yuv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2YUV)  # dithering could be happening here?
 
             inpipe = ffmpeg.input(
                 filename='pipe:',
                 format='rawvideo',
                 pix_fmt='nv12',
-                s=f'{height}x{length}',
+                s=f'{height}x{width}',
                 r=self.framerate,
             )
 
@@ -109,6 +112,8 @@ def start_client(ipaddress, port, interval, length, height):
         print('Disconnecting...')
         if server_sio is not None:
             server_sio.disconnect()
+        if frontend_sio is not None:
+            frontend_sio.disconnect()
         print('Exiting!')
         sys.exit(0)
 
@@ -121,7 +126,8 @@ def start_client(ipaddress, port, interval, length, height):
         print(f'Connected to server at {right_now()}')
         client_thread.start()
         print(f'Thread started at {right_now()}!')
-        frontend_sio.connect('http://localhost:5001', namespaces='/')
+        if frontend_enabled:
+            frontend_sio.connect(f'http://localhost:{frontend_port}', namespaces='/')
 
     @server_sio.on('disconnect')
     def disconnect():
@@ -134,18 +140,20 @@ def start_client(ipaddress, port, interval, length, height):
         if unmodified:
             inpipe = ffmpeg.input('pipe:')
             output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
-            processed = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
-            # image = Image.frombytes(mode="YCbCr", size=(length, height), data=processed).convert('RGBA')
-            # serialized_image = base64.b64encode(image.tobytes())
-            # image.show()
-            print(f"Sending frontend image of size {len(processed)}")
-            # frontend_sio.emit("stream", data={
-            #     'frame': serialized_image
-            # })
-            frontend_sio.emit("stream", data={
-                'count': data['count'],
-                'frame': processed
-            })
+            processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
+            # " The mode of an image defines the type and depth of a pixel in the image."
+            # [https://pillow.readthedocs.io/en/latest/handbook/concepts.html#modes]
+
+            # This might work
+            # https://stackoverflow.com/questions/60729170/python-opencv-converting-planar-yuv-420-image-to-rgb-yuv-array-format
+            image = Image.frombytes(mode="YCbCr", size=(width, height), data=processed_frame).convert('RGBA')
+            image.show()
+
+            if frontend_enabled:
+                frontend_sio.emit("stream", data={
+                    'count': data['count'],
+                    'frame': processed_frame
+                })
 
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+c leads to a clean teardown
 
@@ -165,9 +173,10 @@ if __name__ == '__main__':
     mode_group.add_argument('-s', '--server', action='store_true', help="Start server mode")
     mode_group.add_argument('-c', '--client', action='store_true', help="Start client mode")
 
-    parser.add_argument('--interval', type=float, default=5, help='Interval between frames in seconds (default: 5)')
-    parser.add_argument('--length', type=int, default=640, help="Desired horizontal size of the frame")
+    parser.add_argument('-t', '--interval', type=float, default=5, help='Interval between frames in seconds (default: 5)')
+    parser.add_argument('--width', type=int, default=640, help="Desired horizontal size of the frame")
     parser.add_argument('--height', type=int, default=480, help="Desired vertical size of the frame")
+    parser.add_argument('-f', '--frontend', type=int, default=-1, help="Frontend socket's port to send data to. Not specifying means no frontend testing")
 
     args = parser.parse_args()
 
@@ -182,4 +191,4 @@ if __name__ == '__main__':
     if args.server:
         start_server(ip, args.port)
     elif args.client:
-        start_client(ip, args.port, args.interval, args.length, args.height)
+        start_client(ip, args.port, args.interval, args.width, args.height, args.frontend)
