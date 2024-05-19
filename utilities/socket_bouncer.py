@@ -164,19 +164,24 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    addr_group = parser.add_mutually_exclusive_group(required=True)
-    addr_group.add_argument('-i', '--ipaddress', help="IP address to bind to")
-    addr_group.add_argument('-n', '--interface', type=str, help="Interface name to bind to")
+    # Required
+    required = parser.add_argument_group('Required')
+    mode_group = required.add_mutually_exclusive_group(required=True)
+    mode_group.add_argument('-s', '--server', action='store_true', help="Host a bouncer server")
+    mode_group.add_argument('-c', '--client', action='store_true', help="Connect to a pre-existing server")
+    
+    addr_group = required.add_mutually_exclusive_group(required=True)
+    addr_group.add_argument('-i', '--ipaddress', type=str, help="IP address to bind/connect to")
+    addr_group.add_argument('-n', '--interface', type=str, help="Interface name to bind/connect to")
 
-    parser.add_argument('-p', '--port', type=int, required=True, help="Port number to listen on/connect to")
-    mode_group = parser.add_mutually_exclusive_group(required=True)
-    mode_group.add_argument('-s', '--server', action='store_true', help="Start server mode")
-    mode_group.add_argument('-c', '--client', action='store_true', help="Start client mode")
+    required.add_argument('-p', '--port', type=int, required=True, help="Port number to listen on/connect to")
 
-    parser.add_argument('-t', '--interval', type=float, default=5, help='Interval between frames in seconds (default: 5)')
-    parser.add_argument('--width', type=int, default=640, help="Desired horizontal size of the frame")
-    parser.add_argument('--height', type=int, default=480, help="Desired vertical size of the frame")
-    parser.add_argument('-f', '--frontend', type=int, default=-1, help="Frontend socket's port to send data to. Not specifying means no frontend testing")
+    # Optional
+    optional = parser.add_argument_group('Client Options', 'These only affect the program when run in client mode')
+    optional.add_argument('--interval', type=float, default=5, help='Interval between frames in seconds (default: %(default)ss)')
+    optional.add_argument('--width', type=int, default=640, help="Desired horizontal size of the frame (default: %(default)ss)")
+    optional.add_argument('--height', type=int, default=480, help="Desired vertical size of the frame (default: %(default)spx)")
+    optional.add_argument('--frontend', type=int, default=-1, help="Frontend port data is sent to. (default no frontend)")
 
     args = parser.parse_args()
 
@@ -188,7 +193,7 @@ if __name__ == '__main__':
     else:
         ip = args.ipaddress
 
-    if args.server:
+    if args.move.tolowercase() == 's' or args.move.tolowercase == 'server':
         start_server(ip, args.port)
-    elif args.client:
+    elif args.move.tolowercase() == 'c' or args.move.tolowercase == 'client':
         start_client(ip, args.port, args.interval, args.width, args.height, args.frontend)
