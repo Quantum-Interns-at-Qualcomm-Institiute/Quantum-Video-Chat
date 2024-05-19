@@ -4,8 +4,9 @@ from threading import Thread
 import cv2
 import ffmpeg
 from PIL import Image
+import numpy as np
 
-video_shape = (480, 640, 3)
+video_shape = (640, 480, 3)
 frame_rate = 15
 
 def encrypt(data: bytes):
@@ -22,7 +23,7 @@ inpipe = ffmpeg.input(
     format='rawvideo',
     pix_fmt='bgr24',
     s='{}x{}'.format(
-        video_shape[1], video_shape[0]),
+        video_shape[0], video_shape[1]),
     r=frame_rate,
 )
 
@@ -35,7 +36,7 @@ cap = cv2.VideoCapture(0)
 def produce():
     _, image = cap.read()
     image = cv2.resize(
-        image, (video_shape[1], video_shape[0]))
+        image, (video_shape[0], video_shape[1]))
     data = image.tobytes()
 
     data = producer_output.run(
@@ -60,8 +61,15 @@ def consume(data):
         # Data is now an ISMV format file in memory
         data = consumer_output.run(input=data, capture_stdout=True,
                                 quiet=True)[0]
+        
+        image = np.zeros((video_shape[1], video_shape[0], video_shape[2]), dtype=np.uint8)
+        for i in range(video_shape[1]):
+             for j in range(video_shape[0]):
+                  for k in range(video_shape[2]):
+                       image[i][j][k] = data[k + j * video_shape[2] + i * video_shape[2] * video_shape[0]]
 
-        image = Image.frombytes(mode="RGB", size=(video_shape[1], video_shape[0]), data=data)
+        image = Image.fromarray(image)
+        # image = Image.frombytes(mode="RGB", size=(video_shape[0], video_shape[1]), data=image)
         data = image.tobytes()
         image.show("Output")
 
