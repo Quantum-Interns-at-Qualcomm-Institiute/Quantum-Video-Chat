@@ -1,8 +1,5 @@
-# import io
-# import numpy as np
 import argparse
 from asyncio import Event
-# import base64
 import hashlib
 import signal
 from threading import Thread
@@ -17,7 +14,7 @@ import eventlet
 
 
 def right_now():
-    return datetime.now().strftime("%H:%M:%S.%f")
+    return datetime.now().strftime('%H:%M:%S.%f')
 
 
 def get_hash(data):
@@ -60,11 +57,11 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
             self.framerate = 15
 
         def send_frame(self, count):
-            print(f"Starting image processing at {right_now()}")
+            print(f'Starting image processing at {right_now()}')
             ret, frame_bgr = self.cap.read()  # Pixels are represented in BGR format (Blue, Green, Red) by default in OpenCV
 
             if not ret:
-                print("Failed to capture image")
+                print('Failed to capture image')
                 return
 
             frame_bgr = cv2.resize(frame_bgr, dsize=(width, height))
@@ -85,7 +82,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
             processed = output.run(
                 input=frame_yuv.tobytes(), capture_stdout=True, quiet=True)[0]
 
-            print(f"Frame #{count} processing completed at {right_now()}! Sending...")
+            print(f'Frame #{count} processing completed at {right_now()}! Sending...')
             self.sio.emit('send_frame', data={
                 'count': count,
                 'frame': processed,
@@ -141,16 +138,21 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
             inpipe = ffmpeg.input('pipe:')
             output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
             processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
-            # " The mode of an image defines the type and depth of a pixel in the image."
-            # [https://pillow.readthedocs.io/en/latest/handbook/concepts.html#modes]
+
+            # ' The mode of an image defines the type and depth of a pixel in the image.' -docs
+            # https://pillow.readthedocs.io/en/latest/handbook/concepts.html#modes
 
             # This might work
             # https://stackoverflow.com/questions/60729170/python-opencv-converting-planar-yuv-420-image-to-rgb-yuv-array-format
-            image = Image.frombytes(mode="YCbCr", size=(width, height), data=processed_frame).convert('RGBA')
+
+            # Or this, in the "Examples" section
+            # https://kkroening.github.io/ffmpeg-python/
+
+            image = Image.frombytes(mode='YCbCr', size=(width, height), data=processed_frame).convert('RGBA')
             image.show()
 
             if frontend_enabled:
-                frontend_sio.emit("stream", data={
+                frontend_sio.emit('stream', data={
                     'count': data['count'],
                     'frame': processed_frame
                 })
@@ -167,28 +169,28 @@ if __name__ == '__main__':
     # Required
     required = parser.add_argument_group('Required')
     mode_group = required.add_mutually_exclusive_group(required=True)
-    mode_group.add_argument('-s', '--server', action='store_true', help="Host a bouncer server")
-    mode_group.add_argument('-c', '--client', action='store_true', help="Connect to a pre-existing server")
-    
-    addr_group = required.add_mutually_exclusive_group(required=True)
-    addr_group.add_argument('-i', '--ipaddress', type=str, help="IP address to bind/connect to")
-    addr_group.add_argument('-n', '--interface', type=str, help="Interface name to bind/connect to")
+    mode_group.add_argument('-s', '--server', action='store_true', help='Host a bouncer server')
+    mode_group.add_argument('-c', '--client', action='store_true', help='Connect to a pre-existing server')
 
-    required.add_argument('-p', '--port', type=int, required=True, help="Port number to listen on/connect to")
+    addr_group = required.add_mutually_exclusive_group(required=True)
+    addr_group.add_argument('-i', '--ipaddress', type=str, help='IP address to bind/connect to')
+    addr_group.add_argument('-n', '--interface', type=str, help='Interface name to bind/connect to')
+
+    required.add_argument('-p', '--port', type=int, required=True, help='Port number to listen on/connect to')
 
     # Optional
     optional = parser.add_argument_group('Client Options', 'These only affect the program when run in client mode')
     optional.add_argument('--interval', type=float, default=5, help='Interval between frames in seconds (default: %(default)ss)')
-    optional.add_argument('--width', type=int, default=640, help="Desired horizontal size of the frame (default: %(default)ss)")
-    optional.add_argument('--height', type=int, default=480, help="Desired vertical size of the frame (default: %(default)spx)")
-    optional.add_argument('--frontend', type=int, default=-1, help="Frontend port data is sent to. (default no frontend)")
+    optional.add_argument('--width', type=int, default=640, help='Desired horizontal size of the frame (default: %(default)spx)')
+    optional.add_argument('--height', type=int, default=480, help='Desired vertical size of the frame (default: %(default)spx)')
+    optional.add_argument('--frontend', type=int, default=-1, help='Frontend port data is sent to. (default: no frontend)')
 
     args = parser.parse_args()
 
     if args.interface:
         ip = psutil.net_if_addrs()[args.interface][0].address if args.interface in args.interface else None
         if not ip:
-            print(f"Error: Invalid interface name {args.interface}")
+            print(f'Error: Invalid interface name {args.interface}')
             sys.exit(1)
     else:
         ip = args.ipaddress
