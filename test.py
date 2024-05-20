@@ -5,6 +5,7 @@ import cv2
 import ffmpeg
 from PIL import Image
 import numpy as np
+import time
 
 video_shape = (640, 480, 3)
 frame_rate = 15
@@ -63,10 +64,26 @@ def consume(data):
                                 quiet=True)[0]
         
         image = np.zeros((video_shape[1], video_shape[0], video_shape[2]), dtype=np.uint8)
+        start1 = time.time()
         for i in range(video_shape[1]):
              for j in range(video_shape[0]):
                   for k in range(video_shape[2]):
                        image[i][j][k] = data[k + j * video_shape[2] + i * video_shape[2] * video_shape[0]]
+        end1 = time.time()
+        t1 = end1 - start1
+
+
+        image = np.zeros((video_shape[1], video_shape[0], video_shape[2]), dtype=np.uint8)
+        start2 = time.time()
+        for i in range(len(data)):
+            image[i // (video_shape[2] * video_shape[0])][(i // video_shape[2]) % video_shape[0]][i % video_shape[2]] = data[i]
+        end2 = time.time()
+        t2 = end2 - start2
+
+
+        print("3 loops\t\t\t1 loop")
+        print(f"{t1}\t\t\t{t2}")
+
 
         image = Image.fromarray(image)
         # image = Image.frombytes(mode="RGB", size=(video_shape[0], video_shape[1]), data=image)
