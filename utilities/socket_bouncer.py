@@ -4,13 +4,13 @@ import hashlib
 import signal
 from threading import Thread
 from datetime import datetime
-from PIL import Image
 import cv2
 import ffmpeg
 import socketio
 import sys
 import psutil
 import eventlet
+from time import sleep
 
 
 def right_now():
@@ -58,19 +58,18 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
 
         def send_frame(self, count):
             print(f'Starting image processing at {right_now()}')
-            ret, frame_bgr = self.cap.read()  # Pixels are represented in BGR format (Blue, Green, Red) by default in OpenCV
+            ret, frame = self.cap.read()  # Pixels are represented in BGR format (Blue, Green, Red) by default in OpenCV
 
             if not ret:
                 print('Failed to capture image')
                 return
 
-            frame_bgr = cv2.resize(frame_bgr, dsize=(width, height))
-            frame_yuv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2YUV)  # dithering could be happening here?
+            frame = cv2.resize(frame, dsize=(width, height))
 
             inpipe = ffmpeg.input(
                 filename='pipe:',
                 format='rawvideo',
-                pix_fmt='nv12',
+                pix_fmt='bgr24',
                 s=f'{height}x{width}',
                 r=self.framerate,
             )
@@ -80,7 +79,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
                 preset='ultrafast', tune='zerolatency')
 
             processed = output.run(
-                input=frame_yuv.tobytes(), capture_stdout=True, quiet=True)[0]
+                input=frame.tobytes(), capture_stdout=True, quiet=True)[0]
 
             print(f'Frame #{count} processing completed at {right_now()}! Sending...')
             self.sio.emit('send_frame', data={
@@ -136,7 +135,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
         print(f'I received {'an unmodified' if unmodified else 'modified'} frame #{data['count']} at {right_now()}!')
         if unmodified:
             inpipe = ffmpeg.input('pipe:')
-            output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='nv12')
+            output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgb24')
             processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
 
             # ' The mode of an image defines the type and depth of a pixel in the image.' -docs
@@ -147,19 +146,31 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
 
             # Or this, in the "Examples" section
             # https://kkroening.github.io/ffmpeg-python/
-
-            image = Image.frombytes(mode='YCbCr', size=(width, height), data=processed_frame).convert('RGBA')
-            image.show()
-
+            
+            CHANNELS = 3
             if frontend_enabled:
                 frontend_sio.emit('stream', data={
                     'count': data['count'],
-                    'frame': processed_frame
+                    'frame': processed_frame,
+                    'width': width,
+                    'height': height,
+                    'channels': CHANNELS
                 })
 
     signal.signal(signal.SIGINT, signal_handler)  # Ctrl+c leads to a clean teardown
+    MAX_RETRYS = 5
+    WAIT = 10
+    for retry in range(MAX_RETRYS):
+        try:
+            server_sio.connect(f'http://{ipaddress}:{port}', namespaces='/', wait=True)
+            break
+        except Exception:
+            if MAX_RETRYS - retry >= 0:
+                print(f"Connection failed, trying again in {WAIT} seconds, {MAX_RETRYS - retry} more times")
+                sleep(WAIT)
+            else:
+                print("Connection failed, exiting gracefully")
 
-    server_sio.connect(f'http://{ipaddress}:{port}', namespaces='/')
     server_sio.wait()
 
 
@@ -195,7 +206,7 @@ if __name__ == '__main__':
     else:
         ip = args.ipaddress
 
-    if args.move.tolowercase() == 's' or args.move.tolowercase == 'server':
+    if args.server:
         start_server(ip, args.port)
-    elif args.move.tolowercase() == 'c' or args.move.tolowercase == 'client':
+    elif args.client:
         start_client(ip, args.port, args.interval, args.width, args.height, args.frontend)

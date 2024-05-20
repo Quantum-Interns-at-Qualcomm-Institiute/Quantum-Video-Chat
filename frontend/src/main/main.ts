@@ -144,29 +144,13 @@ const spawnPythonProcess = () => {
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
 		socket.on("stream", (data) => {
-      const frameArray = data.frame as Uint8Array
-      console.log(`Frame #${data.count} (received from backend)`)
+      console.log(`Frame #${data.count} of size ${data.width}x${data.height} (received from backend)`)
 
-			// // Use promise-based .arrayBuffer() method so we can bypass having a FileReader
       try {
-        // const videoFrame = new VideoFrame(frameArray, {
-        //   format: "NV12",
-        //   codedWidth: 640,
-        //   codedHeight: 480,
-        //   timestamp: 0,
-        //   colorSpace: {
-        //     primaries: "smpte170m",
-        //     transfer: "smpte170m",
-        //     matrix: "smpte170m",
-        //     fullRange: true,
-        //   },
-        // });
-        const frameBlob = new Blob([frameArray], {type: "image/jpeg"})
-        const frameURL = URL.createObjectURL(frameBlob)
         // Send this frame to the other window
         if (mainWindow !== null) {
-          console.log(`Sending video frame ${frameURL} to renderer`);
-          mainWindow.webContents.send("frame", frameURL);
+          console.log("Sending offscreen canvas to renderer");
+          mainWindow.webContents.send("frame", data);
         } else throw new Error("main window is null");
       } catch (error) {
         console.log(`Error: ${error}`)
