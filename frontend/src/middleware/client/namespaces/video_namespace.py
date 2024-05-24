@@ -4,6 +4,7 @@ from threading import Thread
 import cv2
 import ffmpeg
 import eventlet
+import time
 
 from .base_namespaces import AVClientNamespace
 
@@ -22,6 +23,7 @@ class VideoClientNamespace(AVClientNamespace):
 
         class VideoThread(Thread):
             def __init__(self, namespace):
+                super().__init__()
                 self.namespace = namespace
 
                 self.cap = cv2.VideoCapture(0)
@@ -46,13 +48,18 @@ class VideoClientNamespace(AVClientNamespace):
                 while True:
                     key_idx, key = self.namespace.av_controller.keys[-self.namespace.av_controller.key_buffer_size]
 
-                    _, image = self.cap.read()
+                    ret, image = self.cap.read()
+                    if not ret:
+                        continue
                     image = cv2.resize(image, (self.width, self.height))
                     data = image.tobytes()
                     print(f"Pre-sending video frame with key index {key_idx}")
+                    start = time.time()
 
                     data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
+                    end = time.time()
+                    print(end - start)
                     print(f"Sending video frame with key index {key_idx}")
                     data = self.namespace.av_controller.encryption.encrypt(data, key)
                     msg = {'frame': key_idx.to_bytes(4, 'big') + data, 'width': self.width, 'height': self.height}
