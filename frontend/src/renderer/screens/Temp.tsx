@@ -39,7 +39,6 @@ export default function Temp(props) {
             const context = canvas.getContext("2d") as CanvasRenderingContext2D;
             const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
             context.putImageData(imageData, 0, 0);
-
         },
       );
     });
