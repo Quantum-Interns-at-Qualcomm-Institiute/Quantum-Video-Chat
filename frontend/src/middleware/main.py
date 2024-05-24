@@ -1,5 +1,6 @@
 from client.video_chat_client import VideoChatClient
 from client.endpoint import Endpoint
+import eventlet
 import json
 import psutil
 import platform
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     api_port = config["API_ENDPOINT_PORT"]
     api_address = "localhost"
 
-    search_string = ('Ethernet 2', 'en7') if config["AD_HOC"] else ('Wi-Fi', 'en0')
+    search_string = ('Ethernet 2', 'en11') if config["AD_HOC"] else ('Wi-Fi', 'en0')
     for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
         if prop.family == 2:
             api_address = prop.address
@@ -43,4 +44,4 @@ if __name__ == "__main__":
     # This prevents the python process from terminating and closing the socket
     while True:
         # print("here")
-        pass
+        eventlet.sleep(5)
