@@ -29,7 +29,7 @@ class VideoClientNamespace(AVClientNamespace):
                 'pipe:',
                 format='rawvideo',
                 pix_fmt='bgr24',
-                s='{width}x{height}',
+                s=f'{width}x{height}',
                 r=self.av_controller.frame_rate,
             )
 
@@ -45,7 +45,7 @@ class VideoClientNamespace(AVClientNamespace):
                 data = image.tobytes()
                 print(f"Pre-sending video frame with key index {key_idx}")
 
-                data = output.run(input=data, capture_stdout=True, quiet=True)[0]
+                data = output.run(input=data, capture_stdout=True, quiet=False)[0]
 
                 data = self.av_controller.encryption.encrypt(data, key)
                 print(f"Sending video frame with key index {key_idx}")
