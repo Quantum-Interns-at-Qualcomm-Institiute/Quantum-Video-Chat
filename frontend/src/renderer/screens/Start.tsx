@@ -15,6 +15,10 @@ export default function Start() {
         navigate('./join');
     };
 
+    const handleTemp = () => {
+      navigate('./temp');
+    }
+
     return (
         <>
         <Header />
@@ -23,6 +27,7 @@ export default function Start() {
             {/* TODO: Make these buttons be components instead */}
             <button type="button" onClick={handleStart}>Start Session</button>
             <button type="button" onClick={handleJoin}>Join Session</button>
+            <button type="button" onClick={handleTemp}>Temp Session</button>
             </div>
         </div>
         </>

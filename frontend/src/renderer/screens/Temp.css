@@ -1,0 +1,12 @@
+body {
+  display: flex;
+  justify-content: space-between;
+}
+
+canvas {
+  min-width: 640px;
+  min-height: 480px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}

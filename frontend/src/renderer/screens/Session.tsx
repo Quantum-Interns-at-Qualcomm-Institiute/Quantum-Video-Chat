@@ -65,9 +65,9 @@ export default function Session(props) {
 		}
 		console.log("Session: Running useEffect()");
 		getOutStream();
-		const canvas = document.getElementById("peer-stream");
-		const context = canvas?.getContext("2d");
-		context.fillstyle = "rgb(255,0,255)";
+    const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+		context.fillStyle = "rgb(255,255,255)";
 		context.fillRect(0, 0, canvas.width, canvas.height);
 	}, []);
 
@@ -81,12 +81,11 @@ export default function Session(props) {
 					frame: Uint8Array;
 					width: number;
 					height: number;
-					channels: number;
 				},
 			) => {
 				console.log("I've made it to the rendering process!");
-				const canvas = document.getElementById("peer-stream");
-				const context = canvas.getContext("2d");
+				const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
+				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 				/*
           `image`: An element to draw into the context.
             The specification permits any canvas image source, specifically, an `HTMLImageElement`,
@@ -95,21 +94,22 @@ export default function Session(props) {
           [See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage]
         */
 
-				const imageData = context.createImageData(
+				const imageData = new ImageData(
+          new Uint8ClampedArray(canvasData.frame),
 					canvasData.width,
 					canvasData.height,
 				);
 
-				for (let horiz_pos = 0; horiz_pos < canvasData.width; ++horiz_pos) {
-					for (let vert_pos = 0; vert_pos < canvasData.height; ++vert_pos) {
-						const pixelIndex = vert_pos * canvasData.width + horiz_pos;
+				// for (let horiz_pos = 0; horiz_pos < canvasData.width; ++horiz_pos) {
+				// 	for (let vert_pos = 0; vert_pos < canvasData.height; ++vert_pos) {
+				// 		const pixelIndex = vert_pos * canvasData.width + horiz_pos;
 
-						for (let channel = 0; channel < canvasData.channels; ++channel) {
-							imageData.data[pixelIndex * 4 + channel] =
-								canvasData.frame[pixelIndex * canvasData.channels + channel];
-						}
-					}
-				}
+				// 		for (let channel = 0; channel < canvasData.channels; ++channel) {
+				// 			imageData.data[pixelIndex * 4 + channel] =
+				// 				canvasData.frame[pixelIndex * canvasData.channels + channel];
+				// 		}
+				// 	}
+				// }
 
 				context.putImageData(imageData, 0, 0);
 			},
