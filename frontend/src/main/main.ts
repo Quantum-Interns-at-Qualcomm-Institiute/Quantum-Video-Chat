@@ -135,14 +135,14 @@ const spawnPythonProcess = () => {
 
 	io.on("connection", (socket: Socket) => {
 		console.log("Connected to backend python code");
-		// const user_id = socket.handshake.headers.user_id;
-		// ipcMain.once("set_peer_id", (event, peer_id) => {
-		// 	// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
-		// 	console.log(
-		// 		`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
-		// 	);
-		// 	socket.emit("connect_to_peer", peer_id);
-		// });
+		const user_id = socket.handshake.headers.user_id;
+		ipcMain.once("set_peer_id", (event, peer_id) => {
+			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
+			console.log(
+				`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
+			);
+			socket.emit("connect_to_peer", peer_id);
+		});
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
 		socket.on("stream", (data) => {
