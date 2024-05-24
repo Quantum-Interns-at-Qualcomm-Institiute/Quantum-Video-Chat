@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Start from "./screens/Start";
 import Join from "./screens/Join";
 import Session from "./screens/Session";
+import Temp from './screens/Temp'
 
 export default function App() {
 	const statuses = ["waiting", "good", "bad"];
@@ -25,6 +26,8 @@ export default function App() {
 
 				{/* Join Session Prompt */}
 				<Route path="/join" element={<Join />}/>
+
+        <Route path="/temp" element={<Temp/>} />
 
 				{/* Home Page */}
 				<Route path="/*" element={<Start />}/>

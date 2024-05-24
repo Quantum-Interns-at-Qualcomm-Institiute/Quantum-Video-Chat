@@ -119,7 +119,9 @@ const createWindow = async () => {
 // Python Child Process
 const spawnPythonProcess = () => {
 	const PORT = 5001;
-	const io = new Server(PORT);
+	const io = new Server(PORT, {
+    maxHttpBufferSize: 1e7
+  });
 
 	// console.log("Spawning Python Child Process...");
 	// const { spawn } = require("node:child_process");
@@ -144,12 +146,11 @@ const spawnPythonProcess = () => {
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
 		socket.on("stream", (data) => {
-      console.log(`Frame #${data.count} of size ${data.width}x${data.height} (received from backend)`)
+      console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
       try {
         // Send this frame to the other window
         if (mainWindow !== null) {
-          console.log("Sending offscreen canvas to renderer");
           mainWindow.webContents.send("frame", data);
         } else throw new Error("main window is null");
       } catch (error) {
