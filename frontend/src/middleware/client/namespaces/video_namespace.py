@@ -3,7 +3,6 @@ import logging
 from threading import Thread
 import cv2
 import ffmpeg
-from PIL import Image
 
 from .base_namespaces import AVClientNamespace
 
@@ -18,19 +17,19 @@ class VideoClientNamespace(AVClientNamespace):
     def on_connect(self):
         super().on_connect()
         inpipe1 = ffmpeg.input('pipe:')
-        self.output = ffmpeg.output(
-            inpipe1, 'pipe:', format='rawvideo', pix_fmt='nv12')
+        self.output = ffmpeg.output(inpipe1, 'pipe:', format='rawvideo', pix_fmt='rgba')
 
         async def send_video():
             await asyncio.sleep(2)
             cap = cv2.VideoCapture(0)
+            width = 3 * self.av_controller.video_shape[1] // 2
+            height = 3 * self.av_controller.video_shape[0] // 2
 
             inpipe = ffmpeg.input(
                 'pipe:',
                 format='rawvideo',
-                pix_fmt='nv12',
-                s='{}x{}'.format(
-                    self.av_controller.video_shape[1], self.av_controller.video_shape[0]),
+                pix_fmt='bgr24',
+                s='{width}x{height}',
                 r=self.av_controller.frame_rate,
             )
 
@@ -42,17 +41,16 @@ class VideoClientNamespace(AVClientNamespace):
                 key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
 
                 _, image = cap.read()
-                image = cv2.resize(
-                    image, (self.av_controller.video_shape[1], self.av_controller.video_shape[0]))
+                image = cv2.resize(image, (width, height))
                 data = image.tobytes()
                 print(f"Pre-sending video frame with key index {key_idx}")
 
-                data = output.run(
-                    input=data, capture_stdout=True, quiet=True)[0]
+                data = output.run(input=data, capture_stdout=True, quiet=True)[0]
 
                 data = self.av_controller.encryption.encrypt(data, key)
                 print(f"Sending video frame with key index {key_idx}")
-                self.send(key_idx.to_bytes(4, 'big') + data)
+                msg = {'frame': key_idx.to_bytes(4, 'big') + data, 'width': width, 'height': height}
+                self.send(msg=msg)
 
                 await asyncio.sleep(1 / self.av_controller.frame_rate / 5)
 
@@ -65,20 +63,18 @@ class VideoClientNamespace(AVClientNamespace):
             if user_id == self.client_socket.user_id:
                 return
 
-            key_idx = int.from_bytes(msg[:4], 'big')
+            frame = msg['frame'][4:]
+            height = msg['height']
+            width = msg['width']
+
+            key_idx = int.from_bytes(msg['frame'][:4], 'big')
             key = self.av_controller.keys[key_idx][1]
 
-            data = self.av_controller.encryption.decrypt(msg[4:], key)
+            data = self.av_controller.encryption.decrypt(frame, key)
 
-            # Data is now an ISMV format file in memory
-            data = self.output.run(input=data, capture_stdout=True,
-                                   quiet=True)[0]
-
-            image = Image.frombytes(mode="YCbCr", size=(self.av_controller.video_shape[1], self.av_controller.video_shape[0]), data=data).convert('RGBA')
-            data = image.tobytes()
-            image.show()
+            data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
             print(f"Sending frame of size {len(data)} to frontend")
-            self.frontend_socket.emit('stream', data)
+            self.frontend_socket.emit('stream', {'frame': data, 'height': height, 'width': width})
 
         asyncio.run(handle_message())

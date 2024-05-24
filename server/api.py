@@ -16,7 +16,7 @@ from flask import Flask, jsonify, request
 import psutil
 import platform
 
-AD_HOC = True
+AD_HOC = False
 search_string = ('Ethernet 2', 'en11') if AD_HOC else ('Wi-Fi', 'en0')
 for prop in psutil.net_if_addrs()[search_string[0 if platform.system() == 'Windows' else 1]]:
     if prop.family == 2:
