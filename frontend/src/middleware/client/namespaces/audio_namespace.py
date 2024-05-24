@@ -3,6 +3,7 @@ import logging
 from threading import Thread
 import pyaudio
 from .base_namespaces import AVClientNamespace
+import eventlet
 
 logging.basicConfig(filename='./src/middleware/logs/client.log',
                     level=logging.INFO,
@@ -20,25 +21,48 @@ class AudioClientNamespace(AVClientNamespace):
                                  frames_per_buffer=self.av_controller.frames_per_buffer)
         self.stream.start_stream()
 
-        async def send_audio():
-            await asyncio.sleep(2)
-            audio = pyaudio.PyAudio()
-            stream = audio.open(format=pyaudio.paInt16, channels=1,
-                                rate=self.av_controller.sample_rate, input=True,
-                                frames_per_buffer=self.av_controller.frames_per_buffer)
+        class AudioThread(Thread):
+            def __init__(self, namespace):
+                super().__init__()
+                self.namespace = namespace
+                self.audio = pyaudio.PyAudio()
+                self.stream = audio.open(format=pyaudio.paInt16, channels=1,
+                                    rate=self.namespace.av_controller.sample_rate, input=True,
+                                    frames_per_buffer=self.namespace.av_controller.frames_per_buffer)
+                
+            def run(self):
+                while True:
+                    key_idx, key = self.namespace.av_controller.keys[-self.namespace.av_controller.key_buffer_size]
 
-            while True:
-                key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
+                    data = self.stream.read(self.namespace.av_controller.frames_per_buffer,
+                                    exception_on_overflow=False)
 
-                data = stream.read(self.av_controller.frames_per_buffer,
-                                   exception_on_overflow=False)
+                    if self.namespace.av_controller.encryption is not None:
+                        data = self.namespace.av_controller.encryption.encrypt(data, key)
+                    self.namespace.send(key_idx.to_bytes(4, 'big') + data)
+                    eventlet.sleep(self.namespace.av_controller.audio_wait)
 
-                if self.av_controller.encryption is not None:
-                    data = self.av_controller.encryption.encrypt(data, key)
-                self.send(key_idx.to_bytes(4, 'big') + data)
-                await asyncio.sleep(self.av_controller.audio_wait)
+        AudioThread(self).start()
 
-        Thread(target=asyncio.run, args=(send_audio(),)).start()
+        # async def send_audio():
+        #     await asyncio.sleep(2)
+        #     audio = pyaudio.PyAudio()
+        #     stream = audio.open(format=pyaudio.paInt16, channels=1,
+        #                         rate=self.av_controller.sample_rate, input=True,
+        #                         frames_per_buffer=self.av_controller.frames_per_buffer)
+
+        #     while True:
+        #         key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
+
+        #         data = stream.read(self.av_controller.frames_per_buffer,
+        #                            exception_on_overflow=False)
+
+        #         if self.av_controller.encryption is not None:
+        #             data = self.av_controller.encryption.encrypt(data, key)
+        #         self.send(key_idx.to_bytes(4, 'big') + data)
+        #         await asyncio.sleep(self.av_controller.audio_wait)
+
+        # Thread(target=asyncio.run, args=(send_audio(),)).start()
 
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
