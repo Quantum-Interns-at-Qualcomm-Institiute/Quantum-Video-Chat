@@ -39,7 +39,7 @@ export default function Session(props) {
 	]);
 
 	// TODO: Should instead be defined in another util file (e.g., ../util/API.js)
-	function handleChat(message) {
+	function handleChat(message: string) {
 		console.log(`Message Sent: ${message}`);
 
 		const date = new Date();
@@ -77,41 +77,17 @@ export default function Session(props) {
 			(
 				event: IpcMainEvent,
 				canvasData: {
-					count: number;
 					frame: Uint8Array;
-					width: number;
 					height: number;
+					width: number;
 				},
 			) => {
-				console.log("I've made it to the rendering process!");
-				const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
-				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-				/*
-          `image`: An element to draw into the context.
-            The specification permits any canvas image source, specifically, an `HTMLImageElement`,
-            an `SVGImageElement`, an `HTMLVideoElement`, an `HTMLCanvasElement`, an `ImageBitmap`,
-            an `OffscreenCanvas`, or a `VideoFrame`.
-          [See: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage]
-        */
-
-				const imageData = new ImageData(
-          new Uint8ClampedArray(canvasData.frame),
-					canvasData.width,
-					canvasData.height,
-				);
-
-				// for (let horiz_pos = 0; horiz_pos < canvasData.width; ++horiz_pos) {
-				// 	for (let vert_pos = 0; vert_pos < canvasData.height; ++vert_pos) {
-				// 		const pixelIndex = vert_pos * canvasData.width + horiz_pos;
-
-				// 		for (let channel = 0; channel < canvasData.channels; ++channel) {
-				// 			imageData.data[pixelIndex * 4 + channel] =
-				// 				canvasData.frame[pixelIndex * canvasData.channels + channel];
-				// 		}
-				// 	}
-				// }
-
-				context.putImageData(imageData, 0, 0);
+        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+        canvas.width = canvasData.width
+        canvas.height = canvasData.height
+        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+        const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
+        context.putImageData(imageData, 0, 0);
 			},
 		);
 
@@ -137,7 +113,7 @@ export default function Session(props) {
 				<div className="top">
 					{/* <div className="video-wrapper" id="left-video"> */}
 					{/* Make this come from the backend code so it's the same size*/}
-					<canvas id="peer-stream" width="640" height="480">
+					<canvas id="peer-stream" min-width="640" min-height="480" object-fit="contain"height="auto" width="auto">
 						{" "}
 						Please wait...{" "}
 					</canvas>
