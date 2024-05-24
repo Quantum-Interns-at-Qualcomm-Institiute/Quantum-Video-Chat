@@ -43,7 +43,7 @@ class VideoClientNamespace(AVClientNamespace):
                 self.output = ffmpeg.output(
                     self.inpipe, 'pipe:', vcodec='libx264', f='ismv',
                     preset='ultrafast', tune='zerolatency')
-                
+
             def run(self):
                 while True:
                     key_idx, key = self.namespace.av_controller.keys[-self.namespace.av_controller.key_buffer_size]
