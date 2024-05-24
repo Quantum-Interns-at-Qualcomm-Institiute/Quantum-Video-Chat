@@ -21,19 +21,21 @@ class VideoClientNamespace(AVClientNamespace):
         self.output = ffmpeg.output(inpipe1, 'pipe:', format='rawvideo', pix_fmt='rgba')
 
         class VideoThread(Thread):
-            def __init__(self):
+            def __init__(self, namespace):
+                self.namespace = namespace
+
                 self.cap = cv2.VideoCapture(0)
                 # width = 3 * self.av_controller.video_shape[1] // 2
                 # height = 3 * self.av_controller.video_shape[0] // 2
-                self.width = self.av_controller.video_shape[1]
-                self.height = self.av_controller.video_shape[0]
+                self.width = self.namespace.av_controller.video_shape[1]
+                self.height = self.namespace.av_controller.video_shape[0]
 
                 self.inpipe = ffmpeg.input(
                     'pipe:',
                     format='rawvideo',
                     pix_fmt='bgr24',
                     s=f'{self.width}x{self.height}',
-                    r=self.av_controller.frame_rate,
+                    r=self.namespace.av_controller.frame_rate,
                 )
 
                 self.output = ffmpeg.output(
@@ -42,7 +44,7 @@ class VideoClientNamespace(AVClientNamespace):
                 
             def run(self):
                 while True:
-                    key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
+                    key_idx, key = self.namespace.av_controller.keys[-self.namespace.av_controller.key_buffer_size]
 
                     _, image = self.cap.read()
                     image = cv2.resize(image, (self.width, self.height))
@@ -52,13 +54,13 @@ class VideoClientNamespace(AVClientNamespace):
                     data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
                     print(f"Sending video frame with key index {key_idx}")
-                    data = self.av_controller.encryption.encrypt(data, key)
+                    data = self.namespace.av_controller.encryption.encrypt(data, key)
                     msg = {'frame': key_idx.to_bytes(4, 'big') + data, 'width': self.width, 'height': self.height}
-                    self.send(msg=msg)
+                    self.namespace.send(msg=msg)
 
-                    eventlet.sleep(1 / self.av_controller.frame_rate / 5)
+                    eventlet.sleep(1 / self.namespace.av_controller.frame_rate / 5)
 
-        VideoThread().start()
+        VideoThread(self).start()
 
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
