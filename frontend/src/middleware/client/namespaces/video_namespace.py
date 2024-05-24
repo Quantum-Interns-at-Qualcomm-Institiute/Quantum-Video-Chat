@@ -3,6 +3,7 @@ import logging
 from threading import Thread
 import cv2
 import ffmpeg
+import eventlet
 
 from .base_namespaces import AVClientNamespace
 
@@ -19,42 +20,45 @@ class VideoClientNamespace(AVClientNamespace):
         inpipe1 = ffmpeg.input('pipe:')
         self.output = ffmpeg.output(inpipe1, 'pipe:', format='rawvideo', pix_fmt='rgba')
 
-        async def send_video():
-            await asyncio.sleep(2)
-            cap = cv2.VideoCapture(0)
-            width = 3 * self.av_controller.video_shape[1] // 2
-            height = 3 * self.av_controller.video_shape[0] // 2
+        class VideoThread(Thread):
+            def __init__(self):
+                self.cap = cv2.VideoCapture(0)
+                # width = 3 * self.av_controller.video_shape[1] // 2
+                # height = 3 * self.av_controller.video_shape[0] // 2
+                self.width = self.av_controller.video_shape[1]
+                self.height = self.av_controller.video_shape[0]
 
-            inpipe = ffmpeg.input(
-                'pipe:',
-                format='rawvideo',
-                pix_fmt='bgr24',
-                s=f'{width}x{height}',
-                r=self.av_controller.frame_rate,
-            )
+                self.inpipe = ffmpeg.input(
+                    'pipe:',
+                    format='rawvideo',
+                    pix_fmt='bgr24',
+                    s=f'{self.width}x{self.height}',
+                    r=self.av_controller.frame_rate,
+                )
 
-            output = ffmpeg.output(
-                inpipe, 'pipe:', vcodec='libx264', f='ismv',
-                preset='ultrafast', tune='zerolatency')
+                self.output = ffmpeg.output(
+                    self.inpipe, 'pipe:', vcodec='libx264', f='ismv',
+                    preset='ultrafast', tune='zerolatency')
+                
+            def run(self):
+                while True:
+                    key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
 
-            while True:
-                key_idx, key = self.av_controller.keys[-self.av_controller.key_buffer_size]
+                    _, image = self.cap.read()
+                    image = cv2.resize(image, (self.width, self.height))
+                    data = image.tobytes()
+                    print(f"Pre-sending video frame with key index {key_idx}")
 
-                _, image = cap.read()
-                image = cv2.resize(image, (width, height))
-                data = image.tobytes()
-                print(f"Pre-sending video frame with key index {key_idx}")
+                    data = self.output.run(input=data, capture_stdout=True, quiet=True)[0]
 
-                data = output.run(input=data, capture_stdout=True, quiet=False)[0]
+                    print(f"Sending video frame with key index {key_idx}")
+                    data = self.av_controller.encryption.encrypt(data, key)
+                    msg = {'frame': key_idx.to_bytes(4, 'big') + data, 'width': self.width, 'height': self.height}
+                    self.send(msg=msg)
 
-                data = self.av_controller.encryption.encrypt(data, key)
-                print(f"Sending video frame with key index {key_idx}")
-                msg = {'frame': key_idx.to_bytes(4, 'big') + data, 'width': width, 'height': height}
-                self.send(msg=msg)
+                    eventlet.sleep(1 / self.av_controller.frame_rate / 5)
 
-                await asyncio.sleep(1 / self.av_controller.frame_rate / 5)
-
-        Thread(target=asyncio.run, args=(send_video(),)).start()
+        VideoThread().start()
 
     def on_message(self, user_id, msg):
         super().on_message(user_id, msg)
