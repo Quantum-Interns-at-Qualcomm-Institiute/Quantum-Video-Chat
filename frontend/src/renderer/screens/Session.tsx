@@ -1,6 +1,7 @@
 import type { IpcMainEvent } from "electron";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ClientContext } from "../utils/ClientContext";
 import Header from "../components/Header";
 import StatusPopup from "../components/StatusPopup";
 import VideoPlayer from "../components/VideoPlayer";
@@ -18,6 +19,7 @@ import "./Session.css";
  */
 export default function Session(props) {
 	const canvasRef = useRef(null);
+	const client = useContext(ClientContext);
 
 	const location = useLocation();
 	const code = location.pathname.slice(-5);
@@ -108,7 +110,7 @@ export default function Session(props) {
 
 			<div className="session-content">
 				{/* Add a copy button instead of allowing text selection */}
-				{code ? <h3 className="code">Code: {code}</h3> : null}
+				<h3 className="code">Code: {client.selfId}</h3>
 
 				<div className="top">
 					{/* <div className="video-wrapper" id="left-video"> */}
