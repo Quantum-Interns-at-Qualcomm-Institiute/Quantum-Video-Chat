@@ -19,9 +19,9 @@ export default function Chat(props) {
     function getMessages() {
         if (!props.messages) return
 
-        return props.messages.map((message) => {
+        return props.messages.map((message, i) => {
             if (!message.time || !message.name) return
-            return <Message time={message.time} name={message.name}>{message.body?message.body:null}</Message>
+            return <Message key={`message-${i}`} time={message.time} name={message.name}>{message.body?message.body:null}</Message>
         });
     }
 
