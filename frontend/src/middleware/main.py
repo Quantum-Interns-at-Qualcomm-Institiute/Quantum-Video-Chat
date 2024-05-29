@@ -35,6 +35,10 @@ if __name__ == "__main__":
         ip="localhost", port=5001)  # TODO: add back in the sys args
     client.set_frontend_socket(endpoint=frontend_socket_endpoint)
 
+    # Communicate self id to frontend
+    print(f"(main.py): Emitting self_id {client.user_id} to frontend.")
+    client.frontend_socket.emit('self_id', data=client.user_id)
+
     @client.frontend_socket.on(event='connect_to_peer')
     def handle_conenct_to_peer(peer_id: str):
         print(f"Frontend reports peer ID {peer_id}")
