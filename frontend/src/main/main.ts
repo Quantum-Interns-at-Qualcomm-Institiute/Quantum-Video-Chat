@@ -121,7 +121,7 @@ const spawnPythonProcess = () => {
 	const PORT = 5001;
 	const io = new Server(PORT, {
     maxHttpBufferSize: 1e7
-  });
+  	});
 
 	// console.log("Spawning Python Child Process...");
 	// const { spawn } = require("node:child_process");
@@ -144,18 +144,23 @@ const spawnPythonProcess = () => {
 			socket.emit("connect_to_peer", peer_id);
 		});
 
+		socket.on('self_id', (self_id) => {
+			console.log(`(main.ts): Received self_id ${self_id} from python subprocess; sending to renderer.`)
+			mainWindow?.webContents.send('self_id', self_id);
+		});
+
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
 		socket.on("stream", (data) => {
-      console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
+			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
-      try {
-        // Send this frame to the other window
-        if (mainWindow !== null) {
-          mainWindow.webContents.send("frame", data);
-        } else throw new Error("main window is null");
-      } catch (error) {
-        console.log(`Error: ${error}`)
-      }
+			try {
+				// Send this frame to the other window
+				if (mainWindow !== null) {
+					mainWindow.webContents.send("frame", data);
+				} else throw new Error("main window is null");
+			} catch (error) {
+				console.log(`Error: ${error}`)
+			}
 
 		});
 	});
