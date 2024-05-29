@@ -82,12 +82,12 @@ export default function Session(props) {
 					width: number;
 				},
 			) => {
-        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-        canvas.width = canvasData.width
-        canvas.height = canvasData.height
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-        const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
-        context.putImageData(imageData, 0, 0);
+				const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+				canvas.width = canvasData.width
+				canvas.height = canvasData.height
+				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+				const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
+				context.putImageData(imageData, 0, 0);
 			},
 		);
 
