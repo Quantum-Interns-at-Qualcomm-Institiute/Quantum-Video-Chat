@@ -1,3 +1,4 @@
+import type { IpcMainEvent } from "electron";
 import { useState, createContext, useEffect } from "react";
 import services from './services';
 
@@ -18,37 +19,43 @@ const initMessages = [
 const initClientContext = {
     selfId: '',
     peerId: '',
-    setPeerId: () => {},
+    joinPeer: services.joinPeer,
     video: {
-        onFrame: null,
+        onFrame: () => {},
     },
     chat: {
-        messages: [{}],
-        sendMessage: (message: string) => {},
+        messages: initMessages,
+        sendMessage: services.chat.sendMessage,
     }
 }
 
 export const ClientContext = createContext(initClientContext);
 
 export function ClientContextProvider({ children } ) {
-    const [selfId, _setSelfId] = useState('');
-    const [peerId, _setPeerId] = useState('');
-    const [onFrame, _setOnFrame] = useState(null);
-    const [messages, _setMessages] = useState(initMessages);
+    const [selfId, _setSelfId] = useState(initClientContext.selfId);
+    const [peerId, _setPeerId] = useState(initClientContext.peerId);
+    const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
+    const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
     // Establish middleware listeners on initial render
     useEffect(() => {
-        window.electronAPI.ipcListen('self_id', (e, data: string) => {
-            console.log(`(renderer): Received self_id ${data} from \`main.ts\`.`)
-            _setSelfId(data);
+        window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
+            console.log(`(renderer): Received self_id ${id} from \`main.ts\`.`)
+            _setSelfId(id);
         })
+
+        window.electronAPI.ipcListen('message', (e: IpcMainEvent, messageData: Object) => {
+            console.log(`(renderer): Received chat message with Object structure ${JSON.stringify(messageData)}`)
+            _setMessages([...messages, messageData]);
+        })
+
     }, []);
 
     return (
         <ClientContext.Provider value={{
             selfId: selfId,
             peerId: peerId,
-            setPeerId: services.setPeerId, 
+            joinPeer: services.joinPeer,
             video: {
                 onFrame: onFrame
             },

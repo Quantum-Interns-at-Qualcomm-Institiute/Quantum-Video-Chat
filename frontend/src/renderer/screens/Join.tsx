@@ -5,7 +5,7 @@ import Header from "../components/Header";
 import { IconButton, Snackbar } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import "./Join.css"; // TODO: Make separate css for Join
+import "./Join.css";
 
 export default function Join() {
 	const isValidCode = async (code: string) => {
