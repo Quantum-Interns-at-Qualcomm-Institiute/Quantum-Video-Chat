@@ -1,5 +1,6 @@
 const services = {
-    setPeerId: setPeerId,
+    isValidId: isValidId,
+    joinPeer: joinPeer,
     video: {
 
     },
@@ -8,11 +9,11 @@ const services = {
     }
 }
 
-export async function setPeerId() {
-
+async function joinPeer(peerId: string) {
+    // window.electronAPI.joinPeer(peerId)
 }
 
-export async function sendMessage(message: string) {
+async function sendMessage(message: string) {
     console.log(`(renderer): Sending chat message '${message}'`);
 
     const date = new Date();
@@ -28,12 +29,28 @@ export async function sendMessage(message: string) {
     // TODO: send the message
 }
 
-export async function onMessage(messageData: Object) {
-    console.log(`(renderer): Received chat message with Object structure ${JSON.stringify(messageData)}`)
+function isValidId(id: string) {
+    let isAlphanumeric = id.match(/^[a-zA-Z0-9]+$/) !== null;
 
-    // TODO: Append new message to list of messages.
-    // Not sure how to get around circular import, but not important rn
-    // _setMessages([...messages, messageData]);
+    if (id === "")
+        return {
+            ok: false,
+            error: "Please enter a valid ID."
+        }
+    
+    else if(!isAlphanumeric)
+        return {
+            ok: false,
+            error: "ID must be alphanumeric."
+        }
+
+    else if(id.length !== 5)
+        return {
+            ok: false,
+            error: "Code must be strictly 5 characters."
+        }
+
+    else return {ok: true, error: ''}
 }
 
 export default services
