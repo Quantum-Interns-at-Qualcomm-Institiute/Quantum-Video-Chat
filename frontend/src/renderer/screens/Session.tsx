@@ -27,34 +27,6 @@ export default function Session(props) {
 	const [selfSrc, setSelfSrc] = useState(null);
 	const [selfSrc2, setSelfSrc2] = useState(null);
 
-	const [messages, setMessages] = useState([
-		{
-			time: "ti:me",
-			name: "Client 1",
-			body: "text from client 1",
-		},
-		{
-			time: "ti:me",
-			name: "Client 2",
-			body: "text from client 2",
-		},
-	]);
-
-	// TODO: Should instead be defined in another util file (e.g., ../util/API.js)
-	function handleChat(message: string) {
-		console.log(`Message Sent: ${message}`);
-
-		const date = new Date();
-		const time = date.toLocaleTimeString();
-		const messageObj = {
-			time: time.substring(0, time.length - 6),
-			name: "Client 1",
-			body: message,
-		};
-
-		setMessages([...messages, messageObj]);
-	}
-
 	// Start incoming video feed from my camera
 	useEffect(() => {
 		async function getOutStream() {
@@ -157,8 +129,8 @@ export default function Session(props) {
 
 					<div className="chat-wrapper">
 						<Chat
-							messages={messages}
-							handleSend={handleChat}
+							messages={client.chat.messages}
+							handleSend={client.chat.sendMessage}
 							status={props.status}
 						/>
 					</div>
