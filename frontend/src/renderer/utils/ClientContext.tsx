@@ -42,6 +42,11 @@ export function ClientContextProvider({ children } ) {
         window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
             console.log(`(renderer): Received self_id ${id} from \`main.ts\`.`)
             _setSelfId(id);
+
+            // Navigate away from Splash page after receiving self_id
+            if(window.location.pathname === '/splash') {
+                window.location.assign('/');
+            }
         })
 
         window.electronAPI.ipcListen('message', (e: IpcMainEvent, messageData: Object) => {
@@ -60,6 +65,10 @@ export function ClientContextProvider({ children } ) {
         ) => {
             onFrame(canvasData);
         });
+
+        // Inform main process that ClientContext is ready for IPC communication
+        console.log('Renderer Ready');
+        window.electronAPI.rendererReady();
     }, []);
 
     return (
