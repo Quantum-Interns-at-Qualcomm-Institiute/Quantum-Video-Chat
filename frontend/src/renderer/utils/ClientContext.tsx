@@ -49,6 +49,17 @@ export function ClientContextProvider({ children } ) {
             _setMessages([...messages, messageData]);
         })
 
+        window.electronAPI.ipcListen('frame',
+        (
+            event: IpcMainEvent,
+            canvasData: {
+                frame: Uint8Array;
+                height: number;
+                width: number
+            }
+        ) => {
+            onFrame(canvasData);
+        });
     }, []);
 
     return (

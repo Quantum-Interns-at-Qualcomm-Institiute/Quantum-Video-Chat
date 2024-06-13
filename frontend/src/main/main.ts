@@ -16,6 +16,7 @@ import { resolveHtmlPath } from "./util";
 import { Server, type Socket } from "socket.io";
 
 const DEFAULT_FRONTEND_PORT = 5001;
+const DEFAULT_RENDERER_URL = 'splash';
 
 class AppUpdater {
 	constructor() {
@@ -81,7 +82,7 @@ const createWindow = async () => {
 		},
 	});
 
-	mainWindow.loadURL(resolveHtmlPath("index.html"));
+	mainWindow.loadURL(resolveHtmlPath(DEFAULT_RENDERER_URL));
 
 	mainWindow.on("ready-to-show", () => {
 		if (!mainWindow) {
@@ -110,6 +111,29 @@ const createWindow = async () => {
 	// Remove this if your app does not use auto updates
 	// eslint-disable-next-line
 	// new AppUpdater();
+};
+
+/**
+ * Awaits a 'renderer-ready' event before executing core video chat processes
+ * e.g., spawn client backend
+ * 
+ * This is necessary to ensure that the Renderer is ready to receive events
+ * such as 'self_id' through IPC.
+ * 
+ * Theoretically could cause an issue if the Renderer somehow is ready before 
+ * this function is called -- but it usually takes SO long to open I doubt
+ * this will ever happen.
+ * 
+ * TODO: Fix that by adding sending a 'is-ready' event to the Renderer and see
+ * if it responds quickly?, before entering the while loop
+ */
+const whenRendererReady = (callback: Function) => {
+	console.log('(main.ts): Waiting for Renderer')
+
+	ipcMain.once('renderer-ready', () => {
+		console.log('(main.ts): Renderer ready')
+		callback();
+	});
 };
 
 /**
@@ -166,7 +190,11 @@ const listenForSocketAndIPC = (PORT: number) => {
 	return PORT;
 }
 
-// Spawn the Python 
+/**
+ * Spawns Python subprocess to run client backend
+ * stdout and stderr is printed, here, by Electron
+ * @param {number} PORT Port for Python subprocess to connect its frontend socket to 
+ */
 const spawnPythonProcess = (PORT: number) => {
 	console.log("(main.ts): Spawning Python Child Process...");
 	const { spawn } = require("node:child_process");
@@ -208,8 +236,6 @@ app.on("window-all-closed", () => {
 app
 	.whenReady()
 	.then(() => {
-		const FRONTEND_PORT = listenForSocketAndIPC(DEFAULT_FRONTEND_PORT);
-		spawnPythonProcess(FRONTEND_PORT);
 		createWindow();
 		app.on("activate", () => {
 			// On macOS it's common to re-create a window in the app when the
@@ -218,3 +244,8 @@ app
 		});
 	})
 	.catch(console.log);
+
+whenRendererReady(() => {
+	const FRONTEND_PORT = listenForSocketAndIPC(DEFAULT_FRONTEND_PORT);
+	spawnPythonProcess(FRONTEND_PORT);
+});
