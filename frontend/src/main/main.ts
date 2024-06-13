@@ -15,6 +15,8 @@ import MenuBuilder from "./menu";
 import { resolveHtmlPath } from "./util";
 import { Server, type Socket } from "socket.io";
 
+const DEFAULT_FRONTEND_PORT = 5001;
+
 class AppUpdater {
 	constructor() {
 		log.transports.file.level = "info";
@@ -116,30 +118,27 @@ const createWindow = async () => {
 	new AppUpdater();
 };
 
-// Python Child Process
-const spawnPythonProcess = () => {
-	const PORT = 5001;
-	const io = new Server(PORT, {
-    maxHttpBufferSize: 1e7
-  	});
+/**
+ * Start socket.io server to communicate with Python subprocess
+ * Set up event listeners to send events from Python to React, vice-versa
+ * @param {number} PORT Default port to listen on.
+ * 						Will iteratively increment port if default is in use
+ * @return {number} 	Port socket is bound to, for Python subprocess to connect to
+ */
+const listenForSocketAndIPC = (PORT: number) => {
+	let io = new Server(PORT, {
+		maxHttpBufferSize: 1e7
+	});
+	console.log(`(main.ts): Starting frontend socket on port ${PORT}`);
 
-	// console.log("Spawning Python Child Process...");
-	// const { spawn } = require("node:child_process");
-	// const python = spawn("python3", ['src/middleware/video_chat.py', [PORT]]);
-
-	// // in close event we are sure that stream from child process is closed
-	// python.on("close", (code: string | null) => {
-	// 	console.log(`child process close all stdio with code ${code}`);
-	// 	// send data to browser
-	// });
 
 	io.on("connection", (socket: Socket) => {
-		console.log("Connected to backend python code");
+		console.log("(main.ts): Received connection from Python subproccess");
 		const user_id = socket.handshake.headers.user_id;
 		ipcMain.once("set_peer_id", (event, peer_id) => {
 			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
 			console.log(
-				`(main.ts): Received peer_id ${peer_id}; sending to Python subprocess.`,
+				`(main.ts): Received peer_id ${peer_id} from renderer; sending to Python subprocess.`,
 			);
 			socket.emit("connect_to_peer", peer_id);
 		});
@@ -164,6 +163,35 @@ const spawnPythonProcess = () => {
 
 		});
 	});
+
+	return PORT;
+}
+
+// Spawn the Python 
+const spawnPythonProcess = (PORT: number) => {
+	console.log("(main.ts): Spawning Python Child Process...");
+	const { spawn } = require("node:child_process");
+	// TODO: Find elegant solution to figure out the name of user's python executable
+	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
+	const python = spawn("py", ['-u', 'src/middleware/main.py', [PORT]]);
+
+	// In close event we are sure that stream from child process is closed
+	python.on("close", (code: string | null) => {
+		console.log(`(py): Child process closed with code ${code}.`);
+		// send data to browser
+	});
+
+
+	// trim() removes newlines automatically included the python outputs
+	python.stdout.setEncoding('utf8');
+	python.stdout.on('data', (data: string) => {
+    	console.log(`(py stdout): ${data.trim()}`);
+	});
+
+	python.stderr.setEncoding('utf8');
+	python.stderr.on('data', (data: string) => {
+		console.log(`(py stderr): ${data.trim()}`);
+	});
 };
 
 /**
@@ -181,7 +209,8 @@ app.on("window-all-closed", () => {
 app
 	.whenReady()
 	.then(() => {
-		spawnPythonProcess();
+		const FRONTEND_PORT = listenForSocketAndIPC(DEFAULT_FRONTEND_PORT);
+		spawnPythonProcess(FRONTEND_PORT);
 		createWindow();
 		app.on("activate", () => {
 			// On macOS it's common to re-create a window in the app when the

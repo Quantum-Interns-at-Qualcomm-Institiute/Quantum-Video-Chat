@@ -6,12 +6,25 @@ import psutil
 import platform
 
 from client.encryption import EncryptSchemes, KeyGenerators
-# import sys
+
+import sys
 
 DEV = True
-CONFIG = f"{'dev_' if DEV else ''}python_config.json"
+import os
+CONFIG = f"src/middleware/{'dev_' if DEV else ''}python_config.json"
+
+DEFAULT_FRONTEND_PORT = 5001
 
 if __name__ == "__main__":
+    client = VideoChatClient().set_encryption_type(encryption_type=EncryptSchemes.AES).set_key_source(key_source=KeyGenerators.DEBUG)
+
+    # Connect to frontend process through socket
+    FRONTEND_PORT = DEFAULT_FRONTEND_PORT
+    if sys.argv[1]: FRONTEND_PORT = sys.argv[1]
+    frontend_socket_endpoint = Endpoint(
+        ip="localhost", port=FRONTEND_PORT)
+    client.set_frontend_socket(endpoint=frontend_socket_endpoint)
+
     with open(file=CONFIG) as json_data:
         config = json.load(json_data)
 
@@ -23,20 +36,14 @@ if __name__ == "__main__":
         if prop.family == 2:
             api_address = prop.address
 
-    client = VideoChatClient().set_encryption_type(encryption_type=EncryptSchemes.AES).set_key_source(key_source=KeyGenerators.DEBUG)
-
     api_endpoint = Endpoint(ip=api_address, port=api_port)
     client.start_api(endpoint=api_endpoint)
 
     server_endpoint = Endpoint(ip=config["SERVER_IP"], port=config["SERVER_PORT"])
     client.set_server_endpoint(endpoint=server_endpoint)
 
-    frontend_socket_endpoint = Endpoint(
-        ip="localhost", port=5001)  # TODO: add back in the sys args
-    client.set_frontend_socket(endpoint=frontend_socket_endpoint)
-
     # Communicate self id to frontend
-    print(f"(main.py): Emitting self_id {client.user_id} to frontend.")
+    print(f"Emitting self_id {client.user_id} to frontend.")
     client.frontend_socket.emit('self_id', data=client.user_id)
 
     @client.frontend_socket.on(event='connect_to_peer')
