@@ -27,12 +27,6 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-// ipcMain.on('ipc-example', async (event, arg) => {
-//   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-//   console.log(msgTemplate(arg));
-//   event.reply('ipc-example', msgTemplate('pong'));
-// });
-
 if (process.env.NODE_ENV === "production") {
 	const sourceMapSupport = require("source-map-support");
 	sourceMapSupport.install();
@@ -115,7 +109,7 @@ const createWindow = async () => {
 
 	// Remove this if your app does not use auto updates
 	// eslint-disable-next-line
-	new AppUpdater();
+	// new AppUpdater();
 };
 
 /**
@@ -130,6 +124,11 @@ const listenForSocketAndIPC = (PORT: number) => {
 		maxHttpBufferSize: 1e7
 	});
 	console.log(`(main.ts): Starting frontend socket on port ${PORT}`);
+	process.on('uncaughtException', function(err) {
+		if(err.code !== 'EADDRINUSE') throw err;
+		console.log(`(main.ts): Port ${PORT} in use; re-trying with port ${PORT+1}`)
+		io = new Server(++PORT);
+	});
 
 
 	io.on("connection", (socket: Socket) => {
