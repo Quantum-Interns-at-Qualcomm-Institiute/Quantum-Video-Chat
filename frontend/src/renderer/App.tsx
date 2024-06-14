@@ -12,8 +12,8 @@ export default function App() {
 	const status = statuses[0];
 
 	return (
-		<ClientContextProvider>
-			<Router>
+		<Router>
+			<ClientContextProvider>
 				<Routes>
 					{/* Host Video Session */}
 					<Route
@@ -38,7 +38,7 @@ export default function App() {
 					{/* Home Page */}
 					<Route path="/*" element={<Start />}/>
 				</Routes>
-			</Router>
-		</ClientContextProvider>
+			</ClientContextProvider>
+		</Router>
 	);
 }

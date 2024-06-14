@@ -1,5 +1,6 @@
 import type { IpcMainEvent } from "electron";
 import { useState, createContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import services from './services';
 
 // TODO: Remove placeholder when chat is properly implemented
@@ -38,6 +39,8 @@ export function ClientContextProvider({ children } ) {
     const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
     const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
+    const navigate = useNavigate();
+
     // Establish middleware listeners on initial render
     useEffect(() => {
         window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
@@ -46,7 +49,8 @@ export function ClientContextProvider({ children } ) {
 
             // Navigate away from Splash page after receiving self_id
             if(window.location.pathname === '/splash') {
-                window.location.assign('/');
+                console.log('(renderer): Closing Splash page.')
+                navigate('/');
             }
         })
 
@@ -68,7 +72,7 @@ export function ClientContextProvider({ children } ) {
         });
 
         // Inform main process that ClientContext is ready for IPC communication
-        console.log('Renderer Ready');
+        console.log('(renderer): Renderer Ready');
         window.electronAPI.rendererReady();
     }, []);
 
