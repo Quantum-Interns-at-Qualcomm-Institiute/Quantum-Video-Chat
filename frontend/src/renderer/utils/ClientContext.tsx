@@ -41,6 +41,12 @@ export function ClientContextProvider({ children } ) {
 
     const navigate = useNavigate();
 
+    const joinPeer = (peer_id) => {
+        console.log(`(renderer): Setting peer_id ${peer_id} from user input.`);
+        _setPeerId(peer_id);
+        services.joinPeer(peer_id)
+    }
+
     // Establish middleware listeners on initial render
     useEffect(() => {
         window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
