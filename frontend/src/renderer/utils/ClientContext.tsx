@@ -26,7 +26,8 @@ const initClientContext = {
     chat: {
         messages: initMessages,
         sendMessage: services.chat.sendMessage,
-    }
+    },
+    quitSession: services.quitSession,
 }
 
 export const ClientContext = createContext(initClientContext);
@@ -82,7 +83,8 @@ export function ClientContextProvider({ children } ) {
             chat: {
                 messages: messages,
                 sendMessage: services.chat.sendMessage
-            }
+            },
+            quitSession: services.quitSession
         }}>
             {children}
         </ClientContext.Provider>

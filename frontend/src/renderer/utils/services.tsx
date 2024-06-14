@@ -6,11 +6,19 @@ const services = {
     },
     chat: {
         sendMessage: sendMessage
-    }
+    },
+    quitSession
 }
 
 async function joinPeer(peerId: string) {
-    // window.electronAPI.joinPeer(peerId)
+    console.log(`(renderer): Sending peer_id ${peerId} to \`main.ts\` to attempt connection.`)
+    window.electronAPI.joinPeer(peerId)
+}
+
+async function quitSession() {
+    console.log(`(renderer): Quitting video chat session`)
+    window.electronAPI.quitSession();
+    window.location.assign('/');
 }
 
 async function sendMessage(message: string) {

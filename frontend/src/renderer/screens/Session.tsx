@@ -65,15 +65,12 @@ export default function Session(props) {
 				context.putImageData(imageData, 0, 0);
 			},
 		);
-
-		if (props.host) {
-			// Is a host
-		} else {
-			// Is client
-			console.log(`sent peer id ${code}`);
-			window.electronAPI.setPeerId(code);
-		}
 	});
+
+
+	function handleLeave() {
+		client.quitSession();
+	}
 
 	return (
 		<>
@@ -83,7 +80,6 @@ export default function Session(props) {
 
 			<div className="session-content">
 				{/* Add a copy button instead of allowing text selection */}
-				<h3 className="code">Code: {client.selfId}</h3>
 				<h3 className="code">ID: {client.selfId}</h3>
 
 				<div className="top">
@@ -129,6 +125,7 @@ export default function Session(props) {
 					</CircleWidget>
 					<div className="vert-spacer" />
 
+					{/* 
 					<div className="chat-wrapper">
 						<Chat
 							messages={client.chat.messages}
@@ -136,6 +133,14 @@ export default function Session(props) {
 							status={props.status}
 						/>
 					</div>
+ 					*/}
+
+					<button
+					className="button leave-button"
+					type="button"
+					onClick={handleLeave}>
+						Leave
+					</button>
 
 					{/* <button id="quit" onClick={handleQuit}>End Session</button> */}
 				</div>

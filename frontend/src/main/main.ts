@@ -158,12 +158,18 @@ const listenForSocketAndIPC = (PORT: number) => {
 	io.on("connection", (socket: Socket) => {
 		console.log("(main.ts): Received connection from Python subproccess");
 		const user_id = socket.handshake.headers.user_id;
-		ipcMain.once("set_peer_id", (event, peer_id) => {
+		ipcMain.once("set-peer-id", (event, peer_id) => {
 			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
 			console.log(
 				`(main.ts): Received peer_id ${peer_id} from renderer; sending to Python subprocess.`,
 			);
 			socket.emit("connect_to_peer", peer_id);
+		});
+
+		ipcMain.on('quit-session', () => {
+			console.log(`(main.ts): Client quit video chat session.`);
+			
+			// TODO: Send event to Python backend; disconnect /gracefully/
 		});
 
 		socket.on('self_id', (self_id) => {
