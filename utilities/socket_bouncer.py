@@ -30,17 +30,17 @@ def start_server(ipaddress, port):
 
     @sio.on('connect')
     def connect(sid, environ):
-        print(f'Connected by socket at {right_now()}')
+        print(f"Connected by socket at {right_now()}")
 
     @sio.on('send_frame')
     def send_frame(sid, data):
-        print(f'I was sent frame #{data['count']} at {right_now()}')
+        print(f"I was sent frame #{data['count']} at {right_now()}")
         sio.emit('ret_frame', data)
         print('So I sent it right back!')
 
     @sio.on('disconnect')
     def disconnect(sid):
-        print(f'Socket disconnected at {right_now()}')
+        print(f"Socket disconnected at {right_now()}")
 
     eventlet.wsgi.server(eventlet.listen((ipaddress, port)), app)
 
@@ -59,7 +59,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
             self.framerate = 15
 
         def send_frame(self, count):
-            print(f'[send] Starting image processing at {right_now()}')
+            print(f"[send] Starting image processing at {right_now()}")
             ret, frame = self.cap.read()  # Pixels are represented in BGR format (Blue, Green, Red) by default in OpenCV
 
             if not ret:
@@ -72,7 +72,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
                 filename='pipe:',
                 format='rawvideo',
                 pix_fmt='bgr24',
-                s=f'{height}x{width}',
+                s=f"{height}x{width}",
                 r=self.framerate,
             )
 
@@ -83,7 +83,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
             processed = output.run(
                 input=frame.tobytes(), capture_stdout=True, quiet=True)[0]
 
-            print(f'[send] Frame #{count} processing completed at {right_now()}! Sending...')
+            print(f"[send] Frame #{count} processing completed at {right_now()}! Sending...")
             self.sio.emit('send_frame', data={
                 'count': count,
                 'frame': processed,
@@ -105,7 +105,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
 
     def signal_handler(sig, frame):
         print('')
-        print(f'You pressed Ctrl+C! Stopping thread at {right_now()}...')
+        print(f"You pressed Ctrl+C! Stopping thread at {right_now()}...")
         client_thread.stop()
         print('Disconnecting...')
         if server_sio is not None:
@@ -121,22 +121,22 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
 
     @server_sio.on('connect')
     def connect():
-        print(f'Connected to server at {right_now()}')
+        print(f"Connected to server at {right_now()}")
         client_thread.start()
-        print(f'Thread started at {right_now()}!')
+        print(f"Thread started at {right_now()}!")
         if frontend_enabled:
-            frontend_sio.connect(f'http://localhost:{frontend_port}', namespaces='/')
+            frontend_sio.connect(f"http://localhost:{frontend_port}", namespaces='/')
 
     @server_sio.on('disconnect')
     def disconnect():
-        print(f'Disconnected from server at {right_now()}')
+        print(f"Disconnected from server at {right_now()}")
 
     @server_sio.on('ret_frame')
     def ret_frame(data):
         unmodified = get_hash(data['frame']) == data['hash']
-        print(f'I received {'an unmodified' if unmodified else 'modified'} frame #{data['count']} at {right_now()}!')
+        print(f"I received {'an unmodified' if unmodified else 'modified'} frame #{data['count']} at {right_now()}!")
         if unmodified:
-            print(f'[receive] Starting image processing at {right_now()}')
+            print(f"[receive] Starting image processing at {right_now()}")
             inpipe = ffmpeg.input('pipe:')
             output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgba')
             processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
@@ -154,7 +154,7 @@ def start_client(ipaddress, port, interval, width, height, frontend_port):
     WAIT = 10
     for retry in range(MAX_RETRYS):
         try:
-            server_sio.connect(f'http://{ipaddress}:{port}', namespaces='/', wait=True)
+            server_sio.connect(f"http://{ipaddress}:{port}", namespaces='/', wait=True)
             break
         except Exception:
             if MAX_RETRYS - retry >= 0:
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     if args.interface:
         ip = psutil.net_if_addrs()[args.interface][0].address if args.interface in args.interface else None
         if not ip:
-            print(f'Error: Invalid interface name {args.interface}')
+            print("Error: Invalid interface name {args.interface}")
             sys.exit(1)
     else:
         ip = args.ipaddress
