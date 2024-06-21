@@ -3,7 +3,7 @@ body {
   justify-content: space-between;
 }
 
-canvas {
+.temp canvas {
   min-width: 640px;
   min-height: 480px;
   width: auto;
