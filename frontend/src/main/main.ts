@@ -168,8 +168,9 @@ const listenForSocketAndIPC = (PORT: number) => {
 
 		ipcMain.on('quit-session', () => {
 			console.log(`(main.ts): Client quit video chat session.`);
-			
+            
 			// TODO: Send event to Python backend; disconnect /gracefully/
+            socket.emit('quit_session');
 		});
 
 		socket.on('self_id', (self_id) => {
