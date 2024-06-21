@@ -48,17 +48,17 @@ export default function Session(props) {
 		context.fillStyle = "rgb(255,255,255)";
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
-        // NOTE: Remove after done testing
-        console.log('test');
+        // NOTE: Remove all below when ready to test actual frames
         let imageData = document.getElementById("blegh-cringe")
-
-        // Resize image for canvas:
-        // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
-        var hRatio = canvas.width / imageData.width;
-        var vRatio = canvas.height / imageData.height;
-        var ratio = Math.max(hRatio, vRatio);
-        console.log(ratio);
-        context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
+        imageData.addEventListener('load', () => {
+            // Resize image for canvas:
+            // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
+            var hRatio = canvas.width / imageData.width;
+            var vRatio = canvas.height / imageData.height;
+            var ratio = Math.max(hRatio, vRatio);
+            console.log(ratio);
+            context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
+        });
 	}, []);
 
 	useEffect(() => {
