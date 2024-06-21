@@ -86,3 +86,8 @@
 .session-content .video-wrapper {
     border: 7px solid var(--neutral);
 }
+
+.session-content canvas {
+    width: 100%;
+    height: 100%;
+}
