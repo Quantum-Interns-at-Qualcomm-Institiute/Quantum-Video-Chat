@@ -10,7 +10,10 @@ import CircleWidget from "../components/widgets/CircleWidget";
 import RectangleWidget from "../components/widgets/RectangleWidget";
 import Chat from "../components/chat/Chat";
 
+import image from "../../../assets/rando.jpeg";
+
 import "./Session.css";
+import { LocalConvenienceStoreOutlined, RateReviewOutlined } from "@mui/icons-material";
 
 /*
  * props.status: str
@@ -40,10 +43,22 @@ export default function Session(props) {
 		}
 		console.log("Session: Running useEffect()");
 		getOutStream();
-    const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
-    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
+        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 		context.fillStyle = "rgb(255,255,255)";
 		context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // NOTE: Remove after done testing
+        console.log('test');
+        let imageData = document.getElementById("blegh-cringe")
+
+        // Resize image for canvas:
+        // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
+        var hRatio = canvas.width / imageData.width;
+        var vRatio = canvas.height / imageData.height;
+        var ratio = Math.max(hRatio, vRatio);
+        console.log(ratio);
+        context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
 	}, []);
 
 	useEffect(() => {
@@ -74,6 +89,11 @@ export default function Session(props) {
 
 	return (
 		<>
+            {/* Remove this after done testing */}
+            <div style={{display: "none"}}>
+                <img id="blegh-cringe" src={image}></img>
+            </div>
+
 			<Header status={props.status} />
 
 			{props.status === "bad" ? <StatusPopup /> : null}
@@ -85,10 +105,12 @@ export default function Session(props) {
 				<div className="top">
 					{/* <div className="video-wrapper" id="left-video"> */}
 					{/* Make this come from the backend code so it's the same size*/}
-					<canvas id="peer-stream" min-width="640" min-height="480" object-fit="contain"height="auto" width="auto">
-						{" "}
-						Please wait...{" "}
-					</canvas>
+                    <div className="video-wrapper">
+                        <canvas id="peer-stream" object-fit="cover">
+                            {" "}
+                            Please wait...{" "}
+                        </canvas>
+                    </div>
 					{/* </div> */}
 					<div className="vert-spacer" />
 					<div className="video-wrapper" id="right-video">

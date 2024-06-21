@@ -206,7 +206,7 @@ const spawnPythonProcess = (PORT: number) => {
 	const { spawn } = require("node:child_process");
 	// TODO: Find elegant solution to figure out the name of user's python executable
 	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
-	const python = spawn("py", ['-u', 'src/middleware/main.py', [PORT]]);
+	const python = spawn("python", ['-u', 'src/middleware/main.py', [PORT]]);
 
 	// In close event we are sure that stream from child process is closed
 	python.on("close", (code: string | null) => {

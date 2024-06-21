@@ -4,7 +4,7 @@ import Splash from "./screens/Splash";
 import Start from "./screens/Start";
 import Join from "./screens/Join";
 import Session from "./screens/Session";
-import Temp from './screens/Temp'
+import Temp from './screens/Temp';
 import { ClientContextProvider } from "./utils/ClientContext";
 
 export default function App() {

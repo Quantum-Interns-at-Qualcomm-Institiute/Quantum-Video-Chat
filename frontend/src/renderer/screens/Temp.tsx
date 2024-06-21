@@ -44,7 +44,7 @@ export default function Temp(props) {
     });
 
     return (
-        <div>
+        <div className="temp">
             <canvas id="peer-stream"/>
             {/* <video ref={videoRef} width="640" height="480" playsInline muted/> */}
         </div>
