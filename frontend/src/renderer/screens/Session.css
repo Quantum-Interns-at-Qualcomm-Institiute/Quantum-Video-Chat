@@ -82,3 +82,7 @@
 .session-content .leave-button:active {
     background-color: rgb(255, 110, 110)
 }
+
+.session-content .video-wrapper {
+    border: 7px solid var(--neutral);
+}
