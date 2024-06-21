@@ -20,7 +20,7 @@ const initMessages = [
 const initClientContext = {
     selfId: '',
     peerId: '',
-    joinPeer: services.joinPeer,
+    joinPeer: (peer_id: string) => {},
     video: {
         onFrame: () => {},
     },
@@ -28,7 +28,7 @@ const initClientContext = {
         messages: initMessages,
         sendMessage: services.chat.sendMessage,
     },
-    quitSession: services.quitSession,
+    quitSession: () => {},
 }
 
 export const ClientContext = createContext(initClientContext);
@@ -47,8 +47,15 @@ export function ClientContextProvider({ children } ) {
         services.joinPeer(peer_id)
     }
 
+    const quitSession = () => {
+        services.quitSession();
+        navigate('/');
+    }
+
     // Establish middleware listeners on initial render
     useEffect(() => {
+        console.log(`ClientContext useEffect`);
+
         window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
             console.log(`(renderer): Received self_id ${id} from \`main.ts\`.`)
             _setSelfId(id);
@@ -86,7 +93,7 @@ export function ClientContextProvider({ children } ) {
         <ClientContext.Provider value={{
             selfId: selfId,
             peerId: peerId,
-            joinPeer: services.joinPeer,
+            joinPeer: joinPeer,
             video: {
                 onFrame: onFrame
             },
@@ -94,7 +101,7 @@ export function ClientContextProvider({ children } ) {
                 messages: messages,
                 sendMessage: services.chat.sendMessage
             },
-            quitSession: services.quitSession
+            quitSession: quitSession
         }}>
             {children}
         </ClientContext.Provider>
