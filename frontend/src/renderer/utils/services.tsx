@@ -18,7 +18,6 @@ async function joinPeer(peerId: string) {
 async function quitSession() {
     console.log(`(renderer): Quitting video chat session`)
     window.electronAPI.quitSession();
-    window.location.assign('/');
 }
 
 async function sendMessage(message: string) {

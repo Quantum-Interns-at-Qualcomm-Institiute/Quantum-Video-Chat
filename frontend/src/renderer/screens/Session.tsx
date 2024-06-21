@@ -56,7 +56,6 @@ export default function Session(props) {
             var hRatio = canvas.width / imageData.width;
             var vRatio = canvas.height / imageData.height;
             var ratio = Math.max(hRatio, vRatio);
-            console.log(ratio);
             context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
         });
 	}, []);
