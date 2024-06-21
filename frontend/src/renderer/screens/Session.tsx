@@ -61,24 +61,32 @@ export default function Session(props) {
 	}, []);
 
 	useEffect(() => {
-		window.electronAPI.ipcListen(
-			"frame",
-			(
-				event: IpcMainEvent,
-				canvasData: {
-					frame: Uint8Array;
-					height: number;
-					width: number;
-				},
-			) => {
-				const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-				canvas.width = canvasData.width
-				canvas.height = canvasData.height
-				const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-				const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
-				context.putImageData(imageData, 0, 0);
-			},
-		);
+        client.video.onFrame = (canvasData) => {
+            const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+            canvas.width = canvasData.width
+            canvas.height = canvasData.height
+            const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+            const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
+            context.putImageData(imageData, 0, 0);
+        }
+		// window.electronAPI.ipcListen(
+		// 	"frame",
+		// 	(
+		// 		event: IpcMainEvent,
+		// 		canvasData: {
+		// 			frame: Uint8Array;
+		// 			height: number;
+		// 			width: number;
+		// 		},
+		// 	) => {
+		// 		const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+		// 		canvas.width = canvasData.width
+		// 		canvas.height = canvasData.height
+		// 		const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+		// 		const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
+		// 		context.putImageData(imageData, 0, 0);
+		// 	},
+		// );
 	});
 
 
