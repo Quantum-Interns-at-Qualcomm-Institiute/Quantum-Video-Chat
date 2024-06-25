@@ -1,6 +1,5 @@
-import logging 
-from api import ServerAPI, SocketAPI
-from server import SocketState, VideoChatServer
+import logging
+from video_chat_server import ServerAPI
 
 logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
@@ -8,8 +7,12 @@ logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 if __name__ == '__main__':
     try:
-        server = VideoChatServer(ServerAPI.DEFAULT_ENDPOINT, SocketAPI, SocketState)
-        # server.set_host()
+        server = ServerAPI.VideoChatServerBuilder()\
+            .set_api_endpoint()\
+            .set_websocket_endpoint()\
+            .set_user_manager()\
+            .build()
+        
         ServerAPI.init(server)
         ServerAPI.start()  # Blocking
     except KeyboardInterrupt:
