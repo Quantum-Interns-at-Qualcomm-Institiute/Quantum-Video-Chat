@@ -7,7 +7,7 @@ from client.errors import Errors
 @total_ordering
 class ClientState(Enum):
     NEW = 'NEW'  # Uninitialized
-    INIT = 'INIT'  # Initialized
+    INITIALIZED = 'INITIALIZED'  # Initialized
     CONNECTING = 'CONNECTING'
     LIVE = 'LIVE'  # Connected to server
     CONNECTED = 'CONNECTED'  # Connected to peer
@@ -17,6 +17,23 @@ class ClientState(Enum):
             arr = list(cls.__class__)
             return arr.index(cls) < arr.index(other)
         return NotImplemented
+
+
+@total_ordering
+class APIState(Enum):
+    NEW = 'NEW'
+    INITIALIZED = 'INITIALIZED'
+    LIVE = 'LIVE'
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            arr = list(self.__class__)
+            return arr.index(self) < arr.index(other)
+        return NotImplemented
+
+
+def remove_last_period(text: str):
+    return text[0:-1] if text[-1] == "." else text
 
 
 def display_message(user_id, msg):

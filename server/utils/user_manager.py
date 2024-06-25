@@ -1,13 +1,14 @@
 # from __future__ import annotations
 
 # region --- Logging ---
+from enum import Enum
 import hashlib
 from abc import ABC, abstractmethod
 
 from utils import Endpoint
 from user import User, UserState
 import logging
-logging.basicConfig(filename='./server/logs/server.log', level=logging.DEBUG,
+logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
                     format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
                     datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
@@ -34,6 +35,9 @@ class InvalidState(Exception):
 
 
 class UserStorageInterface(ABC):
+    @abstractmethod
+    def __str__(self):
+        pass
 
     @abstractmethod
     def add_user(self, user_id, user_info):
@@ -44,7 +48,7 @@ class UserStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def get_user(self, user_id):
+    def get_user_by_id(self, user_id):
         pass
 
     @abstractmethod
@@ -61,6 +65,9 @@ class DictUserStorage(UserStorageInterface):
     def __init__(self):
         self.users = {}
 
+    def __str__(self):
+        return "Dictionary"
+
     def add_user(self, user_id, user_info: User):
         if user_id in self.users:
             raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
@@ -71,7 +78,7 @@ class DictUserStorage(UserStorageInterface):
             raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
         self.users[user_id] = user_info
 
-    def get_user(self, user_id):
+    def get_user_by_id(self, user_id):
         if user_id not in self.users:
             raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
         return self.users.get(user_id, None)
@@ -85,6 +92,13 @@ class DictUserStorage(UserStorageInterface):
         return user_id in self.users
 
 
+class UserStorageTypes(Enum):
+    DICT = DictUserStorage
+
+    def __call__(cls):
+        return cls.value()
+
+
 class UserStorageFactory:
     def __init__(self):
         pass
@@ -96,8 +110,8 @@ class UserStorageFactory:
         pass
 
     def create_storage(self, storage_type: str, **kwargs) -> UserStorageInterface:
-        if storage_type == 'DICT':
-            return DictUserStorage()
+        if storage_type in UserStorageTypes:
+            return storage_type()
         else:
             raise ValueError(f"Invalid storage type: {storage_type}")
 # endregion
@@ -157,7 +171,7 @@ class UserManager:
             raise InvalidState(f"Cannot set state {state} ({peer}) for User {user_id}: Invalid state.")
 
         try:
-            user_info = self.storage.get_user(user_id)
+            user_info = self.storage.get_user_by_id(user_id)
             user_info.state = state
             user_info.peer = peer
             self.storage.update_user(user_id, user_info)
@@ -166,9 +180,9 @@ class UserManager:
             self.logger.error(str(e))
             raise e
 
-    def get_user(self, user_id) -> User:
+    def get_user_by_id(self, user_id) -> User:
         try:
-            user_info = self.storage.get_user(user_id)
+            user_info = self.storage.get_user_by_id(user_id)
             self.logger.debug(f"Retrieved user info for User {user_id}.")
             return User(*user_info)
         except UserNotFound as e:

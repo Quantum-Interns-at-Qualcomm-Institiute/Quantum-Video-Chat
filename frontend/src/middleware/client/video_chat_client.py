@@ -1,4 +1,4 @@
-from typing import Optional
+from enum import Enum
 from client.api import ClientAPI
 from client.endpoint import Endpoint
 from client.errors import Errors
@@ -151,151 +151,217 @@ class SocketClient():
         SocketClient.display_message(user_id, msg)
 
     # endregion
-# endregion
 
 
-# region --- Main Client ---
+class VideoChatClientBuilder:
+    class Defaults(Enum):
+        KEY_GEN: KeyGenerators = KeyGenerators.DEBUG
+        WEBSOCKET_ENDPOINT: Endpoint = Endpoint('localhost', '25565')  # TODO: add default here
+        ENCRYPTION_SCHEME: EncryptSchemes = EncryptSchemes.DEBUG
+        SERVER_ENDPOINT: Endpoint = Endpoint('localhost', '25564')  # TODO: add default here
+        FRONTEND_ENDPOINT: Endpoint = Endpoint('localhost', '25563')   # TODO: add default here
+        API_ENDPOINT: Endpoint = Endpoint('localhost', '25562')  # TODO: add default here
 
-# TODO: consdier renaming to avoid confusion with Client
-class VideoChatClient:
-    # TODO: Remove websocket endpoint?
     def __init__(self):
-        self.logger = logging.getLogger('Client')
-        self.logger.info('Creating new Client')
+        self.logger = logging.getLogger('VideoChatClientBuilder')
+        self.logger.info("Setting up a new VideoChatClient")
 
-        self.state = ClientState.NEW
+        self.encryption_scheme: EncryptSchemes = None
+        self.key_source: KeyGenerators = None
+
+        self.api_endpoint: Endpoint = None
+        self.frontend_endpoint: Endpoint = None
+        self.server_endpoint: Endpoint = None
+        self.websocket_endpoint: Endpoint = None
+
+    def set_encryption_scheme(self, encryption_scheme: EncryptSchemes = None):
+        self.encryption_scheme = encryption_scheme if encryption_scheme is not None else self.Defaults.ENCRYPTION_SCHEME
+
+        self.logger.info(f"Client will use {self.encryption_scheme}-based encryption")
+
+        return self
+
+    def set_key_source(self, key_source: KeyGenerators = None):
+        self.key_source = key_source if key_source is not None else self.Defaults.KEY_GEN
+
+        self.logger.info(f"Client will use a {key_source}-source for key bits")
+
+        return self
+
+    def set_websocket_endpoint(self, endpoint: Endpoint = None):
+        self.websocket_endpoint = endpoint if endpoint is not None else self.Defaults.WEBSOCKET_ENDPOINT  # TODO: add default endpoint
+
+        self.logger.info(f"Setting Client's websocket endpoint to {self.websocket_endpoint}")
+
+        return self
+
+    def set_server_endpoint(self, endpoint: Endpoint = None):
+        self.server_endpoint = endpoint if endpoint is not None else self.Defaults.SERVER_ENDPOINT
+
+        self.logger.info(f"Setting Client's server endpoint to {self.server_endpoint}")
+
+        return self
+
+    def set_frontend_endpoint(self, endpoint: Endpoint = None):
+        self.frontend_endpoint = endpoint if endpoint is not None else self.Defaults.FRONTEND_ENDPOINT
+
+        self.logger.info(f"Setting VideoChatClient's frontend endpoint to {self.frontend_endpoint}")
+
+        return self
+
+    def set_api_endpoint(self, endpoint: Endpoint = None):
+        self.api_endpoint = endpoint if endpoint is not None else self.Defaults.API_ENDPOINT
+
+        self.logger.info(f"Setting VideoChatClient's API endpoint to  {self.api_endpoint}")
+
+        return self
+
+    def build(self):
+        if self.encryption_scheme is None:
+            raise BaseException("Must set encryption scheme before building client")
+        if self.key_source is None:
+            raise BaseException("Must set key source before building client")
+        # TODO: do we need this?
+        # if self.websocket_endpoint is None:
+        #     raise BaseException("Must set client's websocket endpoint before building")
+        if self.server_endpoint is None:
+            raise BaseException("Must set client's server endpoint before building")
+        if self.frontend_endpoint is None:
+            raise BaseException("Must set client's frontend endpoint before building")
+
+        self.logger.info("Creating new VideoChatClient")
+        self.video_chat_client = VideoChatClient(encryption_scheme=self.encryption_scheme, key_source=self.key_source, server_endpoint=self.server_endpoint, websocket_endpoint=self.websocket_endpoint, frontend_endpoint=self.frontend_endpoint, api_endpoint=self.api_endpoint)
+        return self.video_chat_client
+
+
+class VideoChatClient:
+
+    # TODO: Remove websocket endpoint?
+    def __init__(self, encryption_scheme, key_source, server_endpoint, websocket_endpoint, frontend_endpoint, api_endpoint):
+        self.logger = logging.getLogger('VideoChatClient')
+
+        self.video_chat_client_state = ClientState.NEW
         self.user_id = None
-        self.sess_token = None  # TODO: Remove
+        self.sess_token = None  # TODO: Remove?
 
-        self.api_instance = ClientAPI.init(self)
+        self.api_instance = ClientAPI.init(self, endpoint=api_endpoint)  # TODO: where should this go/happen?
 
-        self.websocket_endpoint = None
+        self.websocket_endpoint: Endpoint = websocket_endpoint
         self.websocket_instance = None
 
-        self.frontend_socket = None
+        self.frontend_endpoint: Endpoint = frontend_endpoint
+        self.frontend_sio_client: SocketClient = Client()
 
-        self.server_endpoint = None
-        self.peer_endpoint = None
+        self.server_endpoint: Endpoint = server_endpoint
+        self.peer_endpoint: Endpoint = None
 
-        self.encryption_type = EncryptSchemes.DEBUG
-        self.key_source = KeyGenerators.DEBUG
+        self.encryption_scheme: EncryptSchemes = encryption_scheme
+        self.key_source: KeyGenerators = key_source
 
-    def set_encryption_type(self, encryption_type: EncryptSchemes):
-        self.encryption_type = encryption_type
-        return self
+        self.logger.info("VideoChatClient has been created")
+        self.set_state(ClientState.INITIALIZED)
 
-    def set_key_source(self, key_source: KeyGenerators):
-        self.key_source = key_source
-        return self
-
-    def HandleClientExceptions(endpoint_handler: callable):
-        """
-        Decorator to handle commonly encountered
-        exceptions at Socket Client endpoints.
-
-        NOTE: This should never be called explicitly
-        """
-        def handler_with_exceptions(*args, **kwargs):
-            cls = SocketClient
-
-            try:
-                return endpoint_handler(cls, *args, **kwargs)
-            except Exception as e:  # TODO: Add excpetions
-                raise e
-        return handler_with_exceptions
-
-    # region --- Utils ---
-    # @HandleClientExceptions
-    def start_api(self, endpoint: Optional[Endpoint]):
-        if endpoint:
-            self.api_instance.set_endpoint(endpoint)
-        elif self.api_instance.endpoint is None:
-            raise Errors.INTERNALCLIENTERROR("Endpoint needed before starting API")
-        self.api_instance.start()  # Start the API thread
-        self.logger.info("Bound API endpoint to Client")
-
-    # @HandleClientExceptions
-    def set_server_endpoint(self, endpoint: Endpoint):
-        if not endpoint:
+    def set_state(self, new_state: ClientState):
+        old_state = self.video_chat_client_state
+        if old_state > new_state:
             raise Errors.INTERNALCLIENTERROR(
-                "Cannot connect to a server without an endpoint")
+                f"Cannot set state back to {new_state} or {self.video_chat_client_state}")
+        if self.video_chat_client_state == new_state:
+            raise Errors.INTERNALCLIENTERROR(f"State already set to {new_state}")
+        self.video_chat_client_state = new_state
+        self.logger.info(f"VideoChatClient's state moved from {old_state} to {new_state}")
 
-        # If already live this will prevent the rest
-        self.set_state(ClientState.CONNECTING)
-        self.server_endpoint = endpoint
-        try:
-            self.logger.info(f"Attempting to connect to server: {self.server_endpoint}.")
-            response = self.contact_server('/create_user', json={
-                'api_endpoint': tuple(self.api_instance.endpoint)
-            })
-        except Exception as e:
-            self.server_endpoint = None  # Reset endpoint before exiting
-            raise e
+    def setup(self):
+        if self.video_chat_client_state == ClientState.NEW:
+            raise BaseException("Can only setup video chat client after initialization")
+        if self.video_chat_client_state > ClientState.INITIALIZED:
+            raise BaseException("Can only set up video chat client once")
 
-        # Makes sure response doesn't produce an error before setting the endpoint
-        self.server_endpoint = endpoint
-        self.user_id, self.sess_token = get_parameters(
-            response.json(), 'user_id', 'sess_token')
-        self.logger.info(f"Successfully connected to {self.server_endpoint} as ID '{self.user_id}' with session token '{self.sess_token}'.")
+        self.logger.info("Setting up VideoChatClient...")
+        self.start_api()
+
+        # TODO: place in a try-catch?
+        self.connect_to_server_endpoint()
+
+        self.connect_to_frontend_endpoint()
+        self.logger.log("Finished setting up VideoChatClient!")
         self.set_state(ClientState.LIVE)
 
-    # @HandleClientExceptions
-    def set_frontend_socket(self, endpoint: Endpoint):
-        if not endpoint:
-            raise Errors.INTERNALCLIENTERROR(
-                "Cannot connect to frontend without an endpoint")
+    def start_api(self):
+        self.api_instance.start()  # Start the API thread
+        self.logger.info("Started the VideoChatClient's API endpoint thread")
 
-        self.frontend_socket = Client()
-        self.frontend_socket.connect(
-            str(endpoint),
+    # TODO: re-implement HandleClientExceptions
+
+    def connect_to_server_endpoint(self):
+        # If already live this will prevent the rest
+        self.set_state(ClientState.CONNECTING)
+
+        self.logger.info(f"Attempting to connect to server: {self.server_endpoint}...")
+        response = self.contact_server('/create_user', json={
+            'api_endpoint': tuple(self.api_instance.endpoint)
+        })
+
+        # Makes sure response doesn't produce an error before setting the client state
+        self.user_id, self.sess_token = get_parameters(
+            response.json(), 'user_id', 'sess_token')
+
+        self.logger.info(f"Successfully connected to {self.server_endpoint} as ID '{self.user_id}' with session token '{self.sess_token}'!")
+        self.set_state(ClientState.LIVE)
+
+    def wait(self):
+        raise NotImplementedError
+
+    def contact_server(self, route: str, json=None):
+        endpoint_with_route = self.server_endpoint(route)
+        self.logger.info(f"Contacting Server at {endpoint_with_route}.")
+
+        response = requests.post(url=str(endpoint_with_route), json=json)
+
+        if response.status_code != 200:
+            raise Errors.UNEXPECTEDRESPONSE(f"Unexpected Server response at {endpoint_with_route}: {response.json()['details'] if 'details' in response.json() else response.reason}.")
+
+        return response
+
+    def connect_to_frontend_endpoint(self):
+        # TODO: where should this best go?
+        @self.frontend_sio_client.on(event='connect')
+        def handle_connect():
+            self.logger.log("Successfully connected to frontend socket")
+
+        self.logger.log(f"Trying to connect to frontend endpoint at {self.frontend_endpoint}")
+
+        # TODO: add a try-catch
+        self.frontend_sio_client.connect(
+            str(self.frontend_endpoint),
             headers={'user_id': self.user_id})
 
-        self.logger.info(f"Bound frontend socket to {endpoint}")
+        self.logger.info(f"Connected to frontend socket at {self.frontend_endpoint}")
+
+        # TODO: where should this best go?
+        @self.frontend_sio_client.on(event='connect_to_peer')
+        def handle_conenct_to_peer(peer_id: str):
+            self.logger.log(f"Frontend reports a peer ID of {peer_id}")
+            self.connect_to_peer(peer_id=peer_id)
 
     def connect_to_websocket(self, endpoint, conn_token):
         try:
-            # TODO: figure out where to bubble down to
+            # TODO: find where this should best be located and if we can reduce what it does
             sio = SocketClient.init(
                 endpoint=endpoint, conn_token=conn_token, user_id=self.user_id,
-                display_message=self.display_message, frontend_socket=self.frontend_socket, encryption_type=self.encryption_type, key_source=self.key_source)
+                display_message=self.display_message, frontend_socket=self.frontend_endpoint, encryption_type=self.encryption_scheme, key_source=self.key_source)
             sio.start()
         except Exception as e:
             self.logger.error(f"Failed to connect to WebSocket at {endpoint} with conn_token '{conn_token}'.")
             raise e
 
-    def set_websocket_endpoint(self, endpoint: Endpoint):
-        self.websocket_endpoint: Endpoint = endpoint
-        self.logger.info(f"Bound websocket endpoint to {endpoint}")
-
-    # TODO: should this have @HandleExceptions?
-
-    def set_state(self, state: ClientState):
-        if self.state > state:
-            raise Errors.INTERNALCLIENTERROR(
-                f"Cannot set state back to {state} or {self.state}")
-        if self.state == state:
-            raise Errors.INTERNALCLIENTERROR(f"State already set to {state}")
-        self.state = state
-        self.logger.info(f"Client's state set to {state}")
-
     # TODO: remove
     def authenticate_server(self, sess_token):
         return sess_token == self.sess_token
 
+    # TODO: remove
     def display_message(self, user_id, msg):
         print(f"({user_id}): {msg}")
-
-    # @HandleClientExceptions
-    def contact_server(self, route: str, json=None):
-        endpoint = self.server_endpoint(route)
-        self.logger.info(f"Contacting Server at {endpoint}.")
-
-        response = requests.post(url=str(endpoint), json=json)
-
-        if response.status_code != 200:
-            raise Errors.UNEXPECTEDRESPONSE(f"Unexpected Server response at {endpoint}: {response.json()['details'] if 'details' in response.json() else response.reason}.")
-
-        return response
 
     def kill(self):
         # Shut down Client API
@@ -313,7 +379,6 @@ class VideoChatClient:
             pass
 
         # TODO: should this happen first?
-        #  Delete the user from the server
         try:
             requests.delete(str(self.server_endpoint('/remove_user')), json={
                 'user_id': self.user_id,
@@ -322,20 +387,11 @@ class VideoChatClient:
         except Exception:
             pass
 
-    # endregion
-
-    # region --- Server Interface ---
-    # TODO: connect_to_server() returns a bool, but we never use it
-
     def connect_to_peer(self, peer_id: str):
         """
         Open Socket API. Contact Server /peer_connection with `conn_token`
         and await connection from peer (authenticated by `conn_token`).
         """
-        # # TODO: move into config file
-        # # TODO: implement testing mode
-        # if peer_id == self.user_id:
-        #     self.logger.info("Initiating test mode, mirroring video")
 
         self.logger.info(
             f"Attempting to initiate connection to peer User {peer_id}.")
@@ -357,10 +413,7 @@ class VideoChatClient:
                 break
 
     def disconnect_from_server(self):
-        pass
-    # endregion
-
-    # region --- Client API Handlers ---
+        return NotImplementedError
 
     # TODO: Return case for failed connections
 
@@ -374,9 +427,9 @@ class VideoChatClient:
         ----------
 
         """
-        if self.state == ClientState.CONNECTED:
+        if self.video_chat_client_state == ClientState.CONNECTED:
             raise Errors.INTERNALCLIENTERROR(
-                f"Cannot attempt peer websocket connection while {self.state}.")
+                f"Cannot attempt peer websocket connection while {self.video_chat_client_state}.")
 
         self.logger.info(f"Attempting to connect to peer {peer_id} at {socket_endpoint} with token '{conn_token}'.")
 
@@ -389,9 +442,3 @@ class VideoChatClient:
 
     def disconnect_from_peer(self):
         pass
-    # endregion
-
-    # region --- Web Socket Interface ---
-
-    # endregion
-# endregion
