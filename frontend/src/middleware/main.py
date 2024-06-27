@@ -1,26 +1,18 @@
-from client.video_chat_client import VideoChatClientBuilder
-from client.endpoint import Endpoint
-from client.encryption import EncryptSchemes, KeyGenerators
-import eventlet
 import json
+
+import eventlet
+from client.encryption import EncryptSchemes, KeyGenerators
+from client.endpoint import Endpoint
+from client.video_chat_client import VideoChatClientBuilder
+
 # import sys
 
 DEV = True
-import os
 CONFIG = f"src/middleware/{'dev_' if DEV else ''}python_config.json"
 
 DEFAULT_FRONTEND_PORT = 5001
 
 if __name__ == "__main__":
-    client = VideoChatClient().set_encryption_type(encryption_type=EncryptSchemes.AES).set_key_source(key_source=KeyGenerators.DEBUG)
-
-    # Connect to frontend process through socket
-    FRONTEND_PORT = DEFAULT_FRONTEND_PORT
-    if sys.argv[1]: FRONTEND_PORT = sys.argv[1]
-    frontend_socket_endpoint = Endpoint(
-        ip="localhost", port=FRONTEND_PORT)
-    client.set_frontend_socket(endpoint=frontend_socket_endpoint)
-
     with open(file=CONFIG) as json_data:
         config = json.load(json_data)
 
