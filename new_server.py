@@ -11,18 +11,18 @@ rooms = {}
 
 def signal_handler(sig, frame):
     """
-    Iterates through self-maintained list of rooms and disconnects all users.
+    Iterates through self-maintained list of rooms and disconnects all clients.
 
     NOTE: This function should only be called to handle a SIGINT
     """
     print()
     print("Disconnecting everyone...")
-    for room, users in rooms.items():
+    for room, clients in rooms.items():
         print(f"Disconnecting room '{room}'")
-        for user in users:
-            print(f"Disconnecting user '{user}'")
-            sio.disconnect(user)
-            disconnect(user)
+        for client in clients:
+            print(f"Disconnecting client '{client}'")
+            sio.disconnect(client)
+            disconnect(client)
     print("Shutting down")
     sys.exit(0)
 
@@ -50,10 +50,10 @@ def disconnect(sid):
     """
     On disconnect, removes disconnected client from self-maintained list of rooms
     """
-    for room, users in rooms.items():
-        if sid in users:
-            users.remove(sid)
-            print(f"Removed user '{sid}' from room '{room}'")
+    for room, clients in rooms.items():
+        if sid in clients:
+            clients.remove(sid)
+            print(f"Removed client '{sid}' from room '{room}'")
             break
 
 
@@ -74,8 +74,8 @@ def handle_frame(sid, data):
     room = sio.rooms(sid)
     room.remove(sid)
 
-    users = len(rooms[room[0]])
-    sio.emit('frame', {'sid': sid, 'frame': data['frame']}, room=room, skip_sid=sid if users > 1 else None)
+    clients = len(rooms[room[0]])
+    sio.emit('frame', {'sid': sid, 'frame': data['frame']}, room=room, skip_sid=sid if clients > 1 else None)
 
 
 if __name__ == '__main__':
