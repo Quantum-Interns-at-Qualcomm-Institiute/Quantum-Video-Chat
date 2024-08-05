@@ -10,6 +10,11 @@ rooms = {}
 
 
 def signal_handler(sig, frame):
+    """
+    Iterates through self-maintained list of rooms and disconnects all users.
+
+    NOTE: This function should only be called to handle a SIGINT
+    """
     print()
     print("Disconnecting everyone...")
     for room, users in rooms.items():
@@ -24,6 +29,13 @@ def signal_handler(sig, frame):
 
 @sio.on('connect')
 def connect(sid, environ):
+    """
+    On connection, adds connected client to a room and updates self-maintained list
+    of rooms.
+
+    TODO: Rooms should not all be 'chat', but should instead be dynamically
+    created at request of the client
+    """
     print("Incoming Connection Request!")
     room_id = 'chat'
     sio.enter_room(sid, room_id)
@@ -35,6 +47,9 @@ def connect(sid, environ):
 
 @sio.on('disconnect')
 def disconnect(sid):
+    """
+    On disconnect, removes disconnected client from self-maintained list of rooms
+    """
     for room, users in rooms.items():
         if sid in users:
             users.remove(sid)
@@ -43,7 +58,18 @@ def disconnect(sid):
 
 
 @sio.on('frame')
-def ping(sid, data):
+def handle_frame(sid, data):
+    """
+    Receives a frame from a client and emits it to all other clients in their room.
+    If sender is the only client in their room, returns frame to sender.
+
+    parameters (indexed through data):
+    - frame: Frame data
+
+    emits:
+    - sid: SID of sender
+    - frame: Frame data 
+    """
     print(f'I got a frame from {sid}!')
     room = sio.rooms(sid)
     room.remove(sid)
