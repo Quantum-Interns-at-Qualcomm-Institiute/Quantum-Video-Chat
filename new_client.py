@@ -7,21 +7,35 @@ from eventlet import sleep
 
 
 class VideoThread(Thread):
+    """
+    Manages internal (non-blocking) loop to repeatedly send frames by extending Thread.
+    """
+
     def __init__(self, sio):
         super().__init__()
         self._stop_event = Event()
         self.sio: socketio.Client = sio
 
     def run(self):
+        """
+        Repeatedly sends frames per (specified) interval.
+        Breaks when _stop_event is set (by stop()).
+
+        emits:
+        - frame: Frame data
+        """
+
         interval = 1
-        sleep(interval)
         while not self._stop_event.is_set():
-            print("sending...")
+            print("Sending a frame...")
             self.sio.emit("frame", data={'frame': 'value'})
             sleep(interval)
         print("Thread has stopped")
 
     def stop(self):
+        """
+        Sets _stop_event to break loop initiated by run().
+        """
         self._stop_event.set()
         print("Stop event set")
 
@@ -31,6 +45,12 @@ thread = VideoThread(server_sio)
 
 
 def signal_handler(sig, frame):
+    """
+    Stops VideoThread. Disconnects from server.
+    
+    NOTE: This function should only be called to handle a SIGINT
+    """
+
     print()
     print("Disconnecting...")
     if server_sio.connected:
@@ -47,18 +67,32 @@ def countdown(seconds):
 
 @server_sio.on('connect')
 def connect():
+    """
+    On connection to server, start a VideoThread to send frames.
+    """
     print("Connected to Server")
     thread.start()
 
 
 @server_sio.on('frame')
 def ping(data):
+    """
+    On receipt of a frame, display the frame.
+
+    TODO: Displaying the frame
+    """
     print(f"I got a frame from {data['sid']}!")
 
 
 @server_sio.on('disconnect')
 def disconnect():
-    print("Server disconnected, shutting down")
+    """
+    Stops VideoThread, in case it has not already been stopped.
+
+    TODO: I don't like this redundnacy where the VideoThread may be stopped twice
+    if user quits with SIGINT.
+    """
+    print("Connection with server has been severed.")
     thread.stop()
 
 
