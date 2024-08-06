@@ -1,3 +1,4 @@
+import json
 import signal
 import sys
 
@@ -9,7 +10,7 @@ app = socketio.WSGIApp(sio)
 rooms = {}
 
 
-def signal_handler(sig, frame):
+def sigint_handler(sig, frame):
     """
     Iterates through self-maintained list of rooms and disconnects all clients.
 
@@ -68,16 +69,27 @@ def handle_frame(sid, data):
 
     emits:
     - sid: SID of sender
-    - frame: Frame data 
+    - frame: Frame data
     """
     print(f'I got a frame from {sid}!')
     room = sio.rooms(sid)
     room.remove(sid)
 
-    clients = len(rooms[room[0]])
-    sio.emit('frame', {'sid': sid, 'frame': data['frame']}, room=room, skip_sid=sid if clients > 1 else None)
+    skip = None
+
+    if len(rooms[room[0]]) > 1:
+        skip = sid
+        data['sender'] = sid
+
+    sio.emit('frame', data, room=room, skip_sid=skip)
 
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal_handler)
-    eventlet.wsgi.server(eventlet.listen(('localhost', 4334)), app)
+    CONFIG = "server_config.json"
+    with open(file=CONFIG) as json_data:
+        config = json.load(json_data)
+        address = 'localhost' if 'address' not in config else config['address']
+        port = 7777 if 'port' not in config else config['port']
+
+    signal.signal(signal.SIGINT, sigint_handler)
+    eventlet.wsgi.server(eventlet.listen((config['address'], config['port'])), app)
