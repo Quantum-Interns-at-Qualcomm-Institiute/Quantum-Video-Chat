@@ -1,6 +1,8 @@
 import json
 import signal
 import sys
+from random import choices
+from string import ascii_lowercase
 
 import eventlet
 import socketio
@@ -30,20 +32,25 @@ def sigint_handler(sig, frame):
 
 @sio.on('connect')
 def connect(sid, environ):
-    """
-    On connection, adds connected client to a room and updates self-maintained list
-    of rooms.
+    print(f"Incoming connection from {sid}!")
 
-    TODO: Rooms should not all be 'chat', but should instead be dynamically
-    created at request of the client
+
+@sio.on('room')
+def on_room(sid, room):
     """
-    print("Incoming Connection Request!")
-    room_id = 'chat'
-    sio.enter_room(sid, room_id)
-    if room_id in rooms:
-        rooms[room_id] += [sid]
+    Adds a connected client to a room and updates self-maintained list of rooms.
+    """
+    if len(room) < 1:
+        room = ''.join(choices(ascii_lowercase, k=5))  # TODO: assure uniqueness'
+    if room in rooms:
+        rooms[room] += [sid]
     else:
-        rooms[room_id] = [sid]
+        print(f"Created new room {room}")
+        rooms[room] = [sid]
+
+    sio.enter_room(sid, room)
+    print(f"Added {sid} to {room}")
+    sio.emit("room", room, sid)
 
 
 @sio.on('disconnect')
@@ -62,7 +69,7 @@ def disconnect(sid):
 def handle_frame(sid, data):
     """
     Receives a frame from a client and emits it to all other clients in their room.
-    If sender is the only client in their room, returns frame to sender.
+    If sender is the only client in their room, returns frame to sender. 
 
     parameters (indexed through data):
     - frame: Frame data
@@ -72,6 +79,7 @@ def handle_frame(sid, data):
     - frame: Frame data
     """
     print(f'I got a frame from {sid}!')
+    # Gets user's rooms and removes the default "room"– assumes user is only in 'chat' room
     room = sio.rooms(sid)
     room.remove(sid)
 
