@@ -12,29 +12,12 @@ app = socketio.WSGIApp(sio)
 rooms = {}
 
 
-def sigint_handler(sig, frame):
-    """
-    Iterates through self-maintained list of rooms and disconnects all clients.
-
-    NOTE: This function should only be called to handle a SIGINT
-    """
-    print()
-    print("Disconnecting everyone...")
-    for room, clients in rooms.items():
-        print(f"Disconnecting room '{room}'")
-        for client in clients:
-            print(f"Disconnecting client '{client}'")
-            sio.disconnect(client)
-            disconnect(client)
-    print("Shutting down")
-    sys.exit(0)
-
-
 @sio.on('connect')
 def connect(sid, environ):
     print(f"Incoming connection from {sid}!")
 
 
+# TODO: make "join" instead of "room"
 @sio.on('room')
 def on_room(sid, room):
     """
@@ -53,16 +36,28 @@ def on_room(sid, room):
     sio.emit("room", room, sid)
 
 
-@sio.on('disconnect')
-def disconnect(sid):
+@sio.on('leave')
+def on_leave(sid):
     """
-    On disconnect, removes disconnected client from self-maintained list of rooms
+    Removes a user from a room but maintains server connection. Assumes user is
+    only in one room.
+
+    Arguments:
+        sid -- socket id for the request origin
     """
+    # TODO: user should not be able to leave room they are not in; user should not
+    #       be able to join multiple rooms
     for room, clients in rooms.items():
         if sid in clients:
             clients.remove(sid)
+            sio.leave_room(sid, room)
             print(f"Removed client '{sid}' from room '{room}'")
             break
+
+
+@sio.on('disconnect')
+def disconnect(sid):
+    print(f"User {sid} has disconnected from the server")
 
 
 @sio.on('frame')
@@ -72,7 +67,7 @@ def handle_frame(sid, data):
     If sender is the only client in their room, returns frame to sender. 
 
     parameters (indexed through data):
-    - frame: Frame data
+    - frame: Frame data # TODO: "frame" data doesnt say what's inside of the dict, i need to add kv
 
     emits:
     - sid: SID of sender
@@ -93,8 +88,24 @@ def handle_frame(sid, data):
 
 
 if __name__ == '__main__':
-    CONFIG = "server_config.json"
-    with open(file=CONFIG) as json_data:
+    def sigint_handler(sig, frame):
+        """
+        Iterates through self-maintained list of rooms and disconnects all clients.
+
+        NOTE: This function should only be called to handle a SIGINT
+        """
+        print()
+        print("Disconnecting everyone...")
+        for room, clients in rooms.items():
+            print(f"Disconnecting room '{room}'")
+            for client in clients:
+                print(f"Disconnecting client '{client}'")
+                sio.disconnect(client)
+                disconnect(client)
+        print("Shutting down")
+        sys.exit(0)
+
+    with open(file="server_config.json") as json_data:
         config = json.load(json_data)
         address = 'localhost' if 'address' not in config else config['address']
         port = 7777 if 'port' not in config else config['port']

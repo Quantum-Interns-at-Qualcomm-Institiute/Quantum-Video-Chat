@@ -69,7 +69,7 @@ class VideoThread(Thread):
                 self.server_sio.emit("frame", data={'frame': processed_frame, 'hash': frame_hash, 'sender': None})
                 self.frontend_sio.emit("frame", {"frame": frame, "self": True})  # TODO: if slow send processed frame and re-process own frame
             sleep(interval)
-        print("Thread has stopped")
+        print("Video thread has stopped")
 
     def stop(self):
         """
@@ -79,11 +79,42 @@ class VideoThread(Thread):
         print("Stop event set")
 
 
+class AudioThread(Thread):
+    def __init__(self, sio: socketio.Client):
+        import pyaudio
+        super.__init__()
+        self._stop_event = Event()
+        self.sample_rate = None
+        self.channels = 1
+        self.frames_per_buffer = None
+        self.delay = None
+        self.sio = sio
+        self.audio = pyaudio.PyAudio()
+        self.stream = self.audio.open(format=pyaudio.paInt16, channels=self.channels, rate=self.sample_rate, output=True, frames_per_buffer=self.frames_per_buffer)
+
+    def run(self):
+        self.stream.start_stream()
+
+        while not self._stop_event.is_set():
+            data = self.stream.read(self.frames_per_buffer, False)
+            self.sio.emit('audio', {'audio': data})
+            sleep(self.delay)
+        print("Audio thread has stopped")
+            
+
+
+    def stop(self):
+        self._stop_event.set()
+        
+
+
 width = 640
 height = 480
 server_sio = socketio.Client()
 frontend_sio = socketio.Client()
 thread = VideoThread(server_sio, frontend_sio, height, width)
+
+# SERVER EVENT HANDLERS
 
 
 @server_sio.on('connect')
@@ -133,6 +164,8 @@ def server_on_join_room(room):
     print("Starting video thread")
     # thread.start()
 
+# FRONTEND EVENT HANDLERS
+
 
 @frontend_sio.on('connect')
 def frontend_on_connect():
@@ -150,28 +183,29 @@ def frontend_on_join_room(room):
     server_sio.emit("room", room)
 
 
-@frontend_sio.on('leave_room')
+@frontend_sio.on('leave')
 def frontend_on_leave_room():
-    raise NotImplementedError
-
-
-def safe_connect(sio, address, port, label, retries=10, wait=15):
-    for retry in range(retries):
-        try:
-            sio.connect(f"http://{address}:{port}", wait=True)
-            break
-        except Exception:
-            if retries - retry >= 0:
-                print(f"Connection to {label} failed, trying again in {wait} seconds, {retries - retry} more time(s)")
-                for i in range(1, wait + 1):
-                    print(f"{i}")
-                    sleep(1)
-            else:
-                print("Connection failed too many times, exiting gracefully")
-                # TODO: figure out how to exit gracefully
+    print("User wants to leave their room...")
+    server_sio.emit("leave")
 
 
 if __name__ == '__main__':
+    # TODO: there's a better spot for this but we don't have a class they fit in
+    def safe_connect(sio, address, port, label, retries=10, wait=15):
+        for retry in range(retries):
+            try:
+                sio.connect(f"http://{address}:{port}", wait=True)
+                break
+            except Exception:
+                if retries - retry >= 0:
+                    print(f"Connection to {label} failed, trying again in {wait} seconds, {retries - retry} more time(s)")
+                    for i in range(1, wait + 1):
+                        print(f"{i}")
+                        sleep(1)
+                else:
+                    print("Connection failed too many times, exiting gracefully")
+                    # TODO: figure out how to exit gracefully
+
     def signal_handler(sig, frame):
         """
         Stops `VideoThread`. Disconnects `server_sio` from server.
@@ -185,6 +219,7 @@ if __name__ == '__main__':
             server_sio.disconnect()
             print("Disconnected!")
         sys.exit(0)
+
     signal.signal(signal.SIGINT, signal_handler)
 
     with open(file="client_config.json") as json_data:
@@ -196,23 +231,6 @@ if __name__ == '__main__':
 
     safe_connect(frontend_sio, frontend_address, frontend_port, 'frontend')
     safe_connect(server_sio, server_address, server_port, 'server')
-    # for retry in range(MAX_RETRYS):
-    #     try:
-    #         server_sio.connect(f"http://{server_address}:{server_port}", wait=True)
-    #         break
-    #     except Exception:
-    #         if MAX_RETRYS - retry >= 0:
-    #             print(f"Connection failed, trying again in {WAIT} seconds, {MAX_RETRYS - retry} more time(s)")
-    #             for i in range(1, WAIT + 1):
-    #                 print(f"{i}")
-    #                 sleep(1)
-    #         else:
-    #             print("Connection failed too many times, exiting gracefully")
-    #     finally:
-    #         try:
-    #             frontend_sio.connect(f"http://{frontend_address}:{frontend_port}")
-    #         except Exception:
-    #             print("Frontend isn't responding yet")
 
     while server_sio.connected:
         sleep(1)
