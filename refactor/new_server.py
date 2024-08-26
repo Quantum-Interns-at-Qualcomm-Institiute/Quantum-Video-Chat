@@ -23,8 +23,12 @@ def on_room(sid, room):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
     """
+
     if len(room) < 1:
-        room = ''.join(choices(ascii_lowercase, k=5))  # TODO: assure uniqueness'
+        room = None
+        while room is None or room in rooms:
+            room = ''.join(choices(ascii_lowercase, k=5))
+
     if room in rooms:
         rooms[room] += [sid]
     else:

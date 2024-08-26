@@ -100,12 +100,9 @@ class AudioThread(Thread):
             self.sio.emit('audio', {'audio': data})
             sleep(self.delay)
         print("Audio thread has stopped")
-            
-
 
     def stop(self):
         self._stop_event.set()
-        
 
 
 width = 640
@@ -162,7 +159,7 @@ def server_on_join_room(room):
     print(f"Received room {room} from server, sending to frontend")
     frontend_sio.emit("room", room)
     print("Starting video thread")
-    # thread.start()
+    thread.start()
 
 # FRONTEND EVENT HANDLERS
 
@@ -196,7 +193,8 @@ if __name__ == '__main__':
             try:
                 sio.connect(f"http://{address}:{port}", wait=True)
                 break
-            except Exception:
+            except Exception as e:
+                print(e)
                 if retries - retry >= 0:
                     print(f"Connection to {label} failed, trying again in {wait} seconds, {retries - retry} more time(s)")
                     for i in range(1, wait + 1):
@@ -233,4 +231,4 @@ if __name__ == '__main__':
     safe_connect(server_sio, server_address, server_port, 'server')
 
     while server_sio.connected:
-        sleep(1)
+        sleep(seconds=1)
