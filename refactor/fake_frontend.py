@@ -70,15 +70,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.server:
-        eventlet.wsgi.server(eventlet.listen(("localhost", 5000)), app)
+        eventlet.wsgi.server(eventlet.listen(("localhost", 5001)), app)
     else:
         # TODO: where should this go
-        def safe_connect(sio, address, port, label, retries=10, wait=15):
+        def safe_connect(sio, address, port, label='endpoint', retries=10, wait=15):
             for retry in range(retries):
                 try:
                     sio.connect(f"http://{address}:{port}", wait=True)
                     break
-                except Exception:
+                except Exception as e:
+                    print(e)
                     if retries - retry >= 0:
                         print(f"Connection to {label} failed, trying again in {wait} seconds, {retries - retry} more time(s)")
                         for i in range(1, wait + 1):
@@ -89,7 +90,7 @@ if __name__ == "__main__":
                         # TODO: figure out how to exit gracefully
 
         sio = socketio.Client()
-        safe_connect(sio, 'localhost', 5000, '')
+        safe_connect(sio, 'localhost', 5001)
 
         input("Ready to join a room...")
         sio.emit("join_room", True)
