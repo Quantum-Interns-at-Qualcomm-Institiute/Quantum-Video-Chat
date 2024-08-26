@@ -1,4 +1,10 @@
 {
-  "address" : "localhost",
-  "port" : 7777
+  "server" : {
+    "address" : "localhost",
+    "port" : 7777
+  },
+  "frontend" : {
+    "address" : "127.0.0.1",
+    "port" : 5001
+  }
 }
