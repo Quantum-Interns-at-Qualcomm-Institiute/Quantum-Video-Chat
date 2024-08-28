@@ -56,9 +56,9 @@ export function ClientContextProvider({ children } ) {
     useEffect(() => {
         console.log(`ClientContext useEffect`);
 
-        window.electronAPI.ipcListen('self_id', (e: IpcMainEvent, id: string) => {
-            console.log(`(renderer): Received self_id ${id} from \`main.ts\`.`)
-            _setSelfId(id);
+        // Event emitted when Python subprocess to ready to proceed with chatting
+        window.electronAPI.ipcListen('ready', (e: IpcMainEvent, id: string) => {
+            console.log(`(renderer): Python backend readied.`)
 
             // Navigate away from Splash page after receiving self_id
             if(window.location.pathname === '/splash') {
