@@ -159,32 +159,25 @@ const listenForSocketAndIPC = (PORT: number) => {
 		console.log("(main.ts): Received socket connection from Python subprocess");
 		const user_id = py_socket.handshake.headers.user_id;
 
-        // 
-		ipcMain.once("set-peer-id", (event, peer_id) => {
-			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
+        
+		ipcMain.on("join-room", (event, room_id?: string) => {
 			console.log(
-				`(main.ts): Received peer_id ${peer_id} from renderer; sending to Python subprocess.`,
+				`(main.ts): Attempting to join room with ${room_id ? 'room_id ' + room_id : 'no room ID'}.`,
 			);
-			py_socket.emit("connect_to_peer", peer_id);
+
+            py_socket.emit('join-room')
 		});
 
-		ipcMain.on('quit-session', () => {
-			console.log(`(main.ts): Client quit video chat session.`);
-            
-			// TODO: Send event to Python backend; disconnect /gracefully/
-            py_socket.emit('quit_session');
+		ipcMain.on('leave-room', () => {
+			console.log(`(main.ts): User leaving video chat room.`);
+            py_socket.emit('leave-room');
 		});
 
         py_socket.on('ready', () => {
             console.log(`(main.ts): Python backend readied. May navigate user away from loading screen.`)
             mainWindow?.webContents.send('ready')
         });
-
-		py_socket.on('self_id', (self_id) => {
-			console.log(`(main.ts): Received self_id ${self_id} from python subprocess; sending to renderer.`)
-			mainWindow?.webContents.send('self_id', self_id);
-		});
-
+        
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
 		py_socket.on('stream', (data) => {
 			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
