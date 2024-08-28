@@ -18,8 +18,7 @@ def connect(sid, environ):
     print(f"Incoming connection from {sid}!")
 
 
-# TODO: make "join" instead of "room"
-@sio.on('room')
+@sio.on('join-room')
 def on_room(sid, room):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
@@ -41,7 +40,7 @@ def on_room(sid, room):
     sio.emit("room", room, sid)
 
 
-@sio.on('leave')
+@sio.on('leave-room')
 def on_leave(sid):
     """
     Removes a user from a room but maintains server connection. Assumes user is
