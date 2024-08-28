@@ -155,8 +155,8 @@ const listenForSocketAndIPC = (PORT: number) => {
 	});
 
 
-	io.on("connection", (socket: Socket) => {
-		console.log("(main.ts): Received connection from Python subproccess");
+	io.on('connection', (socket: Socket) => {
+		console.log("(main.ts): Received socket connection from Python subprocess");
 		const user_id = socket.handshake.headers.user_id;
 		ipcMain.once("set-peer-id", (event, peer_id) => {
 			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
@@ -179,7 +179,7 @@ const listenForSocketAndIPC = (PORT: number) => {
 		});
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		socket.on("stream", (data) => {
+		socket.on('stream', (data) => {
 			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
 			try {
@@ -192,6 +192,10 @@ const listenForSocketAndIPC = (PORT: number) => {
 			}
 
 		});
+
+        socket.on('disconnect', (data) => {
+            console.log(`(main.ts): Socket connection to Python subprocess terminated.`)
+        })
 	});
 
 	return PORT;
@@ -207,7 +211,7 @@ const spawnPythonProcess = (PORT: number) => {
 	const { spawn } = require("node:child_process");
 	// TODO: Find elegant solution to figure out the name of user's python executable
 	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
-	const python = spawn("python", ['-u', 'src/middleware/main.py', [PORT]]);
+	const python = spawn("python3", ['-u', 'src/middleware/client.py', [PORT]]);
 
 	// In close event we are sure that stream from child process is closed
 	python.on("close", (code: string | null) => {
