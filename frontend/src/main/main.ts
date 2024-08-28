@@ -155,9 +155,9 @@ const listenForSocketAndIPC = (PORT: number) => {
 	});
 
 
-	io.on('connection', (py_socket: Socket) => {
+	io.on('connection', (pySocket: Socket) => {
 		console.log("(main.ts): Received socket connection from Python subprocess");
-		const user_id = py_socket.handshake.headers.user_id;
+		const user_id = pySocket.handshake.headers.user_id;
 
         
 		ipcMain.on("join-room", (event, room_id?: string) => {
@@ -165,21 +165,21 @@ const listenForSocketAndIPC = (PORT: number) => {
 				`(main.ts): Attempting to join room with ${room_id ? 'room_id ' + room_id : 'no room ID'}.`,
 			);
 
-            py_socket.emit('join-room')
+            pySocket.emit('join-room')
 		});
 
 		ipcMain.on('leave-room', () => {
 			console.log(`(main.ts): User leaving video chat room.`);
-            py_socket.emit('leave-room');
+            pySocket.emit('leave-room');
 		});
 
-        py_socket.on('ready', () => {
+        pySocket.on('ready', () => {
             console.log(`(main.ts): Python backend readied. May navigate user away from loading screen.`)
             mainWindow?.webContents.send('ready')
         });
-        
+
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		py_socket.on('stream', (data) => {
+		pySocket.on('stream', (data) => {
 			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
 			try {
@@ -193,7 +193,7 @@ const listenForSocketAndIPC = (PORT: number) => {
 
 		});
 
-        py_socket.on('disconnect', (data) => {
+        pySocket.on('disconnect', (data) => {
             console.log(`(main.ts): Socket connection to Python subprocess terminated.`)
         })
 	});
