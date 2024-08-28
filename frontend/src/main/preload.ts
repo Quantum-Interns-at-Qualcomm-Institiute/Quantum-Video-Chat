@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
     rendererReady: () => ipcRenderer.send('renderer-ready'),
-    joinPeer: (peer_id: string) => ipcRenderer.send('set-peer-id', peer_id),
-    quitSession: () => ipcRenderer.send('quit-session'),
+    joinRoom: (room_id: string) => ipcRenderer.send('join-room', room_id),
+    leaveRoom: () => ipcRenderer.send('leave-room'),
     ipcListen: (eventName: string, callback: (event: Electron.IpcRendererEvent, ...args: any[]) => void) => ipcRenderer.on(eventName, callback)
 })

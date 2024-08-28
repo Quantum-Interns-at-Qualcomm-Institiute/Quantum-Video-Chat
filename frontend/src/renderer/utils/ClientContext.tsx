@@ -18,43 +18,40 @@ const initMessages = [
 ]
 
 const initClientContext = {
-    selfId: '',
-    peerId: '',
-    joinPeer: (peer_id: string) => {},
+    roomId: '',
+    joinRoom: (peer_id?: string) => {},
+    leaveRoom: () => {},
     video: {
         onFrame: () => {},
     },
     chat: {
         messages: initMessages,
         sendMessage: services.chat.sendMessage,
-    },
-    quitSession: () => {},
+    }
 }
 
 export const ClientContext = createContext(initClientContext);
 
 export function ClientContextProvider({ children } ) {
-    const [selfId, _setSelfId] = useState(initClientContext.selfId);
-    const [peerId, _setPeerId] = useState(initClientContext.peerId);
+    const [roomId, _setRoomId] = useState(initClientContext.roomId);
     const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
     const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
     const navigate = useNavigate();
 
-    const joinPeer = (peer_id) => {
-        console.log(`(renderer): Setting peer_id ${peer_id} from user input.`);
-        _setPeerId(peer_id);
-        services.joinPeer(peer_id)
+    const joinRoom = (room_id?: string) => {
+        services.joinRoom(room_id)
+        navigate('/loading');
     }
 
-    const quitSession = () => {
-        services.quitSession();
+    const leaveRoom = () => {
+        services.leaveRoom();
         navigate('/');
     }
 
     // Establish middleware listeners on initial render
     useEffect(() => {
-        console.log(`ClientContext useEffect`);
+        console.log(`(ClientContext): Initialization.`);
 
         // Event emitted when Python subprocess to ready to proceed with chatting
         window.electronAPI.ipcListen('ready', (e: IpcMainEvent, id: string) => {
@@ -66,6 +63,24 @@ export function ClientContextProvider({ children } ) {
                 navigate('/');
             }
         })
+
+        // Inform main process that ClientContext is ready for IPC communication
+        console.log('(renderer): Renderer Ready');
+        window.electronAPI.rendererReady();
+    }, []);
+
+
+    // Middleware for managing sessions
+    useEffect(() => {
+        console.log(`(ClientContext): Setting up session management.`)
+        
+
+    }, []);
+
+
+    // Middleware for communication during a session
+    useEffect(() => {
+        console.log(`(ClientContext): Setting up peer-to-peer communication.`)
 
         window.electronAPI.ipcListen('message', (e: IpcMainEvent, messageData: Object) => {
             console.log(`(renderer): Received chat message with Object structure ${JSON.stringify(messageData)}`)
@@ -83,25 +98,20 @@ export function ClientContextProvider({ children } ) {
         ) => {
             onFrame(canvasData);
         });
-
-        // Inform main process that ClientContext is ready for IPC communication
-        console.log('(renderer): Renderer Ready');
-        window.electronAPI.rendererReady();
     }, []);
 
     return (
         <ClientContext.Provider value={{
-            selfId: selfId,
-            peerId: peerId,
-            joinPeer: joinPeer,
+            roomId: roomId,
+            joinRoom: joinRoom,
+            leaveRoom: leaveRoom,
             video: {
                 onFrame: onFrame
             },
             chat: {
                 messages: messages,
                 sendMessage: services.chat.sendMessage
-            },
-            quitSession: quitSession
+            }
         }}>
             {children}
         </ClientContext.Provider>

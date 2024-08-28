@@ -174,13 +174,13 @@ def frontend_on_disconnect():
     print("Successfully disconnected from frontend socket")
 
 
-@frontend_sio.on('room')
-def frontend_on_join_room(room):
-    print(f"Frontend requests {room if len(room) > 0 else "new room"}")
+@frontend_sio.on('join-room')
+def frontend_on_join_room(room=None):
+    print(f"Frontend requests {room if room else "new room"}")
     server_sio.emit("room", room)
 
 
-@frontend_sio.on('leave')
+@frontend_sio.on('leave-room')
 def frontend_on_leave_room():
     print("User wants to leave their room...")
     server_sio.emit("leave")
