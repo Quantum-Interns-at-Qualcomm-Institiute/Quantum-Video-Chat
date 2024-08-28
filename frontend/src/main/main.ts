@@ -144,10 +144,10 @@ const whenRendererReady = (callback: Function) => {
  * @return {number} 	Port socket is bound to, for Python subprocess to connect to
  */
 const listenForSocketAndIPC = (PORT: number) => {
-	let io = new Server(PORT, {
-		maxHttpBufferSize: 1e7
+    let io = new Server(PORT, {
+        maxHttpBufferSize: 1e7
 	});
-	console.log(`(main.ts): Starting frontend socket on port ${PORT}`);
+    console.log(`(main.ts): Listening for socket communication from Python subprocess on port ${PORT}`);
 	process.on('uncaughtException', function(err) {
 		if(err.code !== 'EADDRINUSE') throw err;
 		console.log(`(main.ts): Port ${PORT} in use; re-trying with port ${PORT+1}`)
@@ -155,31 +155,33 @@ const listenForSocketAndIPC = (PORT: number) => {
 	});
 
 
-	io.on('connection', (socket: Socket) => {
+	io.on('connection', (py_socket: Socket) => {
 		console.log("(main.ts): Received socket connection from Python subprocess");
-		const user_id = socket.handshake.headers.user_id;
+		const user_id = py_socket.handshake.headers.user_id;
+
+        // 
 		ipcMain.once("set-peer-id", (event, peer_id) => {
 			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
 			console.log(
 				`(main.ts): Received peer_id ${peer_id} from renderer; sending to Python subprocess.`,
 			);
-			socket.emit("connect_to_peer", peer_id);
+			py_socket.emit("connect_to_peer", peer_id);
 		});
 
 		ipcMain.on('quit-session', () => {
 			console.log(`(main.ts): Client quit video chat session.`);
             
 			// TODO: Send event to Python backend; disconnect /gracefully/
-            socket.emit('quit_session');
+            py_socket.emit('quit_session');
 		});
 
-		socket.on('self_id', (self_id) => {
+		py_socket.on('self_id', (self_id) => {
 			console.log(`(main.ts): Received self_id ${self_id} from python subprocess; sending to renderer.`)
 			mainWindow?.webContents.send('self_id', self_id);
 		});
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		socket.on('stream', (data) => {
+		py_socket.on('stream', (data) => {
 			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
 			try {
@@ -193,7 +195,7 @@ const listenForSocketAndIPC = (PORT: number) => {
 
 		});
 
-        socket.on('disconnect', (data) => {
+        py_socket.on('disconnect', (data) => {
             console.log(`(main.ts): Socket connection to Python subprocess terminated.`)
         })
 	});
