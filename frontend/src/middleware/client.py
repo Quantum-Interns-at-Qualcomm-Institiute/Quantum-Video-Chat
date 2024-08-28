@@ -188,6 +188,18 @@ def frontend_on_leave_room():
 if __name__ == '__main__':
     # TODO: there's a better spot for this but we don't have a class they fit in
     def safe_connect(sio, address, port, label, retries=10, wait=15):
+        """
+        Repeatedly attempts to connect an arbitrary socket client to an arbitrary endpoint.
+        Blocks until successful connection or until max retries exceeded.
+
+        Parameters
+        sio (socketio.Client): Client to use for connection
+        address (str): 
+        port (int): 
+        label (str): Name of server; for logging
+        retries (int): How many attempts to make before failure
+        wait (int): Seconds to wait between retries
+        """
         print(f"Attempting connection to {label}")
         for retry in range(retries):
             try:
@@ -238,6 +250,10 @@ if __name__ == '__main__':
 
     safe_connect(frontend_sio, frontend_address, frontend_port, 'frontend')
     safe_connect(server_sio, server_address, server_port, 'server')
+
+    # Send 'ready' event to frontend when connected to both frontend and server
+    print('Ready to start chatting.', flush=True)
+    frontend_sio.emit('ready')
 
     while server_sio.connected:
         sleep(seconds=1)
