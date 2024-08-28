@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Splash from "./screens/Splash";
+import Loading from "./screens/Loading";
 import Start from "./screens/Start";
 import Join from "./screens/Join";
 import Session from "./screens/Session";
@@ -33,7 +33,7 @@ export default function App() {
 					<Route path="/temp" element={<Temp/>} />
 
 					{/*  */}
-					<Route path="/splash" element={<Splash/>} />
+					<Route path="/loading" element={<Loading/>} />
 
 					{/* Home Page */}
 					<Route path="/*" element={<Start />}/>
