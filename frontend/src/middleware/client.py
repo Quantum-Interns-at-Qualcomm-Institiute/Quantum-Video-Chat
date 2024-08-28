@@ -177,13 +177,13 @@ def frontend_on_disconnect():
 @frontend_sio.on('join-room')
 def frontend_on_join_room(room=None):
     print(f"Frontend requests {room if room else "new room"}")
-    server_sio.emit("room", room)
+    server_sio.emit('join-room', room)
 
 
 @frontend_sio.on('leave-room')
 def frontend_on_leave_room():
     print("User wants to leave their room...")
-    server_sio.emit("leave")
+    server_sio.emit('leave-room')
 
 if __name__ == '__main__':
     # TODO: there's a better spot for this but we don't have a class they fit in
