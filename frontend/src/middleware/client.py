@@ -252,7 +252,7 @@ if __name__ == '__main__':
     safe_connect(server_sio, server_address, server_port, 'server')
 
     # Send 'ready' event to frontend when connected to both frontend and server
-    print('Ready to start chatting.', flush=True)
+    print('Ready to start chatting.')
     frontend_sio.emit('ready')
 
     while server_sio.connected:
