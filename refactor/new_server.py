@@ -1,3 +1,4 @@
+import os
 import json
 import signal
 import sys
@@ -109,10 +110,16 @@ if __name__ == '__main__':
         print("Shutting down")
         sys.exit(0)
 
+    # Get binding address from config
     with open(file="server_config.json") as json_data:
         config = json.load(json_data)
         address = 'localhost' if 'address' not in config else config['address']
         port = 7777 if 'port' not in config else config['port']
 
+
     signal.signal(signal.SIGINT, sigint_handler)
-    eventlet.wsgi.server(eventlet.listen((config['address'], config['port'])), app)
+
+    # Doesn't look like eventlet lets you just turn off logging.
+    # Instead, redirected to some random place per:
+    # https://stackoverflow.com/questions/75913952/how-to-disable-eventlet-logging-python
+    eventlet.wsgi.server(eventlet.listen((config['address'], config['port'])), app, log=open(os.devnull,"w"))
