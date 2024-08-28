@@ -1,27 +1,27 @@
 const services = {
     isValidId: isValidId,
-    joinPeer: joinPeer,
+    joinRoom: joinRoom,
+    leaveRoom: leaveRoom,
     video: {
 
     },
     chat: {
         sendMessage: sendMessage
-    },
-    quitSession
+    }
 }
 
-async function joinPeer(peerId: string) {
-    console.log(`(renderer): Sending peer_id ${peerId} to \`main.ts\` to attempt connection.`)
-    window.electronAPI.joinPeer(peerId)
+async function joinRoom(room_id?: string) {
+    console.log(`(services): Attempting to join room with ${room_id ? 'room_id' + room_id : 'no room_id'}`);
+    window.electronAPI.joinRoom(room_id);
 }
 
-async function quitSession() {
-    console.log(`(renderer): Quitting video chat session`)
-    window.electronAPI.quitSession();
+async function leaveRoom() {
+    console.log(`(services): Leaving video chat room`)
+    window.electronAPI.leaveRoom();
 }
 
 async function sendMessage(message: string) {
-    console.log(`(renderer): Sending chat message '${message}'`);
+    console.log(`(services): Sending chat message '${message}'`);
 
     const date = new Date();
     const time = date.toLocaleTimeString();
@@ -42,7 +42,7 @@ function isValidId(id: string) {
     if (id === "")
         return {
             ok: false,
-            error: "Please enter a valid ID."
+            error: "Please enter a valid room ID."
         }
     
     else if(!isAlphanumeric)
