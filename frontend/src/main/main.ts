@@ -175,6 +175,11 @@ const listenForSocketAndIPC = (PORT: number) => {
             py_socket.emit('quit_session');
 		});
 
+        py_socket.on('ready', () => {
+            console.log(`(main.ts): Python backend readied. May navigate user away from loading screen.`)
+            mainWindow?.webContents.send('ready')
+        });
+
 		py_socket.on('self_id', (self_id) => {
 			console.log(`(main.ts): Received self_id ${self_id} from python subprocess; sending to renderer.`)
 			mainWindow?.webContents.send('self_id', self_id);
