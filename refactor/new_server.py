@@ -1,7 +1,7 @@
-import os
 import json
 import signal
 import sys
+import os
 from random import choices
 from string import ascii_lowercase
 
@@ -15,29 +15,33 @@ rooms = {}
 
 @sio.on('connect')
 def connect(sid, environ):
-    print(f"Incoming connection from {sid}!")
+    print(f"Incoming connection from client '{sid}'")
 
 
 @sio.on('join-room')
-def on_room(sid, room):
+def on_room(sid, room_id=None):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
     """
 
-    if len(room) < 1:
-        room = None
-        while room is None or room in rooms:
-            room = ''.join(choices(ascii_lowercase, k=5))
-
-    if room in rooms:
-        rooms[room] += [sid]
+    if not room_id:
+        # If room_id not provided, generate a unique one
+        # and initialize it in `rooms`
+        while room_id is None or room_id in rooms:
+            room_id = ''.join(choices(ascii_lowercase, k=5))
+        print(f"Generated new room '{room_id}'")
+        rooms[room_id] = []
     else:
-        print(f"Created new room {room}")
-        rooms[room] = [sid]
+        # If room_id was specified, confirm it is valid
+        # (Users should be aware if the ID they typed is not what they intended)
+        if room_id not in rooms:
+            # TODO: throw an error 
+            pass
 
-    sio.enter_room(sid, room)
-    print(f"Added {sid} to {room}")
-    sio.emit("room", room, sid)
+    rooms[room_id] = [sid]
+    sio.enter_room(sid, room_id)
+    print(f"Added client '{sid}' to room '{room_id}'")
+    sio.emit('room', room_id, sid)
 
 
 @sio.on('leave-room')
@@ -77,7 +81,7 @@ def handle_frame(sid, data):
     - sid: SID of sender
     - frame: Frame data
     """
-    print(f'I got a frame from {sid}!')
+    print(f"I got a frame from client '{sid}'!")
     # Gets user's rooms and removes the default "room"– assumes user is only in 'chat' room
     room = sio.rooms(sid)
     room.remove(sid)
