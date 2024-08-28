@@ -61,7 +61,7 @@ export function ClientContextProvider({ children } ) {
             console.log(`(renderer): Python backend readied.`)
 
             // Navigate away from Splash page after receiving self_id
-            if(window.location.pathname === '/splash') {
+            if(window.location.pathname === '/loading') {
                 console.log('(renderer): Closing Splash page.')
                 navigate('/');
             }

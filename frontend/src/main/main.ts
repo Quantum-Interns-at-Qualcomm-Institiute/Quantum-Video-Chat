@@ -16,7 +16,7 @@ import { resolveHtmlPath } from "./util";
 import { Server, type Socket } from "socket.io";
 
 const DEFAULT_FRONTEND_PORT = 5001;
-const DEFAULT_RENDERER_URL = 'splash';
+const DEFAULT_RENDERER_URL = 'loading';
 
 class AppUpdater {
 	constructor() {
