@@ -60,9 +60,14 @@ def on_leave(sid):
     #       be able to join multiple rooms
     for room, clients in rooms.items():
         if sid in clients:
-            clients.remove(sid)
+            print(f"Removing client '{sid}' from room '{room}'")
             sio.leave_room(sid, room)
-            print(f"Removed client '{sid}' from room '{room}'")
+            clients.remove(sid)
+
+            if len(clients) == 0:
+                print(f"Deleting empty room '{room}'.")
+                del rooms[room]
+
             break
 
 
@@ -88,6 +93,10 @@ def handle_frame(sid, data):
     # Gets user's rooms and removes the default "room"– assumes user is only in 'chat' room
     room = sio.rooms(sid)
     room.remove(sid)
+    if len(room) == 0:
+        print(f"WARNING - Client '{sid}' sent a frame when not in an active room.")
+        # TODO: Return an error
+        return
 
     skip = None
 
