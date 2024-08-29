@@ -192,11 +192,11 @@ def frontend_on_join_room(room=None):
 @frontend_sio.on('leave-room')
 def frontend_on_leave_room():
     print("User wants to leave their room...")
-    server_sio.emit('leave-room')
-
     global thread
     thread.stop()
     thread = None
+    
+    server_sio.emit('leave-room')
 
 if __name__ == '__main__':
     # TODO: there's a better spot for this but we don't have a class they fit in
