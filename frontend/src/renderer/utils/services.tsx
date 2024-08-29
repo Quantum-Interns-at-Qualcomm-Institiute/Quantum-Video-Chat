@@ -12,12 +12,12 @@ const services = {
 
 async function joinRoom(room_id?: string) {
     console.log(`(services): Attempting to join room with ${room_id ? 'room_id' + room_id : 'no room_id'}`);
-    window.electronAPI.joinRoom(room_id);
+    return window.electronAPI.joinRoom(room_id);
 }
 
 async function leaveRoom() {
     console.log(`(services): Leaving video chat room`)
-    window.electronAPI.leaveRoom();
+    return window.electronAPI.leaveRoom();
 }
 
 async function sendMessage(message: string) {

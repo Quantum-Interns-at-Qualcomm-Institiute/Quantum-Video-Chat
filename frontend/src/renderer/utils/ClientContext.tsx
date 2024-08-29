@@ -23,8 +23,8 @@ const statuses = ["waiting", "good", "bad"];
 const initClientContext = {
     status: statuses[0],
     roomId: '',
-    joinRoom: (peer_id?: string) => {},
-    leaveRoom: () => {},
+    joinRoom: async (peer_id?: string) => {},
+    leaveRoom: async () => {},
     video: {
         onFrame: () => {},
     },
@@ -45,14 +45,22 @@ export function ClientContextProvider({ children } ) {
 
     const navigate = useNavigate();
 
-    const joinRoom = (room_id?: string) => {
+    const joinRoom = async (room_id?: string) => {
         navigate('/loading');
-        services.joinRoom(room_id)
+        var res = await services.joinRoom(room_id)
+        if(res) {
+            console.log(`(ClientContext): ERROR - ${res}`)
+            return res;
+        }
     }
 
-    const leaveRoom = () => {
+    const leaveRoom = async () => {
         navigate('/');
-        services.leaveRoom();
+        var res = await services.leaveRoom();
+        if(res) {
+            console.log(`(ClientContext): ERROR - ${res}`)
+            return res;
+        }
     }
 
     // Establish middleware listeners on initial render
