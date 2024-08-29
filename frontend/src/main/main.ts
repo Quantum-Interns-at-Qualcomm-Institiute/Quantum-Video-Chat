@@ -159,11 +159,17 @@ const listenForSocketAndIPC = (PORT: number) => {
 		console.log("(main.ts): Received socket connection from Python subprocess");
 		const user_id = pySocket.handshake.headers.user_id;
         
-		ipcMain.on('join-room', (event, room_id?: string) => {
+		ipcMain.handle('join-room', async (event, room_id?: string) => {
 			console.log(
 				`(main.ts): Attempting to join room with ${room_id ? 'room_id ' + room_id : 'no room ID'}.`,
 			);
-            pySocket.emit('join-room', room_id)
+            
+            var res = await pySocket.emitWithAck('join-room', room_id)
+            if(res) {
+                console.log(`(main.ts): ERROR - ${res}`);
+                return res
+            }
+
 		});
 
 		ipcMain.on('leave-room', () => {
