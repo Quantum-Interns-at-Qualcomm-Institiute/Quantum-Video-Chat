@@ -13,7 +13,7 @@ from eventlet import sleep
 
 class VideoThread(Thread):
     """
-    Manages internal (non-blocking) loop to repeatedly send frames by extending Thread.
+    Manages internal (non-blocking) loop to repeatedly send image frames by extending Thread.
     """
 
     def __init__(self, server_sio, frontend_sio, height, width, scale=1):
@@ -37,6 +37,14 @@ class VideoThread(Thread):
             preset='ultrafast', tune='zerolatency')
 
     def capture_frame(self):
+        """
+        Captures and resizes an image frame using CV2 capture device.
+
+        Returns:
+        - frame: Original image
+        - processed: Resized Image
+        - frame_hash: Hashed (processed) image for error detection
+        """
         ret, frame = self.cap.read()
 
         if not ret:
@@ -53,10 +61,10 @@ class VideoThread(Thread):
 
     def run(self):
         """
-        Repeatedly sends frames per (specified) `interval`.
+        Repeatedly sends image frames per (specified) `interval`.
         Breaks when `_stop_event` is set (by `stop()`).
 
-        emits:
+        Emits:
         - frame: Frame data
         """
 
@@ -72,14 +80,16 @@ class VideoThread(Thread):
         print("Video thread has stopped")
 
     def stop(self):
-        """
-        Sets `_stop_event` to break loop initiated by `run()`.
-        """
+        """Sets `_stop_event` to break loop initiated by `run()`."""
         self._stop_event.set()
         print("Stop event set")
 
 
 class AudioThread(Thread):
+    """
+    Manages internal (non-blocking) loop to repeatedly send audio packets by extending Thread.
+    """
+
     def __init__(self, sio: socketio.Client):
         import pyaudio
         super.__init__()
@@ -93,6 +103,13 @@ class AudioThread(Thread):
         self.stream = self.audio.open(format=pyaudio.paInt16, channels=self.channels, rate=self.sample_rate, output=True, frames_per_buffer=self.frames_per_buffer)
 
     def run(self):
+        """
+        Repeatedly sends audio packets per (specified) `self.delay`.
+        Breaks when `_stop_event` is set (by `stop()`).
+
+        Emits:
+        - audio: Audio data
+        """
         self.stream.start_stream()
 
         while not self._stop_event.is_set():
@@ -102,6 +119,7 @@ class AudioThread(Thread):
         print("Audio thread has stopped")
 
     def stop(self):
+        """Sets `_stop_event` to break loop initiated by `run()`."""
         self._stop_event.set()
 
 
@@ -116,9 +134,7 @@ thread = None
 
 @server_sio.on('connect')
 def server_on_connect():
-    """
-    On connection to server, start a `VideoThread` to send frames.
-    """
+    """Logs successful connection to server."""
     print("Connected to Server")
 
 
@@ -128,6 +144,13 @@ def server_on_frame(data):
     On receipt of a frame, display the frame.
 
     TODO: Displaying the frame
+
+    Parameters:
+    - data: Frame data
+        - frame: Raw image 
+        - processed_frame: Resized image
+        - hash: Hashed (processed) image for error detection
+        - sender (str): Unique `sid` of sender
     """
     print(data['sender'])
     if sha256(data['frame']).hexdigest() == data['hash']:
@@ -147,7 +170,7 @@ def server_on_disconnect():
     """
     Stops VideoThread, in case it has not already been stopped.
 
-    TODO: I don't like this redundnacy where the VideoThread may be stopped twice
+    TODO: I don't like this redundancy where the VideoThread may be stopped twice
     if user quits with SIGINT.
     """
     print("Connection with server has been severed.")
@@ -159,6 +182,16 @@ def server_on_disconnect():
 
 @server_sio.on('room-id')
 def server_on_join_room(room_id):
+    """
+    Handles incoming room assignment from server.
+    Starts a `VideoThread` and forwards room ID to frontend.
+
+    Parameters:
+    - room_id (str): Assigned room ID
+
+    Emits:
+    - room_id (str): Assigned room ID
+    """
     print(f"Received room_id '{room_id}' from server; sending to frontend")
     frontend_sio.emit("room-id", room_id)
     print("Starting video thread")
@@ -175,18 +208,29 @@ def server_on_join_room(room_id):
 
 @frontend_sio.on('connect')
 def frontend_on_connect():
+    """Logs a successful socket connection to the Javascript frontend."""
     print("Connected to Frontend")
 
 
 @frontend_sio.on('disconnect')
 def frontend_on_disconnect():
+    """Logs a disconnect from the Javascript frontend."""
     print("Successfully disconnected from frontend socket")
 
 
 @frontend_sio.on('join-room')
-def frontend_on_join_room(room=None):
-    print(f"Frontend requests to join {'room \'' + str(room) + '\'' if room else 'new room'}")
-    res = server_sio.call('join-room', room)
+def frontend_on_join_room(room_id=None):
+    """
+    Forwards a request to join a room from the user to the remote server.
+
+    Parameters:
+    - room_id (str, optional): Desired room ID to connect to
+
+    Emits:
+    - room_id (str, optional): Desired room ID to connect to
+    """
+    print(f"Frontend requests to join {'room \'' + str(room_id) + '\'' if room_id else 'new room'}")
+    res = server_sio.call('join-room', room_id)
 
     if res:
         print(f"ERROR - {res}")
@@ -195,7 +239,12 @@ def frontend_on_join_room(room=None):
 
 @frontend_sio.on('leave-room')
 def frontend_on_leave_room():
+    """
+    Stops running `VideoThread`. Forwards request to server for graceful disconnect.
+    """
     print("User wants to leave their room...")
+
+    # TODO: handle case where this is event is triggered when no thread is running
     global thread
     thread.stop()
     thread = None
@@ -209,13 +258,13 @@ if __name__ == '__main__':
         Repeatedly attempts to connect an arbitrary socket client to an arbitrary endpoint.
         Blocks until successful connection or until max retries exceeded.
 
-        Parameters
-        sio (socketio.Client): Client to use for connection
-        address (str): 
-        port (int): 
-        label (str): Name of server; for logging
-        retries (int): How many attempts to make before failure
-        wait (int): Seconds to wait between retries
+        Parameters:
+        - sio (socketio.Client): Client to use for connection
+        - address (str): 
+        - port (int): 
+        - label (str): Name of server; for logging
+        - retries (int): How many attempts to make before failure
+        - wait (int): Seconds to wait between retries
         """
         print(f"Attempting connection to {label}")
         for retry in range(retries):
