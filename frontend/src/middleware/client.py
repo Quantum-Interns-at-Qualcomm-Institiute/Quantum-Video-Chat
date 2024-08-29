@@ -185,8 +185,12 @@ def frontend_on_disconnect():
 
 @frontend_sio.on('join-room')
 def frontend_on_join_room(room=None):
-    print(f"Frontend requests to join {'room ' + str(room) if room else 'new room'}")
-    server_sio.emit('join-room', room)
+    print(f"Frontend requests to join {'room \'' + str(room) + '\'' if room else 'new room'}")
+    res = server_sio.call('join-room', room)
+
+    if res:
+        print(f"ERROR - {res}")
+        return res
 
 
 @frontend_sio.on('leave-room')

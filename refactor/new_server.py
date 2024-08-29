@@ -23,7 +23,7 @@ def on_room(sid, room_id=None):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
     """
-    print(f"Client '{sid}' requests to join {'room ' + str(room_id) if room_id else 'new room'}.")
+    print(f"Client '{sid}' requests to join {'room \'' + str(room_id) + '\'' if room_id else 'new room'}.")
 
     if not room_id:
         # If room_id not provided, generate a unique one
@@ -36,10 +36,8 @@ def on_room(sid, room_id=None):
         # If room_id was specified, confirm it is valid
         # (Users should be aware if the ID they typed is not what they intended)
         if room_id not in rooms:
-            print("Provided room_id doesn't exist.")
-            
-            # TODO: What ist he best way to return this exception? It's not serializable
-            return Exception(f"Invalid room ID '{room_id}'.")
+            print("WARNING - Provided room_id doesn't exist.")
+            return "Provided room_id doesn't exist."
 
     sio.enter_room(sid, room_id)
     rooms[room_id] += [sid]
@@ -94,9 +92,8 @@ def handle_frame(sid, data):
     room = sio.rooms(sid)
     room.remove(sid)
     if len(room) == 0:
-        print(f"WARNING - Client '{sid}' sent a frame when not in an active room.")
-        # TODO: Return an error
-        return
+        print(f"WARNING - Received a frame from a client in no rooms.")
+        return "Client sent a frame when not in an active room."
 
     skip = None
 
