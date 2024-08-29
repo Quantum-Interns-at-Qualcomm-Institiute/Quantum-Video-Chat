@@ -58,6 +58,7 @@ export default function Join() {
 						name="room_id"
 						id="room-id"
 						onChange={handleFieldChange}
+                        autoFocus
 					/>
 					<button type="submit">Connect</button>
 					<button id="return-button" onClick={handleReturn}>
