@@ -84,7 +84,7 @@ export function ClientContextProvider({ children } ) {
         
         // Event emitted when server puts client in a room
         window.electronAPI.ipcListen('room-id', (e: IpcMainEvent, room_id: string) => {
-            console.log(`Received room_id '${room_id}'.`)
+            console.log(`(ClientContext): Received room_id '${room_id}'.`)
             if(window.location.pathname === '/loading') {
                 _setRoomId(room_id);
                 navigate('/session');
