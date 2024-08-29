@@ -51,8 +51,8 @@ export function ClientContextProvider({ children } ) {
     }
 
     const leaveRoom = () => {
-        services.leaveRoom();
         navigate('/');
+        services.leaveRoom();
     }
 
     // Establish middleware listeners on initial render

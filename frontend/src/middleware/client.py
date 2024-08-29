@@ -109,7 +109,7 @@ width = 640
 height = 480
 server_sio = socketio.Client()
 frontend_sio = socketio.Client()
-thread = VideoThread(server_sio, frontend_sio, height, width)
+thread = None
 
 # SERVER EVENT HANDLERS
 
@@ -151,7 +151,10 @@ def server_on_disconnect():
     if user quits with SIGINT.
     """
     print("Connection with server has been severed.")
+
+    global thread
     thread.stop()
+    thread = None
 
 
 @server_sio.on('room-id')
@@ -159,6 +162,12 @@ def server_on_join_room(room_id):
     print(f"Received room_id '{room_id}' from server; sending to frontend")
     frontend_sio.emit("room-id", room_id)
     print("Starting video thread")
+
+    # TODO: Investigate whether we should be checking if `thread` already exists and is running
+    # and whether we need to call `thread.stop()` in that case before constructing a new thread.
+
+    global thread
+    thread = VideoThread(server_sio, frontend_sio, height, width)
     thread.start()
 
 # FRONTEND EVENT HANDLERS
@@ -184,6 +193,10 @@ def frontend_on_join_room(room=None):
 def frontend_on_leave_room():
     print("User wants to leave their room...")
     server_sio.emit('leave-room')
+
+    global thread
+    thread.stop()
+    thread = None
 
 if __name__ == '__main__':
     # TODO: there's a better spot for this but we don't have a class they fit in
