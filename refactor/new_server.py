@@ -15,6 +15,12 @@ rooms = {}
 
 @sio.on('connect')
 def connect(sid, environ):
+    """Logs incoming connection from client
+    
+    Parameters:
+    - sid (str): socket id for the request origin
+    """
+
     print(f"Incoming connection from client '{sid}'")
 
 
@@ -22,8 +28,17 @@ def connect(sid, environ):
 def on_room(sid, room_id=None):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
+
+    Parameters:
+    - room_id (str, optional): Room client would like to join.
+
+    Emits:
+    - sid (str): socket id for the request origin
+    - room_id (str): Confirmation of room client was put into. 
     """
     print(f"Client '{sid}' requests to join {'room \'' + str(room_id) + '\'' if room_id else 'new room'}.")
+
+    # TODO: Throw error if user is already in a room.
 
     if not room_id:
         # If room_id not provided, generate a unique one
@@ -51,8 +66,8 @@ def on_leave(sid):
     Removes a user from a room but maintains server connection. Assumes user is
     only in one room.
 
-    Arguments:
-        sid -- socket id for the request origin
+    Parameters:
+    - sid (str): socket id for the request origin
     """
     # TODO: user should not be able to leave room they are not in; user should not
     #       be able to join multiple rooms
@@ -71,6 +86,12 @@ def on_leave(sid):
 
 @sio.on('disconnect')
 def disconnect(sid):
+    """
+    Log client disconnects.
+
+    Parameters:
+    - sid (str): socket id for the request origin
+    """
     print(f"User '{sid}' has disconnected from the server")
 
 
@@ -84,7 +105,7 @@ def handle_frame(sid, data):
     - frame: Frame data # TODO: "frame" data doesnt say what's inside of the dict, i need to add kv
 
     emits:
-    - sid: SID of sender
+    - sid (str): SID of sender
     - frame: Frame data
     """
     print(f"I got a frame from client '{sid}'!")
@@ -108,8 +129,11 @@ if __name__ == '__main__':
     def sigint_handler(sig, frame):
         """
         Iterates through self-maintained list of rooms and disconnects all clients.
-
         NOTE: This function should only be called to handle a SIGINT
+
+        Parameters:
+        - sig:
+        - frame:
         """
         print()
         print("Disconnecting everyone...")
