@@ -2,7 +2,7 @@
     position: absolute;
 }
 
-.session-content .code {
+.session-content .room-id {
     position: absolute;
     bottom: 0px;
     left: 20px;
