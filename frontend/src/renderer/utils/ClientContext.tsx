@@ -17,7 +17,11 @@ const initMessages = [
     },
 ]
 
+// TODO: Remove after status has been properly implemented
+const statuses = ["waiting", "good", "bad"];
+
 const initClientContext = {
+    status: statuses[0],
     roomId: '',
     joinRoom: (peer_id?: string) => {},
     leaveRoom: () => {},
@@ -33,15 +37,17 @@ const initClientContext = {
 export const ClientContext = createContext(initClientContext);
 
 export function ClientContextProvider({ children } ) {
+	const [status, _setStatus] = useState(initClientContext.status);
     const [roomId, _setRoomId] = useState(initClientContext.roomId);
     const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
     const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
+
     const navigate = useNavigate();
 
     const joinRoom = (room_id?: string) => {
-        services.joinRoom(room_id)
         navigate('/loading');
+        services.joinRoom(room_id)
     }
 
     const leaveRoom = () => {
@@ -57,10 +63,12 @@ export function ClientContextProvider({ children } ) {
         window.electronAPI.ipcListen('ready', (e: IpcMainEvent, id: string) => {
             console.log(`(renderer): Python backend readied.`)
 
-            // Navigate away from Splash page after receiving self_id
+            // Navigate away from Splash page after Python is ready
             if(window.location.pathname === '/loading') {
                 console.log('(renderer): Closing Splash page.')
                 navigate('/');
+            } else {
+                console.log(`(ClientContext): CRITICAL - Received 'ready' event outside of loading screen.`)
             }
         })
 
@@ -70,10 +78,20 @@ export function ClientContextProvider({ children } ) {
     }, []);
 
 
-    // Middleware for managing sessions
+    // Middleware for managing rooms
     useEffect(() => {
-        console.log(`(ClientContext): Setting up session management.`)
+        console.log(`(ClientContext): Setting up room management.`)
         
+        // Event emitted when server puts client in a room
+        window.electronAPI.ipcListen('room-id', (e: IpcMainEvent, room_id: string) => {
+            console.log(`Received room_id '${room_id}'.`)
+            if(window.location.pathname === '/loading') {
+                _setRoomId(room_id);
+                navigate('/session');
+            } else {
+                console.log(`(ClientContext): CRITICAL - Received 'room-id' event outside of loading screen.`)
+            }
+        });
 
     }, []);
 
@@ -102,6 +120,7 @@ export function ClientContextProvider({ children } ) {
 
     return (
         <ClientContext.Provider value={{
+            status: status,
             roomId: roomId,
             joinRoom: joinRoom,
             leaveRoom: leaveRoom,

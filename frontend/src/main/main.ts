@@ -158,20 +158,23 @@ const listenForSocketAndIPC = (PORT: number) => {
 	io.on('connection', (pySocket: Socket) => {
 		console.log("(main.ts): Received socket connection from Python subprocess");
 		const user_id = pySocket.handshake.headers.user_id;
-
         
-		ipcMain.on("join-room", (event, room_id?: string) => {
+		ipcMain.on('join-room', (event, room_id?: string) => {
 			console.log(
 				`(main.ts): Attempting to join room with ${room_id ? 'room_id ' + room_id : 'no room ID'}.`,
 			);
-
-            pySocket.emit('join-room')
+            pySocket.emit('join-room', room_id)
 		});
 
 		ipcMain.on('leave-room', () => {
 			console.log(`(main.ts): User leaving video chat room.`);
             pySocket.emit('leave-room');
 		});
+
+        pySocket.on('room-id', (room_id: string) => {
+            console.log(`(main.ts): Assigned room_id '${room_id}' by server.`)
+            mainWindow?.webContents.send('room-id', room_id);
+        });
 
         pySocket.on('ready', () => {
             console.log(`(main.ts): Python backend readied. May navigate user away from loading screen.`)
@@ -185,7 +188,7 @@ const listenForSocketAndIPC = (PORT: number) => {
 			try {
 				// Send this frame to the other window
 				if (mainWindow !== null) {
-					mainWindow.webContents.send("frame", data);
+					mainWindow?.webContents.send("frame", data);
 				} else throw new Error("main window is null");
 			} catch (error) {
 				console.log(`Error: ${error}`)

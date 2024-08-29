@@ -1,6 +1,6 @@
 import type { IpcMainEvent } from "electron";
 import { useEffect, useState, useRef, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ClientContext } from "../utils/ClientContext";
 
 import Header from "../components/Header";
@@ -15,18 +15,10 @@ import image from "../../../assets/rando.jpeg";
 import "./Session.css";
 import { LocalConvenienceStoreOutlined, RateReviewOutlined } from "@mui/icons-material";
 
-/*
- * props.status: str
- *      - waiting
- *      - bad
- *      - good
- */
+
 export default function Session(props) {
 	const canvasRef = useRef(null);
 	const client = useContext(ClientContext);
-
-	const location = useLocation();
-	const code = location.pathname.slice(-5);
 
 	const [selfSrc, setSelfSrc] = useState(null);
 	const [selfSrc2, setSelfSrc2] = useState(null);
@@ -91,7 +83,7 @@ export default function Session(props) {
 
 
 	function handleLeave() {
-		client.quitSession();
+		client.leaveRoom();
 	}
 
 	return (
@@ -101,13 +93,13 @@ export default function Session(props) {
                 <img id="blegh-cringe" src={image}></img>
             </div>
 
-			<Header status={props.status} />
+			<Header status={client.status} />
 
-			{props.status === "bad" ? <StatusPopup /> : null}
+			{client.status === "bad" ? <StatusPopup /> : null}
 
 			<div className="session-content">
 				{/* Add a copy button instead of allowing text selection */}
-				<h3 className="code">ID: {client.selfId}</h3>
+				<h3 className="room-id">Room ID: {client.roomId}</h3>
 
 				<div className="top">
 					{/* <div className="video-wrapper" id="left-video"> */}
@@ -124,7 +116,7 @@ export default function Session(props) {
 						<VideoPlayer
 							srcObject={selfSrc}
 							id="self-stream"
-							status={props.status}
+							status={client.status}
 						/>
 					</div>
 				</div>
@@ -132,25 +124,25 @@ export default function Session(props) {
 				<div className="bottom">
 					<RectangleWidget
 						topText="Accumulated Secret Key"
-						status={props.status}
+						status={client.status}
 					>
-						{props.status === "good" ? "# Mbits" : "..."}
+						{client.status === "good" ? "# Mbits" : "..."}
 					</RectangleWidget>
 					<div className="vert-spacer" />
 					<CircleWidget
 						topText="Key Rate"
 						bottomText="Mbits/s"
-						status={props.status}
+						status={client.status}
 					>
-						{props.status === "good" ? "3.33" : "..."}
+						{client.status === "good" ? "3.33" : "..."}
 					</CircleWidget>
 					<div className="vert-spacer" />
 					<CircleWidget
 						topText="Error Rate %"
 						bottomText="Mbits"
-						status={props.status}
+						status={client.status}
 					>
-						{props.status === "good" ? "0.2" : "..."}
+						{client.status === "good" ? "0.2" : "..."}
 					</CircleWidget>
 					<div className="vert-spacer" />
 
@@ -159,7 +151,7 @@ export default function Session(props) {
 						<Chat
 							messages={client.chat.messages}
 							handleSend={client.chat.sendMessage}
-							status={props.status}
+							status={client.status}
 						/>
 					</div>
  					*/}
