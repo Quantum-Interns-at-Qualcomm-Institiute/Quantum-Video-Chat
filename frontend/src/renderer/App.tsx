@@ -8,8 +8,6 @@ import Temp from './screens/Temp';
 import { ClientContextProvider } from "./utils/ClientContext";
 
 export default function App() {
-	const statuses = ["waiting", "good", "bad"];
-	const status = statuses[0];
 
 	return (
 		<Router>
@@ -17,13 +15,7 @@ export default function App() {
 				<Routes>
 					{/* Host Video Session */}
 					<Route
-						path="/session/host/*"
-						element={<Session host status={status} />}
-					/>
-
-					{/* Client Video Session */}
-					<Route
-						path="/session/client/*"
+						path="/session"
 						element={<Session status={status} />}
 					/>
 

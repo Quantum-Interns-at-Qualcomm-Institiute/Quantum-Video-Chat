@@ -154,10 +154,10 @@ def server_on_disconnect():
     thread.stop()
 
 
-@server_sio.on('room')
-def server_on_join_room(room):
-    print(f"Received room {room} from server, sending to frontend")
-    frontend_sio.emit("room", room)
+@server_sio.on('room-id')
+def server_on_join_room(room_id):
+    print(f"Received room_id '{room_id}' from server; sending to frontend")
+    frontend_sio.emit("room-id", room_id)
     print("Starting video thread")
     thread.start()
 
@@ -176,7 +176,7 @@ def frontend_on_disconnect():
 
 @frontend_sio.on('join-room')
 def frontend_on_join_room(room=None):
-    print(f"Frontend requests {room if room else "new room"}")
+    print(f"Frontend requests to join {'room ' + str(room) if room else 'new room'}")
     server_sio.emit('join-room', room)
 
 

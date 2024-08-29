@@ -23,6 +23,7 @@ def on_room(sid, room_id=None):
     """
     Adds a connected client to a room and updates self-maintained list of rooms.
     """
+    print(f"Client '{sid}' requests to join {'room ' + str(room_id) if room_id else 'new room'}.")
 
     if not room_id:
         # If room_id not provided, generate a unique one
@@ -35,13 +36,15 @@ def on_room(sid, room_id=None):
         # If room_id was specified, confirm it is valid
         # (Users should be aware if the ID they typed is not what they intended)
         if room_id not in rooms:
-            # TODO: throw an error 
-            pass
+            print("Provided room_id doesn't exist.")
+            
+            # TODO: What ist he best way to return this exception? It's not serializable
+            return Exception(f"Invalid room ID '{room_id}'.")
 
-    rooms[room_id] = [sid]
     sio.enter_room(sid, room_id)
+    rooms[room_id] += [sid]
     print(f"Added client '{sid}' to room '{room_id}'")
-    sio.emit('room', room_id, sid)
+    sio.emit('room-id', room_id, to=sid)
 
 
 @sio.on('leave-room')
@@ -65,7 +68,7 @@ def on_leave(sid):
 
 @sio.on('disconnect')
 def disconnect(sid):
-    print(f"User {sid} has disconnected from the server")
+    print(f"User '{sid}' has disconnected from the server")
 
 
 @sio.on('frame')
