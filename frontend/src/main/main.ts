@@ -16,7 +16,7 @@ import { resolveHtmlPath } from "./util";
 import { Server, type Socket } from "socket.io";
 
 const DEFAULT_FRONTEND_PORT = 5001;
-const DEFAULT_RENDERER_URL = 'splash';
+const DEFAULT_RENDERER_URL = 'loading';
 
 class AppUpdater {
 	constructor() {
@@ -144,10 +144,10 @@ const whenRendererReady = (callback: Function) => {
  * @return {number} 	Port socket is bound to, for Python subprocess to connect to
  */
 const listenForSocketAndIPC = (PORT: number) => {
-	let io = new Server(PORT, {
-		maxHttpBufferSize: 1e7
+    let io = new Server(PORT, {
+        maxHttpBufferSize: 1e7
 	});
-	console.log(`(main.ts): Starting frontend socket on port ${PORT}`);
+    console.log(`(main.ts): Listening for socket communication from Python subprocess on port ${PORT}`);
 	process.on('uncaughtException', function(err) {
 		if(err.code !== 'EADDRINUSE') throw err;
 		console.log(`(main.ts): Port ${PORT} in use; re-trying with port ${PORT+1}`)
@@ -155,43 +155,56 @@ const listenForSocketAndIPC = (PORT: number) => {
 	});
 
 
-	io.on("connection", (socket: Socket) => {
-		console.log("(main.ts): Received connection from Python subproccess");
-		const user_id = socket.handshake.headers.user_id;
-		ipcMain.once("set-peer-id", (event, peer_id) => {
-			// bodgey way of ignoring extraneous requests due to additional runs of useEffect in Session.tsx
+	io.on('connection', (pySocket: Socket) => {
+		console.log("(main.ts): Received socket connection from Python subprocess");
+		const user_id = pySocket.handshake.headers.user_id;
+        
+		ipcMain.handle('join-room', async (event, room_id?: string) => {
 			console.log(
-				`(main.ts): Received peer_id ${peer_id} from renderer; sending to Python subprocess.`,
+				`(main.ts): Attempting to join room with ${room_id ? 'room_id ' + room_id : 'no room ID'}.`,
 			);
-			socket.emit("connect_to_peer", peer_id);
-		});
-
-		ipcMain.on('quit-session', () => {
-			console.log(`(main.ts): Client quit video chat session.`);
             
-			// TODO: Send event to Python backend; disconnect /gracefully/
-            socket.emit('quit_session');
+            var res = await pySocket.emitWithAck('join-room', room_id)
+            if(res) {
+                console.log(`(main.ts): ERROR - ${res}`);
+                return res
+            }
+
 		});
 
-		socket.on('self_id', (self_id) => {
-			console.log(`(main.ts): Received self_id ${self_id} from python subprocess; sending to renderer.`)
-			mainWindow?.webContents.send('self_id', self_id);
+		ipcMain.on('leave-room', () => {
+			console.log(`(main.ts): User leaving video chat room.`);
+            pySocket.emit('leave-room');
 		});
+
+        pySocket.on('room-id', (room_id: string) => {
+            console.log(`(main.ts): Assigned room_id '${room_id}' by server.`)
+            mainWindow?.webContents.send('room-id', room_id);
+        });
+
+        pySocket.on('ready', () => {
+            console.log(`(main.ts): Python backend readied. May navigate user away from loading screen.`)
+            mainWindow?.webContents.send('ready')
+        });
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		socket.on("stream", (data) => {
+		pySocket.on('stream', (data) => {
 			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
 
 			try {
 				// Send this frame to the other window
 				if (mainWindow !== null) {
-					mainWindow.webContents.send("frame", data);
+					mainWindow?.webContents.send("frame", data);
 				} else throw new Error("main window is null");
 			} catch (error) {
 				console.log(`Error: ${error}`)
 			}
 
 		});
+
+        pySocket.on('disconnect', (data) => {
+            console.log(`(main.ts): Socket connection to Python subprocess terminated.`)
+        })
 	});
 
 	return PORT;
@@ -207,7 +220,7 @@ const spawnPythonProcess = (PORT: number) => {
 	const { spawn } = require("node:child_process");
 	// TODO: Find elegant solution to figure out the name of user's python executable
 	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
-	const python = spawn("python", ['-u', 'src/middleware/main.py', [PORT]]);
+	const python = spawn("python3", ['-u', 'src/middleware/client.py', [PORT]]);
 
 	// In close event we are sure that stream from child process is closed
 	python.on("close", (code: string | null) => {
