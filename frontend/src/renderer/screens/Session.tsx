@@ -41,15 +41,15 @@ export default function Session(props) {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
         // NOTE: Remove all below when ready to test actual frames
-        let imageData = document.getElementById("blegh-cringe")
-        imageData.addEventListener('load', () => {
-            // Resize image for canvas:
-            // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
-            var hRatio = canvas.width / imageData.width;
-            var vRatio = canvas.height / imageData.height;
-            var ratio = Math.max(hRatio, vRatio);
-            context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
-        });
+        // let imageData = document.getElementById("blegh-cringe")
+        // imageData.addEventListener('load', () => {
+        //     // Resize image for canvas:
+        //     // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
+        //     var hRatio = canvas.width / imageData.width;
+        //     var vRatio = canvas.height / imageData.height;
+        //     var ratio = Math.max(hRatio, vRatio);
+        //     context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
+        // });
 	}, []);
 
 	useEffect(() => {
@@ -89,9 +89,9 @@ export default function Session(props) {
 	return (
 		<>
             {/* Remove this after done testing */}
-            <div style={{display: "none"}}>
+            {/* <div style={{display: "none"}}>
                 <img id="blegh-cringe" src={image}></img>
-            </div>
+            </div> */}
 
 			<Header status={client.status} />
 
