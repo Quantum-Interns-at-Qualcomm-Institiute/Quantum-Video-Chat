@@ -68,7 +68,7 @@ def disconnect(sid):
 def handle_frame(sid, data):
     """
     Receives a frame from a client and emits it to all other clients in their room.
-    If sender is the only client in their room, returns frame to sender. 
+    If sender is the only client in their room, returns frame to sender.
 
     parameters (indexed through data):
     - frame: Frame data # TODO: "frame" data doesnt say what's inside of the dict, i need to add kv
@@ -76,6 +76,7 @@ def handle_frame(sid, data):
     emits:
     - sid: SID of sender
     - frame: Frame data
+    - audio: True if audio False if video
     """
     print(f'I got a frame from {sid}!')
     # Gets user's rooms and removes the default "room"– assumes user is only in 'chat' room

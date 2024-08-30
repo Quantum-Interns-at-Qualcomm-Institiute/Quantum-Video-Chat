@@ -1,9 +1,8 @@
 import os
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Union
-
 from bitarray import bitarray
+from enum import Enum
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
@@ -101,7 +100,7 @@ class EncryptSchemes(Enum):
 
 
 class EncryptFactory:
-    def create(self, type) -> AbstractEncryptionScheme:
+    def create_encrypt_scheme(self, type) -> AbstractEncryptionScheme:
         if type in EncryptSchemes:
             return type.value()
         else:
@@ -225,7 +224,7 @@ class KeyGenerators(Enum):
 
 class KeyGenFactory:
 
-    def create(self, type) -> AbstractKeyGenerator:
+    def create_key_generator(self, type) -> AbstractKeyGenerator:
         if type in KeyGenerators:
             return type.value()
         else:

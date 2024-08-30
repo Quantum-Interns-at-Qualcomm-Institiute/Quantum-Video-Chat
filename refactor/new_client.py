@@ -5,10 +5,14 @@ from asyncio import Event
 from hashlib import sha256
 from threading import Thread
 
+import encryption
 import ffmpeg
 import socketio
 from cv2 import VideoCapture, resize
 from eventlet import sleep
+
+generator: encryption.AbstractKeyGenerator = encryption.KeyGenFactory().create(encryption.KeyGenerators.DEBUG)
+scheme: encryption.AbstractEncryptionScheme = encryption.EncryptFactory().create(encryption.EncryptSchemes.DEBUG)
 
 
 class VideoThread(Thread):
@@ -37,6 +41,14 @@ class VideoThread(Thread):
             preset='ultrafast', tune='zerolatency')
 
     def capture_frame(self):
+        """
+        Captures a single frame of video at the set resolution
+
+        Returns:
+            raw_frame, processed_frame: capture from the user's camera
+            - raw_frame (bytes): 640x480 bgr24 formatted image
+            - processed_frame (bytes): 640x480 ismv fomatted h264 video frame
+        """
         ret, frame = self.cap.read()
 
         if not ret:
@@ -47,9 +59,7 @@ class VideoThread(Thread):
 
         processed = self.output.run(input=frame.tobytes(), capture_stdout=True, quiet=True)[0]
 
-        frame_hash = sha256(processed).hexdigest()
-
-        return frame, processed, frame_hash
+        return frame, processed
 
     def run(self):
         """
@@ -62,11 +72,13 @@ class VideoThread(Thread):
 
         interval = 10
         while not self._stop_event.is_set():
-            frame, processed_frame, frame_hash = self.capture_frame()
+            frame, processed_frame = self.capture_frame()
             if frame is None:
                 print("Frame capture failed")
             else:
-                self.server_sio.emit("frame", data={'frame': processed_frame, 'hash': frame_hash, 'sender': None})
+                encrypted_frame = scheme.encrypt(processed_frame, generator.generate_key())
+                frame_checksum = sha256(encrypted_frame).hexdigest()
+                self.server_sio.emit("frame", data={'frame': encrypted_frame, 'hash': frame_checksum, 'sender': None})
                 self.frontend_sio.emit("frame", {"frame": frame, "self": True})  # TODO: if slow send processed frame and re-process own frame
             sleep(interval)
         print("Video thread has stopped")
@@ -117,7 +129,7 @@ thread = VideoThread(server_sio, frontend_sio, height, width)
 @server_sio.on('connect')
 def server_on_connect():
     """
-    On connection to server, start a `VideoThread` to send frames.
+    On connection to server, start a `VideoThread` and `AudioThread` to send frames.
     """
     print("Connected to Server")
 
@@ -132,14 +144,17 @@ def server_on_frame(data):
     print(data['sender'])
     if sha256(data['frame']).hexdigest() == data['hash']:
         if data['sender'] is None:
-            print("I got a frame back from myself!")
+            print(f"I got a {"n audio " if data['audio'] else "video "}frame back from myself!")
         else:
-            inpipe = ffmpeg.input('pipe:')
-            output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgba')
-            processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
-            # from PIL import Image
-            # Image.frombytes(mode="RGBA", size=(width, height), data=processed_frame).show() # DEBUG
-            frontend_sio.emit('frame', {'frame': processed_frame, 'self': False})
+            if data['audio']:
+                print('voice comes through')
+            else:
+                inpipe = ffmpeg.input('pipe:')
+                output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgba')
+                processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
+                # from PIL import Image
+                # Image.frombytes(mode="RGBA", size=(width, height), data=processed_frame).show() # DEBUG
+                frontend_sio.emit('frame', {'frame': processed_frame, 'self': False})
 
 
 @server_sio.on('disconnect')
@@ -222,6 +237,7 @@ if __name__ == '__main__':
 
     with open(file="client_config.json") as json_data:
         config = json.load(json_data)
+
         server_address = 'localhost' if 'server' not in config or 'address' not in config['server'] else config['server']['address']
         server_port = 7777 if 'server' not in config or 'port' not in config['server'] else config['server']['port']
         frontend_address = 'localhost' if 'frontend' not in config or 'address' not in config['frontend'] else config['frontend']['address']
