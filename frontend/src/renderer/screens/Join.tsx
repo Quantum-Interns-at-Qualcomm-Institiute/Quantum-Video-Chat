@@ -15,14 +15,14 @@ export default function Join() {
 	const client = useContext(ClientContext);
 	const navigate = useNavigate();
 
-	const [code, setCode] = useState("");
+	const [roomId, setRoomId] = useState("");
 	const [error, setError] = useState({
 		open: false,
 		message: "An error has occured.",
 	});
 
-	function handleCodeChange(e) {
-		setCode(e.target.value);
+	function handleFieldChange(e) {
+		setRoomId(e.target.value);
 	}
 
 	const handleReturn = () => {
@@ -31,19 +31,18 @@ export default function Join() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const response = services.isValidId(code);
+		const response = services.isValidId(roomId);
 		if (!response.ok) {
 			setError({
 				open: true,
-				message: (response.error) ? response.error : 'Please enter a valid code.'
+				message: (response.error) ? response.error : 'Please enter a valid room ID.'
 			})
 		} else {
-			client.joinPeer(code);
-			navigate('/session');
+			client.joinRoom(roomId);
 		}
 	};
 
-	const handleClose = (e, reason) => {
+	const handleClose = (e, reason: string) => {
 		if (reason === "clickaway") return;
 		setError({ ...error, open: false });
 	};
@@ -51,14 +50,15 @@ export default function Join() {
 	return (
 		<>
 			<Header />
-			<div className="start-content">
-				<form className="codeForm" onSubmit={handleSubmit}>
+			<div className="join-content">
+				<form className="room-id-form" onSubmit={handleSubmit}>
 					<input
 						type="text"
-						placeholder="Code"
-						name="code"
-						id="code"
-						onChange={handleCodeChange}
+						placeholder="Room ID"
+						name="room_id"
+						id="room-id"
+						onChange={handleFieldChange}
+                        autoFocus
 					/>
 					<button type="submit">Connect</button>
 					<button id="return-button" onClick={handleReturn}>

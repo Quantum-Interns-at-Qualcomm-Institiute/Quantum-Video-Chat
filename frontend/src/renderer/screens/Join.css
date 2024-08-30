@@ -1,3 +1,51 @@
+
+
+.join-content {
+    width: 100vw;
+    height: 100vh;
+}
+  
+.join-content .room-id-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+
+    display: flex;
+    flex-direction: column;
+}
+  
+.join-content .room-id-form input {
+    height: 50px;
+    width: 175px;
+    margin: 5px;
+
+    font-family: var(--heading-font);
+    font-size: 32px;
+    background-color: white;
+    border-radius: 5px;
+    color: grey;
+
+    border: none;
+    outline: none;
+}
+  
+.join-content .room-id-form input:active {
+    border: none;
+}
+  
+.join-content .room-id-form button {
+    width: 175px;
+    height: 50px;
+
+    margin: 5px;
+
+    font-family: var(--heading-font);
+    font-size: 20px;
+    cursor: pointer;
+}
+  
+
 #return-button {
     margin-top: 50px;
 }
