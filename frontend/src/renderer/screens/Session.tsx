@@ -25,20 +25,20 @@ export default function Session(props) {
 
 	// Start incoming video feed from my camera
 	useEffect(() => {
-		async function getOutStream() {
-			console.log("Session: Attempting to setSelfSrc()");
-			const outStream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-			});
-			setSelfSrc(outStream);
-			// setSelfSrc2(outStream)
-		}
-		console.log("Session: Running useEffect()");
-		getOutStream();
-        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-		context.fillStyle = "rgb(255,255,255)";
-		context.fillRect(0, 0, canvas.width, canvas.height);
+		// async function getOutStream() {
+		// 	console.log("Session: Attempting to setSelfSrc()");
+		// 	const outStream = await navigator.mediaDevices.getUserMedia({
+		// 		video: true,
+		// 	});
+		// 	setSelfSrc(outStream);
+		// 	// setSelfSrc2(outStream)
+		// }
+		// console.log("Session: Running useEffect()");
+		// getOutStream();
+        // const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
+        // const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+		// context.fillStyle = "rgb(255,255,255)";
+		// context.fillRect(0, 0, canvas.width, canvas.height);
 
         // NOTE: Remove all below when ready to test actual frames
         // let imageData = document.getElementById("blegh-cringe")
