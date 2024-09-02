@@ -40,15 +40,14 @@ export const ClientContext = createContext(initClientContext);
 export function ClientContextProvider({ children } ) {
 	const [status, _setStatus] = useState(initClientContext.status);
     const [roomId, _setRoomId] = useState(initClientContext.roomId);
-    const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
+    const [onFrame, _setOnFrame] = useState(() => initClientContext.video.onFrame);
     const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
 
     const navigate = useNavigate();
 
     const setOnFrame = (func) => {
-        console.log(`(ClientContext): Setting onFrame to be \n${func}`)
-        _setOnFrame(func);
+        _setOnFrame(() => {func});
     }
 
     const joinRoom = async (room_id?: string) => {
