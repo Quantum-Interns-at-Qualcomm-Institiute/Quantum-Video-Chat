@@ -53,14 +53,23 @@ export default function Session(props) {
 	}, []);
 
 	useEffect(() => {
-        client.video.onFrame = (canvasData) => {
-            const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-            canvas.width = canvasData.width
-            canvas.height = canvasData.height
-            const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-            const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
-            context.putImageData(imageData, 0, 0);
-        }
+        console.log('(renderer): Passing onFrame function to ClientContext.')
+        client.setOnFrame((frame) => {
+            console.log('(renderer): onFrame() being called to display images.')
+
+            // const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+
+            // if(!canvas) {
+            //     console.log('cant find canvas')
+            //     return;
+            // }
+
+            // canvas.width = frame.width
+            // canvas.height = frame.height
+            // const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+            // const imageData = new ImageData(new Uint8ClampedArray(frame.frame), frame.width, frame.height, {colorSpace: 'srgb'})
+            // context.putImageData(imageData, 0, 0);
+        });
 		// window.electronAPI.ipcListen(
 		// 	"frame",
 		// 	(
