@@ -25,8 +25,9 @@ const initClientContext = {
     roomId: '',
     joinRoom: async (peer_id?: string) => {},
     leaveRoom: async () => {},
+    setOnFrame: (func: CallableFunction) => {},
     video: {
-        onFrame: () => {},
+        onFrame: (frame: any) => {},
     },
     chat: {
         messages: initMessages,
@@ -44,6 +45,11 @@ export function ClientContextProvider({ children } ) {
 
 
     const navigate = useNavigate();
+
+    const setOnFrame = (func) => {
+        console.log(`(ClientContext): Setting onFrame to be \n${func}`)
+        _setOnFrame(func);
+    }
 
     const joinRoom = async (room_id?: string) => {
         navigate('/loading');
@@ -122,6 +128,8 @@ export function ClientContextProvider({ children } ) {
                 width: number
             }
         ) => {
+            console.log('(ClientContext): Received a frame! Running onFrame()')
+            console.log(`(ClientContext): onFrame is \n${onFrame}`);
             onFrame(canvasData);
         });
     }, []);
@@ -132,6 +140,7 @@ export function ClientContextProvider({ children } ) {
             roomId: roomId,
             joinRoom: joinRoom,
             leaveRoom: leaveRoom,
+            setOnFrame: setOnFrame,
             video: {
                 onFrame: onFrame
             },
