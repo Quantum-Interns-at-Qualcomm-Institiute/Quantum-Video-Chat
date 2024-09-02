@@ -38,12 +38,12 @@ class VideoThread(Thread):
 
     def capture_frame(self):
         """
-        Captures and resizes an image frame using CV2 capture device.
+        Captures a single frame of video at the set resolution
 
         Returns:
-        - frame: Original image
-        - processed: Resized Image
-        - frame_hash: Hashed (processed) image for error detection
+            raw_frame, processed_frame: capture from the user's camera
+            - raw_frame (bytes): 640x480 bgr24 formatted image
+            - processed_frame (bytes): 640x480 ismv fomatted h264 video frame
         """
         ret, frame = self.cap.read()
 
@@ -75,7 +75,7 @@ class VideoThread(Thread):
                 print("Frame capture failed")
             else:
                 self.server_sio.emit("frame", data={'frame': processed_frame, 'hash': frame_hash, 'sender': None})
-                self.frontend_sio.emit("frame", {"frame": frame, "self": True})  # TODO: if slow send processed frame and re-process own frame
+                self.frontend_sio.emit("frame", {"frame": frame.tolist(), "self": True})  # TODO: if slow send processed frame and re-process own frame
             sleep(interval)
         print("Video thread has stopped")
 
