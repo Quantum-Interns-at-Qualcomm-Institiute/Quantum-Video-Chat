@@ -25,42 +25,51 @@ export default function Session(props) {
 
 	// Start incoming video feed from my camera
 	useEffect(() => {
-		async function getOutStream() {
-			console.log("Session: Attempting to setSelfSrc()");
-			const outStream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-			});
-			setSelfSrc(outStream);
-			// setSelfSrc2(outStream)
-		}
-		console.log("Session: Running useEffect()");
-		getOutStream();
-        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-		context.fillStyle = "rgb(255,255,255)";
-		context.fillRect(0, 0, canvas.width, canvas.height);
+		// async function getOutStream() {
+		// 	console.log("Session: Attempting to setSelfSrc()");
+		// 	const outStream = await navigator.mediaDevices.getUserMedia({
+		// 		video: true,
+		// 	});
+		// 	setSelfSrc(outStream);
+		// 	// setSelfSrc2(outStream)
+		// }
+		// console.log("Session: Running useEffect()");
+		// getOutStream();
+        // const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
+        // const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+		// context.fillStyle = "rgb(255,255,255)";
+		// context.fillRect(0, 0, canvas.width, canvas.height);
 
         // NOTE: Remove all below when ready to test actual frames
-        let imageData = document.getElementById("blegh-cringe")
-        imageData.addEventListener('load', () => {
-            // Resize image for canvas:
-            // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
-            var hRatio = canvas.width / imageData.width;
-            var vRatio = canvas.height / imageData.height;
-            var ratio = Math.max(hRatio, vRatio);
-            context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
-        });
+        // let imageData = document.getElementById("blegh-cringe")
+        // imageData.addEventListener('load', () => {
+        //     // Resize image for canvas:
+        //     // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
+        //     var hRatio = canvas.width / imageData.width;
+        //     var vRatio = canvas.height / imageData.height;
+        //     var ratio = Math.max(hRatio, vRatio);
+        //     context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
+        // });
 	}, []);
 
 	useEffect(() => {
-        client.video.onFrame = (canvasData) => {
-            const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-            canvas.width = canvasData.width
-            canvas.height = canvasData.height
-            const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-            const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
-            context.putImageData(imageData, 0, 0);
-        }
+        console.log('(renderer): Passing onFrame function to ClientContext.')
+        client.setOnFrame((frame) => {
+            console.log('(renderer): onFrame() being called to display images.')
+
+            // const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
+
+            // if(!canvas) {
+            //     console.log('cant find canvas')
+            //     return;
+            // }
+
+            // canvas.width = frame.width
+            // canvas.height = frame.height
+            // const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+            // const imageData = new ImageData(new Uint8ClampedArray(frame.frame), frame.width, frame.height, {colorSpace: 'srgb'})
+            // context.putImageData(imageData, 0, 0);
+        });
 		// window.electronAPI.ipcListen(
 		// 	"frame",
 		// 	(
@@ -89,9 +98,9 @@ export default function Session(props) {
 	return (
 		<>
             {/* Remove this after done testing */}
-            <div style={{display: "none"}}>
+            {/* <div style={{display: "none"}}>
                 <img id="blegh-cringe" src={image}></img>
-            </div>
+            </div> */}
 
 			<Header status={client.status} />
 

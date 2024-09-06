@@ -188,13 +188,14 @@ const listenForSocketAndIPC = (PORT: number) => {
         });
 
 		// 'stream' events are accompanied by frame, a bytes object representing an isvm from our python script
-		pySocket.on('stream', (data) => {
-			console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
+		pySocket.on('frame', (data) => {
+			// console.log(`Passing frame #${data.count} of size ${data.width}x${data.height} from backend to renderer`)
+            console.log(`Received a frame ${data.self ? 'from self' : ''}.`)
 
-			try {
+            try {
 				// Send this frame to the other window
 				if (mainWindow !== null) {
-					mainWindow?.webContents.send("frame", data);
+					mainWindow.webContents.send('frame', data);
 				} else throw new Error("main window is null");
 			} catch (error) {
 				console.log(`Error: ${error}`)
@@ -220,7 +221,7 @@ const spawnPythonProcess = (PORT: number) => {
 	const { spawn } = require("node:child_process");
 	// TODO: Find elegant solution to figure out the name of user's python executable
 	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
-	const python = spawn("python3", ['-u', 'src/middleware/client.py', [PORT]]);
+	const python = spawn("py", ['-u', 'src/middleware/client.py', [PORT]]);
 
 	// In close event we are sure that stream from child process is closed
 	python.on("close", (code: string | null) => {

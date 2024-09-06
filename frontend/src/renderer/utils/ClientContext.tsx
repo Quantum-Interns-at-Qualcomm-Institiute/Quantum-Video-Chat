@@ -25,8 +25,9 @@ const initClientContext = {
     roomId: '',
     joinRoom: async (peer_id?: string) => {},
     leaveRoom: async () => {},
+    setOnFrame: (func: CallableFunction) => {},
     video: {
-        onFrame: () => {},
+        onFrame: (frame: any) => {},
     },
     chat: {
         messages: initMessages,
@@ -39,11 +40,15 @@ export const ClientContext = createContext(initClientContext);
 export function ClientContextProvider({ children } ) {
 	const [status, _setStatus] = useState(initClientContext.status);
     const [roomId, _setRoomId] = useState(initClientContext.roomId);
-    const [onFrame, _setOnFrame] = useState(initClientContext.video.onFrame);
+    const [onFrame, _setOnFrame] = useState(() => initClientContext.video.onFrame);
     const [messages, _setMessages] = useState(initClientContext.chat.messages);
 
 
     const navigate = useNavigate();
+
+    const setOnFrame = (func) => {
+        _setOnFrame(() => {func});
+    }
 
     const joinRoom = async (room_id?: string) => {
         navigate('/loading');
@@ -122,6 +127,8 @@ export function ClientContextProvider({ children } ) {
                 width: number
             }
         ) => {
+            console.log('(ClientContext): Received a frame! Running onFrame()')
+            console.log(`(ClientContext): onFrame is \n${onFrame}`);
             onFrame(canvasData);
         });
     }, []);
@@ -132,6 +139,7 @@ export function ClientContextProvider({ children } ) {
             roomId: roomId,
             joinRoom: joinRoom,
             leaveRoom: leaveRoom,
+            setOnFrame: setOnFrame,
             video: {
                 onFrame: onFrame
             },

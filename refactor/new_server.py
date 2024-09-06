@@ -39,6 +39,7 @@ def on_room(sid, room_id=None):
     print(f"Client '{sid}' requests to join {'room \'' + str(room_id) + '\'' if room_id else 'new room'}.")
 
     # TODO: Throw error if user is already in a room.
+    # TODO: Throw error if two users already in a room.
 
     if not room_id:
         # If room_id not provided, generate a unique one
