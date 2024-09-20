@@ -27,7 +27,7 @@ const initClientContext = {
     leaveRoom: async () => {},
     setOnFrame: (func: CallableFunction) => {},
     video: {
-        onFrame: (frame: any) => {},
+        onFrame: (frame: any) => {console.log('dummy onFrame()')},
     },
     chat: {
         messages: initMessages,
@@ -48,6 +48,19 @@ export function ClientContextProvider({ children } ) {
 
     const setOnFrame = (func) => {
         _setOnFrame(() => {func});
+        window.electronAPI.ipcRemoveListener('frame');
+        window.electronAPI.ipcListen('frame',
+        (
+            event: IpcMainEvent,
+            canvasData: {
+                frame: Uint8Array;
+                height: number;
+                width: number
+            }
+        ) => {
+            console.log('(ClientContext): Received a frame! Running onFrame()')
+            func(canvasData);
+        });
     }
 
     const joinRoom = async (room_id?: string) => {
@@ -127,8 +140,7 @@ export function ClientContextProvider({ children } ) {
                 width: number
             }
         ) => {
-            console.log('(ClientContext): Received a frame! Running onFrame()')
-            console.log(`(ClientContext): onFrame is \n${onFrame}`);
+            console.log('(ClientContext): Received a frame! Handling with init handler.')
             onFrame(canvasData);
         });
     }, []);
