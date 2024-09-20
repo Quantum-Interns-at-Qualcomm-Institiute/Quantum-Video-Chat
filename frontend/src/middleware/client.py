@@ -68,14 +68,14 @@ class VideoThread(Thread):
         - frame: Frame data
         """
 
-        interval = 10
+        interval = 0.1
         while not self._stop_event.is_set():
             frame, processed_frame, frame_hash = self.capture_frame()
             if frame is None:
                 print("Frame capture failed")
             else:
-                self.server_sio.emit("frame", data={'frame': processed_frame, 'hash': frame_hash, 'sender': None})
-                self.frontend_sio.emit("frame", {"frame": frame.tolist(), "self": True})  # TODO: if slow send processed frame and re-process own frame
+                # self.server_sio.emit("frame", data={'frame': processed_frame, 'hash': frame_hash, 'sender': None})
+                self.frontend_sio.emit("frame", {"frame": frame.tolist(), "width": self.width, "height": self.height, "self": True})  # TODO: if slow send processed frame and re-process own frame
             sleep(interval)
         print("Video thread has stopped")
 

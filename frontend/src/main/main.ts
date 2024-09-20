@@ -221,7 +221,7 @@ const spawnPythonProcess = (PORT: number) => {
 	const { spawn } = require("node:child_process");
 	// TODO: Find elegant solution to figure out the name of user's python executable
 	// Sometimes it's 'python'; sometimes it's 'python3'; sometimes it's 'py'
-	const python = spawn("py", ['-u', 'src/middleware/client.py', [PORT]]);
+	const python = spawn("python3", ['-u', 'src/middleware/client.py', [PORT]]);
 
 	// In close event we are sure that stream from child process is closed
 	python.on("close", (code: string | null) => {
@@ -263,6 +263,8 @@ app
 			// dock icon is clicked and there are no other windows open.
 			if (mainWindow === null) createWindow();
 		});
+
+        mainWindow?.webContents.openDevTools();
 	})
 	.catch(console.log);
 

@@ -70,7 +70,7 @@ class VideoThread(Thread):
         - frame: Frame data
         """
 
-        interval = 10
+        interval = 1
         while not self._stop_event.is_set():
             frame, processed_frame = self.capture_frame()
             if frame is None:
@@ -80,6 +80,7 @@ class VideoThread(Thread):
                 frame_checksum = sha256(encrypted_frame).hexdigest()
                 self.server_sio.emit("frame", data={'frame': encrypted_frame, 'hash': frame_checksum, 'sender': None})
                 self.frontend_sio.emit("frame", {"frame": frame, "self": True})  # TODO: if slow send processed frame and re-process own frame
+                print("SENDING A FRAME")
             sleep(interval)
         print("Video thread has stopped")
 
@@ -149,12 +150,15 @@ def server_on_frame(data):
             if data['audio']:
                 print('voice comes through')
             else:
+                width = data['width']
+                height = data['height']
+
                 inpipe = ffmpeg.input('pipe:')
                 output = ffmpeg.output(inpipe, 'pipe:', format='rawvideo', pix_fmt='rgba')
                 processed_frame = output.run(input=data['frame'], capture_stdout=True, quiet=True)[0]
                 # from PIL import Image
                 # Image.frombytes(mode="RGBA", size=(width, height), data=processed_frame).show() # DEBUG
-                frontend_sio.emit('frame', {'frame': processed_frame, 'self': False})
+                frontend_sio.emit('frame', {'frame': processed_frame, 'width': width, 'height': height, 'self': False})
 
 
 @server_sio.on('disconnect')
