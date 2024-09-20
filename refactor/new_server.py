@@ -1,7 +1,7 @@
 import json
+import os
 import signal
 import sys
-import os
 from random import choices
 from string import ascii_lowercase
 
@@ -123,7 +123,7 @@ def handle_frame(sid, data):
     if len(rooms[room[0]]) > 1:
         skip = sid
         data['sender'] = sid
-
+    
     sio.emit('frame', data, room=room, skip_sid=skip)
 
 
@@ -160,4 +160,5 @@ if __name__ == '__main__':
     # Doesn't look like eventlet lets you just turn off logging.
     # Instead, redirected to some random place per:
     # https://stackoverflow.com/questions/75913952/how-to-disable-eventlet-logging-python
+    eventlet.wsgi.server(eventlet.listen((config['address'], config['port'])), app, log=open(os.devnull,"w"))
     eventlet.wsgi.server(eventlet.listen((config['address'], config['port'])), app, log=open(os.devnull,"w"))
