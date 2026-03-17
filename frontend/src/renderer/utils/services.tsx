@@ -1,63 +1,34 @@
+import { getSocket } from './socket';
+
 const services = {
-    isValidId: isValidId,
-    joinRoom: joinRoom,
-    leaveRoom: leaveRoom,
-    video: {
+  isValidId,
+  joinRoom,
+  leaveRoom,
+  chat: {
+    sendMessage,
+  },
+};
 
-    },
-    chat: {
-        sendMessage: sendMessage
-    }
+async function joinRoom(room_id?: string): Promise<any> {
+  return new Promise((resolve) => {
+    getSocket().emit('join_room', room_id ?? null, (err: any) => resolve(err ?? null));
+  });
 }
 
-async function joinRoom(room_id?: string) {
-    console.log(`(services): Attempting to join room with ${room_id ? 'room_id' + room_id : 'no room_id'}`);
-    return window.electronAPI.joinRoom(room_id);
+async function leaveRoom(): Promise<void> {
+  getSocket().emit('leave_room');
 }
 
-async function leaveRoom() {
-    console.log(`(services): Leaving video chat room`)
-    return window.electronAPI.leaveRoom();
+function sendMessage(message: string) {
+  console.log('(services): sendMessage not yet implemented', message);
 }
 
-async function sendMessage(message: string) {
-    console.log(`(services): Sending chat message '${message}'`);
-
-    const date = new Date();
-    const time = date.toLocaleTimeString();
-    // TODO: Need to replace `name: "Client 1"` with self_id
-    // Not sure how to get around circular import, but not important rn
-    const messageData = {
-        time: time.substring(0, time.length - 6),
-        name: "Client 1",
-        body: message,
-    };
-
-    // TODO: send the message
+function isValidId(id: string): { ok: boolean; error?: string } {
+  if (id === '')          return { ok: false, error: 'Please enter a valid room ID.' };
+  if (!/^[a-zA-Z0-9]+$/.test(id))
+                          return { ok: false, error: 'ID must be alphanumeric.' };
+  if (id.length !== 5)    return { ok: false, error: 'Code must be strictly 5 characters.' };
+  return { ok: true };
 }
 
-function isValidId(id: string) {
-    let isAlphanumeric = id.match(/^[a-zA-Z0-9]+$/) !== null;
-
-    if (id === "")
-        return {
-            ok: false,
-            error: "Please enter a valid room ID."
-        }
-    
-    else if(!isAlphanumeric)
-        return {
-            ok: false,
-            error: "ID must be alphanumeric."
-        }
-
-    else if(id.length !== 5)
-        return {
-            ok: false,
-            error: "Code must be strictly 5 characters."
-        }
-
-    else return {ok: true, error: ''}
-}
-
-export default services
+export default services;

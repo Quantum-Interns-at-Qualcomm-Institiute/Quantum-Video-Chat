@@ -1,166 +1,185 @@
-import type { IpcMainEvent } from "electron";
-import { useState, createContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import services from './services';
+/**
+ * ClientContext — Composes focused hooks into a single context value.
+ *
+ * Single responsibility: wiring sub-hooks together and providing
+ * cross-cutting event handlers (server-error, chat messages).
+ */
+import { useState, useEffect, createContext } from 'react';
+import { getSocket } from './socket';
+import { useConnection } from '../hooks/useConnection';
+import { useSession }    from '../hooks/useSession';
+import { useMedia }      from '../hooks/useMedia';
+import type { CameraDevice, AudioDevice } from '../hooks/useMedia';
 
-// TODO: Remove placeholder when chat is properly implemented
-const initMessages = [
-    {
-        time: "ti:me",
-        name: "Client 1",
-        body: "text from client 1",
-    },
-    {
-        time: "ti:me",
-        name: "Client 2",
-        body: "text from client 2",
-    },
-]
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-// TODO: Remove after status has been properly implemented
-const statuses = ["waiting", "good", "bad"];
-
-const initClientContext = {
-    status: statuses[0],
-    roomId: '',
-    joinRoom: async (peer_id?: string) => {},
-    leaveRoom: async () => {},
-    setOnFrame: (func: CallableFunction) => {},
-    video: {
-        onFrame: (frame: any) => {console.log('dummy onFrame()')},
-    },
-    chat: {
-        messages: initMessages,
-        sendMessage: services.chat.sendMessage,
-    }
+interface Message {
+  time: string;
+  name: string;
+  body: string;
 }
 
-export const ClientContext = createContext(initClientContext);
+interface FrameData {
+  frame: any;
+  height: number;
+  width: number;
+  self?: boolean;
+}
 
-export function ClientContextProvider({ children } ) {
-	const [status, _setStatus] = useState(initClientContext.status);
-    const [roomId, _setRoomId] = useState(initClientContext.roomId);
-    const [onFrame, _setOnFrame] = useState(() => initClientContext.video.onFrame);
-    const [messages, _setMessages] = useState(initClientContext.chat.messages);
+interface ContextValue {
+  middlewareConnected: boolean;
+  serverConnected:     boolean;
+  userId:              string;
+  status:              string;
+  roomId:              string;
+  cameraOn:            boolean;
+  muted:               boolean;
+  cameras:             CameraDevice[];
+  selectedCamera:      number;
+  audioDevices:        AudioDevice[];
+  selectedAudio:       number;
+  waitingForPeer:      boolean;
+  errorMessage:        string;
+  toggleCamera:        () => void;
+  toggleMute:          () => void;
+  selectCamera:        (deviceIndex: number) => void;
+  refreshCameras:      () => void;
+  selectAudio:         (deviceIndex: number) => void;
+  refreshAudioDevices: () => void;
+  joinRoom:            (peer_id?: string) => Promise<any>;
+  leaveRoom:           () => Promise<any>;
+  setOnFrame:          (func: (data: FrameData) => void) => void;
+  clearError:          () => void;
+  connectToServer:     (host: string, port: number) => void;
+  chat: {
+    messages:    Message[];
+    sendMessage: (m: string) => void;
+  };
+}
 
+// ─── Init ─────────────────────────────────────────────────────────────────────
 
-    const navigate = useNavigate();
+const initContext: ContextValue = {
+  middlewareConnected: false,
+  serverConnected:     false,
+  userId:              '',
+  status:              'waiting',
+  roomId:              '',
+  cameraOn:            true,
+  muted:               false,
+  cameras:             [],
+  selectedCamera:      0,
+  audioDevices:        [],
+  selectedAudio:       0,
+  waitingForPeer:      false,
+  errorMessage:        '',
+  toggleCamera:        () => {},
+  toggleMute:          () => {},
+  selectCamera:        () => {},
+  refreshCameras:      () => {},
+  selectAudio:         () => {},
+  refreshAudioDevices: () => {},
+  joinRoom:            async () => {},
+  leaveRoom:           async () => {},
+  setOnFrame:          () => {},
+  clearError:          () => {},
+  connectToServer:     () => {},
+  chat: {
+    messages:    [],
+    sendMessage: () => {},
+  },
+};
 
-    const setOnFrame = (func) => {
-        _setOnFrame(() => {func});
-        window.electronAPI.ipcRemoveListener('frame');
-        window.electronAPI.ipcListen('frame',
-        (
-            event: IpcMainEvent,
-            canvasData: {
-                frame: Uint8Array;
-                height: number;
-                width: number
-            }
-        ) => {
-            console.log('(ClientContext): Received a frame! Running onFrame()')
-            func(canvasData);
-        });
-    }
+export const ClientContext = createContext<ContextValue>(initContext);
 
-    const joinRoom = async (room_id?: string) => {
-        navigate('/loading');
-        var res = await services.joinRoom(room_id)
-        if(res) {
-            console.log(`(ClientContext): ERROR - ${res}`)
-            return res;
+// ─── Provider ─────────────────────────────────────────────────────────────────
+
+export function ClientContextProvider({ children }: { children: React.ReactNode }) {
+  // Compose focused hooks
+  const connection = useConnection();
+  const [errorMessage, setErrorMessage] = useState('');
+  const session    = useSession(setErrorMessage);
+  const media      = useMedia();
+
+  const [status, _setStatus]     = useState(initContext.status);
+  const [messages, _setMessages] = useState<Message[]>([]);
+
+  const clearError = () => setErrorMessage('');
+
+  const connectToServer = (host: string, port: number) => {
+    setErrorMessage('');
+    getSocket().emit('configure_server', { host, port });
+  };
+
+  const sendMessage = (message: string) => {
+    console.log('(ClientContext): sendMessage not yet implemented', message);
+  };
+
+  // ── Cross-cutting events that span multiple hooks ────────────────────────
+  useEffect(() => {
+    const socket = getSocket();
+
+    socket.on('server-error', (msg: string) => {
+      connection.setServerConnected(false);
+      if (msg) {
+        setErrorMessage(msg);
+        if (msg.toLowerCase().includes('does not exist')) {
+          session._setWaitingForPeer(false);
+          session._setRoomId('');
         }
-    }
+      }
+    });
 
-    const leaveRoom = async () => {
-        navigate('/');
-        var res = await services.leaveRoom();
-        if(res) {
-            console.log(`(ClientContext): ERROR - ${res}`)
-            return res;
-        }
-    }
+    // Dedicated peer-disconnected event: cleanly end the session
+    // without marking the server as down (server is still alive).
+    socket.on('peer-disconnected', (data: { peer_id: string }) => {
+      session._setWaitingForPeer(false);
+      session._setRoomId('');
+      setErrorMessage(`Peer ${data.peer_id} has left the session.`);
+    });
 
-    // Establish middleware listeners on initial render
-    useEffect(() => {
-        console.log(`(ClientContext): Initialization.`);
+    socket.on('message', (msg: Message) => {
+      _setMessages((prev) => [...prev, msg]);
+    });
 
-        // Event emitted when Python subprocess to ready to proceed with chatting
-        window.electronAPI.ipcListen('ready', (e: IpcMainEvent, id: string) => {
-            console.log(`(renderer): Python backend readied.`)
+    return () => {
+      socket.off('server-error');
+      socket.off('peer-disconnected');
+      socket.off('message');
+    };
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
-            // Navigate away from Splash page after Python is ready
-            if(window.location.pathname === '/loading') {
-                console.log('(renderer): Closing Splash page.')
-                navigate('/');
-            } else {
-                console.log(`(ClientContext): CRITICAL - Received 'ready' event outside of loading screen.`)
-            }
-        })
-
-        // Inform main process that ClientContext is ready for IPC communication
-        console.log('(renderer): Renderer Ready');
-        window.electronAPI.rendererReady();
-    }, []);
-
-
-    // Middleware for managing rooms
-    useEffect(() => {
-        console.log(`(ClientContext): Setting up room management.`)
-        
-        // Event emitted when server puts client in a room
-        window.electronAPI.ipcListen('room-id', (e: IpcMainEvent, room_id: string) => {
-            console.log(`(ClientContext): Received room_id '${room_id}'.`)
-            if(window.location.pathname === '/loading') {
-                _setRoomId(room_id);
-                navigate('/session');
-            } else {
-                console.log(`(ClientContext): CRITICAL - Received 'room-id' event outside of loading screen.`)
-            }
-        });
-
-    }, []);
-
-
-    // Middleware for communication during a session
-    useEffect(() => {
-        console.log(`(ClientContext): Setting up peer-to-peer communication.`)
-
-        window.electronAPI.ipcListen('message', (e: IpcMainEvent, messageData: Object) => {
-            console.log(`(renderer): Received chat message with Object structure ${JSON.stringify(messageData)}`)
-            _setMessages([...messages, messageData]);
-        })
-
-        window.electronAPI.ipcListen('frame',
-        (
-            event: IpcMainEvent,
-            canvasData: {
-                frame: Uint8Array;
-                height: number;
-                width: number
-            }
-        ) => {
-            console.log('(ClientContext): Received a frame! Handling with init handler.')
-            onFrame(canvasData);
-        });
-    }, []);
-
-    return (
-        <ClientContext.Provider value={{
-            status: status,
-            roomId: roomId,
-            joinRoom: joinRoom,
-            leaveRoom: leaveRoom,
-            setOnFrame: setOnFrame,
-            video: {
-                onFrame: onFrame
-            },
-            chat: {
-                messages: messages,
-                sendMessage: services.chat.sendMessage
-            }
-        }}>
-            {children}
-        </ClientContext.Provider>
-    )
+  return (
+    <ClientContext.Provider
+      value={{
+        middlewareConnected: connection.middlewareConnected,
+        serverConnected:     connection.serverConnected,
+        userId:              session.userId,
+        status,
+        roomId:              session.roomId,
+        cameraOn:            media.cameraOn,
+        muted:               media.muted,
+        cameras:             media.cameras,
+        selectedCamera:      media.selectedCamera,
+        audioDevices:        media.audioDevices,
+        selectedAudio:       media.selectedAudio,
+        waitingForPeer:      session.waitingForPeer,
+        errorMessage,
+        toggleCamera:        media.toggleCamera,
+        toggleMute:          media.toggleMute,
+        selectCamera:        media.selectCamera,
+        refreshCameras:      media.refreshCameras,
+        selectAudio:         media.selectAudio,
+        refreshAudioDevices: media.refreshAudioDevices,
+        joinRoom:            session.joinRoom,
+        leaveRoom:           session.leaveRoom,
+        setOnFrame:          session.setOnFrame,
+        clearError,
+        connectToServer,
+        chat: { messages, sendMessage },
+      }}
+    >
+      {children}
+    </ClientContext.Provider>
+  );
 }

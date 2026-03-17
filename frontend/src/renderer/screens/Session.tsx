@@ -1,202 +1,94 @@
-import type { IpcMainEvent } from "electron";
-import { useEffect, useState, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { ClientContext } from "../utils/ClientContext";
+import { useEffect, useRef, useContext } from 'react';
+import { ClientContext } from '../utils/ClientContext';
 
-import Header from "../components/Header";
-import StatusPopup from "../components/StatusPopup";
-import VideoPlayer from "../components/VideoPlayer";
-import CircleWidget from "../components/widgets/CircleWidget";
-import RectangleWidget from "../components/widgets/RectangleWidget";
-import Chat from "../components/chat/Chat";
+import Header from '../components/Header';
+import StatusPopup from '../components/StatusPopup';
+import VideoPlayer from '../components/VideoPlayer';
+import NoiseCanvas from '../components/NoiseCanvas';
+import CircleWidget from '../components/widgets/CircleWidget';
+import RectangleWidget from '../components/widgets/RectangleWidget';
 
-import image from "../../../assets/rando.jpeg";
+import { drawOnCanvas } from '../utils/canvas';
+import './Session.css';
 
-import "./Session.css";
-import { LocalConvenienceStoreOutlined, RateReviewOutlined } from "@mui/icons-material";
+export default function Session() {
+  const peerCanvasRef = useRef<HTMLCanvasElement>(null);
+  const selfCanvasRef = useRef<HTMLCanvasElement>(null);
 
+  const client = useContext(ClientContext);
 
-export default function Session(props) {
-	const canvasRef = useRef(null);
-	const client = useContext(ClientContext);
+  // ── Route incoming frames to the correct canvas ────────────────────────
+  useEffect(() => {
+    client.setOnFrame((canvasData: any) => {
+      if (canvasData.self) {
+        drawOnCanvas(selfCanvasRef.current, canvasData);
+      } else {
+        drawOnCanvas(peerCanvasRef.current, canvasData);
+      }
+    });
+  }, []);
 
-	const [selfSrc, setSelfSrc] = useState(null);
-	const [selfSrc2, setSelfSrc2] = useState(null);
+  const handleLeave = () => client.leaveRoom();
 
-	// Start incoming video feed from my camera
-	useEffect(() => {
-		// async function getOutStream() {
-		// 	console.log("Session: Attempting to setSelfSrc()");
-		// 	const outStream = await navigator.mediaDevices.getUserMedia({
-		// 		video: true,
-		// 	});
-		// 	setSelfSrc(outStream);
-		// 	// setSelfSrc2(outStream)
-		// }
-		// console.log("Session: Running useEffect()");
-		// getOutStream();
-        const canvas = document.getElementById("peer-stream") as HTMLCanvasElement;
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-		context.fillStyle = "rgb(255,255,255)";
-		context.fillRect(0, 0, canvas.width, canvas.height);
+  return (
+    <>
+      <Header status={client.status} />
+      {client.status === 'bad' && <StatusPopup />}
 
-        // NOTE: Remove all below when ready to test actual frames
-        const imageData = document.getElementById("blegh-cringe")
-        imageData.addEventListener('load', () => {
-            // Resize image for canvas:
-            // https://stackoverflow.com/questions/23104582/scaling-an-image-to-fit-on-canvas
-            console.log(imageData);
+      <div className="session-content">
+        <h3 className="room-id">Room ID: {client.roomId}</h3>
 
-            const hRatio = canvas.width / imageData.width;
-            const vRatio = canvas.height / imageData.height;
-            const ratio = Math.max(hRatio, vRatio);
-            // context.drawImage(imageData, 0,0, imageData.width, imageData.height, 0, 0, imageData.width*ratio, imageData.height*ratio)
-        });
-	}, []);
+        <div className="top">
+          {/* ── Left: Peer video ─────────────────────────────────────── */}
+          <div className="video-wrapper">
+            <canvas ref={peerCanvasRef} id="peer-stream">
+              Waiting for peer…
+            </canvas>
+          </div>
 
-	useEffect(() => {
-        console.log('(renderer): Passing onFrame function to ClientContext.')
-        client.setOnFrame((canvasData) => {
-            console.log('(renderer): onFrame() being called to display images.')
+          <div className="vert-spacer" />
 
-            // GBR -> RGB; Add Alpha channel
-            for(let i = 0; i < 480; i++) {
-                for(let j = 0; j < 640; j++) {
-                    canvasData.frame[i][j].push(255);
-                }
-            }
+          {/* ── Right: Self video (camera) ───────────────────────────── */}
+          <div className="video-wrapper" id="right-video">
+            {client.cameraOn ? (
+              /* Canvas is always mounted; when no frames arrive it stays blank.
+                 Wrapping in the same border-styled div keeps layout consistent. */
+              <canvas ref={selfCanvasRef} id="self-stream" className="self-canvas" />
+            ) : (
+              <VideoPlayer status={client.status} cameraEnabled={false} id="self-stream" />
+            )}
+          </div>
+        </div>
 
-            // JS -> Py -> Server -> Py -> JS
+        <div className="bottom">
+          <RectangleWidget topText="Accumulated Secret Key" status={client.status}>
+            {client.status === 'good' ? '# Mbits' : '…'}
+          </RectangleWidget>
+          <div className="vert-spacer" />
+          <CircleWidget topText="Key Rate" bottomText="Mbits/s" status={client.status}>
+            {client.status === 'good' ? '3.33' : '…'}
+          </CircleWidget>
+          <div className="vert-spacer" />
+          <CircleWidget topText="Error Rate %" bottomText="Mbits" status={client.status}>
+            {client.status === 'good' ? '0.2' : '…'}
+          </CircleWidget>
+          <div className="vert-spacer" />
 
-            canvasData.frame = canvasData.frame.flat(2);
+          <button
+            className="button camera-button"
+            type="button"
+            onClick={client.toggleCamera}
+          >
+            {client.cameraOn ? '📷 Cam On' : '🚫 Cam Off'}
+          </button>
 
-            console.log(canvasData);
+          <div className="vert-spacer" />
 
-            const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-            canvas.width = canvasData.width
-            canvas.height = canvasData.height
-            const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-            const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvas.width, canvas.height, {colorSpace: 'srgb'})
-            context.putImageData(imageData, 0, 0);
-
-            // const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-
-            // if(!canvas) {
-            //     console.log('cant find canvas')
-            //     return;
-            // }
-
-            // canvas.width = frame.width
-            // canvas.height = frame.height
-            // const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-            // const imageData = new ImageData(new Uint8ClampedArray(frame.frame), frame.width, frame.height, {colorSpace: 'srgb'})
-            // context.putImageData(imageData, 0, 0);
-        });
-		// window.electronAPI.ipcListen(
-		// 	"frame",
-		// 	(
-		// 		event: IpcMainEvent,
-		// 		canvasData: {
-		// 			frame: Uint8Array;
-		// 			height: number;
-		// 			width: number;
-		// 		},
-		// 	) => {
-		// 		const canvas = document.getElementById("peer-stream") as HTMLCanvasElement
-		// 		canvas.width = canvasData.width
-		// 		canvas.height = canvasData.height
-		// 		const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-		// 		const imageData = new ImageData(new Uint8ClampedArray(canvasData.frame), canvasData.width, canvasData.height, {colorSpace: 'srgb'})
-		// 		context.putImageData(imageData, 0, 0);
-		// 	},
-		// );
-	});
-
-
-	function handleLeave() {
-		client.leaveRoom();
-	}
-
-	return (
-		<>
-            {/* Remove this after done testing */}
-            <div style={{display: "none"}}>
-                <img id="blegh-cringe" src={image}></img>
-            </div>
-
-			<Header status={client.status} />
-
-			{client.status === "bad" ? <StatusPopup /> : null}
-
-			<div className="session-content">
-				{/* Add a copy button instead of allowing text selection */}
-				<h3 className="room-id">Room ID: {client.roomId}</h3>
-
-				<div className="top">
-					{/* <div className="video-wrapper" id="left-video"> */}
-					{/* Make this come from the backend code so it's the same size*/}
-                    <div className="video-wrapper">
-                        <canvas id="peer-stream" object-fit="cover">
-                            {" "}
-                            Please wait...{" "}
-                        </canvas>
-                    </div>
-					{/* </div> */}
-					<div className="vert-spacer" />
-					<div className="video-wrapper" id="right-video">
-						<VideoPlayer
-							srcObject={selfSrc}
-							id="self-stream"
-							status={client.status}
-						/>
-					</div>
-				</div>
-
-				<div className="bottom">
-					<RectangleWidget
-						topText="Accumulated Secret Key"
-						status={client.status}
-					>
-						{client.status === "good" ? "# Mbits" : "..."}
-					</RectangleWidget>
-					<div className="vert-spacer" />
-					<CircleWidget
-						topText="Key Rate"
-						bottomText="Mbits/s"
-						status={client.status}
-					>
-						{client.status === "good" ? "3.33" : "..."}
-					</CircleWidget>
-					<div className="vert-spacer" />
-					<CircleWidget
-						topText="Error Rate %"
-						bottomText="Mbits"
-						status={client.status}
-					>
-						{client.status === "good" ? "0.2" : "..."}
-					</CircleWidget>
-					<div className="vert-spacer" />
-
-					{/* 
-					<div className="chat-wrapper">
-						<Chat
-							messages={client.chat.messages}
-							handleSend={client.chat.sendMessage}
-							status={client.status}
-						/>
-					</div>
- 					*/}
-
-					<button
-					className="button leave-button"
-					type="button"
-					onClick={handleLeave}>
-						Leave
-					</button>
-
-					{/* <button id="quit" onClick={handleQuit}>End Session</button> */}
-				</div>
-			</div>
-		</>
-	);
+          <button className="button leave-button" type="button" onClick={handleLeave}>
+            Leave
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }

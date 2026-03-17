@@ -1,46 +1,128 @@
-
-
 .start-content {
   width: 100vw;
-  height: 100vh;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.start-content .codeForm {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%);
-
+.server-form-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0;
+  padding: 32px 36px;
+  min-width: 420px;
 }
 
-.start-content .codeForm input {
-  height: 50px;
-  width: 175px;
-  margin: 5px;
+.server-form-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
+.server-form-label {
   font-family: var(--heading-font);
-  font-size: 32px;
-  background-color: white;
-  border-radius: 5px;
-  color: grey;
+  color: var(--off-white);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
 
-  border: none;
+.server-form-colon {
+  color: var(--off-white);
+  font-size: 1.2rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.server-input {
+  height: 40px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0;
+  color: var(--off-white);
+  font-family: var(--heading-font);
+  font-size: 0.9rem;
+  padding: 0 10px;
   outline: none;
+  transition: border-color 0.15s;
+}
+.server-input:focus    { border-color: var(--border-focus); }
+.server-input:disabled { opacity: 0.5; }
+
+.server-input--host { width: 160px; }
+.server-input--port { width: 70px; }
+
+.connect-button {
+  height: 40px;
+  padding: 0 16px;
+  font-family: var(--heading-font);
+  font-size: 0.9rem;
+  border-radius: 0;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  white-space: nowrap;
+}
+.connect-button--idle,
+.connect-button--error {
+  background: var(--btn-bg);
+  color: var(--off-white);
+}
+.connect-button--idle:hover { background: var(--btn-bg-hover); }
+.connect-button--connecting { background: var(--btn-bg); color: var(--off-white); opacity: 0.5; cursor: default; }
+.connect-button--connected  { background: rgba(169, 182, 101, 0.25); color: var(--success); cursor: default; }
+
+.server-form-error {
+  color: var(--bad);
+  font-family: var(--heading-font);
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: center;
 }
 
-.start-content .codeForm input:active {
-  border: none;
+.server-form-info {
+  color: var(--off-white);
+  font-family: var(--heading-font);
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: center;
+  opacity: 0.8;
+}
+.server-form-info code {
+  background: var(--card-bg);
+  padding: 2px 8px;
+  border-radius: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  user-select: all;
 }
 
-.start-content .codeForm button {
+.session-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+.session-buttons .button {
   width: 175px;
   height: 50px;
-
-  margin: 5px;
-
   font-family: var(--heading-font);
-  font-size: 20px;
+  font-size: 1rem;
   cursor: pointer;
+  border-radius: 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--btn-bg);
+  color: var(--off-white);
+  transition: background 0.15s, opacity 0.15s;
 }
+.session-buttons .button:hover:not(:disabled) { background: var(--btn-bg-hover); }
+.session-buttons .button:disabled { opacity: 0.35; cursor: not-allowed; }
