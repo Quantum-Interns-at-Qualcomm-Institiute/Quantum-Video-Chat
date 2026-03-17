@@ -1,17 +1,14 @@
 # from __future__ import annotations
 
 # region --- Logging ---
-from enum import Enum
 import hashlib
+import random
+from random import choice
+from string import ascii_letters, digits
 from abc import ABC, abstractmethod
-
-from utils import Endpoint
-from user import User, UserState
-import logging
-logging.basicConfig(filename='./logs/server.log', level=logging.DEBUG,
-                    format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
-                    datefmt='%H:%M:%S')
-logger = logging.getLogger(__name__)
+from .user import User
+from .user import UserState
+from custom_logging import logger
 # endregion
 
 
@@ -35,9 +32,6 @@ class InvalidState(Exception):
 
 
 class UserStorageInterface(ABC):
-    @abstractmethod
-    def __str__(self):
-        pass
 
     @abstractmethod
     def add_user(self, user_id, user_info):
@@ -48,7 +42,7 @@ class UserStorageInterface(ABC):
         pass
 
     @abstractmethod
-    def get_user_by_id(self, user_id):
+    def get_user(self, user_id):
         pass
 
     @abstractmethod
@@ -57,6 +51,10 @@ class UserStorageInterface(ABC):
 
     @abstractmethod
     def has_user(self, user_id):
+        pass
+
+    @abstractmethod
+    def get_all_users(self):
         pass
 
 
@@ -65,38 +63,35 @@ class DictUserStorage(UserStorageInterface):
     def __init__(self):
         self.users = {}
 
-    def __str__(self):
-        return "Dictionary"
-
-    def add_user(self, user_id, user_info: User):
+    def add_user(self, user_id, user_info):
         if user_id in self.users:
-            raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
+            raise DuplicateUser(f"Cannot add user {
+                                user_id}: User already exists.")
         self.users[user_id] = user_info
 
     def update_user(self, user_id, user_info):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot update user {
+                               user_id}: User does not exist.")
         self.users[user_id] = user_info
 
-    def get_user_by_id(self, user_id):
+    def get_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot get user {
+                               user_id}: User does not exist.")
         return self.users.get(user_id, None)
 
     def remove_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot remove user {user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot remove user {
+                               user_id}: User does not exist.")
         del self.users[user_id]
 
     def has_user(self, user_id):
         return user_id in self.users
 
-
-class UserStorageTypes(Enum):
-    DICT = DictUserStorage
-
-    def __call__(cls):
-        return cls.value()
+    def get_all_users(self):
+        return dict(self.users)
 
 
 class UserStorageFactory:
@@ -110,8 +105,8 @@ class UserStorageFactory:
         pass
 
     def create_storage(self, storage_type: str, **kwargs) -> UserStorageInterface:
-        if storage_type in UserStorageTypes:
-            return storage_type()
+        if storage_type == 'DICT':
+            return DictUserStorage()
         else:
             raise ValueError(f"Invalid storage type: {storage_type}")
 # endregion
@@ -124,25 +119,15 @@ class UserManager:
 
     def __init__(self, storage: UserStorageInterface):
         self.storage = storage
-        self.logger = logging.getLogger("UserManager")
 
-    # I would personally just generate a completely random string every time, but#
-    # we do this in Andy's interest of having perfect reproducibility during testing
-    def generate_user_id(self, endpoint: str):
-        self.logger.debug(
-            f"Generating User ID for user with API Endpoint {endpoint}.")
-        hash_object = hashlib.sha256(endpoint.encode())
-        user_id = hash_object.hexdigest()[:5]
-
-        hash_object = hashlib.sha256(hash_object.hexdigest().encode())
-        user_id = hash_object.hexdigest()[:5]
-        shift = 0
-
-        while self.storage.has_user(user_id):
-            shift += 1
-            user_id = hash_object.hexdigest()[shift: 5 + shift]
-
-        return user_id
+    def generate_user_id(self):
+        """Generate a unique 5-digit numeric user ID (10000–99999)."""
+        for _ in range(100):  # avoid infinite loop on a very full server
+            user_id = str(random.randint(10000, 99999))
+            if not self.storage.has_user(user_id):
+                return user_id
+        # Fallback: expand to 6 digits if 5-digit space is exhausted
+        return str(random.randint(100000, 999999))
 
     # See note for generate_user_id(); the particular choice of seed here is a bit AIDS, though.
     # Also note uniqueness is not strictly necessary for tokens, so I've omitted it.
@@ -153,46 +138,56 @@ class UserManager:
 
         return token
 
-    def add_user(self, endpoint: Endpoint):
-        user_id = self.generate_user_id(str(endpoint))
-        sess_token = self.generate_token(user_id)
-        user = User(user_id, sess_token, endpoint)
+    def add_user(self, api_endpoint):
+        user_id = self.generate_user_id()
         try:
-            self.storage.add_user(user_id, user)
-            self.logger.debug(
-                f"Added User {user_id} with session token '{sess_token}'.")
-            return user_id, sess_token
+            self.storage.add_user(user_id, User(api_endpoint))
+            logger.debug(f"Added User {user_id}'.")
+            return user_id
         except DuplicateUser as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def set_user_state(self, user_id, state: UserState, peer=None):
-        if (state == UserState.IDLE) ^ (peer is None):
-            raise InvalidState(f"Cannot set state {state} ({peer}) for User {user_id}: Invalid state.")
+        if (state == UserState.IDLE) ^ (peer == None):
+            raise InvalidState(f"Cannot set state {state} ({peer}) for User {
+                               user_id}: Invalid state.")
 
         try:
-            user_info = self.storage.get_user_by_id(user_id)
+            user_info = self.storage.get_user(user_id)
             user_info.state = state
             user_info.peer = peer
             self.storage.update_user(user_id, user_info)
-            self.logger.debug(f"Updated User {user_id} state: {state} ({peer}).")
+            logger.debug(f"Updated User {user_id} state: {
+                state} ({peer}).")
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
-    def get_user_by_id(self, user_id) -> User:
+    def get_user(self, user_id) -> User:
         try:
-            user_info = self.storage.get_user_by_id(user_id)
-            self.logger.debug(f"Retrieved user info for User {user_id}.")
+            user_info = self.storage.get_user(user_id)
+            logger.debug(f"Retrieved user info for User {user_id}.")
             return User(*user_info)
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
             raise e
 
     def remove_user(self, user_id):
         try:
             self.storage.remove_user(user_id)
-            self.logger.debug(f"Removed User {user_id}.")
+            logger.debug(f"Removed User {user_id}.")
         except UserNotFound as e:
-            self.logger.error(str(e))
+            logger.error(str(e))
+
+    def get_all_users(self):
+        users = self.storage.get_all_users()
+        return {
+            uid: {
+                'api_endpoint': str(user.api_endpoint),
+                'state': user.state.value,
+                'peer': user.peer,
+            }
+            for uid, user in users.items()
+        }
 # endregion

@@ -1,8 +1,2 @@
-import type { ElectronHandler } from "../main/preload";
- declare global {
-	interface Window {
-		electron: ElectronHandler;
-	}
-}
-
+// Electron is no longer used. This file is kept as a placeholder.
 export {};

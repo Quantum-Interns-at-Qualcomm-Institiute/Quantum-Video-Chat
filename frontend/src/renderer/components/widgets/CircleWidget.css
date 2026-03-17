@@ -16,12 +16,11 @@
     justify-content: center;
     align-items: center;
 
-    background-color: var(--light-grey);
-    border: 7px solid var(--neutral);
-    border-radius: 50%;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 0;
 
-
-    color: black;
+    color: var(--text-primary);
     font-size: 32px;
 }
 
