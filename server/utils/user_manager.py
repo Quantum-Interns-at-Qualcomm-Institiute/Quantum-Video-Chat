@@ -65,26 +65,22 @@ class DictUserStorage(UserStorageInterface):
 
     def add_user(self, user_id, user_info):
         if user_id in self.users:
-            raise DuplicateUser(f"Cannot add user {
-                                user_id}: User already exists.")
+            raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
         self.users[user_id] = user_info
 
     def update_user(self, user_id, user_info):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot update user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
         self.users[user_id] = user_info
 
     def get_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot get user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
         return self.users.get(user_id, None)
 
     def remove_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot remove user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot remove user {user_id}: User does not exist.")
         del self.users[user_id]
 
     def has_user(self, user_id):
@@ -150,16 +146,14 @@ class UserManager:
 
     def set_user_state(self, user_id, state: UserState, peer=None):
         if (state == UserState.IDLE) ^ (peer == None):
-            raise InvalidState(f"Cannot set state {state} ({peer}) for User {
-                               user_id}: Invalid state.")
+            raise InvalidState(f"Cannot set state {state} ({peer}) for User {user_id}: Invalid state.")
 
         try:
             user_info = self.storage.get_user(user_id)
             user_info.state = state
             user_info.peer = peer
             self.storage.update_user(user_id, user_info)
-            logger.debug(f"Updated User {user_id} state: {
-                state} ({peer}).")
+            logger.debug(f"Updated User {user_id} state: {state} ({peer}).")
         except UserNotFound as e:
             logger.error(str(e))
             raise e
