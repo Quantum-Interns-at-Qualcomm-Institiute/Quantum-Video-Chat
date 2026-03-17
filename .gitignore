@@ -23,7 +23,7 @@ node_modules
 
 release/app/dist
 release/build
-.erb/dll
+**/.erb/dll
 
 .idea
 npm-debug.log.*
@@ -35,8 +35,13 @@ npm-debug.log.*
 settings.ini
 **/dev_python_config.json
 .vscode
-**/.vscodekey.bin
+**/.vscode
+key.bin
 
 # all hidden directories
 .*
 !.git*
+
+# Build output
+**/dist
+**/dist-electron
