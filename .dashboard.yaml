@@ -3,7 +3,7 @@ services:
     display_name: Video Chat (Server)
     compose_service: server
     default_port: 5050
-    url_path: /admin/status
+    url_path: /dashboard
     healthcheck: /admin/status
     ports:
       rest: 5050
@@ -23,6 +23,6 @@ services:
   - name: video-chat-frontend
     display_name: Video Chat (Frontend)
     compose_service: frontend
-    default_port: 3000
+    default_port: 1212
     depends_on:
       - video-chat-middleware

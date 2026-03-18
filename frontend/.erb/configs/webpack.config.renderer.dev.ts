@@ -46,8 +46,6 @@ const configuration: webpack.Configuration = {
   target: 'web',
 
   entry: [
-    `webpack-dev-server/client?http://localhost:${port}/dist`,
-    'webpack/hot/only-dev-server',
     path.join(webpackPaths.srcRendererPath, 'index.tsx'),
   ],
 
@@ -176,6 +174,7 @@ const configuration: webpack.Configuration = {
 
   devServer: {
     port,
+    host: '0.0.0.0',
     compress: true,
     hot: true,
     open: false,  // start.sh handles opening the browser at the right moment
@@ -186,6 +185,7 @@ const configuration: webpack.Configuration = {
     historyApiFallback: {
       verbose: true,
     },
+    allowedHosts: 'all',
   },
 };
 
