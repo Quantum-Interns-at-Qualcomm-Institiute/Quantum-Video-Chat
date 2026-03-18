@@ -33,7 +33,7 @@ start
 if (key_index matches\ncurrent key?) then (yes)
     :AES-128 decrypt;
     :H.264 decode\n(ffmpeg rawvideo);
-    :IPC 'frame' event\n(Electron → Renderer);
+    :Socket.IO 'frame' event\n(Middleware → Browser);
     :Canvas drawImage();
 else (no)
     :Drop frame\n(stale key);

@@ -144,7 +144,7 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 
 			<fieldset className="settings-group">
 				<legend>Network</legend>
-				{numberInput("network", "electron_ipc_port", "Electron IPC Port")}
+				{numberInput("network", "middleware_port", "Middleware Port")}
 				{numberInput("network", "server_rest_port", "Server REST Port")}
 				{numberInput("network", "server_websocket_port", "Server WebSocket Port")}
 				{numberInput("network", "client_api_port", "Client API Port")}

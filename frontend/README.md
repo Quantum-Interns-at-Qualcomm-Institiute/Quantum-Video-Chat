@@ -1,6 +1,6 @@
 # Quantum Video Chat — Frontend
 
-React + TypeScript desktop UI for the Quantum Video Chat application. Originally scaffolded from [Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate).
+React + TypeScript browser UI for the Quantum Video Chat application.
 
 See the [root README](../README.md) for full project documentation.
 
@@ -23,7 +23,6 @@ npm test
 
 ```
 src/
-├── main/                    # Electron main process
 ├── middleware/               # Lightweight Python middleware (browser ↔ QKD server)
 │   ├── client.py            # Entry point
 │   ├── state.py             # Centralised mutable state

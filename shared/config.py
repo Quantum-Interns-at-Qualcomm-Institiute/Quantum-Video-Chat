@@ -4,11 +4,11 @@ Central configuration for Quantum Video Chat.
 All hardcoded constants live here.  Values are resolved in order:
   1. Environment variable (QVC_* prefix)
   2. settings.ini at the project root
-  3. frontend/settings.ini (where Electron writes in dev mode)
+  3. frontend/settings.ini (fallback location)
   4. Hardcoded default below
 
-The DEFAULTS dict mirrors every tunable constant so the Electron
-front-end can populate the "Reset to Defaults" action.
+The DEFAULTS dict mirrors every tunable constant so the front-end
+can populate the "Reset to Defaults" action.
 
 For testability, the Config dataclass bundles all settings into an
 injectable object.  Module-level globals are backward-compatible
@@ -29,9 +29,8 @@ from shared.encryption import EncryptSchemes, KeyGenerators
 
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Electron (in dev) writes settings to frontend/settings.ini.  Fall back to
-# that location when no settings.ini exists at the project root so that both
-# processes always read the same file.
+# Fall back to frontend/settings.ini when no settings.ini exists at the
+# project root so that both processes always read the same file.
 _SETTINGS_FILE: str = next(
     (p for p in (
         os.path.join(_PROJECT_ROOT, 'settings.ini'),
@@ -104,7 +103,7 @@ class Config:
 
     # Network
     local_ip: str = ''
-    electron_ipc_port: int = 5001
+    middleware_port: int = 5001
     server_rest_port: int = 5050
     server_websocket_port: int = 3000
     client_api_port: int = 4000
@@ -174,7 +173,7 @@ class Config:
 
         return cls(
             local_ip=os.environ.get('QVC_LOCAL_IP') or get_local_ip(),
-            electron_ipc_port=get('network', 'electron_ipc_port', 5001,
+            middleware_port=get('network', 'middleware_port', 5001,
                                   env_key='QVC_IPC_PORT', cast=int),
             server_rest_port=get('network', 'server_rest_port', 5050,
                                  env_key='QVC_SERVER_REST_PORT', cast=int),
@@ -209,7 +208,7 @@ _default = Config.from_ini()
 
 LOCAL_IP: str = _default.local_ip
 
-ELECTRON_IPC_PORT: int = _default.electron_ipc_port
+MIDDLEWARE_PORT: int = _default.middleware_port
 SERVER_REST_PORT: int = _default.server_rest_port
 SERVER_WEBSOCKET_PORT: int = _default.server_websocket_port
 CLIENT_API_PORT: int = _default.client_api_port
@@ -239,12 +238,12 @@ DEBUG_VIDEO: bool = _default.debug_video
 MUTE_AUDIO: bool = _default.mute_audio
 
 # ---------------------------------------------------------------------------
-# Defaults dict (consumed by Electron for "Reset to Defaults")
+# Defaults dict (consumed by frontend for "Reset to Defaults")
 # ---------------------------------------------------------------------------
 
 DEFAULTS = {
     'network': {
-        'electron_ipc_port': 5001,
+        'middleware_port': 5001,
         'server_rest_port': 5050,
         'server_websocket_port': 3000,
         'client_api_port': 4000,

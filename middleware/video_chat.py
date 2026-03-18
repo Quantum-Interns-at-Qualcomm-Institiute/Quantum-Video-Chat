@@ -10,9 +10,9 @@ import socketio
 
 from client.client import Client
 from client.api import ClientAPI
-from adapters.electron import ElectronSocketAdapter
+from adapters.socket_adapter import SocketAdapter
 from shared.endpoint import Endpoint
-from shared.config import ELECTRON_IPC_PORT
+from shared.config import MIDDLEWARE_PORT as _CFG_MIDDLEWARE_PORT
 from custom_logging import logger
 
 DEV = True
@@ -25,14 +25,13 @@ if __name__ == "__main__":
 
     try:
         frontend_socket = socketio.Client()
-        adapter = ElectronSocketAdapter(frontend_socket)
+        adapter = SocketAdapter(frontend_socket)
 
-        # Connect to Electron's IPC socket first so that status events emitted
-        # during Client initialisation (server_connecting, server_connected, …)
-        # are delivered to the frontend.
-        logger.info(f'Attempting to connect to frontend socket at {ELECTRON_IPC_PORT}')
+        # Connect to the browser frontend socket first so that status events
+        # emitted during Client initialisation are delivered to the frontend.
+        logger.info(f'Attempting to connect to frontend socket at {_CFG_MIDDLEWARE_PORT}')
         frontend_socket.connect(
-            f"http://localhost:{ELECTRON_IPC_PORT}",
+            f"http://localhost:{_CFG_MIDDLEWARE_PORT}",
             retry=True,
             transports=['websocket'])
 

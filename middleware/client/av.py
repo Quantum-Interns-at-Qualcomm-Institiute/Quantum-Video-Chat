@@ -22,7 +22,7 @@ from shared.config import (
 # region --- Client-specific Video Namespace ---
 
 class ClientVideoClientNamespace(VideoClientNamespace):
-    """Forwards decoded video frames to the Electron frontend via the adapter."""
+    """Forwards decoded video frames to the browser frontend via the adapter."""
     pix_fmt = 'rgb0'
 
     def _tobytes(self, image):

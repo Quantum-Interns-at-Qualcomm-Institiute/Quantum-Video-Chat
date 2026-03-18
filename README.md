@@ -1,6 +1,6 @@
 # Quantum Video Chat
 
-A secure, peer-to-peer video chat desktop application built around quantum key distribution (QKD) principles. Encrypted audio and video streams are exchanged between peers using AES-128 keys that rotate every second, with support for file-based key injection from real QKD hardware.
+A secure, peer-to-peer video chat application built around quantum key distribution (QKD) principles. Encrypted audio and video streams are exchanged between peers using AES-128 keys that rotate every second, with support for file-based key injection from real QKD hardware.
 
 ---
 
@@ -22,7 +22,6 @@ All three processes share a common Python library (`shared/`) that provides encr
 quantum-video-chat/
 ├── start.sh                              # Dev launcher (bash start.sh client|server)
 ├── pytest.ini                            # Pytest config (paths, markers)
-├── key.bin                               # QKD key file (for FileKeyGenerator)
 │
 ├── shared/                               # Shared Python library
 │   ├── adapters.py                       # FrontendAdapter ABC
@@ -52,14 +51,14 @@ quantum-video-chat/
 │       ├── user.py                       # User model + UserState enum
 │       └── user_manager.py               # In-memory user storage + manager
 │
-├── middleware/                           # Python middleware (runs alongside Electron)
-│   ├── video_chat.py                     # Entry point — connects to Electron IPC
+├── middleware/                           # Python middleware (browser ↔ server bridge)
+│   ├── video_chat.py                     # Entry point — connects to browser via Socket.IO
 │   ├── custom_logging.py                 # Middleware logging config
 │   ├── dev_python_config.json            # Dev server endpoint config
 │   ├── python_config.json                # Production server endpoint config
 │   ├── requirements.txt                  # Python dependencies
 │   ├── adapters/
-│   │   └── electron.py                   # ElectronSocketAdapter (FrontendAdapter impl)
+│   │   └── socket_adapter.py             # SocketAdapter (FrontendAdapter impl)
 │   └── client/
 │       ├── client.py                     # Client orchestrator (connect, disconnect, kill)
 │       ├── socket_client.py              # SocketClient (WebSocket connection)
@@ -70,16 +69,11 @@ quantum-video-chat/
 │       ├── errors.py                     # Client error enum
 │       └── util.py                       # ClientState, parameter helpers
 │
-├── frontend/                             # Electron + React desktop app
+├── frontend/                             # React browser app
 │   ├── settings.ini                      # Persisted user settings (INI format)
 │   ├── package.json                      # npm dependencies + scripts
 │   ├── src/
-│   │   ├── main/
-│   │   │   ├── main.ts                   # Electron main: Socket.IO IPC, settings, spawn
-│   │   │   ├── preload.ts                # contextBridge: setPeerId, disconnect, settings
-│   │   │   ├── menu.ts                   # Application menu builder
-│   │   │   └── util.ts                   # HTML path resolver
-│   │   ├── middleware/                    # Lightweight Python middleware (no Electron)
+│   │   ├── middleware/                    # Lightweight Python middleware (browser-facing)
 │   │   │   ├── client.py                 # Entry point + port detection + shutdown
 │   │   │   ├── state.py                  # MiddlewareState — centralised mutable state
 │   │   │   ├── video.py                  # VideoThread — camera capture + frame emission
@@ -87,7 +81,7 @@ quantum-video-chat/
 │   │   │   └── events.py                 # Socket.io + REST event handler registration
 │   │   ├── renderer/
 │   │   │   ├── App.tsx                   # Router + global connection status state
-│   │   │   ├── preload.d.ts              # TypeScript declarations for electronAPI
+│   │   │   ├── platform.ts              # Browser platform API (settings, events)
 │   │   │   ├── screens/
 │   │   │   │   ├── MainScreen.tsx        # Single-screen layout (composes sub-components)
 │   │   │   │   ├── Start.tsx             # Home — start or join a session
@@ -135,7 +129,7 @@ quantum-video-chat/
 │   │   ├── test_socket_client.py         # SocketClient tests
 │   │   ├── test_server_comms.py          # Server communication tests
 │   │   ├── test_av.py                    # AV pipeline tests
-│   │   ├── test_electron_adapter.py      # Adapter tests
+│   │   ├── test_socket_adapter.py        # Adapter tests
 │   │   └── test_util.py                  # Utility tests
 │   ├── shared/                           # Shared library unit tests
 │   │   ├── test_encryption.py            # Encryption round-trip tests
@@ -159,18 +153,17 @@ quantum-video-chat/
 
 1. **Host** clicks "Start Session" — a random session code is generated and displayed.
 2. **Client** enters the code on the Join screen.
-3. Both sides call `electronAPI.setPeerId(code)` via IPC.
-4. Electron main emits `connect_to_peer` to Python middleware over Socket.IO (:5001).
-5. Middleware calls `POST /peer_connection` on the backend server.
-6. Server starts a shared WebSocket namespace and contacts the peer's ClientAPI (:4000).
-7. Both clients connect to the shared WebSocket and begin streaming encrypted AV.
+3. The browser emits `connect_to_peer` to the Python middleware over Socket.IO (:5001).
+4. Middleware calls `POST /peer_connection` on the backend server.
+5. Server starts a shared WebSocket namespace and contacts the peer's ClientAPI (:4000).
+6. Both clients connect to the shared WebSocket and begin streaming encrypted AV.
 
 ### Disconnecting
 
 ![Session Disconnect Flow](docs/diagrams/session-disconnect.svg)
 
 1. Either user clicks "Hang Up" in the Session screen.
-2. `electronAPI.disconnect()` sends IPC to Electron main, which emits `disconnect_call` to middleware.
+2. The browser emits `disconnect_call` to the middleware via Socket.IO.
 3. Middleware calls `Client.disconnect_from_peer()`:
    - Stops AV key rotation (`_key_stop.set()`)
    - Disconnects from the WebSocket
@@ -217,12 +210,12 @@ Three key generators:
 Runtime settings can be configured in three ways (highest priority first):
 
 1. **Environment variables** (`QVC_*` prefix)
-2. **Settings INI file** (`frontend/settings.ini`, editable from the in-app Settings screen)
+2. **Settings INI file** (`settings.ini`, editable from the in-app Settings screen)
 3. **Hardcoded defaults** in `shared/config.py`
 
 | Constant | Default | Env Override |
 |----------|---------|-------------|
-| Electron IPC port | 5001 | `QVC_IPC_PORT` |
+| Middleware port | 5001 | `QVC_IPC_PORT` |
 | Server REST port | 5050 | `QVC_SERVER_REST_PORT` |
 | Server WebSocket port | 3000 | `QVC_SERVER_WS_PORT` |
 | Client API port | 4000 | `QVC_CLIENT_API_PORT` |
@@ -273,7 +266,7 @@ The `start.sh` script handles port detection and process lifecycle:
 # Terminal 1 — Backend server
 bash start.sh server
 
-# Terminal 2 — Client (Electron + middleware, spawned automatically)
+# Terminal 2 — Client (browser + middleware)
 bash start.sh client
 ```
 
@@ -285,9 +278,8 @@ For a two-client session on one machine, run `bash start.sh client` in two separ
 # 1. Backend server
 cd server && python3 main.py
 
-# 2. Frontend (starts renderer, Electron, and middleware automatically)
+# 2. Frontend (starts renderer and middleware)
 cd frontend && npm install && npm run start:renderer
-# Electron main starts automatically via webpack plugin
 ```
 
 ---
@@ -330,7 +322,7 @@ java -jar plantuml.jar -tsvg -o . docs/diagrams/*.puml
 ## Key Design Decisions
 
 - **`shared/` library**: Eliminates duplicated Python code between server and middleware. Both import from `shared/` via `sys.path`. Includes shared exception-handling decorators (`shared/decorators.py`) and a unified exception hierarchy (`shared/exceptions.py`).
-- **`FrontendAdapter` ABC**: Decouples the middleware from Electron's Socket.IO transport. The `ElectronSocketAdapter` is the only class that knows about socket.io; everything else codes against the abstract interface.
+- **`FrontendAdapter` ABC**: Decouples the middleware from the Socket.IO transport. The `SocketAdapter` is the only class that knows about socket.io; everything else codes against the abstract interface.
 - **Composition over inheritance**: `SocketAPI` owns a `Thread` rather than extending it, keeping the class open for extension without coupling to threading internals. `Server` delegates peer connection workflows to `PeerConnectionManager`.
 - **React hooks for state separation**: `ClientContext` composes three focused hooks (`useConnection`, `useSession`, `useMedia`) rather than managing all state inline. Each hook has a single responsibility and can be tested independently.
 - **Middleware module decomposition**: The lightweight Python middleware (`frontend/src/middleware/`) separates concerns into `state.py` (centralised mutable state), `video.py` (camera capture), `server_comms.py` (QKD server REST calls), and `events.py` (event handler registration), with `client.py` as a thin entry point.
@@ -339,7 +331,7 @@ java -jar plantuml.jar -tsvg -o . docs/diagrams/*.puml
 - **Thread-safe key state**: The rotating encryption key (`AV.key`) is protected by a `threading.Lock` to prevent data races between the key rotation thread and the AV streaming threads.
 - **SID tracking for disconnect**: The `SocketAPI` maps socket session IDs to user IDs, enabling proper state cleanup when clients disconnect unexpectedly.
 - **TOCTOU-safe port binding**: The middleware detects port collisions at startup with `SO_REUSEADDR=0` probing and auto-increments to a free port, preventing two instances on the same machine from silently sharing a port.
-- **Settings INI with no dependencies**: The Electron main process includes a zero-dependency INI parser/serialiser, with defaults mirrored in both TypeScript and Python.
+- **Settings INI with no dependencies**: A zero-dependency INI parser/serialiser, with defaults mirrored in both TypeScript and Python.
 
 ---
 
@@ -347,7 +339,6 @@ java -jar plantuml.jar -tsvg -o . docs/diagrams/*.puml
 
 | Layer | Technologies |
 |-------|-------------|
-| Desktop shell | Electron, electronmon |
 | UI | React, React Router, Material UI, TypeScript |
 | Bundler | Webpack 5, webpack-dev-server |
 | Backend server | Python, Flask, Flask-SocketIO, gevent |

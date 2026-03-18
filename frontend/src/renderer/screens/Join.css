@@ -16,7 +16,7 @@
   height: 50px;
   width: 175px;
   margin: 5px;
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 32px;
   background: var(--input-bg);
   border: 1px solid var(--border-subtle);
@@ -32,7 +32,7 @@
   width: 175px;
   height: 50px;
   margin: 5px;
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 20px;
   cursor: pointer;
   background: var(--btn-bg);
