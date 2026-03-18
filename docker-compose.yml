@@ -29,9 +29,6 @@ services:
       QUANTUM_SERVER_HOST: server
       QUANTUM_SERVER_PORT: ${QVC_SERVER_REST_PORT:-5050}
       QVC_CLIENT_API_PORT: ${QVC_CLIENT_API_PORT:-4000}
-    depends_on:
-      server:
-        condition: service_healthy
 
   frontend:
     build:
@@ -42,5 +39,3 @@ services:
       PORT: ${QVC_FRONTEND_PORT:-1212}
     volumes:
       - ./frontend/src:/app/src
-    depends_on:
-      - client
