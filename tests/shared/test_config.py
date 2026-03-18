@@ -64,11 +64,11 @@ class TestGetLocalIp:
 class TestDefaultPorts:
     def test_defaults(self):
         from shared.config import (
-            ELECTRON_IPC_PORT, SERVER_REST_PORT,
+            MIDDLEWARE_PORT, SERVER_REST_PORT,
             SERVER_WEBSOCKET_PORT, CLIENT_API_PORT
         )
         # These will use whatever env vars are set or defaults
-        assert isinstance(ELECTRON_IPC_PORT, int)
+        assert isinstance(MIDDLEWARE_PORT, int)
         assert isinstance(SERVER_REST_PORT, int)
         assert isinstance(SERVER_WEBSOCKET_PORT, int)
         assert isinstance(CLIENT_API_PORT, int)
@@ -110,7 +110,7 @@ class TestDefaults:
 
     def test_defaults_network_values(self):
         from shared.config import DEFAULTS
-        assert DEFAULTS['network']['electron_ipc_port'] == 5001
+        assert DEFAULTS['network']['middleware_port'] == 5001
         assert DEFAULTS['network']['server_rest_port'] == 5050
         assert DEFAULTS['network']['server_websocket_port'] == 3000
         assert DEFAULTS['network']['client_api_port'] == 4000
@@ -139,7 +139,7 @@ class TestIniLoading:
         """_get returns env var value over INI and default."""
         from shared.config import _get
         with patch.dict(os.environ, {'QVC_TEST_VAR': '9999'}):
-            result = _get('network', 'electron_ipc_port', 5001,
+            result = _get('network', 'middleware_port', 5001,
                          env_key='QVC_TEST_VAR', cast=int)
             assert result == 9999
 

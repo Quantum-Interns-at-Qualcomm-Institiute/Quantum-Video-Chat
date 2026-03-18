@@ -10,14 +10,14 @@
     width: 100%;
     text-align: center;
     padding: 5px 0;
-    font-family: var(--heading-font);
+    font-family: var(--body-font);
     color: var(--off-white);
 }
 
 .rectangle {
     width: 250px;
     border: 1px solid var(--border-default);
-    font-family: var(--heading-font);
+    font-family: var(--body-font);
     color: var(--text-primary);
     font-size: 32px;
     background-color: var(--bg-surface);

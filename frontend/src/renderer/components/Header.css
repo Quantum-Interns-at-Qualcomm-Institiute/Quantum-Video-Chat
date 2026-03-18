@@ -3,7 +3,7 @@
 }
 
 .header {
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   color: var(--off-white);
   width: 100%;
 

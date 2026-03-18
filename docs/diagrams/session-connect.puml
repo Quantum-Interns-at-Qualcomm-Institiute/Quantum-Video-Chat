@@ -23,15 +23,15 @@ skinparam sequence {
 
 title Session Connection Flow
 
-participant "Host\n(Electron)" as host
+participant "Host\n(Browser)" as host
 participant "Host\nMiddleware" as hostmw
 participant "Backend\nServer" as server
 participant "Peer\nMiddleware" as peermw
-participant "Peer\n(Electron)" as peer
+participant "Peer\n(Browser)" as peer
 
 == Registration ==
 
-host -> hostmw : setPeerId(code)\nvia IPC
+host -> hostmw : setPeerId(code)\nvia Socket.IO
 hostmw -> server : POST /peer_connection\n{user_id, peer_id}
 activate server
 
@@ -52,8 +52,8 @@ hostmw -> hostmw : connect_to_websocket()
 
 hostmw -> server : WebSocket /video, /audio\n(encrypted AV frames)
 server -> peermw : broadcast to peer\n(exclude sender)
-peermw -> peer : IPC 'frame' event
-hostmw -> host : IPC 'self-frame' event
+peermw -> peer : Socket.IO 'frame' event
+hostmw -> host : Socket.IO 'self-frame' event
 
 note over host, peer
   AES-128 keys rotate every 1 second.

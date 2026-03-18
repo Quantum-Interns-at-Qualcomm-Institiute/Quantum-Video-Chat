@@ -28,10 +28,8 @@ skinparam note {
 
 title Quantum Video Chat — System Architecture
 
-rectangle "Electron App (Desktop)" as electron #E8F4FD {
-    component "Main Process\nmain.ts\nSocket.IO :5001\nSettings INI R/W" as main
-    component "Renderer (React)\nStart / Join / Session\nSettings" as renderer
-    main <-right-> renderer : IPC
+rectangle "Browser Frontend (React)" as frontend #E8F4FD {
+    component "Renderer\nStart / Join / Session\nSettings" as renderer
 }
 
 rectangle "Python Middleware" as mw #F0FFF0 {
@@ -56,7 +54,7 @@ rectangle "shared/" as shared #F5F0FF {
     component "encryption\nendpoint\nconfig\nstate\nAV namespaces" as sharedlib
 }
 
-main -down-> client : Socket.IO
+renderer -down-> client : Socket.IO
 clientapi -right-> restapi : REST
 socketclient <-right-> socketapi : **WebSocket**\n(encrypted AV)
 mw ..> sharedlib

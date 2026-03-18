@@ -48,7 +48,7 @@
 }
 
 .settings-drawer-header h2 {
-    font-family: var(--heading-font);
+    font-family: var(--body-font);
     font-size: 22px;
     color: var(--off-white);
     margin: 0;

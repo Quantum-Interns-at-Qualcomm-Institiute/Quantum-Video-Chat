@@ -15,7 +15,7 @@ err()  { echo -e "${RED}[qvc]${NC} $*" >&2; }
 
 usage() {
     echo -e "Usage: ${YELLOW}bash start.sh <client|server>${NC}"
-    echo "  client  — Start browser frontend + Python middleware (no Electron)"
+    echo "  client  — Start browser frontend + Python middleware"
     echo "  server  — Start Python backend server + admin dashboard"
     exit 1
 }

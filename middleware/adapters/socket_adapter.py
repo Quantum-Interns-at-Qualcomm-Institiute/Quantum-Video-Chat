@@ -3,9 +3,9 @@ import socketio
 from shared.adapters import FrontendAdapter
 
 
-class ElectronSocketAdapter(FrontendAdapter):
+class SocketAdapter(FrontendAdapter):
     """
-    Bridges the middleware to an Electron frontend via a socket.io connection.
+    Bridges the middleware to the browser frontend via a socket.io connection.
 
     - `send_frame` emits raw video bytes as a 'stream' event.
     - `on_peer_id` wires the 'connect_to_peer' socket event to a callback,

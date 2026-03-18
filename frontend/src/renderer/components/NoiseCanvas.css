@@ -19,7 +19,7 @@
 .noise-label {
   position: absolute;
   color: var(--text-primary);
-  font-family: var(--heading-font, monospace);
+  font-family: var(--body-font);
   font-size: clamp(10px, 2vw, 18px);
   letter-spacing: 0.1em;
   text-transform: uppercase;

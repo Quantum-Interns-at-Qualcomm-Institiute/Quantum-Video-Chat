@@ -1,8 +1,7 @@
 /**
  * Socket.io-client singleton.
  *
- * The browser connects directly to the Python middleware server
- * (no Electron, no IPC bridge).
+ * The browser connects directly to the Python middleware server.
  *
  * For same-device testing with two users, run two middleware instances
  * on different ports and open the app with a ?port= query parameter:

@@ -27,7 +27,7 @@
 }
 
 .server-form-label {
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   color: var(--off-white);
   font-size: 0.85rem;
   letter-spacing: 0.08em;
@@ -48,7 +48,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: 0;
   color: var(--off-white);
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 0.9rem;
   padding: 0 10px;
   outline: none;
@@ -63,7 +63,7 @@
 .connect-button {
   height: 40px;
   padding: 0 16px;
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 0.9rem;
   border-radius: 0;
   border: 1px solid var(--border-subtle);
@@ -82,7 +82,7 @@
 
 .server-form-error {
   color: var(--bad);
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 0.8rem;
   margin: 0;
   text-align: center;
@@ -90,7 +90,7 @@
 
 .server-form-info {
   color: var(--off-white);
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 0.8rem;
   margin: 0;
   text-align: center;
@@ -115,7 +115,7 @@
 .session-buttons .button {
   width: 175px;
   height: 50px;
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   font-size: 1rem;
   cursor: pointer;
   border-radius: 0;

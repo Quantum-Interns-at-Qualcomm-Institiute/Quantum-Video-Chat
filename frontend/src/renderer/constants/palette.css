@@ -1,4 +1,4 @@
-/* ── Soft-Machine Dark (default) ── */
+/* ── Dark (default) ── */
 :root {
     /* Surface colors */
     --bg-base:       #2d2b22;
@@ -47,7 +47,7 @@
     --card-bg:        rgba(212, 190, 152, 0.04);
 }
 
-/* ── Soft-Machine Light ── */
+/* ── Light ── */
 [data-theme="light"] {
     /* Surface colors */
     --bg-base:       #e8e0cc;
