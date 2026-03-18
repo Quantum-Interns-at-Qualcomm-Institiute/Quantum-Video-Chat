@@ -75,7 +75,7 @@ export default function Session() {
           <div className="vert-spacer" />
 
           <button
-            className="button camera-button"
+            className="btn camera-button"
             type="button"
             onClick={client.toggleCamera}
           >
@@ -84,7 +84,7 @@ export default function Session() {
 
           <div className="vert-spacer" />
 
-          <button className="button leave-button" type="button" onClick={handleLeave}>
+          <button className="btn btn-danger leave-button" type="button" onClick={handleLeave}>
             Leave
           </button>
         </div>

@@ -1,19 +1,20 @@
 /**
  * Toast — Auto-dismissing notification overlay.
  *
+ * Uses ui-kit toast classes for positioning and animation.
  * Appears from the top, auto-hides after a timeout.
- * Used for error messages instead of the old side panel.
  */
 import { useState, useEffect, useRef } from 'react';
 import './Toast.css';
 
 interface ToastProps {
   message: string;
+  type?: 'error' | 'success';
   duration?: number;
   onDismiss: () => void;
 }
 
-export default function Toast({ message, duration = 5000, onDismiss }: ToastProps) {
+export default function Toast({ message, type = 'error', duration = 5000, onDismiss }: ToastProps) {
   const [visible, setVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -33,17 +34,21 @@ export default function Toast({ message, duration = 5000, onDismiss }: ToastProp
 
   if (!message) return null;
 
+  const variant = type === 'success' ? 'ui-toast-success' : 'ui-toast-error';
+
   return (
-    <div
-      className={`toast ${visible ? 'toast--visible' : 'toast--hidden'}`}
-      role="alert"
-      onClick={() => {
-        setVisible(false);
-        setTimeout(onDismiss, 300);
-      }}
-    >
-      <span className="toast-message">{message}</span>
-      <span className="toast-dismiss" aria-label="Dismiss">&times;</span>
+    <div className="ui-toast-container">
+      <div
+        className={`ui-toast ${variant} ${visible ? 'visible' : ''}`}
+        role="alert"
+        onClick={() => {
+          setVisible(false);
+          setTimeout(onDismiss, 300);
+        }}
+      >
+        <span>{message}</span>
+        <button className="ui-toast-dismiss" aria-label="Dismiss">&times;</button>
+      </div>
     </div>
   );
 }

@@ -45,6 +45,17 @@
     --spinner-track:  rgba(212, 190, 152, 0.15);
     --spinner-head:   rgba(212, 190, 152, 0.70);
     --card-bg:        rgba(212, 190, 152, 0.04);
+
+    /* ── ui-kit token aliases ── */
+    --bg:             var(--bg-base);
+    --surface2:       var(--bg-overlay);
+    --border:         var(--border-default);
+    --text:           var(--text-primary);
+    --text-inverse:   #2d2b22;
+    --accent-hover:   #e8b86a;
+    --danger:         var(--error);
+    --warn:           var(--warning);
+    --font:           var(--body-font);
 }
 
 /* ── Light ── */
@@ -84,4 +95,8 @@
     --spinner-track:  rgba(58, 56, 48, 0.15);
     --spinner-head:   rgba(58, 56, 48, 0.70);
     --card-bg:        rgba(58, 56, 48, 0.04);
+
+    /* ── ui-kit token aliases (light) ── */
+    --text-inverse:   #e8e0cc;
+    --accent-hover:   #a0761f;
 }

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { Snackbar, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 
 import "../screens/Settings.css";
 import platform from "../platform";
 import ThemeToggle from "./ThemeToggle";
+import Toast from "./Toast";
 
 type SettingsData = Record<string, Record<string, string | number | boolean>>;
 
@@ -193,13 +192,13 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 			</fieldset>
 
 			<div className="settings-actions">
-				<button type="button" onClick={handleSave}>
+				<button type="button" className="btn" onClick={handleSave}>
 					Save
 				</button>
-				<button type="button" onClick={handleReset}>
+				<button type="button" className="btn" onClick={handleReset}>
 					Reset to Defaults
 				</button>
-				<button type="button" id="return-button" onClick={handleCancel}>
+				<button type="button" className="btn" id="return-button" onClick={handleCancel}>
 					Cancel
 				</button>
 			</div>
@@ -208,21 +207,14 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 				Changes require restarting the application.
 			</p>
 
-			<Snackbar
-				open={snackbar.open}
-				autoHideDuration={4000}
-				message={snackbar.message}
-				onClose={() => setSnackbar({ ...snackbar, open: false })}
-				action={
-					<IconButton
-						size="small"
-						color="inherit"
-						onClick={() => setSnackbar({ ...snackbar, open: false })}
-					>
-						<CloseIcon fontSize="small" />
-					</IconButton>
-				}
-			/>
+			{snackbar.open && (
+				<Toast
+					message={snackbar.message}
+					type="success"
+					duration={4000}
+					onDismiss={() => setSnackbar({ ...snackbar, open: false })}
+				/>
+			)}
 		</>
 	);
 }

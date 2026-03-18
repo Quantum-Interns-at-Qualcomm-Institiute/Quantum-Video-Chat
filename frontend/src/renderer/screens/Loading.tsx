@@ -9,7 +9,7 @@ import './Loading.css';
 export default function Loading() {
   return (
     <div className="loading-wrapper">
-      <div className="loading-spinner" />
+      <div className="ui-spinner" />
       <span className="loading">Connecting…</span>
     </div>
   );
