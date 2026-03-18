@@ -22,7 +22,10 @@ class MiddlewareState:
 
     def __init__(self):
         # ── Socket.io server (browsers connect here) ─────────────────────
-        self.flask_app = Flask(__name__)
+        _dir = os.path.dirname(__file__)
+        self.flask_app = Flask(__name__,
+                               template_folder=os.path.join(_dir, 'templates'),
+                               static_folder=os.path.join(_dir, 'static'))
         self.sio = socketio.Server(
             cors_allowed_origins='*',
             async_mode='gevent',
