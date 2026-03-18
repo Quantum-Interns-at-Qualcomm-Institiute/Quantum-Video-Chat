@@ -55,13 +55,13 @@ export default function Header() {
 
           <span className="conn-sep">&middot;</span>
 
-          <span className={`conn-state conn-state--${stateLabel.replace(/\s/g, '-')}`}>
+          <span className={`ui-badge conn-state conn-state--${stateLabel.replace(/\s/g, '-')}`}>
             {stateLabel}
           </span>
         </div>
 
         <button
-          className="header-theme-btn"
+          className="btn btn-icon header-theme-btn"
           onClick={toggleLogo}
           aria-label={logoVisible ? 'Hide logo' : 'Show logo'}
           title={logoVisible ? 'Hide logo' : 'Show logo'}
@@ -70,7 +70,7 @@ export default function Header() {
         </button>
 
         <button
-          className="header-theme-btn"
+          className="btn btn-icon header-theme-btn"
           onClick={() => setDarkMode((prev) => !prev)}
           aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           title={darkMode ? 'Light mode' : 'Dark mode'}

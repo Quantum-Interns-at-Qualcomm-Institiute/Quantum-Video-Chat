@@ -14,7 +14,4 @@
   min-height: 0;
 }
 
-/* ── Spinner keyframe (shared) ───────────────────────────────────────────── */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* Spinner keyframe now provided by ui-kit (.ui-spinner) */

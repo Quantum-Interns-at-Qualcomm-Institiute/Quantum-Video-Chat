@@ -28,20 +28,16 @@
 }
 .join-content .room-id-form input:focus { border-color: var(--border-focus); }
 
-.join-content .room-id-form button {
+/* Buttons use .btn from ui-kit; app-specific size overrides */
+.join-content .room-id-form .btn {
   width: 175px;
   height: 50px;
   margin: 5px;
-  font-family: var(--body-font);
   font-size: 20px;
-  cursor: pointer;
   background: var(--btn-bg);
   color: var(--off-white);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0;
-  transition: background 0.15s;
 }
-.join-content .room-id-form button:hover { background: var(--btn-bg-hover); }
+.join-content .room-id-form .btn:hover { background: var(--btn-bg-hover); }
 
 #return-button {
   margin-top: 50px;

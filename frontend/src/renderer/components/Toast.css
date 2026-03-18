@@ -1,51 +1,26 @@
-/* ── Toast notification ───────────────────────────────────────────────────── */
-.toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-100px);
+/* ── Toast overrides (ui-kit provides .ui-toast base) ─────────────────────── */
+.ui-toast-container {
   z-index: 1000;
+  padding-top: 20px;
+}
 
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 12px 20px;
-  background: rgba(234, 105, 98, 0.92);
-  border: 1px solid rgba(234, 105, 98, 0.4);
-  border-radius: 0;
-  color: var(--text-primary);
-  font-family: var(--body-font);
+.ui-toast {
+  cursor: pointer;
   font-size: 0.85rem;
   letter-spacing: 0.02em;
-  cursor: pointer;
-
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  opacity: 0;
-  pointer-events: none;
+  padding: 12px 20px;
+  gap: 12px;
 }
 
-.toast--visible {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-  pointer-events: auto;
+/* QVC error toasts use a solid red background */
+.ui-toast-error {
+  background: rgba(234, 105, 98, 0.92);
+  border-color: rgba(234, 105, 98, 0.4);
+  color: var(--text-primary);
 }
 
-.toast--hidden {
-  transform: translateX(-50%) translateY(-100px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.toast-message {
-  flex: 1;
-}
-
-.toast-dismiss {
-  font-size: 1.2rem;
-  opacity: 0.7;
-  transition: opacity 0.15s;
-}
-.toast-dismiss:hover {
-  opacity: 1;
+.ui-toast-success {
+  background: rgba(169, 182, 101, 0.92);
+  border-color: rgba(169, 182, 101, 0.4);
+  color: var(--text-primary);
 }

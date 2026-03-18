@@ -16,15 +16,11 @@
   opacity: 0.7;
 }
 
-.loading-spinner {
+/* Spinner uses .ui-spinner from ui-kit */
+.loading-wrapper .ui-spinner {
   width: 40px;
   height: 40px;
-  border: 1px solid var(--spinner-track);
+  border-width: 1px;
+  border-color: var(--spinner-track);
   border-top-color: var(--spinner-head);
-  border-radius: 0;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }

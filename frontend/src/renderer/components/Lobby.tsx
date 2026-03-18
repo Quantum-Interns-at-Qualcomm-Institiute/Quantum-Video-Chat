@@ -226,7 +226,7 @@ export default function Lobby() {
       {/* ── Waiting indicator ─────────────────────────────────────────── */}
       {client.waitingForPeer && (
         <div className="lobby-waiting">
-          <span className="lobby-waiting-spinner" />
+          <span className="ui-spinner ui-spinner-sm" />
           <span>Waiting for peer to join...</span>
           {client.userId && (
             <span className="lobby-user-id">Your ID: <strong>{client.userId}</strong></span>

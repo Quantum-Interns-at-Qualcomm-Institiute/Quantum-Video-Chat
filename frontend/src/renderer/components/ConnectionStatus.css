@@ -51,7 +51,7 @@
 
 .peer-banner.outgoing .banner-icon {
     display: inline-block;
-    animation: spin 1.2s linear infinite;
+    animation: ui-spin 1.2s linear infinite;
 }
 
 .peer-banner.incoming {
@@ -70,7 +70,4 @@
     50%       { opacity: 0.35; }
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
+/* spin keyframe now provided by ui-kit (ui-spin) */

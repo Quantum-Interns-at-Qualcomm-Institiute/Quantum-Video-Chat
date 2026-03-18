@@ -101,7 +101,7 @@ export default function Start() {
               />
               <button
                 type="submit"
-                className={`button connect-button connect-button--${status}`}
+                className={`btn connect-button connect-button--${status}`}
                 disabled={status === 'connecting'}
               >
                 {status === 'connecting' ? 'Connecting…'
@@ -124,13 +124,13 @@ export default function Start() {
               <p className="server-form-info">
                 Share your ID: <code>{client.userId}</code>
               </p>
-              <div className="loading-spinner" />
+              <div className="ui-spinner" />
             </div>
           ) : (
             <div className="session-buttons">
               <button
                 type="button"
-                className="button"
+                className="btn"
                 onClick={() => client.joinRoom()}
                 disabled={!isConnected}
                 title={!isConnected ? 'Connect to a server first' : ''}
@@ -139,7 +139,7 @@ export default function Start() {
               </button>
               <button
                 type="button"
-                className="button"
+                className="btn"
                 onClick={() => navigate('/join')}
                 disabled={!isConnected}
                 title={!isConnected ? 'Connect to a server first' : ''}
