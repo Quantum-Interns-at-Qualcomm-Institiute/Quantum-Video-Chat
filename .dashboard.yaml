@@ -3,14 +3,14 @@ services:
     display_name: Video Chat (Server)
     compose_service: server
     default_port: 5050
-    url_path: /dashboard
+    url_path: /admin/status
     healthcheck: /admin/status
     ports:
       rest: 5050
       websocket: 3000
 
-  - name: video-chat-client
-    display_name: Video Chat (Client)
+  - name: video-chat-middleware
+    display_name: Video Chat (Middleware)
     compose_service: client
     default_port: 4000
     no_browser: true
@@ -19,3 +19,10 @@ services:
     environment:
       QVC_SERVER_WS_PORT: "3002"
       QVC_SERVER_REST_PORT: "5051"
+
+  - name: video-chat-frontend
+    display_name: Video Chat (Frontend)
+    compose_service: frontend
+    default_port: 3000
+    depends_on:
+      - video-chat-middleware
