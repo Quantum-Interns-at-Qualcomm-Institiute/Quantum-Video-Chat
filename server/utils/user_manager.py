@@ -2,6 +2,7 @@
 
 # region --- Logging ---
 import hashlib
+import random
 from random import choice
 from string import ascii_letters, digits
 from abc import ABC, abstractmethod
@@ -52,6 +53,10 @@ class UserStorageInterface(ABC):
     def has_user(self, user_id):
         pass
 
+    @abstractmethod
+    def get_all_users(self):
+        pass
+
 
 class DictUserStorage(UserStorageInterface):
 
@@ -85,6 +90,9 @@ class DictUserStorage(UserStorageInterface):
     def has_user(self, user_id):
         return user_id in self.users
 
+    def get_all_users(self):
+        return dict(self.users)
+
 
 class UserStorageFactory:
     def __init__(self):
@@ -112,17 +120,14 @@ class UserManager:
     def __init__(self, storage: UserStorageInterface):
         self.storage = storage
 
-    # I would personally just generate a completely random string every time, but we do this in Andy's interest of having perfect reproducibility during testing
     def generate_user_id(self):
-        # logger.debug(f"Generating User ID for user with API Endpoint {endpoint}.")
-        # hash_object = hashlib.sha256(endpoint.encode())
-        # user_id = hash_object.hexdigest()[:5]
-
-        # while self.storage.has_user(user_id):
-        #     hash_object = hashlib.sha256(hash_object.hexdigest().encode())
-        #     user_id = hash_object.hexdigest()[:5]
-
-        return ''.join(choice(ascii_letters + digits) for _ in range(5)).lower()
+        """Generate a unique 5-digit numeric user ID (10000–99999)."""
+        for _ in range(100):  # avoid infinite loop on a very full server
+            user_id = str(random.randint(10000, 99999))
+            if not self.storage.has_user(user_id):
+                return user_id
+        # Fallback: expand to 6 digits if 5-digit space is exhausted
+        return str(random.randint(100000, 999999))
 
     # See note for generate_user_id(); the particular choice of seed here is a bit AIDS, though.
     # Also note uniqueness is not strictly necessary for tokens, so I've omitted it.
@@ -133,11 +138,10 @@ class UserManager:
 
         return token
 
-    def add_user(self):
+    def add_user(self, api_endpoint):
         user_id = self.generate_user_id()
-        # user_info = User(endpoint)
         try:
-            self.storage.add_user(user_id, None)
+            self.storage.add_user(user_id, User(api_endpoint))
             logger.debug(f"Added User {user_id}'.")
             return user_id
         except DuplicateUser as e:
@@ -146,16 +150,14 @@ class UserManager:
 
     def set_user_state(self, user_id, state: UserState, peer=None):
         if (state == UserState.IDLE) ^ (peer == None):
-            raise InvalidState(f"Cannot set state {state} ({peer}) for User {
-                               user_id}: Invalid state.")
+            raise InvalidState(f"Cannot set state {state} ({peer}) for User {user_id}: Invalid state.")
 
         try:
             user_info = self.storage.get_user(user_id)
             user_info.state = state
             user_info.peer = peer
             self.storage.update_user(user_id, user_info)
-            logger.debug(f"Updated User {user_id} state: {
-                state} ({peer}).")
+            logger.debug(f"Updated User {user_id} state: {state} ({peer}).")
         except UserNotFound as e:
             logger.error(str(e))
             raise e
@@ -175,4 +177,15 @@ class UserManager:
             logger.debug(f"Removed User {user_id}.")
         except UserNotFound as e:
             logger.error(str(e))
+
+    def get_all_users(self):
+        users = self.storage.get_all_users()
+        return {
+            uid: {
+                'api_endpoint': str(user.api_endpoint),
+                'state': user.state.value,
+                'peer': user.peer,
+            }
+            for uid, user in users.items()
+        }
 # endregion

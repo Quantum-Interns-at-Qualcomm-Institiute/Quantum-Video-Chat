@@ -3,32 +3,123 @@
 }
 
 .header {
-  position: relative;
-
-  font-family: var(--heading-font);
+  font-family: var(--body-font);
   color: var(--off-white);
-  width: 100vw;
-  height: 10vh;
+  width: 100%;
 
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 20px 0;
+  padding: 10px 20px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.header h1 {
-  position: absolute;
-  /* Just looks better at top: 65% tbh */
-  top: 65%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-
-  font-size: min(80px,5vw);
-  font-weight: 400;
-  margin: 0;
+.header-left {
+  display: flex;
+  align-items: center;
 }
 
 .header img#logo {
-  max-height: calc(15vh - 40px);
+  height: 32px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Theme / logo toggle buttons ─────────────────────────────────────────── */
+.header-theme-btn {
+  background: none;
+  border: 1px solid var(--border-subtle);
+  color: var(--off-white);
+  cursor: pointer;
+  opacity: 0.7;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 0;
+  transition: opacity 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-theme-btn:hover { opacity: 1; background: var(--btn-bg); }
+
+/* ── Connection status ────────────────────────────────────────────────────── */
+.conn-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  opacity: 0.75;
+  letter-spacing: 0.03em;
+  color: var(--off-white);
+}
+
+.conn-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* green — connected */
+.conn-dot--ok {
+  background: var(--success);
+  box-shadow: 0 0 5px rgba(169, 182, 101, 0.5);
+}
+
+/* amber — middleware up but server not yet connected */
+.conn-dot--idle {
+  background: var(--accent);
+  box-shadow: 0 0 5px rgba(216, 166, 87, 0.5);
+}
+
+/* red — not connected at all */
+.conn-dot--off {
+  background: var(--error);
+  box-shadow: 0 0 5px rgba(234, 105, 98, 0.5);
+}
+
+.conn-label {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.conn-sep {
+  opacity: 0.4;
+  margin: 0 2px;
+}
+
+/* ── Connection state label ───────────────────────────────────────────────── */
+.conn-state {
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 1px 6px;
+  border-radius: 0;
+}
+
+.conn-state--idle {
+  color: var(--off-white);
+  opacity: 0.5;
+}
+
+.conn-state--ready {
+  color: var(--success);
+}
+
+.conn-state--waiting {
+  color: var(--accent);
+}
+
+.conn-state--in-session {
+  color: var(--success);
+  background: rgba(169, 182, 101, 0.12);
 }
