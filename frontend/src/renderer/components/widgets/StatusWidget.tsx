@@ -1,29 +1,24 @@
-// import Ellipsis from "../../assets/ellipsis.png";
 import Locked from '../../../../assets/Lock.svg';
 import Unlock from '../../../../assets/Unlock.svg';
 
 import './StatusWidget.css';
 
-export default function StatusWidget(props) {
-  function getStatusContext(status) {
-    switch (status) {
-      case 'waiting':
-        return ['Establishing', <br />, 'Connection', <br />, '...'];
+type WidgetStatus = 'waiting' | 'good' | 'bad';
 
-      case 'good':
-        return ['Communcations', <br />, 'Secure', <img src={Locked} />];
+interface StatusWidgetProps {
+  status: WidgetStatus;
+}
 
-      case 'bad':
-        return ['Eavesdropper', <br />, 'Detected', <img src={Unlock} />];
+const STATUS_CONTENT: Record<WidgetStatus, React.ReactNode[]> = {
+  waiting: ['Establishing', <br key="b1" />, 'Connection', <br key="b2" />, '...'],
+  good:    ['Communications', <br key="b1" />, 'Secure', <img key="icon" src={Locked} alt="Locked" />],
+  bad:     ['Eavesdropper', <br key="b1" />, 'Detected', <img key="icon" src={Unlock} alt="Unlocked" />],
+};
 
-      default:
-        return '';
-    }
-  }
-
+export default function StatusWidget({ status }: StatusWidgetProps) {
   return (
-    <div className={`status-widget ${props.status}`}>
-      {getStatusContext(props.status)}
+    <div className={`status-widget ${status}`}>
+      {STATUS_CONTENT[status] ?? null}
     </div>
   );
 }

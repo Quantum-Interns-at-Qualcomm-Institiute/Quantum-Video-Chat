@@ -1,33 +1,41 @@
-import {useEffect, useRef} from 'react';
-import Loading from "../../../assets/Loading Screen Effect.mp4";
-
+import { useEffect, useRef } from 'react';
+import NoiseCanvas from './NoiseCanvas';
 import './VideoPlayer.css';
 
-/*
- * props.loading: bool
- * props.srcObject: MediaStream obj
- * props.status: str
- *      - waiting
- *      - bad
- *      - good
+interface VideoPlayerProps {
+  srcObject?: MediaStream | null;
+  status?: string;
+  cameraEnabled?: boolean;
+  id?: string;
+}
+
+/**
+ * Displays a live video feed or, when no feed is available / camera is off,
+ * an animated noise canvas.
  */
-export default function VideoPlayer(props) {
-    
-    const videoRef = useRef(null);
+export default function VideoPlayer({
+  srcObject,
+  status = 'waiting',
+  cameraEnabled = true,
+  id,
+}: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-    useEffect(() => {
-        let video = videoRef.current;
-        if (video) {
-            console.log('VideoPlayer: Attempting to set video.srcObject')
-            video.srcObject = props.loading ? null : props.srcObject;
-        }
-    },[props.srcObject, props.status]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) video.srcObject = srcObject ?? null;
+  }, [srcObject]);
 
-    return (
-        <div className={`video-player ${props.status}`}>
-            <video ref={videoRef} autoPlay={true} loop={props.loading}>
-                {props.loading ? <source src={Loading} type="video/mp4"/> : null}
-            </video>
-        </div>
-    );
+  const showNoise  = !cameraEnabled || !srcObject;
+  const noiseLabel = cameraEnabled ? 'No Signal' : 'Camera Disabled';
+
+  return (
+    <div className={`video-player ${status}`} id={id}>
+      {showNoise ? (
+        <NoiseCanvas label={noiseLabel} />
+      ) : (
+        <video ref={videoRef} autoPlay playsInline muted />
+      )}
+    </div>
+  );
 }

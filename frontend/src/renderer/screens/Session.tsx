@@ -1,151 +1,94 @@
-import { useEffect, useState, useRef } from "react";
-import {useLocation, useNavigate} from "react-router-dom";
-import Header from "../components/Header";
-import StatusPopup from "../components/StatusPopup";
-import VideoPlayer from "../components/VideoPlayer";
-import CircleWidget from "../components/widgets/CircleWidget";
-import RectangleWidget from "../components/widgets/RectangleWidget";
-import Chat from "../components/chat/Chat";
+import { useEffect, useRef, useContext } from 'react';
+import { ClientContext } from '../utils/ClientContext';
 
-// import { closeSession } from "../util/Auth";
-// import {handleChat} from "../util/API.js";
+import Header from '../components/Header';
+import StatusPopup from '../components/StatusPopup';
+import VideoPlayer from '../components/VideoPlayer';
+import NoiseCanvas from '../components/NoiseCanvas';
+import CircleWidget from '../components/widgets/CircleWidget';
+import RectangleWidget from '../components/widgets/RectangleWidget';
 
+import { drawOnCanvas } from '../utils/canvas';
 import './Session.css';
 
-/*
-* props.status: str
-*      - waiting
-*      - bad
-*      - good
-*/
-export default function Session(props) {
-    // const { ipcRenderer } = require('electron');
-    const canvasRef = useRef(null);
+export default function Session() {
+  const peerCanvasRef = useRef<HTMLCanvasElement>(null);
+  const selfCanvasRef = useRef<HTMLCanvasElement>(null);
 
-    // ipcRenderer.on('frame', (event, frame) => {
-    //     const canvas = canvasRef.current;
-    //     const context = canvas.getContext('2d');
-    //     context.drawImage(frame, 0, 0, canvas.width, canvas.height);
-    // })
+  const client = useContext(ClientContext);
 
-    const location = useLocation();
-    const code = location.pathname.slice(-5);
+  // ── Route incoming frames to the correct canvas ────────────────────────
+  useEffect(() => {
+    client.setOnFrame((canvasData: any) => {
+      if (canvasData.self) {
+        drawOnCanvas(selfCanvasRef.current, canvasData);
+      } else {
+        drawOnCanvas(peerCanvasRef.current, canvasData);
+      }
+    });
+  }, []);
 
-    // const startedSession = useRef(false);
-    const [selfSrc, setSelfSrc] = useState(null);
-    const [selfSrc2, setSelfSrc2] = useState(null);
+  const handleLeave = () => client.leaveRoom();
 
-    const [messages, setMessages] = useState([
-        {
-            time: "ti:me",
-            name: "Client 1",
-            body: "text from client 1"
-        }, {
-            time: "ti:me",
-            name: "Client 2",
-            body: "text from client 2"
-        }
-    ]);
+  return (
+    <>
+      <Header status={client.status} />
+      {client.status === 'bad' && <StatusPopup />}
 
-    const navigate = useNavigate();
+      <div className="session-content">
+        <h3 className="room-id">Room ID: {client.roomId}</h3>
 
-    const handleReturn = () => {
-        navigate('/start');
-    }
+        <div className="top">
+          {/* ── Left: Peer video ─────────────────────────────────────── */}
+          <div className="video-wrapper">
+            <canvas ref={peerCanvasRef} id="peer-stream">
+              Waiting for peer…
+            </canvas>
+          </div>
 
-    // TODO: Should instead be defined in another util file (e.g., ../util/API.js)
-    function handleChat(message) {
-        console.log("Message Sent: " + message);
+          <div className="vert-spacer" />
 
-        var date = new Date();
-        const time = date.toLocaleTimeString()
-        const messageObj = {
-            time: time.substring(0,time.length-6),
-            name: "Client 1",
-            body: message
-        }
+          {/* ── Right: Self video (camera) ───────────────────────────── */}
+          <div className="video-wrapper" id="right-video">
+            {client.cameraOn ? (
+              /* Canvas is always mounted; when no frames arrive it stays blank.
+                 Wrapping in the same border-styled div keeps layout consistent. */
+              <canvas ref={selfCanvasRef} id="self-stream" className="self-canvas" />
+            ) : (
+              <VideoPlayer status={client.status} cameraEnabled={false} id="self-stream" />
+            )}
+          </div>
+        </div>
 
-        setMessages([...messages, messageObj]);
-    }
+        <div className="bottom">
+          <RectangleWidget topText="Accumulated Secret Key" status={client.status}>
+            {client.status === 'good' ? '# Mbits' : '…'}
+          </RectangleWidget>
+          <div className="vert-spacer" />
+          <CircleWidget topText="Key Rate" bottomText="Mbits/s" status={client.status}>
+            {client.status === 'good' ? '3.33' : '…'}
+          </CircleWidget>
+          <div className="vert-spacer" />
+          <CircleWidget topText="Error Rate %" bottomText="Mbits" status={client.status}>
+            {client.status === 'good' ? '0.2' : '…'}
+          </CircleWidget>
+          <div className="vert-spacer" />
 
-    // const navigate = useNavigate();
+          <button
+            className="button camera-button"
+            type="button"
+            onClick={client.toggleCamera}
+          >
+            {client.cameraOn ? '📷 Cam On' : '🚫 Cam Off'}
+          </button>
 
-    // const handleQuit = async () => {
-    //     await closeSession();
-    //     navigate('/');
-    // }
+          <div className="vert-spacer" />
 
-    // Start incoming video feed from my camera
-    useEffect(() =>{
-        async function getOutStream() {
-            console.log('Session: Attempting to setSelfSrc()')
-            const outStream = await navigator.mediaDevices.getUserMedia({video: true})
-            setSelfSrc(outStream)
-            // setSelfSrc2(outStream)
-        }
-        console.log('Session: Running useEffect()')
-        getOutStream()
-    },[])
-
-    useEffect(() => {
-        window.electronAPI.ipcListen('frame', (event, frame) => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext('2d');
-            context.drawImage(frame, 0, 0, canvas.width, canvas.height);
-        })
-
-        if (props.host) {
-            // Is a host
-            ;
-        } else {
-            // Is client
-            console.log(`sent peer id ${code}`)
-            window.electronAPI.setPeerId(code);
-        }
-    })
-
-    return (
-        <>
-            <Header status={props.status} />
-
-            {props.status == "bad" ? <StatusPopup/> : null}
-
-            <div className="session-content">
-                {/* Add a copy button instead of allowing text selection */}
-                { code ? <h3 className="code">Code: {code}</h3> : null}
-
-                <div className="top">
-                    <div className="video-wrapper" id="left-video">
-                        <canvas ref={canvasRef} id="peer-stream"></canvas>
-                    </div>
-                    <div className="vert-spacer"></div>
-                    <div className="video-wrapper" id="right-video">
-                        <VideoPlayer srcObject={selfSrc} id="self-stream" status={props.status}/>
-                    </div>
-                </div>
-
-                <div className="bottom">
-
-                    <RectangleWidget topText="Accumulated Secret Key" status={props.status}>
-                        {props.status == "good" ? "# Mbits" : "..."}
-                    </RectangleWidget>
-                    <div className="vert-spacer"></div>
-                    <CircleWidget topText="Key Rate" bottomText="Mbits/s" status={props.status}>
-                        {props.status == "good" ? "3.33" : "..."}
-                    </CircleWidget>
-                    <div className="vert-spacer"></div>
-                    <CircleWidget topText="Error Rate %" bottomText="Mbits" status={props.status}>
-                        {props.status == "good" ? "0.2" : "..."}
-                    </CircleWidget>
-                    <div className="vert-spacer"></div>
-
-                    <div className="chat-wrapper">
-                        <Chat messages={messages} handleSend={handleChat} status={props.status}/>
-                    </div>
-
-                    {/* <button id="quit" onClick={handleQuit}>End Session</button> */}
-                </div>
-            </div>
-        </>
-    )
+          <button className="button leave-button" type="button" onClick={handleLeave}>
+            Leave
+          </button>
+        </div>
+      </div>
+    </>
+  );
 }

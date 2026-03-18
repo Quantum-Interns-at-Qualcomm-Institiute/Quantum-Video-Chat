@@ -1,0 +1,63 @@
+@startuml architecture
+!theme plain
+skinparam backgroundColor transparent
+skinparam defaultFontName "Segoe UI, Helvetica, Arial, sans-serif"
+skinparam defaultFontSize 13
+skinparam componentStyle rectangle
+skinparam padding 8
+skinparam roundCorner 10
+skinparam shadowing false
+skinparam linetype ortho
+
+skinparam rectangle {
+    BackgroundColor #F8F9FA
+    BorderColor #DEE2E6
+    FontColor #212529
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #ADB5BD
+    FontColor #212529
+}
+
+skinparam note {
+    BackgroundColor #FFF3CD
+    BorderColor #FFECB5
+}
+
+title Quantum Video Chat — System Architecture
+
+rectangle "Browser Frontend (React)" as frontend #E8F4FD {
+    component "Renderer\nStart / Join / Session\nSettings" as renderer
+}
+
+rectangle "Python Middleware" as mw #F0FFF0 {
+    component "Client\n(orchestrator)" as client
+    component "ClientAPI\n:4000" as clientapi
+    component "SocketClient\n(WebSocket)" as socketclient
+    component "AV + Encryption\nKey Rotation" as av
+    client -down-> clientapi
+    client -down-> socketclient
+    client -down-> av
+}
+
+rectangle "Python Backend Server" as backend #FFF0F0 {
+    component "ServerAPI (REST)\n:5050" as restapi
+    component "SocketAPI (WebSocket)\n:3000\n/video  /audio" as socketapi
+    component "UserManager\nUser[]" as usermgr
+    restapi -down-> usermgr
+    socketapi -down-> usermgr
+}
+
+rectangle "shared/" as shared #F5F0FF {
+    component "encryption\nendpoint\nconfig\nstate\nAV namespaces" as sharedlib
+}
+
+renderer -down-> client : Socket.IO
+clientapi -right-> restapi : REST
+socketclient <-right-> socketapi : **WebSocket**\n(encrypted AV)
+mw ..> sharedlib
+backend ..> sharedlib
+
+@enduml
