@@ -20,7 +20,7 @@ import os
 import signal
 import sys
 import requests
-from flask import send_from_directory
+from flask import render_template
 
 from state import MiddlewareState, MIDDLEWARE_PORT, IS_LOCAL, DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT
 from events import register_browser_events, register_server_events, register_rest_routes
@@ -34,20 +34,11 @@ register_browser_events(mw)
 register_server_events(mw)
 register_rest_routes(mw)
 
-# ─── Serve frontend static files ─────────────────────────────────────────────
-FRONTEND_DIR = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist', 'renderer')
+# ─── Serve frontend ──────────────────────────────────────────────────────────
 
-if os.path.isdir(FRONTEND_DIR):
-    @mw.flask_app.route('/')
-    def serve_index():
-        return send_from_directory(FRONTEND_DIR, 'index.html')
-
-    @mw.flask_app.route('/<path:path>')
-    def serve_static(path):
-        file_path = os.path.join(FRONTEND_DIR, path)
-        if os.path.isfile(file_path):
-            return send_from_directory(FRONTEND_DIR, path)
-        return send_from_directory(FRONTEND_DIR, 'index.html')
+@mw.flask_app.route('/')
+def serve_index():
+    return render_template('index.html')
 
 
 # ─── Shutdown ─────────────────────────────────────────────────────────────────
