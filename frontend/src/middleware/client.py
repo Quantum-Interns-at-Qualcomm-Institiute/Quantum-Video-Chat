@@ -2,7 +2,7 @@
 Quantum Video Chat — Python middleware (entry point).
 
 Acts as a socket.io SERVER that the browser connects to directly.
-No Electron. No IPC bridges.
+Browser connects directly via Socket.IO.
 
 Two-socket design:
   sio          — socket.io server; browsers connect here (port 5001)
