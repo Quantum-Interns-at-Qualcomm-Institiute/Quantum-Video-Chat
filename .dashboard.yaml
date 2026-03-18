@@ -13,7 +13,7 @@ services:
     display_name: Video Chat (Client)
     compose_service: client
     default_port: 4000
-    url_path: /admin/status
+    no_browser: true
     depends_on:
       - video-chat-server
     environment:
