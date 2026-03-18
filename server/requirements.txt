@@ -1,11 +1,13 @@
 bidict==0.23.1
+bitarray==2.9.2
 blinker==1.8.1
 certifi==2024.2.2
 charset-normalizer==3.3.2
 click==8.1.7
+ffmpeg==1.4
 Flask==3.0.3
+Flask-SocketIO==5.3.6
 gevent==24.2.1
-gevent-websocket==0.10.1
 greenlet==3.0.3
 idna==3.7
 itsdangerous==2.2.0
@@ -20,7 +22,4 @@ python-engineio==4.9.0
 python-socketio==5.11.2
 requests==2.31.0
 urllib3==2.2.1
-websocket-client==1.8.0
 Werkzeug==3.0.2
-zope.event==5.0
-zope.interface==6.3

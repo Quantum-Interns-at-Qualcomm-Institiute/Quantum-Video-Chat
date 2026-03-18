@@ -11,12 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY middleware/requirements.txt requirements.txt
+COPY server/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/ server/
 COPY shared/ shared/
-COPY middleware/ middleware/
-COPY start.sh .
 
 CMD ["python", "server/main.py"]

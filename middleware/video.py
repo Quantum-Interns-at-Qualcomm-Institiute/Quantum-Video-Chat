@@ -6,7 +6,7 @@ Uses composition (owns a Thread) rather than inheriting from Thread.
 Uses FrameSource protocol for camera/static frame abstraction.
 
 Note: The ``shared`` package lives at the project root, which is not on
-``sys.path`` when the middleware runs standalone from ``frontend/src/middleware/``.
+``sys.path`` when the middleware runs standalone from ``middleware/``.
 We add the project root to ``sys.path`` so that ``shared.frame_source`` is
 importable at runtime.
 """
@@ -16,7 +16,7 @@ import threading
 import gevent
 
 # Ensure the project root is on sys.path so ``shared.*`` imports work.
-_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 

@@ -200,7 +200,7 @@ class TestRandomKeyGenerator:
 class TestDebugKeyGenerator:
     def test_specified_keylength(self):
         gen = DebugKeyGenerator()
-        gen.speficied_keylength(8)
+        gen.specified_keylength(8)
         key = gen.get_key()
         assert isinstance(key, bytes)
         assert len(key) == 8
@@ -209,7 +209,7 @@ class TestDebugKeyGenerator:
 
     def test_specified_keylength_shorter(self):
         gen = DebugKeyGenerator()
-        gen.speficied_keylength(4)
+        gen.specified_keylength(4)
         assert gen.get_key() == bytes([0, 1, 0, 1])
 
 

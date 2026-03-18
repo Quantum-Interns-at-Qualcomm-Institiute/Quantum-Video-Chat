@@ -142,7 +142,7 @@ class DebugKeyGenerator(AbstractKeyGenerator):
         self.key: bytes = b''
         self.key_length = 0
 
-    def speficied_keylength(self, length):
+    def specified_keylength(self, length):
         self.key_length = length
         self.key = bytes([i % 2 for i in range(self.key_length)])
 
@@ -159,7 +159,7 @@ class DebugKeyGenerator(AbstractKeyGenerator):
         if key is not None:
             self.specified_key(key)
         elif key_length != 0:
-            self.speficied_keylength(key_length)
+            self.specified_keylength(key_length)
         else:
             raise ValueError("Invalid parameters")
 

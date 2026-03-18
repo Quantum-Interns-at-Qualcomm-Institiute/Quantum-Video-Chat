@@ -19,16 +19,21 @@ services:
       retries: 5
       start_period: 15s
 
-  client:
+  middleware:
     build:
       context: .
-      dockerfile: Dockerfile.client
+      dockerfile: Dockerfile.middleware
     ports:
-      - "127.0.0.1:${QVC_CLIENT_API_PORT:-4000}:${QVC_CLIENT_API_PORT:-4000}"
+      - "127.0.0.1:${QVC_MIDDLEWARE_PORT:-5001}:${QVC_MIDDLEWARE_PORT:-5001}"
     environment:
       QUANTUM_SERVER_HOST: server
       QUANTUM_SERVER_PORT: ${QVC_SERVER_REST_PORT:-5050}
-      QVC_CLIENT_API_PORT: ${QVC_CLIENT_API_PORT:-4000}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:${QVC_MIDDLEWARE_PORT:-5001}/socket.io/?EIO=4&transport=polling"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   frontend:
     build:
