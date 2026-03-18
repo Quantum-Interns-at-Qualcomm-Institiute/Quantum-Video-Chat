@@ -37,9 +37,9 @@ services:
     build:
       context: ./frontend
     ports:
-      - "127.0.0.1:${QVC_FRONTEND_PORT:-3000}:${QVC_FRONTEND_PORT:-3000}"
+      - "127.0.0.1:${QVC_FRONTEND_PORT:-1212}:${QVC_FRONTEND_PORT:-1212}"
     environment:
-      PORT: ${QVC_FRONTEND_PORT:-3000}
+      PORT: ${QVC_FRONTEND_PORT:-1212}
     volumes:
       - ./frontend/src:/app/src
     depends_on:
