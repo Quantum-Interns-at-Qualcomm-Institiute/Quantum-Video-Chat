@@ -1,21 +1,20 @@
-import "./CircleWidget.css";
+import './CircleWidget.css';
 
-/* 
- * props.topText: str
- * props.bottomText: str
- * props.children: str
- * props.status: str
- *      - waiting: establishing connection
- *      - good: communicatons secure
- *      - bad:  eavesdropper detected
- */
-export default function CircleWidget(props) {
+type WidgetStatus = 'waiting' | 'good' | 'bad';
 
-    return(
-        <div className="circle-widget">
-            <div>{props.topText}</div>
-            <div className={`circle ${props.status}`}>{props.children}</div>
-            <div>{props.bottomText}</div>
-        </div>
-    );
+interface CircleWidgetProps {
+  topText:     string;
+  bottomText:  string;
+  status:      WidgetStatus;
+  children?:   React.ReactNode;
+}
+
+export default function CircleWidget({ topText, bottomText, status, children }: CircleWidgetProps) {
+  return (
+    <div className="circle-widget">
+      <div>{topText}</div>
+      <div className={`circle ${status}`}>{children}</div>
+      <div>{bottomText}</div>
+    </div>
+  );
 }

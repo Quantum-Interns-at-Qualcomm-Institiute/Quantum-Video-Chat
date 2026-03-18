@@ -1,8 +1,14 @@
 import './Message.css';
 
-export default function Message(props) {
+interface MessageProps {
+    time: string;
+    name: string;
+    children?: React.ReactNode;
+}
 
-    if(!props.time || !props.name) return;
+export default function Message(props: MessageProps) {
+
+    if (!props.time || !props.name) return;
 
     return (
         <div className="message">
