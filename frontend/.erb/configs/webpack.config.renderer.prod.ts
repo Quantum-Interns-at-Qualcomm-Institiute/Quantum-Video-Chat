@@ -109,6 +109,7 @@ const configuration: webpack.Configuration = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
       DEBUG_PROD: false,
+      MIDDLEWARE_PORT: '5001',
     }),
 
     new MiniCssExtractPlugin({

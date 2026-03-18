@@ -2,27 +2,35 @@
  * Socket.io-client singleton.
  *
  * The browser connects directly to the Python middleware server.
+ * When the middleware serves the frontend, the Socket.IO connection
+ * targets the same origin (host:port) the page was loaded from.
  *
- * For same-device testing with two users, run two middleware instances
- * on different ports and open the app with a ?port= query parameter:
- *
- *   Tab 1: http://localhost:3000          → middleware on :5001
- *   Tab 2: http://localhost:3000?port=5002 → middleware on :5002
+ * For development or manual override, use a ?port= query parameter:
+ *   http://localhost:5001              → middleware on :5001 (same origin)
+ *   http://localhost:5001?port=5002    → middleware on :5002 (cross-origin)
  */
 import { io, Socket } from 'socket.io-client';
 
-/** Read middleware port from URL search params, env var, or default 5001. */
-function getMiddlewarePort(): number {
+/** Resolve the middleware URL: same origin by default, ?port= override. */
+function getMiddlewareUrl(): { port: number; url: string } {
   if (typeof window !== 'undefined' && window.location?.search) {
     const params = new URLSearchParams(window.location.search);
     const p = params.get('port');
-    if (p && !isNaN(Number(p))) return Number(p);
+    if (p && !isNaN(Number(p))) {
+      const port = Number(p);
+      return { port, url: `http://localhost:${port}` };
+    }
   }
-  return parseInt(process.env.MIDDLEWARE_PORT ?? '5001', 10);
+  // When served by the middleware, connect back to the same origin
+  if (typeof window !== 'undefined' && window.location?.origin && !window.location.origin.includes('undefined')) {
+    const port = parseInt(window.location.port || '5001', 10);
+    return { port, url: window.location.origin };
+  }
+  const port = parseInt(process.env.MIDDLEWARE_PORT ?? '5001', 10);
+  return { port, url: `http://localhost:${port}` };
 }
 
-const MIDDLEWARE_PORT = getMiddlewarePort();
-const MIDDLEWARE_URL  = `http://localhost:${MIDDLEWARE_PORT}`;
+const { port: MIDDLEWARE_PORT, url: MIDDLEWARE_URL } = getMiddlewareUrl();
 
 let _socket: Socket | null = null;
 
