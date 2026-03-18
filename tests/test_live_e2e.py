@@ -258,7 +258,7 @@ def _client_msg_main(client_id, server_rest, my_api_port, is_initiator,
             def _send_when_ready():
                 deadline = time.monotonic() + 30
                 while time.monotonic() < deadline:
-                    sc = getattr(client, 'socket_client', None)
+                    sc = getattr(client, 'websocket_instance', None)
                     if sc is not None and sc.is_connected():
                         time.sleep(0.3)   # let the channel stabilise
                         sc.send_message(f'hello from {client_id}')
@@ -272,7 +272,7 @@ def _client_msg_main(client_id, server_rest, my_api_port, is_initiator,
             peer_id = peer_q.get(timeout=20)
             # connect_to_peer is synchronous; WebSocket is live on return.
             client.connect_to_peer(peer_id)
-            client.socket_client.send_message(f'hello from {client_id}')
+            client.websocket_instance.send_message(f'hello from {client_id}')
 
         # Keep the process alive while messages flow.
         while True:
