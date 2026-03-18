@@ -3,12 +3,11 @@
 # region --- Logging ---
 import hashlib
 import random
-from random import choice
-from string import ascii_letters, digits
 from abc import ABC, abstractmethod
 from .user import User
 from .user import UserState
 from custom_logging import logger
+from shared.exceptions import InvalidState
 # endregion
 
 
@@ -22,9 +21,6 @@ class DuplicateUser(Exception):
 class UserNotFound(Exception):
     pass
 
-
-class InvalidState(Exception):
-    pass
 # endregion
 
 
@@ -65,26 +61,22 @@ class DictUserStorage(UserStorageInterface):
 
     def add_user(self, user_id, user_info):
         if user_id in self.users:
-            raise DuplicateUser(f"Cannot add user {
-                                user_id}: User already exists.")
+            raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
         self.users[user_id] = user_info
 
     def update_user(self, user_id, user_info):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot update user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
         self.users[user_id] = user_info
 
     def get_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot get user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
         return self.users.get(user_id, None)
 
     def remove_user(self, user_id):
         if user_id not in self.users:
-            raise UserNotFound(f"Cannot remove user {
-                               user_id}: User does not exist.")
+            raise UserNotFound(f"Cannot remove user {user_id}: User does not exist.")
         del self.users[user_id]
 
     def has_user(self, user_id):
@@ -129,8 +121,8 @@ class UserManager:
         # Fallback: expand to 6 digits if 5-digit space is exhausted
         return str(random.randint(100000, 999999))
 
-    # See note for generate_user_id(); the particular choice of seed here is a bit AIDS, though.
-    # Also note uniqueness is not strictly necessary for tokens, so I've omitted it.
+    # Token uniqueness is not strictly necessary, so a simple SHA-256 of the
+    # user_id is sufficient here.
     def generate_token(self, user_id):
         logger.debug(f"Generating token for User {user_id}.")
         hash_object = hashlib.sha256(user_id.encode())

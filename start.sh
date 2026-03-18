@@ -96,7 +96,7 @@ start_client() {
     fi
 
     log "Starting Python middleware on port $MIDDLEWARE_PORT..."
-    run_prefixed "middleware" python3 "$ROOT/frontend/src/middleware/client.py" --port "$MIDDLEWARE_PORT"
+    run_prefixed "middleware" python3 "$ROOT/middleware/client.py" --port "$MIDDLEWARE_PORT"
 
     log "Waiting for middleware at http://localhost:$MIDDLEWARE_PORT ..."
     ELAPSED=0
