@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY middleware/ middleware/
 COPY shared/ shared/
 
-CMD ["python", "middleware/video_chat.py"]
+CMD ["python", "middleware/client.py"]
