@@ -24,7 +24,7 @@ export default function SettingsDrawer({ open, onClose }: SettingsDrawerProps) {
 			<div className={`settings-drawer ${open ? "open" : ""}`}>
 				<div className="settings-drawer-header">
 					<button
-						className="settings-drawer-close"
+						className="btn btn-icon settings-drawer-close"
 						onClick={onClose}
 						aria-label="Close settings"
 					>

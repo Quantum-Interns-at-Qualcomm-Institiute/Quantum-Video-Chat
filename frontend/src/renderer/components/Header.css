@@ -31,17 +31,11 @@
   gap: 10px;
 }
 
-/* ── Theme / logo toggle buttons ─────────────────────────────────────────── */
+/* ── Theme / logo toggle buttons (uses .btn .btn-icon from ui-kit) ────────── */
 .header-theme-btn {
-  background: none;
-  border: 1px solid var(--border-subtle);
-  color: var(--off-white);
-  cursor: pointer;
   opacity: 0.7;
   line-height: 1;
   padding: 5px 8px;
-  border-radius: 0;
-  transition: opacity 0.15s, background 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,30 +90,14 @@
   margin: 0 2px;
 }
 
-/* ── Connection state label ───────────────────────────────────────────────── */
+/* ── Connection state label (uses .ui-badge from ui-kit) ─────────────────── */
 .conn-state {
-  text-transform: uppercase;
   font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  padding: 1px 6px;
-  border-radius: 0;
+  background: transparent;
+  border: none;
 }
 
-.conn-state--idle {
-  color: var(--off-white);
-  opacity: 0.5;
-}
-
-.conn-state--ready {
-  color: var(--success);
-}
-
-.conn-state--waiting {
-  color: var(--accent);
-}
-
-.conn-state--in-session {
-  color: var(--success);
-  background: rgba(169, 182, 101, 0.12);
-}
+.conn-state--idle { color: var(--off-white); opacity: 0.5; }
+.conn-state--ready { color: var(--success); }
+.conn-state--waiting { color: var(--accent); }
+.conn-state--in-session { color: var(--success); background: rgba(169, 182, 101, 0.12); }

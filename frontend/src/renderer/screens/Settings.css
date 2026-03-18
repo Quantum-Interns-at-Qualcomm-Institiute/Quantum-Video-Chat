@@ -74,14 +74,11 @@
   margin-top: 24px;
 }
 
-.settings-actions button {
+/* Action buttons use .btn from ui-kit; app-specific size overrides */
+.settings-actions .btn {
   width: 175px;
   height: 50px;
-  font-family: var(--body-font);
   font-size: 18px;
-  cursor: pointer;
-  border-radius: 0;
-  border: 1px solid var(--border-subtle);
   background: var(--btn-bg);
   color: var(--off-white);
 }
