@@ -8,6 +8,20 @@ from state import APIState
 from utils import (
     ServerError, get_parameters, Endpoint,
 )
+
+
+def _get_ssl_context():
+    """Return (cert, key) paths if dev certs exist, else None."""
+    import os
+    from pathlib import Path
+    for d in [
+        Path(os.environ.get("DEV_CERT_DIR", "")),
+        Path(__file__).resolve().parents[2] / ".certs",
+    ]:
+        cert, key = d / "cert.pem", d / "key.pem"
+        if cert.is_file() and key.is_file():
+            return (str(cert), str(key))
+    return None
 from admin_routes import admin_bp, init_admin
 from shared.config import LOCAL_IP, SERVER_REST_PORT
 from shared.decorators import handle_exceptions_with_cls
@@ -56,7 +70,9 @@ class ServerAPI:
         if cls.state == APIState.LIVE:
             raise ServerError("Cannot start API: already running.")
         cls.state = APIState.LIVE
-        cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app)
+        ssl_ctx = _get_ssl_context()
+        ssl_args = {"certfile": ssl_ctx[0], "keyfile": ssl_ctx[1]} if ssl_ctx else {}
+        cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app, **ssl_args)
         cls.http_server.serve_forever()
 
     @classmethod
