@@ -12,6 +12,20 @@ from utils.av import generate_flask_namespace
 from shared.config import LOCAL_IP, SERVER_WEBSOCKET_PORT
 
 
+def _get_ssl_context():
+    """Return (cert, key) paths if dev certs exist, else None."""
+    import os
+    from pathlib import Path
+    for d in [
+        Path(os.environ.get("DEV_CERT_DIR", "")),
+        Path(__file__).resolve().parents[2] / ".certs",
+    ]:
+        cert, key = d / "cert.pem", d / "key.pem"
+        if cert.is_file() and key.is_file():
+            return (str(cert), str(key))
+    return None
+
+
 class SocketAPI:
     """WebSocket API for peer-to-peer session communication.
 
@@ -131,7 +145,8 @@ class SocketAPI:
                 probe = Thread(target=_signal_when_listening, daemon=True)
                 probe.start()
 
-                self.socketio.run(self.app, host=self.endpoint.ip, port=self.endpoint.port)
+                self.socketio.run(self.app, host=self.endpoint.ip, port=self.endpoint.port,
+                                  ssl_context=_get_ssl_context())
             except OSError:
                 self.logger.error(f"Endpoint {self.endpoint} in use.")
                 self.state = SocketState.INIT
