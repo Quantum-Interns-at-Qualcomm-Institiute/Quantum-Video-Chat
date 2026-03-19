@@ -40,9 +40,27 @@ let elapsedInterval = null;
 let noiseRaf = null;
 let socket = null;
 
+/* ── Backend Connect Widget ──────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('backend-connect');
+  if (el && window.UIKit && UIKit.initConnect) {
+    window.backendConnect = UIKit.initConnect(el, {
+      service: 'qvc',
+      defaultHost: 'localhost',
+      defaultPort: 5002,
+      label: 'Backend',
+      onConnect: function(info) {
+        // Reinit socket with new URL
+        if (socket) { socket.disconnect(); }
+        initSocket(info.url);
+      }
+    });
+  }
+});
+
 /* ── Socket.IO ──────────────────────────────────────────────────────────── */
-function initSocket() {
-  socket = io(typeof MIDDLEWARE_URL !== "undefined" ? MIDDLEWARE_URL : window.location.origin, {
+function initSocket(url) {
+  socket = io(url || (typeof MIDDLEWARE_URL !== "undefined" ? MIDDLEWARE_URL : window.location.origin), {
     autoConnect: false,
     reconnection: true,
     reconnectionDelay: 1000,
@@ -51,12 +69,14 @@ function initSocket() {
 
   socket.on('connect', () => {
     state.middlewareConnected = true;
+    if (window.backendConnect) window.backendConnect.setStatus('connected');
     render();
   });
 
   socket.on('disconnect', () => {
     state.middlewareConnected = false;
     state.serverConnected = false;
+    if (window.backendConnect) window.backendConnect.setStatus('disconnected');
     render();
   });
 
