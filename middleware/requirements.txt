@@ -4,6 +4,7 @@ certifi==2024.2.2
 charset-normalizer==3.3.2
 click==8.1.7
 Flask==3.0.3
+flask-cors==5.0.1
 gevent==24.2.1
 gevent-websocket==0.10.1
 greenlet==3.0.3

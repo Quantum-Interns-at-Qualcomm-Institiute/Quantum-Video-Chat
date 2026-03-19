@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="QKD Video Chat — quantum-secure peer-to-peer video calling.">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.socket.io">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.socket.io https://andypeterson2.github.io">
     <title>QKD Video Chat</title>
     <link rel="stylesheet" href="/static/style.css">
     <script>
@@ -17,6 +17,8 @@
   <body>
     <div id="app" class="main-screen"></div>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://andypeterson2.github.io/ui-kit/service-config.js"></script>
+    <script>const MIDDLEWARE_URL = ServiceConfig.get("qvc", "http://localhost:5002");</script>
     <script src="/static/app.js"></script>
   </body>
 </html>

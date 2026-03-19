@@ -6,6 +6,7 @@ Replaces scattered module-level globals with a single, inspectable object.
 import os
 import socketio
 from flask import Flask
+from flask_cors import CORS
 
 
 MIDDLEWARE_PORT = 5001
@@ -26,6 +27,7 @@ class MiddlewareState:
         self.flask_app = Flask(__name__,
                                template_folder=os.path.join(_dir, 'templates'),
                                static_folder=os.path.join(_dir, 'static'))
+        CORS(self.flask_app)
         self.sio = socketio.Server(
             cors_allowed_origins='*',
             async_mode='gevent',
