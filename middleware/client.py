@@ -102,7 +102,20 @@ if __name__ == '__main__':
         print(f'(middleware): Local mode — will auto-configure server '
               f'{DEFAULT_SERVER_HOST}:{DEFAULT_SERVER_PORT}')
 
+    def _get_ssl_context():
+        from pathlib import Path
+        for d in [
+            Path(os.environ.get("DEV_CERT_DIR", "")),
+            Path(__file__).resolve().parents[1] / ".certs",
+        ]:
+            cert, key = d / "cert.pem", d / "key.pem"
+            if cert.is_file() and key.is_file():
+                return (str(cert), str(key))
+        return None
+
+    ssl_ctx = _get_ssl_context()
+    ssl_args = {"certfile": ssl_ctx[0], "keyfile": ssl_ctx[1]} if ssl_ctx else {}
     WSGIServer.reuse_addr = 1
     server = WSGIServer(('0.0.0.0', chosen_port), mw.app,
-                        handler_class=WebSocketHandler, log=None)
+                        handler_class=WebSocketHandler, log=None, **ssl_args)
     server.serve_forever()
