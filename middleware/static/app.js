@@ -42,7 +42,7 @@ let socket = null;
 
 /* ── Socket.IO ──────────────────────────────────────────────────────────── */
 function initSocket() {
-  socket = io(window.location.origin, {
+  socket = io(typeof MIDDLEWARE_URL !== "undefined" ? MIDDLEWARE_URL : window.location.origin, {
     autoConnect: false,
     reconnection: true,
     reconnectionDelay: 1000,
