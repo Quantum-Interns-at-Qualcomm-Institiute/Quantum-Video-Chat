@@ -1,5 +1,6 @@
 import os
-from logging import Formatter, getLogger, DEBUG, INFO, StreamHandler, FileHandler
+from logging import Formatter, getLogger, DEBUG, INFO, StreamHandler
+from logging.handlers import RotatingFileHandler
 from datetime import datetime
 
 
@@ -48,7 +49,11 @@ def get_logger(name: str, log_dir: str = 'logs'):
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 
-    file_handler = FileHandler(log_file_path, mode='a')
+    file_handler = RotatingFileHandler(
+        log_file_path, mode='a',
+        maxBytes=10 * 1024 * 1024,  # 10 MB
+        backupCount=5,
+    )
     file_handler.setLevel(DEBUG)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)

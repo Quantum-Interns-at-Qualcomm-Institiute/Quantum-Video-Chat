@@ -30,7 +30,8 @@ class Server:
         with UserStorageFactory() as factory:
             storage = factory.create_storage(user_storage)
             self.user_manager = UserManager(storage=storage)
-        self.qber_manager = None  # QBERManager
+        self.qber_monitor = None  # Set by AV when BB84 mode is active
+        self.bb84_key_gen = None  # Reference to BB84KeyGenerator for admin API
 
         self.notifier = ClientNotifier(self)
         self.peer_manager = PeerConnectionManager(self)
