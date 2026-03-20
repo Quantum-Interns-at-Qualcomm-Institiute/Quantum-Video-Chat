@@ -25,3 +25,27 @@ def debug_scheme():
 def random_key_gen():
     from shared.encryption import RandomKeyGenerator
     return RandomKeyGenerator()
+
+
+@pytest.fixture
+def channel_params():
+    from shared.bb84.physical_layer import ChannelParameters
+    return ChannelParameters()
+
+
+@pytest.fixture
+def bb84_protocol():
+    from shared.bb84.protocol import BB84Protocol
+    return BB84Protocol()
+
+
+@pytest.fixture
+def qber_monitor():
+    from shared.bb84.qber_monitor import QBERMonitor
+    return QBERMonitor()
+
+
+@pytest.fixture
+def bb84_key_gen():
+    from shared.encryption import BB84KeyGenerator
+    return BB84KeyGenerator()

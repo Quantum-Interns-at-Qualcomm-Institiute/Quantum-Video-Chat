@@ -1,12 +1,6 @@
 @import "./constants/palette.css";
 @import "./constants/fonts.css";
 
-/* ── ui-kit components ── */
-@import "./ui-kit/components/buttons.css";
-@import "./ui-kit/components/spinner.css";
-@import "./ui-kit/components/toasts.css";
-@import "./ui-kit/components/badges.css";
-@import "./ui-kit/components/alert.css";
 
 * {
     box-sizing: border-box;

@@ -241,3 +241,18 @@ class SocketAPI:
             self.state = SocketState.LIVE
 
     # endregion
+
+    # region --- QBER Event Broadcasting ---
+
+    def emit_qber_update(self, event_type: str, data: dict):
+        """Broadcast QBER metrics to all connected clients.
+
+        Called by the AV layer's key rotation thread when a BB84 round
+        completes or is aborted due to intrusion detection.
+        """
+        self.socketio.emit('qber-update', {
+            'event': event_type,
+            **data,
+        })
+
+    # endregion
