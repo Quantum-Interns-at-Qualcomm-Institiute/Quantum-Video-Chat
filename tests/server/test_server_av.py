@@ -38,6 +38,7 @@ class TestServerVideoClientNamespace:
 
 
 class TestAV:
+    @patch('utils.av._keygen_name', 'DEBUG')
     @patch('utils.av.Thread')
     def test_init_creates_encryption_and_key_gen(self, mock_thread):
         from utils.av import AV
@@ -48,6 +49,7 @@ class TestAV:
         assert av.key_gen is not None
         assert av.key is not None
 
+    @patch('utils.av._keygen_name', 'DEBUG')
     @patch('utils.av.Thread')
     def test_init_starts_daemon_key_rotation_thread(self, mock_thread):
         from utils.av import AV
@@ -59,6 +61,7 @@ class TestAV:
         assert call_kwargs['daemon'] is True
         mock_thread.return_value.start.assert_called_once()
 
+    @patch('utils.av._keygen_name', 'DEBUG')
     @patch('utils.av.Thread')
     def test_init_generates_namespaces(self, mock_thread):
         from utils.av import AV
