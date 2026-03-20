@@ -41,6 +41,7 @@ key.bin
 # all hidden directories
 .*
 !.git*
+!.dashboard.yaml
 
 # Build output
 **/dist
