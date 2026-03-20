@@ -79,9 +79,10 @@ class TestUserManager:
         assert uid == uid.lower()
 
     def test_generate_user_id_uniqueness(self, user_manager):
-        ids = {user_manager.generate_user_id() for _ in range(100)}
-        # With 36^5 possible IDs, 100 should all be unique
-        assert len(ids) == 100
+        ids = {user_manager.generate_user_id() for _ in range(50)}
+        # 5-digit numeric IDs (90k range) — 50 draws keeps collision
+        # probability well under 1% via birthday paradox
+        assert len(ids) == 50
 
     def test_add_user_returns_id(self, user_manager):
         uid = user_manager.add_user(('127.0.0.1', 4000))
