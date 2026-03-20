@@ -3,7 +3,6 @@ import string
 from abc import ABC, abstractmethod
 from enum import Enum
 from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad, unpad
 
 
 # region --- Encryption Schemes ---
@@ -54,23 +53,31 @@ class DebugEncryption(AbstractEncryptionScheme):
 
 
 class AESEncryption(AbstractEncryptionScheme):
+    """AES-GCM authenticated encryption.
+
+    Ciphertext format: nonce (12 bytes) || tag (16 bytes) || ciphertext
+    """
+
+    NONCE_SIZE = 12
+    TAG_SIZE = 16
+
     def __init__(self, bits=128):
         self.bits = bits
         self.name = f"AES-{bits}"
         self.results = []
 
     def encrypt(self, data: bytes, key: bytes) -> bytes:
-        iv = os.urandom(16)
-        cipher = AES.new(key, AES.MODE_CBC, iv=iv)
-        data = pad(data, AES.block_size)
-        return iv + cipher.encrypt(data)
+        nonce = os.urandom(self.NONCE_SIZE)
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        ciphertext, tag = cipher.encrypt_and_digest(data)
+        return nonce + tag + ciphertext
 
     def decrypt(self, data: bytes, key: bytes) -> bytes:
-        iv = data[:16]
-        ciphertext = data[16:]
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        decrypted = cipher.decrypt(ciphertext)
-        return unpad(decrypted, AES.block_size)
+        nonce = data[:self.NONCE_SIZE]
+        tag = data[self.NONCE_SIZE:self.NONCE_SIZE + self.TAG_SIZE]
+        ciphertext = data[self.NONCE_SIZE + self.TAG_SIZE:]
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        return cipher.decrypt_and_verify(ciphertext, tag)
 
     def get_name(self):
         return self.name
