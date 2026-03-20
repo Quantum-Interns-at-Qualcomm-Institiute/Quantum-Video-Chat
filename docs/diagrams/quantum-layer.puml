@@ -1,5 +1,6 @@
 @startuml quantum-layer
-!theme plain
+!include style.puml
+
 title BB84 Quantum Layer — Component Diagram
 
 package "shared/bb84/" {
@@ -17,9 +18,7 @@ package "shared/bb84/" {
     }
 
     component [EavesdropperSimulator] as Eve
-
     component [QBERMonitor] as Monitor
-
     component [AbstractHardwareBridge] as Bridge
     component [MATLABBridge] as MATLAB
     component [QiskitValidator] as Qiskit

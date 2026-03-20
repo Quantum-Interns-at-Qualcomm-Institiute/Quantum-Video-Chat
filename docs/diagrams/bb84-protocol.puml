@@ -1,11 +1,12 @@
 @startuml bb84-protocol
-!theme plain
+!include style.puml
+
 title BB84 Quantum Key Distribution Protocol
 
-participant "Alice\n(Sender)" as A #LightGreen
-participant "Quantum Channel\n(Fiber)" as QC #LightYellow
-participant "Bob\n(Receiver)" as B #LightBlue
-participant "Classical Channel\n(Authenticated)" as CC #LightGray
+participant "Alice\n(Sender)" as A $GREEN
+participant "Quantum Channel\n(Fiber)" as QC $YELLOW
+participant "Bob\n(Receiver)" as B $BLUE
+participant "Classical Channel\n(Authenticated)" as CC $GRAY
 
 == Step 1: Quantum Transmission ==
 
@@ -41,9 +42,9 @@ alt QBER > 11% (Eavesdropper Detected)
     CC -> A :
     A -> A : Discard key material
     B -> B : Discard key material
-    note over A, B #LightCoral : Restart protocol\nwith new random bits
+    note over A, B $RED : Restart protocol\nwith new random bits
 else QBER < 11% (Secure)
-    note over A, B #LightGreen : Channel is secure\nProceed to error correction
+    note over A, B $GREEN : Channel is secure\nProceed to error correction
 end
 
 == Step 4: Error Correction (Cascade) ==
@@ -62,6 +63,6 @@ CC -> B :
 A -> A : Hash corrected key\n(removes Eve's information)
 B -> B : Hash corrected key\n(same Toeplitz matrix)
 
-note over A, B #LightGreen : **Final shared key**\n128 bits, information-theoretically secure
+note over A, B $GREEN : **Final shared key**\n128 bits, information-theoretically secure
 
 @enduml
