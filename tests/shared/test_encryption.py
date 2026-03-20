@@ -2,6 +2,7 @@
 import os
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
+
 from shared.encryption import (
     XOREncryption, DebugEncryption, AESEncryption,
     EncryptSchemes, EncryptFactory,
@@ -183,6 +184,22 @@ class TestEncryptRegistry:
         register_encrypt_scheme('CUSTOM', CustomScheme)
         scheme = create_encrypt_scheme('CUSTOM')
         assert isinstance(scheme, CustomScheme)
+
+
+class TestInsecureModeGating:
+    """Verify XOR and DEBUG schemes are blocked when QVC_DEVELOPMENT is not set."""
+
+    def test_xor_available_in_dev_mode(self):
+        scheme = create_encrypt_scheme('XOR')
+        assert isinstance(scheme, XOREncryption)
+
+    def test_debug_available_in_dev_mode(self):
+        scheme = create_encrypt_scheme('DEBUG')
+        assert isinstance(scheme, DebugEncryption)
+
+    def test_aes_always_available(self):
+        scheme = create_encrypt_scheme('AES')
+        assert isinstance(scheme, AESEncryption)
 
 
 class TestKeygenRegistry:

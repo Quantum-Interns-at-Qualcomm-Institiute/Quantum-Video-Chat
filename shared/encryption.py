@@ -104,8 +104,11 @@ def create_encrypt_scheme(name: str) -> AbstractEncryptionScheme:
 
 # Built-in schemes
 register_encrypt_scheme('AES', AESEncryption)
-register_encrypt_scheme('XOR', XOREncryption)
-register_encrypt_scheme('DEBUG', DebugEncryption)
+
+# XOR and DEBUG are insecure and only available when QVC_DEVELOPMENT=true
+if os.environ.get('QVC_DEVELOPMENT', '').lower() in ('true', '1', 'yes'):
+    register_encrypt_scheme('XOR', XOREncryption)
+    register_encrypt_scheme('DEBUG', DebugEncryption)
 
 
 # Deprecated: enum + factory kept for backward compatibility.
