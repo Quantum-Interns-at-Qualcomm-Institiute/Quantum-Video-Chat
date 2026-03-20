@@ -80,32 +80,50 @@ class TestAESEncryption:
         scheme = AESEncryption(256)
         assert scheme.get_name() == 'AES-256'
 
-    def test_iv_prepended_to_ciphertext(self, aes_scheme):
+    def test_nonce_and_tag_prepended_to_ciphertext(self, aes_scheme):
         key = b'0123456789abcdef'
-        plaintext = b'Hello, World!!!'  # 15 bytes -> padded to 16
+        plaintext = b'Hello, World!!!'  # 15 bytes, no padding needed with GCM
         encrypted = aes_scheme.encrypt(plaintext, key)
-        # 16 bytes IV + 16 bytes ciphertext (one AES block after padding)
-        assert len(encrypted) == 16 + 16
+        # 12 bytes nonce + 16 bytes tag + 15 bytes ciphertext
+        assert len(encrypted) == 12 + 16 + len(plaintext)
 
-    def test_different_ivs_produce_different_ciphertext(self, aes_scheme):
+    def test_different_nonces_produce_different_ciphertext(self, aes_scheme):
         key = b'0123456789abcdef'
         plaintext = b'Same data same data same!'
         enc1 = aes_scheme.encrypt(plaintext, key)
         enc2 = aes_scheme.encrypt(plaintext, key)
-        # Different random IVs should produce different ciphertext
         assert enc1 != enc2
-        # But both decrypt to the same plaintext
         assert aes_scheme.decrypt(enc1, key) == plaintext
         assert aes_scheme.decrypt(enc2, key) == plaintext
 
-    def test_iv_is_random_bytes(self, aes_scheme):
+    def test_nonce_is_random_bytes(self, aes_scheme):
         key = b'0123456789abcdef'
         plaintext = b'test data.......'
         enc1 = aes_scheme.encrypt(plaintext, key)
         enc2 = aes_scheme.encrypt(plaintext, key)
-        iv1 = enc1[:16]
-        iv2 = enc2[:16]
-        assert iv1 != iv2  # Random IVs should differ
+        nonce1 = enc1[:12]
+        nonce2 = enc2[:12]
+        assert nonce1 != nonce2
+
+    def test_tampered_ciphertext_raises(self, aes_scheme):
+        key = b'0123456789abcdef'
+        plaintext = b'authenticated data'
+        encrypted = aes_scheme.encrypt(plaintext, key)
+        # Flip a bit in the ciphertext portion
+        tampered = bytearray(encrypted)
+        tampered[-1] ^= 0x01
+        with pytest.raises(Exception):
+            aes_scheme.decrypt(bytes(tampered), key)
+
+    def test_tampered_tag_raises(self, aes_scheme):
+        key = b'0123456789abcdef'
+        plaintext = b'authenticated data'
+        encrypted = aes_scheme.encrypt(plaintext, key)
+        # Flip a bit in the tag
+        tampered = bytearray(encrypted)
+        tampered[12] ^= 0x01
+        with pytest.raises(Exception):
+            aes_scheme.decrypt(bytes(tampered), key)
 
 
 # ---- Encrypt Factory (deprecated) ----
