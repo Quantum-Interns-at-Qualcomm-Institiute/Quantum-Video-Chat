@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -6,7 +6,29 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  QVC_DEVELOPMENT: 'true'
+
 jobs:
+  python-lint:
+    name: Python Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linting tools
+        run: pip install ruff
+
+      - name: Run ruff check
+        run: ruff check shared/ server/ middleware/ tests/
+
   python-tests:
     name: Python Tests
     runs-on: ubuntu-latest
@@ -39,6 +61,32 @@ jobs:
         run: |
           python -m pytest tests/ \
             --ignore=tests/test_live_e2e.py \
+            -v --tb=short --timeout=60
+
+  bb84-simulator-tests:
+    name: BB84 Quantum Simulator Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r server/requirements.txt
+          pip install pytest pytest-timeout pytest-mock
+
+      - name: Run BB84 protocol and integration tests
+        run: |
+          python -m pytest \
+            tests/shared/bb84/ \
+            tests/test_bb84_integration.py \
             -v --tb=short --timeout=60
 
   frontend-tests:
@@ -84,3 +132,28 @@ jobs:
       - name: Type check and build
         working-directory: server-dashboard
         run: npx tsc --noEmit
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build server image
+        run: docker build -f Dockerfile.server -t qvc-server .
+
+      - name: Build client image
+        run: docker build -f Dockerfile.client -t qvc-client .
+
+      - name: Verify server starts
+        run: |
+          docker run -d --name qvc-server-test \
+            -e QVC_SERVER_REST_PORT=5050 \
+            -e QVC_LOCAL_IP=0.0.0.0 \
+            -e DEV_CERT_DIR="" \
+            -p 5050:5050 qvc-server
+          sleep 5
+          curl -sf http://localhost:5050/admin/status || (docker logs qvc-server-test && exit 1)
+          docker stop qvc-server-test
