@@ -1,34 +1,19 @@
 @startuml video-pipeline
-!theme plain
-skinparam backgroundColor transparent
-skinparam defaultFontName "Segoe UI, Helvetica, Arial, sans-serif"
-skinparam defaultFontSize 12
-skinparam shadowing false
-skinparam ActivityBarColor #495057
-skinparam ActivityBorderColor #ADB5BD
-skinparam ActivityBackgroundColor #F8F9FA
-
-skinparam activity {
-    BackgroundColor #F8F9FA
-    BorderColor #ADB5BD
-    FontColor #212529
-    DiamondBackgroundColor #FFF3CD
-    DiamondBorderColor #FFECB5
-}
+!include style.puml
 
 title Video Frame Pipeline
 
-|#E8F4FD|Sender|
+|$BLUE|Sender|
 start
 :OpenCV capture\n(or debug random frame);
 :H.264 encode\n(ffmpeg, ultrafast/zerolatency);
 :AES-128 encrypt\n(prepend 4-byte key_index);
 
-|#F0FFF0|Network|
+|$GREEN|Network|
 :WebSocket /video\n(Socket.IO binary);
 :Server broadcast\n(exclude sender);
 
-|#FFF0F0|Receiver|
+|$RED|Receiver|
 :Read 4-byte key_index;
 if (key_index matches\ncurrent key?) then (yes)
     :AES-128 decrypt;

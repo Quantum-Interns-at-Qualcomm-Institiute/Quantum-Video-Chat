@@ -1,25 +1,5 @@
 @startuml session-connect
-!theme plain
-skinparam backgroundColor transparent
-skinparam defaultFontName "Segoe UI, Helvetica, Arial, sans-serif"
-skinparam defaultFontSize 12
-skinparam shadowing false
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-
-skinparam participant {
-    BackgroundColor #F8F9FA
-    BorderColor #ADB5BD
-    FontColor #212529
-}
-
-skinparam sequence {
-    ArrowColor #495057
-    LifeLineBorderColor #CED4DA
-    LifeLineBackgroundColor #F8F9FA
-    DividerBackgroundColor #E9ECEF
-    GroupBackgroundColor #F8F9FA
-}
+!include style.puml
 
 title Session Connection Flow
 

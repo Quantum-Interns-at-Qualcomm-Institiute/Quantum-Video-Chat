@@ -1,18 +1,5 @@
 @startuml state-machines
-!theme plain
-skinparam backgroundColor transparent
-skinparam defaultFontName "Helvetica, Arial, sans-serif"
-skinparam defaultFontSize 12
-skinparam shadowing false
-
-skinparam state {
-    BackgroundColor #F8F9FA
-    BorderColor #ADB5BD
-    FontColor #212529
-    StartColor #495057
-    EndColor #495057
-    ArrowColor #495057
-}
+!include style.puml
 
 title State Machines
 
