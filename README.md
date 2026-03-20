@@ -1,6 +1,32 @@
 # Quantum Video Chat
 
-A secure, peer-to-peer video chat application built around quantum key distribution (QKD) principles. Encrypted audio and video streams are exchanged between peers using AES-128 keys that rotate every second, with support for file-based key injection from real QKD hardware.
+A secure, peer-to-peer video chat application with a full **BB84 quantum key distribution** simulation. Encrypted audio and video streams are exchanged between peers using AES-128 keys generated through a realistic quantum optical channel simulation — including Poissonian photon statistics, fiber attenuation, single-photon detector noise, and the complete BB84 protocol (sifting, QBER estimation, Cascade error correction, Toeplitz privacy amplification).
+
+The system detects eavesdropping in real time: when the quantum bit error rate (QBER) exceeds the 11% threshold, the key is automatically rejected and redistributed — all while the video stream continues uninterrupted.
+
+---
+
+## Quantum Key Distribution (BB84)
+
+The BB84 simulation (`shared/bb84/`) models the full optical chain:
+
+| Component | Description |
+|-----------|-------------|
+| **PhotonSource** | Mode-locked laser with Poisson statistics (μ ≈ 0.1) to minimize PNS attacks |
+| **QuantumChannel** | Fiber-optic channel with configurable attenuation (0.2 dB/km) |
+| **SinglePhotonDetector** | InGaAs APD model with efficiency (10%), dark counts, afterpulsing, dead time, jitter |
+| **EavesdropperSimulator** | Intercept-resend attack raising QBER to ~25% for detection |
+
+The protocol engine runs the full BB84 key exchange:
+1. **Random basis/bit generation** — Alice and Bob independently choose rectilinear (+) or diagonal (×) bases
+2. **Sifting** — Discard bits where bases don't match (~50% survival rate)
+3. **QBER estimation** — Sacrifice 10% of sifted bits to detect eavesdropping
+4. **Error correction** — Cascade protocol (binary search, 4 passes) reconciles remaining errors
+5. **Privacy amplification** — Toeplitz hashing removes Eve's information
+
+The QBER monitor tracks channel quality in real time and classifies each round as NORMAL (<5%), WARNING (5-11%), or INTRUSION DETECTED (>11%). An eavesdropper toggle is available for live demos.
+
+For the formal security analysis, see [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
 
 ---
 
@@ -33,8 +59,15 @@ quantum-video-chat/
 │   ├── logging.py                        # Shared logging setup
 │   ├── parameters.py                     # Request parameter extraction
 │   ├── state.py                          # ClientState enum
-│   └── av/
-│       └── namespaces.py                 # Audio/Video/Key client + Flask namespaces
+│   ├── av/
+│   │   └── namespaces.py                 # Audio/Video/Key client + Flask namespaces
+│   └── bb84/                             # BB84 quantum key distribution
+│       ├── physical_layer.py             # Optical chain simulator (source, channel, detector)
+│       ├── protocol.py                   # Full BB84 protocol (sifting, QBER, Cascade, PA)
+│       ├── qber_monitor.py               # Real-time QBER tracking + intrusion detection
+│       ├── hardware_bridge.py            # Abstract hardware interface + MATLAB/Qiskit stubs
+│       ├── hardware_key_generator.py     # Hardware-backed key generator with sim fallback
+│       └── utils.py                      # Binary entropy, Toeplitz hashing
 │
 ├── server/                               # Backend server
 │   ├── main.py                           # Entry point
@@ -195,10 +228,11 @@ Three encryption schemes, selected via `shared/config.py` or the Settings screen
 | `XOREncryption` | XOR cipher |
 | `DebugEncryption` | Passthrough — no encryption |
 
-Three key generators:
+Four key generators:
 
 | Generator | Description |
 |-----------|-------------|
+| `BB84KeyGenerator` | Simulated BB84 quantum key distribution (default) |
 | `RandomKeyGenerator` | Cryptographically random keys |
 | `FileKeyGenerator` | Reads keys from `key.bin` (for real QKD hardware) |
 | `DebugKeyGenerator` | Fixed key for testing |
@@ -224,6 +258,12 @@ Runtime settings can be configured in three ways (highest priority first):
 | Sample rate | 8196 Hz | — |
 | Key length | 128 bits | — |
 | Debug video | false | `QVC_DEBUG_VIDEO` |
+| BB84 raw bits | 4096 | — |
+| BB84 QBER threshold | 0.11 | — |
+| BB84 fiber length | 1.0 km | — |
+| BB84 source intensity | 0.1 (μ) | — |
+| BB84 detector efficiency | 0.10 | — |
+| BB84 eavesdropper | false | `QVC_BB84_EAVESDROPPER` |
 
 The middleware also reads server connection details from a JSON config file:
 
@@ -319,8 +359,21 @@ java -jar plantuml.jar -tsvg -o . docs/diagrams/*.puml
 
 ---
 
+## Threat Model
+
+See [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) for the full security analysis, including:
+- What BB84 protects against (intercept-resend, PNS attacks)
+- QBER threshold derivation (11% from Shannon limit)
+- System assumptions (authenticated classical channel, trusted devices)
+- Known limitations (simulation only, no decoy states)
+
+---
+
 ## Key Design Decisions
 
+- **BB84 physical layer simulation**: Models the actual optical chain (Poisson photon source, fiber attenuation, SPD noise) rather than using Qiskit gate circuits, because QKD operates on classical probability distributions, not gate-based quantum computing. Qiskit is available as a validation tool via `QiskitValidator`.
+- **QBER-aware key rotation**: The AV key rotation thread (`server/utils/av.py`) detects BB84 round failures and keeps the old working key during intrusion events, ensuring video never drops.
+- **Hardware bridge pattern**: `AbstractHardwareBridge` decouples the protocol from sensor hardware, enabling seamless transition from simulation to real QKD equipment (MATLAB, LabVIEW, etc.).
 - **`shared/` library**: Eliminates duplicated Python code between server and middleware. Both import from `shared/` via `sys.path`. Includes shared exception-handling decorators (`shared/decorators.py`) and a unified exception hierarchy (`shared/exceptions.py`).
 - **`FrontendAdapter` ABC**: Decouples the middleware from the Socket.IO transport. The `SocketAdapter` is the only class that knows about socket.io; everything else codes against the abstract interface.
 - **Composition over inheritance**: `SocketAPI` owns a `Thread` rather than extending it, keeping the class open for extension without coupling to threading internals. `Server` delegates peer connection workflows to `PeerConnectionManager`.

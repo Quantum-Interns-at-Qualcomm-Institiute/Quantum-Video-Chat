@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from threading import Thread, Lock, Event
 
@@ -8,12 +9,16 @@ from shared.av.namespaces import (
     VideoClientNamespace,
     display_message,
 )
-from shared.encryption import create_encrypt_scheme, create_key_generator
+from shared.encryption import (
+    create_encrypt_scheme, create_key_generator, BB84KeyGenerator,
+)
 from shared.config import (
     VIDEO_SHAPE, DISPLAY_SHAPE, FRAME_RATE,
     SAMPLE_RATE, FRAMES_PER_BUFFER, AUDIO_WAIT,
     KEY_LENGTH, _scheme_name, _keygen_name,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # region --- Server-specific Video Namespace ---
@@ -61,18 +66,63 @@ class AV:
         self._key_lock = Lock()
         self._key_stop = Event()
 
+        # BB84 QBER monitoring
+        self.qber_monitor = None
+        self._qber_event_callback = None
+        self._is_bb84 = isinstance(self.key_gen, BB84KeyGenerator)
+
+        if self._is_bb84:
+            from shared.bb84.qber_monitor import QBERMonitor
+            self.qber_monitor = QBERMonitor()
+            self.key_gen.set_metrics_callback(self.qber_monitor.record_round)
+
         self.client_namespaces = generate_client_namespace(cls, self)
 
         def _rotate_keys():
             key_idx = 0
             while not self._key_stop.is_set():
                 self.key_gen.generate_key(key_length=KEY_LENGTH)
+
+                # BB84: check if round was aborted (intrusion detected)
+                if self._is_bb84 and hasattr(self.key_gen, 'last_round_result'):
+                    result = self.key_gen.last_round_result
+                    if result and result.aborted:
+                        logger.warning(
+                            "BB84 key generation aborted: %s (QBER=%.4f)",
+                            result.abort_reason, result.qber
+                        )
+                        if self._qber_event_callback:
+                            self._qber_event_callback('intrusion_detected', {
+                                'qber': result.qber,
+                                'reason': result.abort_reason,
+                                'sifted_bits': result.sifted_bits,
+                            })
+                        # Retry faster — don't update key
+                        self._key_stop.wait(timeout=0.5)
+                        continue
+
                 with self._key_lock:
                     self.key = key_idx, self.key_gen.get_key()
                 key_idx += 1
-                self._key_stop.wait(timeout=1)
+
+                if self._is_bb84 and self._qber_event_callback:
+                    result = self.key_gen.last_round_result
+                    if result:
+                        self._qber_event_callback('key_redistributed', {
+                            'qber': result.qber,
+                            'sifted_bits': result.sifted_bits,
+                            'final_key_bits': result.final_key_bits,
+                            'duration': result.duration_seconds,
+                        })
+
+                rotation_interval = 3.0 if self._is_bb84 else 1.0
+                self._key_stop.wait(timeout=rotation_interval)
 
         Thread(target=_rotate_keys, daemon=True).start()
+
+    def set_qber_event_callback(self, callback):
+        """Register callback(event_type, data) for QBER events."""
+        self._qber_event_callback = callback
 
 # endregion
 

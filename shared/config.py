@@ -125,6 +125,14 @@ class Config:
     encrypt_scheme: str = 'AES'
     key_generator: str = 'FILE'
 
+    # BB84
+    bb84_num_raw_bits: int = 4096
+    bb84_qber_threshold: float = 0.11
+    bb84_fiber_length_km: float = 1.0
+    bb84_source_intensity: float = 0.1
+    bb84_detector_efficiency: float = 0.10
+    bb84_eavesdropper_enabled: bool = False
+
     # Debug
     debug_video: bool = False
 
@@ -192,6 +200,13 @@ class Config:
             key_length=get('encryption', 'key_length', 128, cast=int),
             encrypt_scheme=get('encryption', 'encrypt_scheme', 'AES'),
             key_generator=get('encryption', 'key_generator', 'FILE'),
+            bb84_num_raw_bits=get('bb84', 'num_raw_bits', 4096, cast=int),
+            bb84_qber_threshold=get('bb84', 'qber_threshold', 0.11, cast=float),
+            bb84_fiber_length_km=get('bb84', 'fiber_length_km', 1.0, cast=float),
+            bb84_source_intensity=get('bb84', 'source_intensity', 0.1, cast=float),
+            bb84_detector_efficiency=get('bb84', 'detector_efficiency', 0.10, cast=float),
+            bb84_eavesdropper_enabled=getbool('bb84', 'eavesdropper_enabled', False,
+                                               env_key='QVC_BB84_EAVESDROPPER'),
             debug_video=getbool('debug', 'video_enabled', False, env_key='QVC_DEBUG_VIDEO'),
         )
 
@@ -264,6 +279,14 @@ DEFAULTS = {
         'key_length': 128,
         'encrypt_scheme': 'AES',
         'key_generator': 'FILE',
+    },
+    'bb84': {
+        'num_raw_bits': 4096,
+        'qber_threshold': 0.11,
+        'fiber_length_km': 1.0,
+        'source_intensity': 0.1,
+        'detector_efficiency': 0.10,
+        'eavesdropper_enabled': False,
     },
     'debug': {
         'video_enabled': False,

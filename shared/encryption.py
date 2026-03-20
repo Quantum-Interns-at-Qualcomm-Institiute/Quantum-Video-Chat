@@ -60,14 +60,16 @@ class AESEncryption(AbstractEncryptionScheme):
         self.results = []
 
     def encrypt(self, data: bytes, key: bytes) -> bytes:
-        cipher = AES.new(key, AES.MODE_CBC, iv=b'0' * 16)
+        iv = os.urandom(16)
+        cipher = AES.new(key, AES.MODE_CBC, iv=iv)
         data = pad(data, AES.block_size)
-        return cipher.encrypt(data)
+        return iv + cipher.encrypt(data)
 
     def decrypt(self, data: bytes, key: bytes) -> bytes:
-        iv = b'0' * 16
+        iv = data[:16]
+        ciphertext = data[16:]
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        decrypted = cipher.decrypt(data)
+        decrypted = cipher.decrypt(ciphertext)
         return unpad(decrypted, AES.block_size)
 
     def get_name(self):
@@ -206,6 +208,60 @@ class FileKeyGenerator(AbstractKeyGenerator):
     def get_key(self) -> bytes:
         return self.key
 
+class BB84KeyGenerator(AbstractKeyGenerator):
+    """Key generator using simulated BB84 quantum key distribution.
+
+    Runs a full BB84 protocol round (physical layer simulation, sifting,
+    QBER estimation, error correction, privacy amplification) to produce
+    each key. Reports metrics via an optional callback.
+    """
+
+    def __init__(self, protocol_config=None):
+        from shared.bb84.protocol import BB84Protocol, BB84ProtocolConfig
+        self._config = protocol_config or BB84ProtocolConfig()
+        self._protocol = BB84Protocol(self._config)
+        self.key: bytes = b''
+        self._last_round_result = None
+        self._eavesdropper = None
+        self._metrics_callback = None
+
+    def set_eavesdropper(self, eavesdropper):
+        """Enable eavesdropper simulation for demos."""
+        self._eavesdropper = eavesdropper
+
+    def clear_eavesdropper(self):
+        """Disable eavesdropper simulation."""
+        self._eavesdropper = None
+
+    def set_metrics_callback(self, callback):
+        """Register callback(BB84RoundResult) for QBER monitoring."""
+        self._metrics_callback = callback
+
+    def generate_key(self, key_length=0, **kwargs):
+        if key_length:
+            self._config.target_key_length_bits = key_length
+
+        result = self._protocol.run_round(eavesdropper=self._eavesdropper)
+        self._last_round_result = result
+
+        if self._metrics_callback:
+            self._metrics_callback(result)
+
+        if result.aborted or result.key is None:
+            # Key generation failed — keep old key
+            return
+
+        self.key = result.key
+
+    def get_key(self) -> bytes:
+        return self.key
+
+    @property
+    def last_round_result(self):
+        """Access the most recent BB84RoundResult for metrics."""
+        return self._last_round_result
+
+
 # endregion
 
 
@@ -230,6 +286,7 @@ def create_key_generator(name: str) -> AbstractKeyGenerator:
 register_key_generator('FILE', FileKeyGenerator)
 register_key_generator('RANDOM', RandomKeyGenerator)
 register_key_generator('DEBUG', DebugKeyGenerator)
+register_key_generator('BB84', BB84KeyGenerator)
 
 
 # Deprecated: enum + factory kept for backward compatibility.
@@ -238,6 +295,7 @@ class KeyGenerators(Enum):
     FILE = FileKeyGenerator
     RANDOM = RandomKeyGenerator
     DEBUG = DebugKeyGenerator
+    BB84 = BB84KeyGenerator
 
 
 class KeyGenFactory:

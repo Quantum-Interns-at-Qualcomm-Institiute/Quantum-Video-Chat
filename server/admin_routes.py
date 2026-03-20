@@ -134,3 +134,65 @@ def admin_shutdown():
     return jsonify({'status': 'shutting_down'}), 200
 
 # endregion
+
+
+# region --- Quantum / BB84 Endpoints ---
+
+@admin_bp.route('/admin/quantum/metrics', methods=['GET'])
+@handle_exceptions
+def admin_quantum_metrics():
+    """Return current BB84/QBER metrics if BB84 mode is active."""
+    if _server is None or not hasattr(_server, 'qber_monitor') or _server.qber_monitor is None:
+        return jsonify({'bb84_active': False}), 200
+
+    monitor = _server.qber_monitor
+    summary = monitor.get_summary()
+    history = [s.to_dict() for s in monitor.get_history()]
+    return jsonify({
+        'bb84_active': True,
+        'summary': summary,
+        'history': history,
+    }), 200
+
+
+@admin_bp.route('/admin/quantum/config', methods=['GET'])
+@handle_exceptions
+def admin_quantum_config():
+    """Return current BB84 configuration."""
+    from shared.config import _default
+    return jsonify({
+        'key_generator': _default.key_generator,
+        'bb84_num_raw_bits': _default.bb84_num_raw_bits,
+        'bb84_qber_threshold': _default.bb84_qber_threshold,
+        'bb84_fiber_length_km': _default.bb84_fiber_length_km,
+        'bb84_source_intensity': _default.bb84_source_intensity,
+        'bb84_detector_efficiency': _default.bb84_detector_efficiency,
+        'bb84_eavesdropper_enabled': _default.bb84_eavesdropper_enabled,
+    }), 200
+
+
+@admin_bp.route('/admin/quantum/eavesdropper', methods=['POST'])
+@handle_exceptions
+def admin_toggle_eavesdropper():
+    """Toggle eavesdropper simulation for demo purposes."""
+    if _server is None or not hasattr(_server, 'bb84_key_gen') or _server.bb84_key_gen is None:
+        return jsonify({'error': 'BB84 mode not active'}), 400
+
+    from shared.bb84.protocol import EavesdropperSimulator
+    key_gen = _server.bb84_key_gen
+
+    data = request.get_json(silent=True) or {}
+    enabled = data.get('enabled', key_gen._eavesdropper is None)
+    rate = data.get('interception_rate', 1.0)
+
+    if enabled:
+        key_gen.set_eavesdropper(EavesdropperSimulator(interception_rate=rate))
+        status = 'enabled'
+    else:
+        key_gen.clear_eavesdropper()
+        status = 'disabled'
+
+    logger.info("Eavesdropper simulation %s (rate=%.2f)", status, rate)
+    return jsonify({'eavesdropper': status, 'interception_rate': rate}), 200
+
+# endregion
