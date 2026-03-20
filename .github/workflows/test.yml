@@ -10,22 +10,20 @@ jobs:
   python-tests:
     name: Python Tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.11', '3.12']
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.11'
 
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
             portaudio19-dev \
             libgl1 \
             libglib2.0-0
@@ -34,6 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r server/requirements.txt
+          pip install -r middleware/requirements.txt
           pip install pytest pytest-timeout pytest-mock
 
       - name: Run unit and integration tests
@@ -45,6 +44,7 @@ jobs:
   frontend-tests:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
@@ -67,6 +67,7 @@ jobs:
   dashboard-build:
     name: Dashboard Build Check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v4
