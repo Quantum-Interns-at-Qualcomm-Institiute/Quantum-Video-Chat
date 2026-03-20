@@ -112,7 +112,7 @@ class EncryptSchemes(Enum):
 class EncryptFactory:
     """Deprecated: use create_encrypt_scheme(name) instead."""
     def create_encrypt_scheme(self, type) -> AbstractEncryptionScheme:
-        if type in EncryptSchemes:
+        if isinstance(type, EncryptSchemes):
             return type.value()
         raise ValueError(f"Invalid encryption scheme type: {type}")
 
@@ -301,7 +301,7 @@ class KeyGenerators(Enum):
 class KeyGenFactory:
     """Deprecated: use create_key_generator(name) instead."""
     def create_key_generator(self, type) -> AbstractKeyGenerator:
-        if type in KeyGenerators:
+        if isinstance(type, KeyGenerators):
             return type.value()
         raise ValueError(f"Invalid key generator type: {type}")
 
