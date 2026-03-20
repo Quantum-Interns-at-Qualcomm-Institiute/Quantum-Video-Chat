@@ -15,7 +15,7 @@ A -> B : Quantum key exchange\n(QBER ≈ 2-4%)
 M -> M : Record QBER: NORMAL
 V -> V : Video encrypted with\ncurrent key (AES-128)
 
-note over A, B, V $GREEN : Key rotates every 3 seconds\nVideo continues uninterrupted
+note over A, V $GREEN : Key rotates every 3 seconds\nVideo continues uninterrupted
 
 == Eve Begins Intercept-Resend Attack ==
 
