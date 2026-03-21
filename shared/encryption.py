@@ -60,14 +60,15 @@ class AESEncryption(AbstractEncryptionScheme):
         self.results = []
 
     def encrypt(self, data: bytes, key: bytes) -> bytes:
-        cipher = AES.new(key, AES.MODE_CBC, iv=b'0' * 16)
+        iv = os.urandom(AES.block_size)
+        cipher = AES.new(key, AES.MODE_CBC, iv=iv)
         data = pad(data, AES.block_size)
-        return cipher.encrypt(data)
+        return iv + cipher.encrypt(data)
 
     def decrypt(self, data: bytes, key: bytes) -> bytes:
-        iv = b'0' * 16
+        iv = data[:AES.block_size]
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        decrypted = cipher.decrypt(data)
+        decrypted = cipher.decrypt(data[AES.block_size:])
         return unpad(decrypted, AES.block_size)
 
     def get_name(self):
