@@ -36,6 +36,20 @@ def dashboard():
 
 # endregion
 
+# region --- Health Check ---
+
+@admin_bp.route('/health', methods=['GET'])
+def health_check():
+    """Liveness probe — returns 200 if the server process is running."""
+    uptime = time.time() - _server.start_time if _server else 0
+    return jsonify({
+        'status': 'healthy',
+        'uptime_seconds': round(uptime, 1),
+        'api_state': _get_state().value if _get_state else 'unknown',
+    }), 200
+
+# endregion
+
 # region --- Admin Endpoints ---
 
 @admin_bp.route('/admin/status', methods=['GET'])
