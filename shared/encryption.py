@@ -218,6 +218,21 @@ class FileKeyGenerator(AbstractKeyGenerator):
     def get_key(self) -> bytes:
         return self.key
 
+    def close(self):
+        """Close the underlying file handle to prevent resource leaks."""
+        if self.file and not self.file.closed:
+            self.file.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
+    def __del__(self):
+        self.close()
+
 class BB84KeyGenerator(AbstractKeyGenerator):
     """Key generator using simulated BB84 quantum key distribution.
 
