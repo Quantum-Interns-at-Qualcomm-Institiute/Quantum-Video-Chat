@@ -193,7 +193,26 @@ class FileKeyGenerator(AbstractKeyGenerator):
         self.key_length = key_length
         self.key: bytes = b''
         self.file_name = file_name
-        self.file = open(self.file_name, "rb")
+        self._file = None
+
+    def _open(self):
+        if self._file is None:
+            self._file = open(self.file_name, "rb")
+        return self._file
+
+    def close(self):
+        if self._file is not None:
+            self._file.close()
+            self._file = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def __del__(self):
+        self.close()
 
     def generate_key(self, key_length=0):
         if key_length:
@@ -201,7 +220,7 @@ class FileKeyGenerator(AbstractKeyGenerator):
         elif self.key_length < 1:
             raise ValueError("Error, please make key length nonzero")
         num_bytes = (self.key_length + 7) // 8
-        self.key = self.file.read(num_bytes)
+        self.key = self._open().read(num_bytes)
 
     def get_key(self) -> bytes:
         return self.key
