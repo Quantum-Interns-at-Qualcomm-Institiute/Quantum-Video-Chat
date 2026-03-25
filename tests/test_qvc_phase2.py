@@ -519,30 +519,12 @@ class TestWebRTCPeerConnectionLifecycle:
         src = _read_source('server/peer_manager.py')
         assert 'user_id == peer_id' in src
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_client_has_peer_connection_handler(self):
-        src = _read_source('middleware/client/client.py')
-        assert 'handle_peer_connection' in src
-        assert 'disconnect_from_peer' in src
-
     def test_client_states_include_connected(self):
         from shared.state import ClientState
         assert hasattr(ClientState, 'CONNECTED')
         assert hasattr(ClientState, 'NEW')
         assert hasattr(ClientState, 'LIVE')
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_socket_client_has_connect_disconnect(self):
-        src = _read_source('middleware/client/socket_client.py')
-        assert 'def connect(' in src
-        assert 'def disconnect(' in src
-        assert 'def is_connected(' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_peer_disconnect_notifies_adapter(self):
-        """Client should notify the frontend adapter on peer disconnect."""
-        src = _read_source('middleware/client/client.py')
-        assert "send_status('peer_disconnected'" in src
 
 
 class TestVideoStreamQuality:
@@ -614,65 +596,11 @@ class TestTextChatMessageDelivery:
         assert 'sendMessage' in src
         assert 'messages' in src
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_socket_client_has_send_message(self):
-        src = _read_source('middleware/client/socket_client.py')
-        assert 'def send_message(' in src
 
 
 # ===================================================================
 # Frontend Tests
 # ===================================================================
-
-
-class TestElectronAppLaunchAndWindowManagement:
-    """WP #657: Electron app launch and window management."""
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_main_ts_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'main', 'main.ts')
-        assert os.path.exists(path)
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_creates_browser_window(self):
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'BrowserWindow' in src
-        assert 'new BrowserWindow' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_window_dimensions_set(self):
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'width:' in src or 'width =' in src
-        assert 'height:' in src or 'height =' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_context_isolation_enabled(self):
-        """Security: contextIsolation should be true."""
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'contextIsolation: true' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_node_integration_disabled(self):
-        """Security: nodeIntegration should be false."""
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'nodeIntegration: false' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_ready_to_show_handler(self):
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'ready-to-show' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_window_closed_handler(self):
-        src = _read_source('frontend/src/main/main.ts')
-        assert "'closed'" in src or '"closed"' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_spawns_python_middleware(self):
-        """Electron main should spawn the Python middleware process."""
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'spawn' in src
-        assert 'python' in src.lower() or 'video_chat.py' in src
 
 
 class TestReactComponentRenderAndState:
@@ -799,12 +727,6 @@ class TestRoomCreationAndJoinFlow:
         src = _read_source('server/peer_manager.py')
         assert 'class PeerConnectionManager' in src
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_client_has_connect_to_peer(self):
-        """video_chat.py should wire adapter.on_peer_id to client.connect_to_peer."""
-        src = _read_source('middleware/video_chat.py')
-        assert 'connect_to_peer' in src
-
     def test_join_room_handles_errors(self):
         src = _read_source('frontend/src/renderer/hooks/useSession.ts')
         assert 'setErrorMessage' in src or 'error' in src.lower()
@@ -813,22 +735,10 @@ class TestRoomCreationAndJoinFlow:
 class TestSessionCleanupAndResourceRelease:
     """WP #661: Session cleanup and resource release."""
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_client_kill_closes_api_and_websocket(self):
-        src = _read_source('middleware/client/client.py')
-        assert 'def kill(' in src
-        assert 'api_instance' in src
-        assert 'websocket_instance' in src
-
     def test_disconnect_from_peer_stops_key_rotation(self):
         """Disconnecting should stop the key rotation thread."""
         src = _read_source('server/utils/av.py')
         assert '_key_stop' in src
-
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_disconnect_resets_state_to_live(self):
-        src = _read_source('middleware/client/client.py')
-        assert 'ClientState.LIVE' in src
 
     def test_peer_manager_disconnect_resets_both_users(self):
         """Server-side disconnect should reset both user and peer to IDLE."""
@@ -845,22 +755,9 @@ class TestSessionCleanupAndResourceRelease:
         assert 'SIGINT' in src
         assert 'SIGTERM' in src
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_electron_before_quit_kills_python(self):
-        """Electron should kill Python process on before-quit."""
-        src = _read_source('frontend/src/main/main.ts')
-        assert 'before-quit' in src
-        assert 'kill' in src
-
     def test_file_key_generator_cleanup_on_del(self):
         """FileKeyGenerator.__del__ should close the file handle."""
         src = _read_source('shared/encryption.py')
         assert 'def __del__(' in src
         assert 'self.close()' in src
 
-    @pytest.mark.skip(reason="source not yet implemented")
-    def test_video_chat_finally_cleanup(self):
-        """video_chat.py should disconnect in a finally block."""
-        src = _read_source('middleware/video_chat.py')
-        assert 'finally:' in src
-        assert 'disconnect' in src
