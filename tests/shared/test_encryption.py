@@ -250,9 +250,30 @@ class TestFileKeyGenerator:
             assert isinstance(key, bytes)
 
     def test_default_file_path(self):
-        with patch('builtins.open', mock_open(read_data=b'\x00' * 32)):
-            gen = FileKeyGenerator()
-            assert gen.file_name.endswith('key.bin')
+        gen = FileKeyGenerator()
+        assert gen.file_name.endswith('key.bin')
+
+    def test_context_manager_closes_file(self):
+        m = mock_open(read_data=b'\x00' * 32)
+        with patch('builtins.open', m):
+            with FileKeyGenerator(file_name='fake.bin') as gen:
+                gen.generate_key(key_length=128)
+                assert gen.get_key() is not None
+            # File should be closed after exiting context
+            m().close.assert_called()
+
+    def test_close_method(self):
+        m = mock_open(read_data=b'\x00' * 32)
+        with patch('builtins.open', m):
+            gen = FileKeyGenerator(file_name='fake.bin')
+            gen.generate_key(key_length=128)
+            gen.close()
+            assert gen._file is None
+
+    def test_lazy_open(self):
+        """File is not opened until generate_key is called."""
+        gen = FileKeyGenerator(file_name='nonexistent.bin')
+        assert gen._file is None
 
 
 # ---- Key Gen Factory (deprecated) ----

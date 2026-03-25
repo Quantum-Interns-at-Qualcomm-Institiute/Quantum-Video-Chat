@@ -5,44 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QVC Server Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Apply saved theme before first paint to avoid flash -->
   <script>(function(){var t=localStorage.getItem('qvc-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <style>
     /* ── Themes ─────────────────────────────────────────────────────────────── */
     :root {
-      --bg:        #2d2b22;
-      --panel-bg:  #3a3830;
-      --text:      #d4be98;
-      --muted:     #a89b84;
-      --card-bg:   rgba(212, 190, 152, 0.05);
-      --border:    rgba(212, 190, 152, 0.12);
-      --accent:    #d8a657;
-      --danger:    #ea6962;
-      --success:   #a9b665;
-      --warning:   #d8a657;
-      --log-debug: #7c7160;
-      --log-info:  #d4be98;
-      --log-warn:  #d8a657;
-      --log-error: #ea6962;
-      --log-critical: #ea6962;
-      --focus-ring:#d8a657;
+      --bg:        #111111;
+      --panel-bg:  #1A1A1A;
+      --text:      #EEEEEE;
+      --muted:     #777777;
+      --card-bg:   rgba(238, 238, 238, 0.05);
+      --border:    rgba(238, 238, 238, 0.12);
+      --accent:    #6699EE;
+      --danger:    #EE5555;
+      --success:   #44BB77;
+      --warning:   #DDAA33;
+      --log-debug: #666666;
+      --log-info:  #DDDDDD;
+      --log-warn:  #DDAA33;
+      --log-error: #EE5555;
+      --log-critical: #EE5555;
+      --focus-ring:#6699EE;
     }
     [data-theme="light"] {
-      --bg:        #e8e0cc;
-      --panel-bg:  #ddd5c0;
-      --text:      #3a3830;
-      --muted:     #5c5a4d;
-      --card-bg:   rgba(58, 56, 48, 0.04);
-      --border:    rgba(58, 56, 48, 0.14);
-      --accent:    #b8862f;
-      --danger:    #c62828;
-      --success:   #5a7a2e;
-      --warning:   #b8862f;
-      --log-debug: #5c5a4d;
-      --log-warn:  #b8862f;
-      --log-error: #c62828;
-      --focus-ring:#b8862f;
+      --bg:        #FFFFFF;
+      --panel-bg:  #FAFAFA;
+      --text:      #111111;
+      --muted:     #888888;
+      --card-bg:   rgba(17, 17, 17, 0.04);
+      --border:    rgba(17, 17, 17, 0.14);
+      --accent:    #2255CC;
+      --danger:    #CC3333;
+      --success:   #1A7A42;
+      --warning:   #CC8800;
+      --log-debug: #888888;
+      --log-warn:  #CC8800;
+      --log-error: #CC3333;
+      --focus-ring:#2255CC;
     }
 
     /* ── Reset ──────────────────────────────────────────────────────────────── */
@@ -53,7 +53,7 @@
     html, body {
       height: 100vh;
       overflow: hidden;
-      font-family: "Atkinson Hyperlegible Mono", monospace;
+      font-family: "IBM Plex Mono", monospace;
       background: var(--bg);
       color: var(--text);
       transition: background 0.2s, color 0.2s;
@@ -125,7 +125,7 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    #config-inline .cfg-val { color: var(--text); font-weight: 500; font-family: "Atkinson Hyperlegible Mono", monospace; font-size: 0.72rem; }
+    #config-inline .cfg-val { color: var(--text); font-weight: 500; font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; }
 
     /* push controls to right */
     .topbar-spacer { flex: 1; }
@@ -145,7 +145,7 @@
     }
     .topbar-btn:hover { background: var(--card-bg); }
     .topbar-btn-danger { border-color: var(--danger); color: var(--danger); }
-    .topbar-btn-danger:hover { background: rgba(234,105,98,0.1); }
+    .topbar-btn-danger:hover { background: rgba(238,85,85,0.1); }
 
     /* ── Middle row: users | events ─────────────────────────────────────────── */
     #middle-row {
@@ -201,7 +201,7 @@
     #log-file {
       font-size: 0.72rem;
       color: var(--muted);
-      font-family: "Atkinson Hyperlegible Mono", monospace;
+      font-family: "IBM Plex Mono", monospace;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -213,7 +213,7 @@
       border: 1px solid var(--border);
       border-radius: 0;
       padding: 8px 12px;
-      font-family: "Atkinson Hyperlegible Mono", monospace;
+      font-family: "IBM Plex Mono", monospace;
       font-size: 0.78rem;
       line-height: 1.5;
       white-space: pre-wrap;
@@ -241,25 +241,25 @@
     }
     [data-theme="light"] th { background: var(--bg); }
     td { padding: 6px 10px; border-bottom: 1px solid rgba(128,128,128,0.07); vertical-align: middle; }
-    .mono { font-family: "Atkinson Hyperlegible Mono", monospace; font-size: 0.78rem; }
+    .mono { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; }
     .empty { color: var(--muted); font-size: 0.85rem; padding: 6px 0; }
 
     /* ── Badges ─────────────────────────────────────────────────────────────── */
     .badge { display: inline-block; padding: 2px 8px; border-radius: 0; font-size: 0.74rem; font-weight: 600; }
-    .badge-idle              { color: var(--success); background: rgba(169,182,101,0.14); }
-    .badge-connected         { color: var(--accent);  background: rgba(216,166,87,0.14); }
-    .badge-user_added        { color: var(--success); background: rgba(169,182,101,0.14); }
-    .badge-user_removed      { color: var(--warning); background: rgba(216,166,87,0.14); }
-    .badge-peer_connected    { color: var(--accent);  background: rgba(216,166,87,0.14); }
-    .badge-peer_disconnected { color: var(--danger);  background: rgba(234,105,98,0.14); }
+    .badge-idle              { color: var(--success); background: rgba(68,187,119,0.14); }
+    .badge-connected         { color: var(--accent);  background: rgba(102,153,238,0.14); }
+    .badge-user_added        { color: var(--success); background: rgba(68,187,119,0.14); }
+    .badge-user_removed      { color: var(--warning); background: rgba(221,170,51,0.14); }
+    .badge-peer_connected    { color: var(--accent);  background: rgba(102,153,238,0.14); }
+    .badge-peer_disconnected { color: var(--danger);  background: rgba(238,85,85,0.14); }
 
     /* ── Action buttons ─────────────────────────────────────────────────────── */
     .btn { padding: 2px 9px; border-radius: 0; border: 1px solid; background: transparent; cursor: pointer; font-size: 0.74rem; font-weight: 500; font-family: inherit; margin-right: 3px; transition: background 0.12s; }
     .btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .btn-warn   { color: var(--warning); border-color: var(--warning); }
-    .btn-warn:hover:not(:disabled)   { background: rgba(216,166,87,0.12); }
+    .btn-warn:hover:not(:disabled)   { background: rgba(221,170,51,0.12); }
     .btn-danger { color: var(--danger);  border-color: var(--danger); }
-    .btn-danger:hover:not(:disabled) { background: rgba(234,105,98,0.12); }
+    .btn-danger:hover:not(:disabled) { background: rgba(238,85,85,0.12); }
 
     /* ── Error banner ───────────────────────────────────────────────────────── */
     .error-msg { background: rgba(198,40,40,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 7px 12px; border-radius: 0; margin-bottom: 10px; font-size: 0.82rem; }

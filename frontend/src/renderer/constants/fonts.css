@@ -1,5 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  --body-font: "Atkinson Hyperlegible Mono", monospace;
+  --heading-font: "IBM Plex Sans", system-ui, sans-serif;
+  --body-font: "IBM Plex Mono", monospace;
 }

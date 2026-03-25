@@ -22,7 +22,7 @@ body {
 }
 
 code {
-    font-family: "Atkinson Hyperlegible Mono", source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: "IBM Plex Mono", source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 /* ── QVC overrides: square spinners to match zero-radius aesthetic ── */
