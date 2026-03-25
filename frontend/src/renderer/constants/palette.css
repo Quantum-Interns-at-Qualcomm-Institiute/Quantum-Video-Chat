@@ -1,102 +1,87 @@
-/* ── Dark (default) ── */
+/* ── Monochrome Dark (default) ── */
 :root {
     /* Surface colors */
-    --bg-base:       #2d2b22;
-    --bg-surface:    #3a3830;
-    --bg-overlay:    #504d40;
-    --bg-muted:      #5c5a4d;
-    --bg-highlight:  #6b6858;
+    --bg-base:       #111111;
+    --bg-surface:    #1A1A1A;
+    --bg-overlay:    #222222;
+    --bg-muted:      #333333;
+    --bg-highlight:  #444444;
 
     /* Text colors */
-    --text-primary:  #d4be98;
-    --text-secondary:#a89b84;
-    --text-muted:    #7c7160;
+    --text-primary:  #EEEEEE;
+    --text-secondary:#DDDDDD;
+    --text-muted:    #777777;
 
     /* Accent colors */
-    --accent:        #d8a657;
-    --accent-teal:   #6ba3a0;
-    --accent-olive:  #8b9a5e;
-    --accent-brown:  #a67c53;
+    --accent:        #6699EE;
+    --accent-teal:   #6699EE;
+    --accent-olive:  #44BB77;
+    --accent-brown:  #DDAA33;
 
     /* Semantic colors */
-    --error:         #ea6962;
-    --success:       #a9b665;
-    --warning:       #d8a657;
+    --error:         #EE5555;
+    --success:       #44BB77;
+    --warning:       #DDAA33;
 
     /* Border colors */
-    --border-default:#504d40;
-    --border-focus:  #d8a657;
+    --border-default:#333333;
+    --border-focus:  #6699EE;
 
     /* Backward-compat aliases */
     --darkblue:      var(--bg-base);
     --off-white:     var(--text-primary);
     --bad:           var(--error);
-    --good:          var(--accent-teal);
+    --good:          var(--accent);
     --good-rate:     var(--success);
     --neutral:       var(--text-primary);
     --light-grey:    var(--text-secondary);
     --surface:       var(--bg-surface);
 
     /* Semantic UI tokens (dark) */
-    --btn-bg:         rgba(212, 190, 152, 0.12);
-    --btn-bg-hover:   rgba(212, 190, 152, 0.22);
-    --input-bg:       rgba(212, 190, 152, 0.08);
+    --btn-bg:         rgba(238, 238, 238, 0.12);
+    --btn-bg-hover:   rgba(238, 238, 238, 0.22);
+    --input-bg:       rgba(238, 238, 238, 0.08);
     --border-subtle:  var(--border-default);
-    --spinner-track:  rgba(212, 190, 152, 0.15);
-    --spinner-head:   rgba(212, 190, 152, 0.70);
-    --card-bg:        rgba(212, 190, 152, 0.04);
-
-    /* ── ui-kit token aliases ── */
-    --bg:             var(--bg-base);
-    --surface2:       var(--bg-overlay);
-    --border:         var(--border-default);
-    --text:           var(--text-primary);
-    --text-inverse:   #2d2b22;
-    --accent-hover:   #e8b86a;
-    --danger:         var(--error);
-    --warn:           var(--warning);
-    --font:           var(--body-font);
+    --spinner-track:  rgba(238, 238, 238, 0.15);
+    --spinner-head:   rgba(238, 238, 238, 0.70);
+    --card-bg:        rgba(238, 238, 238, 0.04);
 }
 
-/* ── Light ── */
+/* ── Monochrome Light ── */
 [data-theme="light"] {
     /* Surface colors */
-    --bg-base:       #e8e0cc;
-    --bg-surface:    #ddd5c0;
-    --bg-overlay:    #cfc7b0;
-    --bg-muted:      #bfb7a0;
-    --bg-highlight:  #b0a890;
+    --bg-base:       #FFFFFF;
+    --bg-surface:    #FAFAFA;
+    --bg-overlay:    #F2F2F2;
+    --bg-muted:      #E5E5E5;
+    --bg-highlight:  #CCCCCC;
 
     /* Text colors */
-    --text-primary:  #3a3830;
-    --text-secondary:#5c5a4d;
-    --text-muted:    #7c7160;
+    --text-primary:  #111111;
+    --text-secondary:#222222;
+    --text-muted:    #888888;
 
     /* Accent colors */
-    --accent:        #b8862f;
-    --accent-teal:   #4a7a77;
-    --accent-olive:  #5a6a3e;
-    --accent-brown:  #7a5c33;
+    --accent:        #2255CC;
+    --accent-teal:   #2255CC;
+    --accent-olive:  #1A7A42;
+    --accent-brown:  #CC8800;
 
     /* Semantic colors */
-    --error:         #c62828;
-    --success:       #5a7a2e;
-    --warning:       #b8862f;
+    --error:         #CC3333;
+    --success:       #1A7A42;
+    --warning:       #CC8800;
 
     /* Border colors */
-    --border-default:#b0a890;
-    --border-focus:  #b8862f;
+    --border-default:#CCCCCC;
+    --border-focus:  #2255CC;
 
     /* Semantic UI tokens (light) */
-    --btn-bg:         rgba(58, 56, 48, 0.08);
-    --btn-bg-hover:   rgba(58, 56, 48, 0.16);
-    --input-bg:       rgba(58, 56, 48, 0.06);
+    --btn-bg:         rgba(17, 17, 17, 0.08);
+    --btn-bg-hover:   rgba(17, 17, 17, 0.16);
+    --input-bg:       rgba(17, 17, 17, 0.06);
     --border-subtle:  var(--border-default);
-    --spinner-track:  rgba(58, 56, 48, 0.15);
-    --spinner-head:   rgba(58, 56, 48, 0.70);
-    --card-bg:        rgba(58, 56, 48, 0.04);
-
-    /* ── ui-kit token aliases (light) ── */
-    --text-inverse:   #e8e0cc;
-    --accent-hover:   #a0761f;
+    --spinner-track:  rgba(17, 17, 17, 0.15);
+    --spinner-head:   rgba(17, 17, 17, 0.70);
+    --card-bg:        rgba(17, 17, 17, 0.04);
 }
