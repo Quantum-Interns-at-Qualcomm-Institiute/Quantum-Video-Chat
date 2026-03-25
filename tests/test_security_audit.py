@@ -130,7 +130,7 @@ class TestSignalingChannelSecurity:
         config = Config()
         assert hasattr(config, 'server_websocket_port')
         assert hasattr(config, 'server_rest_port')
-        assert hasattr(config, 'electron_ipc_port')
+        assert hasattr(config, 'middleware_port')
         assert hasattr(config, 'client_api_port')
 
     def test_socket_api_module_exists(self):
