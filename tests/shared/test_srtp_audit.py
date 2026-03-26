@@ -37,8 +37,8 @@ class TestKeyExchangeSecurity:
                 gen.generate_key(key_length=32)
                 key = gen.get_key()
                 assert len(key) > 0
-            # After exiting context, file should be closed
-            assert gen.file.closed
+            # After exiting context, file handle should be released
+            assert gen._file is None
 
     def test_file_key_generator_close_is_idempotent(self):
         """Calling close() multiple times should not raise."""

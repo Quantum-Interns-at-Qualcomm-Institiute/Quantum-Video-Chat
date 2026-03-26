@@ -203,7 +203,26 @@ class FileKeyGenerator(AbstractKeyGenerator):
         self.key_length = key_length
         self.key: bytes = b''
         self.file_name = file_name
-        self.file = open(self.file_name, "rb")
+        self._file = None
+
+    def _open(self):
+        if self._file is None:
+            self._file = open(self.file_name, "rb")
+        return self._file
+
+    def close(self):
+        if self._file is not None:
+            self._file.close()
+            self._file = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def __del__(self):
+        self.close()
 
     def generate_key(self, key_length=0):
         if key_length:
@@ -211,10 +230,11 @@ class FileKeyGenerator(AbstractKeyGenerator):
         elif self.key_length < 1:
             raise ValueError("Error, please make key length nonzero")
         num_bytes = (self.key_length + 7) // 8
-        data = self.file.read(num_bytes)
+        f = self._open()
+        data = f.read(num_bytes)
         if len(data) < num_bytes:
-            self.file.seek(0)
-            data = self.file.read(num_bytes)
+            f.seek(0)
+            data = f.read(num_bytes)
             if len(data) < num_bytes:
                 raise RuntimeError(f"Key file too small: need {num_bytes} bytes, got {len(data)}")
         self.key = data
@@ -222,20 +242,6 @@ class FileKeyGenerator(AbstractKeyGenerator):
     def get_key(self) -> bytes:
         return self.key
 
-    def close(self):
-        """Close the underlying file handle to prevent resource leaks."""
-        if self.file and not self.file.closed:
-            self.file.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        return False
-
-    def __del__(self):
-        self.close()
 
 class BB84KeyGenerator(AbstractKeyGenerator):
     """Key generator using simulated BB84 quantum key distribution.

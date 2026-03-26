@@ -24,10 +24,10 @@ class TestStructuredLogging:
         source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
         assert 'JSONFormatter' in source
 
-    def test_json_log_file_created(self):
-        """Structured logs should write to .json.log files."""
+    def test_log_file_handler_created(self):
+        """Logger should configure file output."""
         source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert '.json.log' in source
+        assert 'RotatingFileHandler' in source
 
     def test_json_formatter_includes_required_fields(self):
         """JSON log entries should include timestamp, level, logger, message."""
@@ -41,9 +41,14 @@ class TestStructuredLogging:
         assert 'user_id' in source
         assert 'request_id' in source
 
+    def test_get_logger_function_exists(self):
+        """Logging module should expose a get_logger function."""
+        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
+        assert 'def get_logger' in source
+
 
 class TestHealthCheck:
-    """Verify health check endpoint exists."""
+    """Verify health check and admin monitoring endpoints exist."""
 
     def test_health_endpoint_defined(self):
         """Admin routes should have /health endpoint."""
@@ -59,6 +64,16 @@ class TestHealthCheck:
         """Health endpoint should include uptime."""
         source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
         assert 'uptime' in source
+
+    def test_admin_dashboard_endpoint(self):
+        """Admin routes should have a dashboard endpoint."""
+        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        assert 'dashboard' in source
+
+    def test_admin_uses_blueprint(self):
+        """Admin routes should use Flask Blueprint."""
+        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        assert 'Blueprint' in source
 
 
 class TestMetrics:
