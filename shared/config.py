@@ -105,7 +105,6 @@ class Config:
     local_ip: str = ''
     middleware_port: int = 5001
     server_rest_port: int = 5050
-    server_websocket_port: int = 3000
     client_api_port: int = 4000
 
     # Video
@@ -116,7 +115,7 @@ class Config:
     frame_rate: int = 15
 
     # Audio
-    sample_rate: int = 8196
+    sample_rate: int = 8000
     audio_wait: float = 0.125
     mute_audio: bool = False
 
@@ -185,8 +184,6 @@ class Config:
                                   env_key='QVC_IPC_PORT', cast=int),
             server_rest_port=get('network', 'server_rest_port', 5050,
                                  env_key='QVC_SERVER_REST_PORT', cast=int),
-            server_websocket_port=get('network', 'server_websocket_port', 3000,
-                                      env_key='QVC_SERVER_WS_PORT', cast=int),
             client_api_port=get('network', 'client_api_port', 4000,
                                 env_key='QVC_CLIENT_API_PORT', cast=int),
             video_width=get('video', 'video_width', 640, cast=int),
@@ -194,7 +191,7 @@ class Config:
             display_width=get('video', 'display_width', 960, cast=int),
             display_height=get('video', 'display_height', 720, cast=int),
             frame_rate=get('video', 'frame_rate', 15, cast=int),
-            sample_rate=get('audio', 'sample_rate', 8196, cast=int),
+            sample_rate=get('audio', 'sample_rate', 8000, cast=int),
             audio_wait=get('audio', 'audio_wait', 0.125, cast=float),
             mute_audio=getbool('audio', 'mute_by_default', False, env_key='QVC_MUTE_AUDIO'),
             key_length=get('encryption', 'key_length', 128, cast=int),
@@ -225,7 +222,6 @@ LOCAL_IP: str = _default.local_ip
 
 MIDDLEWARE_PORT: int = _default.middleware_port
 SERVER_REST_PORT: int = _default.server_rest_port
-SERVER_WEBSOCKET_PORT: int = _default.server_websocket_port
 CLIENT_API_PORT: int = _default.client_api_port
 
 _VIDEO_WIDTH: int = _default.video_width
@@ -260,7 +256,6 @@ DEFAULTS = {
     'network': {
         'middleware_port': 5001,
         'server_rest_port': 5050,
-        'server_websocket_port': 3000,
         'client_api_port': 4000,
     },
     'video': {
@@ -271,7 +266,7 @@ DEFAULTS = {
         'frame_rate': 15,
     },
     'audio': {
-        'sample_rate': 8196,
+        'sample_rate': 8000,
         'audio_wait': 0.125,
         'mute_by_default': False,
     },

@@ -255,7 +255,7 @@ Runtime settings can be configured in three ways (highest priority first):
 | Client API port | 4000 | `QVC_CLIENT_API_PORT` |
 | Video shape | 640x480 | — |
 | Frame rate | 15 fps | — |
-| Sample rate | 8196 Hz | — |
+| Sample rate | 8000 Hz | — |
 | Key length | 128 bits | — |
 | Debug video | false | `QVC_DEBUG_VIDEO` |
 | BB84 raw bits | 4096 | — |

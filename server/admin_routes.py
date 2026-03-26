@@ -1,4 +1,5 @@
 """Admin dashboard and monitoring endpoints — separated from user-facing API."""
+import ipaddress
 import logging
 import os
 import threading
@@ -7,11 +8,23 @@ from collections import deque
 
 from flask import Blueprint, jsonify, request, render_template
 
-from shared.config import SERVER_REST_PORT, SERVER_WEBSOCKET_PORT, LOCAL_IP
+from shared.config import SERVER_REST_PORT, LOCAL_IP
 from shared.decorators import handle_exceptions
 
 admin_bp = Blueprint('admin', __name__)
 logger = logging.getLogger('ServerAPI')
+
+_ADMIN_KEY = os.environ.get('QVC_ADMIN_KEY', '')
+
+
+def _check_admin_auth(req):
+    """Return True if the request is authorized for admin access."""
+    if _ADMIN_KEY:
+        auth = req.headers.get('Authorization', '')
+        return auth == f'Bearer {_ADMIN_KEY}'
+    # No key configured — allow loopback and private (Docker bridge) networks.
+    addr = ipaddress.ip_address(req.remote_addr)
+    return addr.is_loopback or addr.is_private
 
 # Reference to the Server instance — set by ServerAPI when registering the blueprint.
 _server = None
@@ -56,6 +69,8 @@ def health_check():
 @handle_exceptions
 def admin_status():
     """Return server uptime, state, user count, and configuration."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     uptime = time.time() - _server.start_time
     all_users = _server.user_manager.get_all_users()
     user_count = len(all_users)
@@ -73,7 +88,6 @@ def admin_status():
         'call_count': call_count,
         'config': {
             'rest_port': SERVER_REST_PORT,
-            'websocket_port': SERVER_WEBSOCKET_PORT,
             'local_ip': LOCAL_IP,
         },
     }), 200
@@ -83,6 +97,8 @@ def admin_status():
 @handle_exceptions
 def admin_users():
     """Return all connected users with their states and peers."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     users = _server.user_manager.get_all_users()
     return jsonify({'users': users}), 200
 
@@ -91,6 +107,8 @@ def admin_users():
 @handle_exceptions
 def admin_events():
     """Return recent server events (connection history)."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     limit = request.args.get('limit', 50, type=int)
     events = list(_server.event_log)[-limit:]
     return jsonify({'events': events}), 200
@@ -100,6 +118,8 @@ def admin_events():
 @handle_exceptions
 def admin_logs():
     """Return recent lines from the server log file for this run."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     lines_count = request.args.get('lines', 100, type=int)
     # Resolve the log file from the logger so we always read the file
     # created at startup — not a date-derived guess that breaks per-run files.
@@ -119,6 +139,8 @@ def admin_logs():
 @handle_exceptions
 def admin_disconnect(user_id):
     """Force-disconnect a user from their peer."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     _server.disconnect_peer(user_id)
     return jsonify({'status': 'disconnected', 'user_id': user_id}), 200
 
@@ -127,6 +149,8 @@ def admin_disconnect(user_id):
 @handle_exceptions
 def admin_remove(user_id):
     """Force-disconnect and remove a user from the server."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     try:
         _server.disconnect_peer(user_id)
     except Exception:
@@ -139,6 +163,8 @@ def admin_remove(user_id):
 @handle_exceptions
 def admin_shutdown():
     """Gracefully shut down the entire server."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     if _shutdown_fn is None:
         return jsonify({'error': 'Shutdown not available'}), 503
 
@@ -156,6 +182,8 @@ def admin_shutdown():
 @handle_exceptions
 def admin_quantum_metrics():
     """Return current BB84/QBER metrics if BB84 mode is active."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     if _server is None or not hasattr(_server, 'qber_monitor') or _server.qber_monitor is None:
         return jsonify({'bb84_active': False}), 200
 
@@ -173,6 +201,8 @@ def admin_quantum_metrics():
 @handle_exceptions
 def admin_quantum_config():
     """Return current BB84 configuration."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     from shared.config import _default
     return jsonify({
         'key_generator': _default.key_generator,
@@ -189,6 +219,8 @@ def admin_quantum_config():
 @handle_exceptions
 def admin_toggle_eavesdropper():
     """Toggle eavesdropper simulation for demo purposes."""
+    if not _check_admin_auth(request):
+        return jsonify({'error': 'Forbidden'}), 403
     if _server is None or not hasattr(_server, 'bb84_key_gen') or _server.bb84_key_gen is None:
         return jsonify({'error': 'BB84 mode not active'}), 400
 

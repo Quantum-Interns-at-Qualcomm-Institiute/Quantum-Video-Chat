@@ -8,12 +8,6 @@ import logging
 from server import Server
 from rest_api import ServerAPI
 
-logging.basicConfig(
-    filename='./logs/api.log',
-    level=logging.DEBUG,
-    format='[%(asctime)s] (%(levelname)s) %(name)s.%(funcName)s: %(message)s',
-    datefmt='%H:%M:%S',
-)
 logger = logging.getLogger(__name__)
 
 
@@ -33,8 +27,10 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
-    server = Server(ServerAPI.DEFAULT_ENDPOINT)
+    ServerAPI.init_socketio()
+    server = Server(ServerAPI.DEFAULT_ENDPOINT, socketio=ServerAPI.socketio)
     ServerAPI.init(server)
+
 
     try:
         ServerAPI.start()  # Blocking

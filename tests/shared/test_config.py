@@ -65,12 +65,11 @@ class TestDefaultPorts:
     def test_defaults(self):
         from shared.config import (
             MIDDLEWARE_PORT, SERVER_REST_PORT,
-            SERVER_WEBSOCKET_PORT, CLIENT_API_PORT
+            CLIENT_API_PORT
         )
         # These will use whatever env vars are set or defaults
         assert isinstance(MIDDLEWARE_PORT, int)
         assert isinstance(SERVER_REST_PORT, int)
-        assert isinstance(SERVER_WEBSOCKET_PORT, int)
         assert isinstance(CLIENT_API_PORT, int)
 
 
@@ -89,7 +88,7 @@ class TestConstants:
 
     def test_sample_rate(self):
         from shared.config import SAMPLE_RATE
-        assert SAMPLE_RATE == 8196
+        assert SAMPLE_RATE == 8000
 
     def test_key_length(self):
         from shared.config import KEY_LENGTH
@@ -112,7 +111,6 @@ class TestDefaults:
         from shared.config import DEFAULTS
         assert DEFAULTS['network']['middleware_port'] == 5001
         assert DEFAULTS['network']['server_rest_port'] == 5050
-        assert DEFAULTS['network']['server_websocket_port'] == 3000
         assert DEFAULTS['network']['client_api_port'] == 4000
 
     def test_defaults_video_values(self):
@@ -157,7 +155,7 @@ class TestConfigDataclass:
         assert cfg.video_width == 640
         assert cfg.video_height == 480
         assert cfg.frame_rate == 15
-        assert cfg.sample_rate == 8196
+        assert cfg.sample_rate == 8000
         assert cfg.key_length == 128
 
     def test_derived_properties(self):

@@ -1,5 +1,4 @@
 import os
-import string
 from abc import ABC, abstractmethod
 from enum import Enum
 from Crypto.Cipher import AES
@@ -64,7 +63,6 @@ class AESEncryption(AbstractEncryptionScheme):
     def __init__(self, bits=128):
         self.bits = bits
         self.name = f"AES-{bits}"
-        self.results = []
 
     def encrypt(self, data: bytes, key: bytes) -> bytes:
         nonce = os.urandom(self.NONCE_SIZE)
@@ -213,7 +211,13 @@ class FileKeyGenerator(AbstractKeyGenerator):
         elif self.key_length < 1:
             raise ValueError("Error, please make key length nonzero")
         num_bytes = (self.key_length + 7) // 8
-        self.key = self.file.read(num_bytes)
+        data = self.file.read(num_bytes)
+        if len(data) < num_bytes:
+            self.file.seek(0)
+            data = self.file.read(num_bytes)
+            if len(data) < num_bytes:
+                raise RuntimeError(f"Key file too small: need {num_bytes} bytes, got {len(data)}")
+        self.key = data
 
     def get_key(self) -> bytes:
         return self.key

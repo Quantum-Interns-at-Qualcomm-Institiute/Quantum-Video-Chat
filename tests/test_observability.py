@@ -211,34 +211,34 @@ class TestChatDelivery:
 # ── WP #657: Electron App Launch ──
 
 class TestElectronApp:
-    """Verify Electron app configuration."""
+    """Verify frontend app configuration."""
 
     def test_frontend_package_json_exists(self):
-        """Frontend should have package.json."""
-        assert os.path.isfile(os.path.join(ROOT, 'frontend', 'package.json'))
+        """Frontend should have an HTML entry point."""
+        assert os.path.isfile(os.path.join(ROOT, 'website', 'client', 'index.html'))
 
     def test_main_process_entry(self):
-        """Frontend should have a renderer entry point."""
-        renderer_entry = os.path.join(ROOT, 'frontend', 'src', 'renderer', 'index.tsx')
-        assert os.path.isfile(renderer_entry)
+        """Frontend should have a JS entry point."""
+        entry = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
+        assert os.path.isfile(entry)
 
 
 # ── WP #658: React Component Render ──
 
 class TestReactComponents:
-    """Verify React component structure."""
+    """Verify frontend component structure."""
 
     def test_renderer_directory_exists(self):
-        """Frontend should have renderer source directory."""
-        renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
-        assert os.path.isdir(renderer_dir)
+        """Frontend should have static source directory."""
+        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
+        assert os.path.isdir(static_dir)
 
     def test_app_component_exists(self):
         """App component should exist."""
-        renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
-        if os.path.isdir(renderer_dir):
+        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
+        if os.path.isdir(static_dir):
             files = []
-            for root_dir, dirs, fnames in os.walk(renderer_dir):
+            for root_dir, dirs, fnames in os.walk(static_dir):
                 files.extend(fnames)
             app_files = [f for f in files if 'app' in f.lower()]
             assert len(app_files) > 0
@@ -251,19 +251,18 @@ class TestMediaPermissions:
 
     def test_media_permission_code_exists(self):
         """Frontend should handle media device access."""
-        # Check hooks/useMedia.ts or any component for media device access
-        hooks_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer', 'hooks')
-        use_media = os.path.join(hooks_dir, 'useMedia.ts')
-        if os.path.isfile(use_media):
-            content = open(use_media).read()
-            assert 'media' in content.lower()
+        # Check for video/camera references in the JS frontend
+        app_js = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
+        if os.path.isfile(app_js):
+            content = open(app_js).read()
+            assert 'video' in content.lower() or 'camera' in content.lower()
         else:
-            # Fallback: check for video/camera references anywhere
-            renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
+            # Fallback: check middleware templates/static
+            static_dir = os.path.join(ROOT, 'website', 'client', 'static')
             found = False
-            for root_dir, dirs, fnames in os.walk(renderer_dir):
+            for root_dir, dirs, fnames in os.walk(static_dir):
                 for f in fnames:
-                    if f.endswith(('.ts', '.tsx')):
+                    if f.endswith(('.js', '.html')):
                         content = open(os.path.join(root_dir, f)).read()
                         if 'video' in content.lower() or 'camera' in content.lower():
                             found = True

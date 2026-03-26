@@ -202,44 +202,48 @@ class VideoClientNamespace(AVClientNamespace):
                 inpipe, 'pipe:', vcodec='libx264', f='ismv',
                 preset='ultrafast', tune='zerolatency')
 
-            while True:
-                with self.av._key_lock:
-                    cur_key_idx, key = self.av.key
+            try:
+                while True:
+                    with self.av._key_lock:
+                        cur_key_idx, key = self.av.key
 
-                if self.av.debug_video:
-                    # Generate a loading-spinner frame instead of random noise.
-                    # A rotating arc on a dark background — functionally identical
-                    # to a camera frame on the wire, but visually a loading wheel.
-                    image = np.zeros((h, w, 3), dtype=np.uint8)
-                    image[:] = (30, 30, 30)  # dark gray background
+                    if self.av.debug_video:
+                        # Generate a loading-spinner frame instead of random noise.
+                        # A rotating arc on a dark background — functionally identical
+                        # to a camera frame on the wire, but visually a loading wheel.
+                        image = np.zeros((h, w, 3), dtype=np.uint8)
+                        image[:] = (30, 30, 30)  # dark gray background
 
-                    cx, cy = w // 2, h // 2
-                    radius = min(w, h) // 6
-                    thickness = max(3, radius // 5)
+                        cx, cy = w // 2, h // 2
+                        radius = min(w, h) // 6
+                        thickness = max(3, radius // 5)
 
-                    # Subtle background ring (track)
-                    cv2.ellipse(image, (cx, cy), (radius, radius),
-                                0, 0, 360, (60, 60, 60), thickness, cv2.LINE_AA)
+                        # Subtle background ring (track)
+                        cv2.ellipse(image, (cx, cy), (radius, radius),
+                                    0, 0, 360, (60, 60, 60), thickness, cv2.LINE_AA)
 
-                    # Rotating foreground arc — spins ~1 revolution per second
-                    angle = (time.time() * 270) % 360
-                    start = int(angle)
-                    cv2.ellipse(image, (cx, cy), (radius, radius),
-                                0, start, start + 270,
-                                (220, 220, 220), thickness, cv2.LINE_AA)
-                else:
-                    _, image = cap.read()
-                    image = cv2.resize(image, (w, h))
+                        # Rotating foreground arc — spins ~1 revolution per second
+                        angle = (time.time() * 270) % 360
+                        start = int(angle)
+                        cv2.ellipse(image, (cx, cy), (radius, radius),
+                                    0, start, start + 270,
+                                    (220, 220, 220), thickness, cv2.LINE_AA)
+                    else:
+                        _, image = cap.read()
+                        image = cv2.resize(image, (w, h))
 
-                # Let subclasses preview what we are about to send (e.g. show
-                # the debug frame or camera feed in the sender's own UI).
-                self._handle_self_frame(image)
+                    # Let subclasses preview what we are about to send (e.g. show
+                    # the debug frame or camera feed in the sender's own UI).
+                    self._handle_self_frame(image)
 
-                data = self._tobytes(image)
-                data = output.run(input=data, capture_stdout=True, quiet=True)[0]
-                data = self.av.encryption.encrypt(data, key)
-                self.send(cur_key_idx.to_bytes(4, 'big') + data)
-                time.sleep(1 / self.av.frame_rate / 5)
+                    data = self._tobytes(image)
+                    data = output.run(input=data, capture_stdout=True, quiet=True)[0]
+                    data = self.av.encryption.encrypt(data, key)
+                    self.send(cur_key_idx.to_bytes(4, 'big') + data)
+                    time.sleep(1 / self.av.frame_rate / 5)
+            finally:
+                if cap is not None:
+                    cap.release()
 
         Thread(target=send_video, daemon=True).start()
 

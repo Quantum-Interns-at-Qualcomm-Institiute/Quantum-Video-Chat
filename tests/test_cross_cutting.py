@@ -302,19 +302,22 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # Collect all non-vendor CSS files
+        # Collect all non-vendor CSS files from the website client
         cls.css_files = []  # type: List[str]
-        renderer_dir = os.path.join(ROOT, "frontend", "src", "renderer")
-        for dirpath, _, filenames in os.walk(renderer_dir):
-            for fn in filenames:
-                if fn.endswith(".css"):
-                    cls.css_files.append(os.path.relpath(
-                        os.path.join(dirpath, fn), ROOT
-                    ))
+        for search_dir in ("website/client/static", "middleware/static"):
+            base = os.path.join(ROOT, search_dir)
+            if not os.path.isdir(base):
+                continue
+            for dirpath, _, filenames in os.walk(base):
+                for fn in filenames:
+                    if fn.endswith(".css"):
+                        cls.css_files.append(os.path.relpath(
+                            os.path.join(dirpath, fn), ROOT
+                        ))
         cls.rest_src = _read("server/rest_api.py")
 
     def test_css_files_exist(self):
-        """At least one CSS file exists in the frontend renderer."""
+        """At least one CSS file exists in the frontend."""
         self.assertGreater(len(self.css_files), 0)
 
     def test_no_vendor_prefix_only_properties(self):
@@ -337,7 +340,7 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
                     if not has_std:
                         # Allow known CSS properties that are still vendor-prefixed
                         # (e.g., -webkit-app-region which has no standard equivalent)
-                        known_exceptions = {"app-region", "font-smoothing"}
+                        known_exceptions = {"app-region", "font-smoothing", "osx-font-smoothing"}
                         if std_prop not in known_exceptions:
                             self.fail(
                                 f"Vendor-prefix-only property '-{m.group(1)}{std_prop}' "
@@ -362,10 +365,10 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
         self.assertIn("Access-Control-Allow-Headers", self.rest_src)
 
     def test_tsx_components_exist(self):
-        """Frontend has React TSX components for cross-platform UI."""
-        comp_dir = os.path.join(ROOT, "frontend", "src", "renderer", "components")
-        tsx_files = [f for f in os.listdir(comp_dir) if f.endswith(".tsx")]
-        self.assertGreater(len(tsx_files), 0, "No TSX components found")
+        """Frontend has JS/HTML components for cross-platform UI."""
+        static_dir = os.path.join(ROOT, "website", "client", "static")
+        js_files = [f for f in os.listdir(static_dir) if f.endswith(".js")]
+        self.assertGreater(len(js_files), 0, "No JS frontend files found")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -418,17 +421,11 @@ class TestNetworkResilience(unittest.TestCase):
             "Disconnect handler should preserve the session for reconnection",
         )
 
-    def test_socket_reverts_to_live_on_all_disconnect(self):
-        """Socket API reverts to LIVE state when all users disconnect."""
-        self.assertIn("SocketState.LIVE", self.socket_src)
-        disconnect_section = self.socket_src[
-            self.socket_src.index("def _on_disconnect"):
-        ]
-        self.assertIn("LIVE", disconnect_section)
-
-    def test_port_collision_recovery(self):
-        """Socket API recovers from port-in-use by incrementing the port."""
-        self.assertIn("endpoint.port + 1", self.socket_src)
+    def test_socket_uses_room_based_sessions(self):
+        """Socket API uses room-based session isolation."""
+        self.assertIn("self.sessions", self.socket_src)
+        self.assertIn("join_room", self.socket_src)
+        self.assertIn("leave_room", self.socket_src)
 
     def test_error_emission_to_browser(self):
         """Middleware emits 'server-error' events to the browser on failure."""
@@ -448,13 +445,13 @@ class TestPerformanceArchitecture(unittest.TestCase):
         cls.config_src = _read("shared/config.py")
         cls.middleware_src = _read("middleware/server_comms.py")
 
-    def test_socket_api_uses_threads(self):
-        """Socket API uses threading.Thread for background operation."""
-        self.assertIn("from threading import Thread", self.socket_src)
+    def test_socket_api_uses_shared_socketio(self):
+        """Socket API accepts a shared SocketIO instance."""
+        self.assertIn("socketio: SocketIO", self.socket_src)
 
-    def test_socket_api_daemon_thread(self):
-        """Socket API thread is a daemon so it doesn't block shutdown."""
-        self.assertIn("daemon=True", self.socket_src)
+    def test_socket_api_creates_sessions(self):
+        """Socket API creates room-based sessions."""
+        self.assertIn("create_session", self.socket_src)
 
     def test_configurable_frame_rate(self):
         """Frame rate is configurable via config."""
@@ -472,7 +469,7 @@ class TestPerformanceArchitecture(unittest.TestCase):
     def test_configurable_network_ports(self):
         """Network ports are configurable via config."""
         for port_key in ("middleware_port", "server_rest_port",
-                         "server_websocket_port", "client_api_port"):
+                         "client_api_port"):
             self.assertIn(port_key, self.config_src,
                           f"Missing configurable port: {port_key}")
 
@@ -500,8 +497,8 @@ class TestPerformanceArchitecture(unittest.TestCase):
 
     def test_ssl_context_support(self):
         """Server supports optional TLS/SSL via dev certificates."""
-        socket_src = self.socket_src
-        self.assertIn("ssl_context", socket_src)
+        rest_src = _read("server/rest_api.py")
+        self.assertIn("ssl", rest_src.lower())
 
 
 if __name__ == "__main__":
