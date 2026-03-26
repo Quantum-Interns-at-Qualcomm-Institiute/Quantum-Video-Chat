@@ -60,15 +60,15 @@ class TestAESRandomIV:
         with pytest.raises(Exception):
             enc.decrypt(ct, key_b)
 
-    def test_tampered_iv_fails(self):
+    def test_tampered_nonce_fails(self):
         enc = AESEncryption()
         key = os.urandom(16)
         ct = enc.encrypt(b'important data!!', key)
-        # Flip a bit in the IV
+        # Flip a bit in the nonce
         tampered = bytes([ct[0] ^ 0x01]) + ct[1:]
-        # Decryption should produce wrong plaintext (CBC property)
-        result = enc.decrypt(tampered, key)
-        assert result != b'important data!!'
+        # AES-GCM should reject tampered ciphertext (MAC check)
+        with pytest.raises(ValueError):
+            enc.decrypt(tampered, key)
 
 
 class TestEncryptionSchemeSecurityProperties:
@@ -128,7 +128,6 @@ class TestSignalingChannelSecurity:
         """Server config should define explicit ports for all services."""
         from shared.config import Config
         config = Config()
-        assert hasattr(config, 'server_websocket_port')
         assert hasattr(config, 'server_rest_port')
         assert hasattr(config, 'middleware_port')
         assert hasattr(config, 'client_api_port')

@@ -275,42 +275,24 @@ class TestPrivacyAmplification:
 class TestRealTimeKeyExchangeStatusUI:
     """WP #650: Real-time key exchange status UI.
 
-    The frontend receives key exchange status via socket events.
-    Verify the source files contain the proper event listeners and
-    status structures.
+    Verify the server-side QBER monitoring and status broadcast
+    infrastructure exists (frontend is now in website monorepo).
     """
 
-    def test_connection_status_component_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'components', 'ConnectionStatus.tsx')
-        assert os.path.exists(path)
+    def test_qber_monitor_has_summary(self):
+        """QBER monitor should provide summary for UI display."""
+        src = _read_source('shared/bb84/qber_monitor.py')
+        assert 'get_summary' in src
 
-    def test_connection_status_has_server_states(self):
-        src = _read_source('frontend/src/renderer/components/ConnectionStatus.tsx')
-        assert "'connecting'" in src or '"connecting"' in src
-        assert "'connected'" in src or '"connected"' in src
-        assert "'error'" in src or '"error"' in src
+    def test_qber_monitor_has_history(self):
+        """QBER monitor should track history for UI charts."""
+        src = _read_source('shared/bb84/qber_monitor.py')
+        assert 'get_history' in src
 
-    def test_connection_status_exports_conn_status_type(self):
-        src = _read_source('frontend/src/renderer/components/ConnectionStatus.tsx')
-        assert 'ConnStatus' in src
-        assert 'export' in src
-
-    def test_client_context_exposes_server_connected(self):
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        assert 'serverConnected' in src
-        assert 'middlewareConnected' in src
-
-    def test_use_connection_hook_has_status_events(self):
-        src = _read_source('frontend/src/renderer/hooks/useConnection.ts')
-        assert "'connect'" in src or '"connect"' in src
-        assert "'disconnect'" in src or '"disconnect"' in src
-        assert "'server-connected'" in src or '"server-connected"' in src
-
-    def test_status_widget_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'components', 'widgets', 'StatusWidget.tsx')
-        assert os.path.exists(path)
+    def test_socket_api_emits_qber_updates(self):
+        """Socket API should emit qber-update events."""
+        src = _read_source('server/socket_api.py')
+        assert 'qber' in src.lower()
 
 
 # ===================================================================
@@ -566,35 +548,20 @@ class TestVideoStreamQuality:
 
 
 class TestTextChatMessageDelivery:
-    """WP #656: Text chat message delivery."""
+    """WP #656: Text chat message delivery.
 
-    def test_chat_component_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'components', 'chat', 'Chat.tsx')
-        assert os.path.exists(path)
+    Verify server-side message handling (frontend is now in website monorepo).
+    """
 
-    def test_chat_has_send_handler(self):
-        src = _read_source('frontend/src/renderer/components/chat/Chat.tsx')
-        assert 'handleSend' in src
-        assert 'handleSubmit' in src
+    def test_socket_api_handles_message_event(self):
+        """Socket API should handle message events."""
+        src = _read_source('server/socket_api.py')
+        assert "'message'" in src
 
-    def test_chat_has_message_interface(self):
-        src = _read_source('frontend/src/renderer/components/chat/Chat.tsx')
-        assert 'interface MessageData' in src or 'interface ChatProps' in src
-        assert 'time' in src
-        assert 'name' in src
-        assert 'body' in src
-
-    def test_message_component_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'components', 'chat', 'Message.tsx')
-        assert os.path.exists(path)
-
-    def test_client_context_has_chat(self):
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        assert 'chat' in src
-        assert 'sendMessage' in src
-        assert 'messages' in src
+    def test_middleware_relays_messages(self):
+        """Middleware should relay chat messages."""
+        src = _read_source('middleware/server_comms.py')
+        assert 'message' in src
 
 
 
@@ -603,91 +570,42 @@ class TestTextChatMessageDelivery:
 # ===================================================================
 
 
-class TestReactComponentRenderAndState:
-    """WP #658: React component render and state management."""
+class TestFrontendComponentStructure:
+    """WP #658: Frontend component structure.
 
-    def test_app_tsx_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer', 'App.tsx')
+    Verify the website client frontend exists (replaces old Electron app).
+    """
+
+    def test_frontend_html_entry_exists(self):
+        """Website client should have an HTML entry point."""
+        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'index.html')
         assert os.path.exists(path)
 
-    def test_app_uses_client_context_provider(self):
-        src = _read_source('frontend/src/renderer/App.tsx')
-        assert 'ClientContextProvider' in src
+    def test_frontend_js_entry_exists(self):
+        """Website client should have a JS entry point."""
+        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
+        assert os.path.exists(path)
 
-    def test_main_screen_uses_context(self):
-        src = _read_source('frontend/src/renderer/screens/MainScreen.tsx')
-        assert 'useContext' in src
-        assert 'ClientContext' in src
-
-    def test_main_screen_conditional_render(self):
-        """MainScreen should render Lobby or InCall based on session state."""
-        src = _read_source('frontend/src/renderer/screens/MainScreen.tsx')
-        assert 'Lobby' in src
-        assert 'InCall' in src
-        assert 'roomId' in src or 'inSession' in src
-
-    def test_client_context_provides_all_state(self):
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        required_fields = [
-            'middlewareConnected', 'serverConnected', 'userId',
-            'roomId', 'cameraOn', 'muted', 'waitingForPeer',
-            'errorMessage',
-        ]
-        for field in required_fields:
-            assert field in src, f"Missing context field: {field}"
-
-    def test_hooks_use_dependency_injection(self):
-        """Hooks should accept socket factories for testability."""
-        for hook_file in ('useConnection.ts', 'useSession.ts', 'useMedia.ts'):
-            src = _read_source(f'frontend/src/renderer/hooks/{hook_file}')
-            # Should accept an optional factory/provider parameter
-            assert 'socketFactory' in src or 'socketProvider' in src, \
-                f"{hook_file} missing socket injection parameter"
-
-    def test_video_player_component_exists(self):
-        src = _read_source('frontend/src/renderer/components/VideoPlayer.tsx')
-        assert 'VideoPlayer' in src
-        assert 'srcObject' in src
+    def test_frontend_css_exists(self):
+        """Website client should have a stylesheet."""
+        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'style.css')
+        assert os.path.exists(path)
 
 
 class TestCameraMicrophonePermissionHandling:
     """WP #659: Camera/microphone permission handling."""
-
-    def test_use_media_hook_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'hooks', 'useMedia.ts')
-        assert os.path.exists(path)
-
-    def test_use_media_has_toggle_camera(self):
-        src = _read_source('frontend/src/renderer/hooks/useMedia.ts')
-        assert 'toggleCamera' in src
-        assert 'toggleMute' in src
-
-    def test_use_media_has_device_selection(self):
-        src = _read_source('frontend/src/renderer/hooks/useMedia.ts')
-        assert 'selectCamera' in src
-        assert 'refreshCameras' in src
-
-    def test_use_media_emits_toggle_events(self):
-        src = _read_source('frontend/src/renderer/hooks/useMedia.ts')
-        assert "'toggle_camera'" in src or '"toggle_camera"' in src
-        assert "'toggle_mute'" in src or '"toggle_mute"' in src
-
-    def test_use_media_has_audio_device_support(self):
-        src = _read_source('frontend/src/renderer/hooks/useMedia.ts')
-        assert 'audioDevices' in src or 'AudioDevice' in src
-        assert 'selectAudio' in src
 
     def test_video_chat_handles_mute_toggle(self):
         """Middleware entrypoint should handle toggle_mute from frontend."""
         src = _read_source('middleware/events.py')
         assert 'toggle_mute' in src
 
-    def test_camera_off_shows_noise_canvas(self):
-        """VideoPlayer should show NoiseCanvas when camera is disabled."""
-        src = _read_source('frontend/src/renderer/components/VideoPlayer.tsx')
-        assert 'NoiseCanvas' in src
-        assert 'cameraEnabled' in src
+    def test_frontend_references_video(self):
+        """Frontend JS should reference video functionality."""
+        app_js = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
+        with open(app_js) as f:
+            content = f.read()
+        assert 'video' in content.lower()
 
 
 # ===================================================================
@@ -698,38 +616,20 @@ class TestCameraMicrophonePermissionHandling:
 class TestRoomCreationAndJoinFlow:
     """WP #660: Room creation and join flow."""
 
-    def test_use_session_hook_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', 'src', 'renderer',
-                            'hooks', 'useSession.ts')
-        assert os.path.exists(path)
-
-    def test_use_session_has_join_and_leave(self):
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        assert 'joinRoom' in src
-        assert 'leaveRoom' in src
-
-    def test_use_session_emits_socket_events(self):
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        assert "'join_room'" in src or '"join_room"' in src
-        assert "'leave_room'" in src or '"leave_room"' in src
-
-    def test_use_session_handles_room_id(self):
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        assert "'room-id'" in src or '"room-id"' in src
-        assert 'setRoomId' in src or '_setRoomId' in src
-
-    def test_use_session_handles_waiting_for_peer(self):
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        assert "'waiting-for-peer'" in src or '"waiting-for-peer"' in src
-        assert 'waitingForPeer' in src
-
     def test_server_has_peer_connection_manager(self):
         src = _read_source('server/peer_manager.py')
         assert 'class PeerConnectionManager' in src
 
-    def test_join_room_handles_errors(self):
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        assert 'setErrorMessage' in src or 'error' in src.lower()
+    def test_socket_api_handles_room_events(self):
+        """Socket API should handle room-based events."""
+        src = _read_source('server/socket_api.py')
+        assert 'join_room' in src
+        assert 'create_session' in src
+
+    def test_rest_api_has_peer_connection(self):
+        """REST API should have peer_connection endpoint."""
+        src = _read_source('server/rest_api.py')
+        assert 'peer_connection' in src
 
 
 class TestSessionCleanupAndResourceRelease:
