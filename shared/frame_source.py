@@ -6,17 +6,19 @@ from the specific source (camera, microphone, static noise, test patterns).
 
 Implementing classes must provide ``capture()`` and ``release()``.
 """
+import logging
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 class FrameSource(ABC):
     """Abstract base class for video frame sources."""
 
     @abstractmethod
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         """Return the next BGR frame, or None if unavailable."""
 
     @abstractmethod
@@ -35,7 +37,7 @@ class CameraSource(FrameSource):
         self.width = width
         self.height = height
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         ret, frame = self.cap.read()
         if not ret:
             return None
@@ -52,7 +54,7 @@ class StaticNoiseSource(FrameSource):
         self.width = width
         self.height = height
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         return np.random.randint(
             30, 200, (self.height, self.width, 3), dtype=np.uint8)
 
@@ -83,7 +85,7 @@ class MockFrameSource(FrameSource):
         self.looping = looping
         self._index = 0
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         if self._index >= self.NUM_FRAMES:
             if self.looping:
                 self._index = 0
@@ -139,7 +141,7 @@ class AudioSource(ABC):
     """
 
     @abstractmethod
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         """Return the next audio chunk, or None if unavailable."""
 
     @abstractmethod
@@ -166,7 +168,7 @@ class MicrophoneSource(AudioSource):
             frames_per_buffer=frames_per_buffer,
         )
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         try:
             data = self._stream.read(self.frames_per_buffer,
                                      exception_on_overflow=False)
@@ -179,11 +181,11 @@ class MicrophoneSource(AudioSource):
             self._stream.stop_stream()
             self._stream.close()
         except Exception:
-            pass
+            logger.debug("Failed to close audio stream", exc_info=True)
         try:
             self._pa.terminate()
         except Exception:
-            pass
+            logger.debug("Failed to terminate PyAudio", exc_info=True)
 
 
 class SilenceSource(AudioSource):
@@ -192,7 +194,7 @@ class SilenceSource(AudioSource):
     def __init__(self, frames_per_buffer: int = 1366):
         self.frames_per_buffer = frames_per_buffer
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         return np.zeros(self.frames_per_buffer, dtype=np.float32)
 
     def release(self) -> None:
@@ -220,7 +222,7 @@ class MockAudioSource(AudioSource):
         self.looping = looping
         self._index = 0
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         if self._index >= self.NUM_CHUNKS:
             if self.looping:
                 self._index = 0

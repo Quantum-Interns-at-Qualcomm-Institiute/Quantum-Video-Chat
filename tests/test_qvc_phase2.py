@@ -27,25 +27,25 @@ Room Management Tests:
   WP #660: Room creation and join flow
   WP #661: Session cleanup and resource release
 """
+import hashlib
 import os
 import re
 import tempfile
-import hashlib
-import pytest
 from collections import Counter
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import patch
+
+import pytest
 
 from shared.encryption import (
     AESEncryption,
-    XOREncryption,
     DebugEncryption,
-    RandomKeyGenerator,
-    FileKeyGenerator,
     DebugKeyGenerator,
+    FileKeyGenerator,
+    RandomKeyGenerator,
+    XOREncryption,
     create_encrypt_scheme,
     create_key_generator,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -107,10 +107,11 @@ class TestBB84BasisSelectionRandomness:
         gen.generate_key()
         raw = gen.get_key()
         # Treat each bit as a basis choice: 0 = rectilinear, 1 = diagonal
-        basis_choices = []
-        for byte in raw:
-            for bit in range(8):
-                basis_choices.append((byte >> bit) & 1)
+        basis_choices = [
+            (byte >> bit) & 1
+            for byte in raw
+            for bit in range(8)
+        ]
         counts = Counter(basis_choices)
         total = len(basis_choices)
         ratio = counts[0] / total

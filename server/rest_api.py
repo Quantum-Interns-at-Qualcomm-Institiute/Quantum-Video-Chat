@@ -7,12 +7,14 @@ from functools import wraps
 
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO
-
-from server import Server
 from state import APIState
 from utils import (
-    ServerError, get_parameters, Endpoint,
+    Endpoint,
+    ServerError,
+    get_parameters,
 )
+
+from server import Server
 
 
 class RateLimiter:
@@ -52,10 +54,11 @@ def rate_limit(f):
     return wrapper
 
 
-from shared.ssl_utils import get_ssl_context as _get_ssl_context
-from admin_routes import admin_bp, init_admin
-from shared.config import LOCAL_IP, SERVER_REST_PORT
-from shared.decorators import handle_exceptions_with_cls
+from admin_routes import admin_bp, init_admin  # noqa: E402
+
+from shared.config import LOCAL_IP, SERVER_REST_PORT  # noqa: E402
+from shared.decorators import handle_exceptions_with_cls  # noqa: E402
+from shared.ssl_utils import get_ssl_context as _get_ssl_context  # noqa: E402
 
 
 class ServerAPI:

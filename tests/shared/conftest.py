@@ -1,7 +1,7 @@
 """Shared-layer test fixtures."""
 import os
+
 import pytest
-from unittest.mock import patch, mock_open
 
 # Enable dev-only encryption modes (XOR, DEBUG) for testing
 os.environ.setdefault('QVC_DEVELOPMENT', 'true')

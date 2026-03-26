@@ -1,10 +1,50 @@
-# Ruff configuration for QVC
-# Only enforce rules that catch real bugs, not style nits.
+# Ruff linter configuration for QVC
+
+line-length = 120
 
 [lint]
 select = [
-    "E9",    # Runtime errors (syntax errors, etc.)
-    "F63",   # Invalid comparisons
-    "F7",    # Syntax errors in type annotations
-    "F82",   # Undefined names
+    "E",      # pycodestyle errors
+    "F",      # pyflakes (unused imports, undefined names, etc.)
+    "I",      # isort (import sorting)
+    "UP",     # pyupgrade (modern Python idioms)
+    "B",      # bugbear (common bug patterns)
+    "SIM",    # simplify (code simplification)
+    "T201",   # print statements (should use logging)
+    "RUF",    # ruff-specific rules
+    "N",      # pep8-naming
+    "S110",   # try-except-pass (silent exception swallowing)
+    "C4",     # flake8-comprehensions
+    "PERF",   # performance anti-patterns
 ]
+ignore = [
+    "E501",    # line length (handled by line-length setting above)
+    "E731",    # lambda assignment (sometimes clearer)
+    "N805",    # first argument naming (false positives on descriptors)
+    "N806",    # non-lowercase variable in function (common for constants)
+    "N818",    # exception naming convention (not enforcing suffix)
+    "RUF002",  # ambiguous unicode in docstrings (false positives)
+    "RUF012",  # mutable class default (dataclass fields are fine)
+    "RUF013",  # implicit optional (PEP 484 style is fine)
+    "SIM105",  # contextlib.suppress (try/except is often clearer)
+    "SIM108",  # ternary (multi-line if/else is often clearer)
+    "SIM114",  # combinable if branches (sometimes clearer separate)
+    "SIM115",  # open context manager (not always practical)
+    "B017",    # pytest.raises(Exception) (acceptable in tests)
+    "B905",    # zip strict (not always needed)
+    "PERF203", # try-except in loop (sometimes necessary)
+]
+
+[lint.per-file-ignores]
+"tests/**" = [
+    "S101",    # assert is expected in tests
+    "T201",    # print in tests is fine for debugging
+    "F811",    # redefined names from fixtures
+    "SIM",     # simplification rules too noisy in tests
+    "N",       # naming conventions relaxed in tests
+    "RUF059",  # unused unpacked variables in tests
+]
+"middleware/audio.py" = ["E402"]  # sys.path manipulation before imports
+"middleware/video.py" = ["E402"]
+"middleware/events.py" = ["E402"]
+"middleware/server_comms.py" = ["E402"]

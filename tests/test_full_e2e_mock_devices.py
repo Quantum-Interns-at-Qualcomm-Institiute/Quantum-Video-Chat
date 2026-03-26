@@ -14,13 +14,13 @@ Simulates the complete lifecycle:
 
 Uses MockFrameSource and MockAudioSource instead of real hardware.
 """
-import numpy as np
-import pytest
 from unittest.mock import MagicMock, patch
 
-from shared.endpoint import Endpoint
-from shared.frame_source import MockFrameSource, MockAudioSource
+import numpy as np
+import pytest
 
+from shared.endpoint import Endpoint
+from shared.frame_source import MockAudioSource, MockFrameSource
 
 # ---------------------------------------------------------------------------
 # Helpers — minimal relay simulator
@@ -119,6 +119,7 @@ def mock_server():
 
     with patch('server.SocketAPI', MockSocketAPI):
         import importlib
+
         import server as server_mod
         importlib.reload(server_mod)
         Server = server_mod.Server
@@ -174,7 +175,7 @@ class TestServerLifecycle:
         """call_count reflects only CONNECTED users."""
         uid_a = mock_server.add_user(('127.0.0.1', 5001))
         uid_b = mock_server.add_user(('127.0.0.1', 5002))
-        uid_c = mock_server.add_user(('127.0.0.1', 5003))
+        _uid_c = mock_server.add_user(('127.0.0.1', 5003))
 
         from utils.user import UserState
 

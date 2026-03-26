@@ -6,7 +6,6 @@ are avoided due to Python 3.10+ union syntax in physical_layer.py.
 """
 
 import os
-import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 BB84_DIR = os.path.join(ROOT, 'shared', 'bb84')

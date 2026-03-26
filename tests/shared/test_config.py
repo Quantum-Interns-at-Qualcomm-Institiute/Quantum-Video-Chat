@@ -1,9 +1,7 @@
 """Tests for shared/config.py — get_local_ip(), env var overrides, INI loading."""
 import os
 import tempfile
-import importlib
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 
 class TestGetLocalIp:
@@ -63,10 +61,7 @@ class TestGetLocalIp:
 
 class TestDefaultPorts:
     def test_defaults(self):
-        from shared.config import (
-            MIDDLEWARE_PORT, SERVER_REST_PORT,
-            CLIENT_API_PORT
-        )
+        from shared.config import CLIENT_API_PORT, MIDDLEWARE_PORT, SERVER_REST_PORT
         # These will use whatever env vars are set or defaults
         assert isinstance(MIDDLEWARE_PORT, int)
         assert isinstance(SERVER_REST_PORT, int)
@@ -142,8 +137,9 @@ class TestIniLoading:
             assert result == 9999
 
     def test_load_ini_returns_configparser(self):
-        from shared.config import _load_ini
         import configparser
+
+        from shared.config import _load_ini
         result = _load_ini()
         assert isinstance(result, configparser.ConfigParser)
 
@@ -193,7 +189,7 @@ class TestConfigDataclass:
                 os.unlink(f.name)
 
     def test_default_instance_matches_globals(self):
-        from shared.config import Config, _default, VIDEO_SHAPE, FRAME_RATE, KEY_LENGTH
+        from shared.config import FRAME_RATE, KEY_LENGTH, VIDEO_SHAPE, _default
         assert _default.video_shape == VIDEO_SHAPE
         assert _default.frame_rate == FRAME_RATE
         assert _default.key_length == KEY_LENGTH

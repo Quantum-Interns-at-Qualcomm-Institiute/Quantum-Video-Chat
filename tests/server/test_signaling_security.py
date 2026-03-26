@@ -9,7 +9,6 @@ issues with shared/config.py (str | None syntax requires 3.10+).
 """
 
 import os
-import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOCKET_API_PATH = os.path.join(ROOT, 'server', 'socket_api.py')

@@ -1,7 +1,6 @@
 """Tests for server/state.py — APIState and SocketState enums."""
-import pytest
-import os
 import importlib.util
+import os
 
 # Import server/state.py specifically, not shared/state.py
 _server_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'server')

@@ -2,16 +2,13 @@ import time
 from collections import deque
 from datetime import datetime
 
-from exceptions import InvalidState
-
-from custom_logging import logger
-from utils import ServerError, Endpoint
-from utils.user_manager import UserManager, UserStorageFactory, UserState
-from utils.user_manager import DuplicateUser, UserNotFound
-from shared.config import LOCAL_IP
-from peer_manager import PeerConnectionManager
 from client_notifier import ClientNotifier
+from custom_logging import logger
+from exceptions import InvalidState
+from peer_manager import PeerConnectionManager
 from socket_api import SocketAPI
+from utils import Endpoint, ServerError
+from utils.user_manager import DuplicateUser, UserManager, UserNotFound, UserState, UserStorageFactory
 
 
 # region --- Server ---

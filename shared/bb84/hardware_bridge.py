@@ -90,7 +90,7 @@ class MATLABBridge(AbstractHardwareBridge):
         """
         if self._file_handle is None or self._file_handle.closed:
             if not os.path.exists(self.key_path):
-                raise IOError(f"Key file not found: {self.key_path}")
+                raise OSError(f"Key file not found: {self.key_path}")
             self._file_handle = open(self.key_path, 'rb')
 
         data = self._file_handle.read(length_bytes)
@@ -109,7 +109,7 @@ class MATLABBridge(AbstractHardwareBridge):
         """
         if not os.path.exists(self.qber_path):
             return 0.0
-        with open(self.qber_path, 'r') as f:
+        with open(self.qber_path) as f:
             return float(f.read().strip())
 
     def is_connected(self) -> bool:
@@ -205,7 +205,7 @@ class QiskitValidator:
             simulator = AerSimulator()
             result = simulator.run(qc, shots=1).result()
             counts = result.get_counts()
-            measured_bit = int(list(counts.keys())[0])
+            measured_bit = int(next(iter(counts.keys())))
 
             if measured_bit == alice_bits[i]:
                 correct_measurements += 1

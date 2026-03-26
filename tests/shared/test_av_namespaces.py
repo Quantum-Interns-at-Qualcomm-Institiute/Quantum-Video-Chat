@@ -1,6 +1,5 @@
 """Tests for shared/av/namespaces.py — AV namespace classes."""
-import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 
 class TestBroadcastFlaskNamespace:

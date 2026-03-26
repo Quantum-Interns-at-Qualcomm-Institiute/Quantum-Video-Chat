@@ -9,11 +9,11 @@ Tests cover:
   5. REST /peer_disconnected endpoint -- server notifies middleware of peer leaving
   6. SocketAPI room-id emission -- both users connect -> room-id broadcast
 """
-import pytest
 from unittest.mock import MagicMock, patch
 
-from shared.endpoint import Endpoint
+import pytest
 
+from shared.endpoint import Endpoint
 
 # ---------------------------------------------------------------------------
 # SocketAPI room-id tests
@@ -104,6 +104,7 @@ class TestServerPeerConnectionFlow:
 
         with patch('server.SocketAPI', MockSocketAPI):
             import importlib
+
             import server as server_mod
             importlib.reload(server_mod)
             Server = server_mod.Server

@@ -4,10 +4,10 @@ MiddlewareState — Single mutable state container for the middleware.
 Replaces scattered module-level globals with a single, inspectable object.
 """
 import os
+
 import socketio
 from flask import Flask
 from flask_cors import CORS
-
 
 MIDDLEWARE_PORT = 5001
 WIDTH  = 640

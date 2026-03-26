@@ -1,6 +1,6 @@
 """Tests for server/utils/user.py — User class and UserState enum."""
-import pytest
 from utils.user import User, UserState
+
 from shared.endpoint import Endpoint
 
 

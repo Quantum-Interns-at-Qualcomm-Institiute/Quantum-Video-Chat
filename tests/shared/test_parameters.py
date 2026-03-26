@@ -1,7 +1,8 @@
 """Tests for shared/parameters.py — get_parameters() and is_type()."""
 import pytest
+
+from shared.exceptions import InvalidParameter, ParameterError
 from shared.parameters import get_parameters, is_type
-from shared.exceptions import ParameterError, InvalidParameter
 
 
 class TestGetParametersDict:

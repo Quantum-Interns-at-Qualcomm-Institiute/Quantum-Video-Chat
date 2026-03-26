@@ -1,12 +1,13 @@
 """Tests for the BB84KeyGenerator."""
 import pytest
 
-from shared.encryption import (
-    BB84KeyGenerator, AbstractKeyGenerator,
-    create_key_generator, register_key_generator,
-)
-from shared.bb84.protocol import BB84ProtocolConfig, EavesdropperSimulator
 from shared.bb84.physical_layer import ChannelParameters
+from shared.bb84.protocol import BB84ProtocolConfig, EavesdropperSimulator
+from shared.encryption import (
+    AbstractKeyGenerator,
+    BB84KeyGenerator,
+    create_key_generator,
+)
 
 
 @pytest.fixture

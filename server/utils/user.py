@@ -1,5 +1,6 @@
-from . import Endpoint
 from enum import Enum
+
+from . import Endpoint
 
 
 class UserState(Enum):

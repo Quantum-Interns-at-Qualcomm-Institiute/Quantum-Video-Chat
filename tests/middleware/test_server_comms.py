@@ -1,6 +1,8 @@
 """Tests for middleware/server_comms.py — QKD server communication."""
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock, PropertyMock
+
 from tests.middleware._helpers import load_middleware_module
 
 mw_state = load_middleware_module('state')

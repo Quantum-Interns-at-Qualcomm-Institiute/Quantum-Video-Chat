@@ -4,8 +4,8 @@ Root conftest.py -- sets up sys.path so imports mirror the project's runtime lay
 The project uses sys.path.insert at runtime (in main.py, video_chat.py, etc.) to make
 `shared`, `server`, and `middleware` importable. We replicate that here for tests.
 """
-import sys
 import os
+import sys
 
 # Enable dev-only encryption modes (XOR, DEBUG) for testing
 os.environ.setdefault('QVC_DEVELOPMENT', 'true')
@@ -25,8 +25,9 @@ for subdir in ('server', 'middleware'):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-import pytest
-from shared.endpoint import Endpoint
+import pytest  # noqa: E402
+
+from shared.endpoint import Endpoint  # noqa: E402
 
 
 @pytest.fixture

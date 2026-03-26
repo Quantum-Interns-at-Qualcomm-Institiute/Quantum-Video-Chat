@@ -1,6 +1,6 @@
 """Tests for shared/endpoint.py — Endpoint class."""
-import pytest
 from unittest.mock import patch
+
 from shared.endpoint import Endpoint
 
 

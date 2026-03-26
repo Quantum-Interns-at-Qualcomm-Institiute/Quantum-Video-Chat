@@ -11,10 +11,8 @@ Verifies:
   7. Looping mode auto-resets after exhaustion
 """
 import numpy as np
-import pytest
 
-from shared.frame_source import SilenceSource, MockAudioSource
-
+from shared.frame_source import MockAudioSource, SilenceSource
 
 SAMPLE_RATE = 8000
 FRAMES_PER_BUFFER = SAMPLE_RATE // 6  # 1366

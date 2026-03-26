@@ -4,10 +4,13 @@
 import random
 import threading
 from abc import ABC, abstractmethod
-from .user import User
-from .user import UserState
+
 from custom_logging import logger
+
 from shared.exceptions import InvalidState
+
+from .user import User, UserState
+
 # endregion
 
 

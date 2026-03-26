@@ -1,15 +1,13 @@
 """Tests for admin endpoints in server/rest_api.py."""
 import json
-import os
 import time
 from collections import deque
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from shared.endpoint import Endpoint
-from shared.exceptions import ServerError, BadRequest
+from shared.exceptions import BadRequest
 
 
 class TestAdminEndpoints:
@@ -17,9 +15,9 @@ class TestAdminEndpoints:
 
     @pytest.fixture(autouse=True)
     def setup_api(self):
+        from admin_routes import init_admin
         from rest_api import ServerAPI
         from state import APIState
-        from admin_routes import init_admin
 
         ServerAPI.state = APIState.INIT
         ServerAPI.server = MagicMock()

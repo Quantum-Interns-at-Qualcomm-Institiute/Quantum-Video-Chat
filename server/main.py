@@ -1,12 +1,14 @@
-import sys
 import os
 import signal
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
 
-from server import Server
 from rest_api import ServerAPI
+
+from server import Server
 
 logger = logging.getLogger(__name__)
 

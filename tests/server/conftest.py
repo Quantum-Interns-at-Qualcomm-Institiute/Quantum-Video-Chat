@@ -1,6 +1,7 @@
 """Server-layer test fixtures."""
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 @pytest.fixture
@@ -11,7 +12,7 @@ def dict_storage():
 
 @pytest.fixture
 def user_manager():
-    from utils.user_manager import UserManager, DictUserStorage
+    from utils.user_manager import DictUserStorage, UserManager
     return UserManager(storage=DictUserStorage())
 
 
@@ -25,11 +26,11 @@ def mock_server():
     MockSocketAPI = MagicMock()
 
     with patch('server.SocketAPI', MockSocketAPI):
+        import importlib
+
+        import server as server_mod
         from server import Server
         from shared.endpoint import Endpoint
-
-        import importlib
-        import server as server_mod
         importlib.reload(server_mod)
         Server = server_mod.Server
 

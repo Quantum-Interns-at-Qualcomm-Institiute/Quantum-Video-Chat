@@ -1,8 +1,7 @@
 """Tests for shared/logging.py — get_logger()."""
-import pytest
 import logging
 from logging.handlers import RotatingFileHandler
-from unittest.mock import patch, mock_open, MagicMock
+
 from shared.logging import get_logger
 
 
@@ -36,7 +35,7 @@ class TestGetLogger:
 
     def test_creates_log_directory(self, tmp_path):
         log_dir = tmp_path / 'subdir' / 'logs'
-        logger = get_logger('test_mkdir', log_dir=str(log_dir))
+        _logger = get_logger('test_mkdir', log_dir=str(log_dir))
         assert log_dir.exists()
 
     def test_stream_handler_level_is_info(self, tmp_path):

@@ -10,10 +10,11 @@ Note: The ``shared`` package lives at the project root, which is not on
 We add the project root to ``sys.path`` so that ``shared.frame_source`` is
 importable at runtime.
 """
+import base64
 import os
 import sys
 import threading
-import base64
+
 import cv2
 import gevent
 
@@ -22,7 +23,10 @@ _PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from shared.frame_source import CameraSource, StaticNoiseSource, MockFrameSource
+from shared.frame_source import CameraSource, MockFrameSource, StaticNoiseSource
+from shared.logging import get_logger
+
+logger = get_logger(__name__)
 
 # Special device indices for test sources (selected via the camera picker).
 MOCK_DEVICE_A = -1
@@ -37,9 +41,9 @@ class VideoThread:
         self._stop_event = threading.Event()
         # Use MockFrameSource for special negative device indices,
         # real CameraSource for physical cameras.
-        if device == MOCK_DEVICE_A or device == MOCK_DEVICE_B:
+        if device in (MOCK_DEVICE_A, MOCK_DEVICE_B):
             self._camera_source = MockFrameSource(width=width, height=height, looping=True)
-            print(f'(middleware): Using MockFrameSource (device={device})')
+            logger.info('Using MockFrameSource (device=%s)', device)
         else:
             self._camera_source = CameraSource(device=device, width=width, height=height)
         self._static_source = StaticNoiseSource(width=width, height=height)
@@ -93,11 +97,11 @@ class VideoThread:
                             'height': self.height,
                         })
                     except Exception:
-                        pass  # server disconnected mid-send
+                        logger.debug('Frame send failed (server disconnected mid-send)')
             gevent.sleep(interval)
 
         self._camera_source.release()
-        print('(middleware): Video thread stopped.')
+        logger.info('Video thread stopped.')
 
     def stop(self):
         self._stop_event.set()

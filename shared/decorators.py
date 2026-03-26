@@ -5,7 +5,11 @@ from functools import wraps
 from flask import jsonify
 
 from shared.exceptions import (
-    ServerError, BadRequest, BadGateway, BadAuthentication, InvalidState,
+    BadAuthentication,
+    BadGateway,
+    BadRequest,
+    InvalidState,
+    ServerError,
 )
 
 logger = logging.getLogger(__name__)

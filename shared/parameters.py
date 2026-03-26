@@ -1,8 +1,7 @@
-from typing import Callable, Union
-from shared.exceptions import ParameterError, InvalidParameter
+from shared.exceptions import InvalidParameter, ParameterError
 
 
-def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple, None]):
+def get_parameters(data: list | tuple | dict, *args: list | str | tuple | None):
     """
     Returns desired parameters from a collection with optional data validation.
     Validator functions return true iff associated data is valid.
@@ -27,7 +26,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
         param_vals = ()
         for param, validator in zip(data, validators):
             if not validator:
-                validator = lambda x: not not x
+                validator = lambda x: bool(x)
             if not validator(param):
                 raise InvalidParameter("Parameter failed validation.")
             param_vals = (*param_vals, param)
@@ -40,7 +39,7 @@ def get_parameters(data: Union[list, tuple, dict], *args: Union[list, str, tuple
                 param, validator = arg
             else:
                 param = arg
-                validator = lambda x: not not x
+                validator = lambda x: bool(x)
 
             if param not in data:
                 raise ParameterError(

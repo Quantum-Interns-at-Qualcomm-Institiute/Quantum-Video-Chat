@@ -9,9 +9,10 @@ Models the optical chain for quantum key distribution:
 All parameters are configurable via the ChannelParameters dataclass.
 """
 import math
-import numpy as np
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
+
+import numpy as np
 
 
 class Polarization(Enum):
@@ -145,8 +146,7 @@ class SinglePhotonDetector:
         """Attempt to detect photons and measure the polarization state."""
 
         # Dead time check: if detector hasn't recovered, no detection
-        if self._last_detection_index is not None:
-            if pulse_index - self._last_detection_index < self._dead_time_pulses:
+        if self._last_detection_index is not None and pulse_index - self._last_detection_index < self._dead_time_pulses:
                 return DetectionEvent(
                     pulse_index=pulse_index,
                     detected=False,
@@ -158,8 +158,7 @@ class SinglePhotonDetector:
         is_afterpulse = False
         if self._last_detection_index is not None:
             gap = pulse_index - self._last_detection_index
-            if gap < self._dead_time_pulses * 3:
-                if self._rng.random() < self.params.afterpulse_probability:
+            if gap < self._dead_time_pulses * 3 and self._rng.random() < self.params.afterpulse_probability:
                     is_afterpulse = True
 
         # Dark count check (independent of photon arrival)

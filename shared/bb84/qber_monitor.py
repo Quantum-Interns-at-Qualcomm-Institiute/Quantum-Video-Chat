@@ -6,10 +6,10 @@ for dashboard display.
 """
 import time
 from collections import deque
-from dataclasses import dataclass, asdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
 from enum import Enum
 from threading import Lock
-from typing import Callable
 
 from shared.bb84.protocol import BB84RoundResult
 
@@ -78,7 +78,7 @@ class QBERMonitor:
 
     def remove_listener(self, callback: Callable[[QBERSnapshot], None]):
         """Unregister a previously added callback."""
-        self._listeners = [l for l in self._listeners if l is not callback]
+        self._listeners = [listener for listener in self._listeners if listener is not callback]
 
     def record_round(self, result: BB84RoundResult) -> QBERSnapshot:
         """Process a BB84 round result and emit appropriate events.

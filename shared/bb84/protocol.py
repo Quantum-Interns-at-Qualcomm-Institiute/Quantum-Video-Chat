@@ -11,14 +11,17 @@ Implements the full BB84 protocol:
 Includes an eavesdropper simulator for demonstrating intrusion detection.
 """
 import time
-import numpy as np
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from shared.bb84.physical_layer import (
-    ChannelParameters, Basis, PhysicalLayerSimulator, DetectionEvent,
-    _BIT_BASIS_TO_POLARIZATION,
+    Basis,
+    ChannelParameters,
+    DetectionEvent,
+    PhysicalLayerSimulator,
 )
-from shared.bb84.utils import binary_entropy, toeplitz_hash, bits_to_bytes
+from shared.bb84.utils import binary_entropy, toeplitz_hash
 
 
 @dataclass

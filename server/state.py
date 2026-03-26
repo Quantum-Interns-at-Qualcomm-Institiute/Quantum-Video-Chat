@@ -1,5 +1,5 @@
-from functools import total_ordering
 from enum import Enum
+from functools import total_ordering
 
 
 class APIState(Enum):
