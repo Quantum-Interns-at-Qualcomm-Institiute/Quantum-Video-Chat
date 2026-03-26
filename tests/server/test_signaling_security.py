@@ -13,6 +13,7 @@ import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOCKET_API_PATH = os.path.join(ROOT, 'server', 'socket_api.py')
+SSL_UTILS_PATH = os.path.join(ROOT, 'shared', 'ssl_utils.py')
 
 
 def _read_source():
@@ -20,28 +21,33 @@ def _read_source():
         return f.read()
 
 
+def _read_ssl_utils():
+    with open(SSL_UTILS_PATH) as f:
+        return f.read()
+
+
 class TestSSLSupport:
-    """Verify the signaling server supports TLS/SSL."""
+    """Verify the signaling server supports TLS/SSL via shared.ssl_utils."""
 
     def test_ssl_context_function_exists(self):
-        """Server must have SSL context configuration."""
-        source = _read_source()
-        assert 'def _get_ssl_context' in source
+        """SSL utils must define get_ssl_context."""
+        source = _read_ssl_utils()
+        assert 'def get_ssl_context' in source
 
     def test_ssl_context_checks_cert_paths(self):
         """SSL context should verify cert and key files exist."""
-        source = _read_source()
+        source = _read_ssl_utils()
         assert 'cert.pem' in source
         assert 'key.pem' in source
 
     def test_ssl_context_supports_env_override(self):
         """DEV_CERT_DIR environment variable should be respected."""
-        source = _read_source()
+        source = _read_ssl_utils()
         assert 'DEV_CERT_DIR' in source
 
     def test_ssl_context_handles_missing_certs(self):
         """SSL context should return None when certs are absent."""
-        source = _read_source()
+        source = _read_ssl_utils()
         assert 'return None' in source or 'None' in source
 
 
@@ -51,7 +57,7 @@ class TestConnectionAuthentication:
     def test_socket_api_tracks_users(self):
         """SocketAPI must maintain a user registry."""
         source = _read_source()
-        assert 'self.users' in source
+        assert 'self.sessions' in source
         assert 'self.sids' in source
 
     def test_connect_handler_validates_identity(self):

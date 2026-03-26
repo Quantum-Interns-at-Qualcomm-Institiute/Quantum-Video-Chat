@@ -17,22 +17,29 @@ sys.path.insert(0, ROOT)
 # ── WP #369: Structured Logging, Metrics, Health Check ──
 
 class TestStructuredLogging:
-    """Verify logging module is available and functional."""
+    """Verify structured JSON logging is available."""
 
-    def test_custom_formatter_exists(self):
-        """Logging module should have a custom formatter."""
+    def test_json_formatter_exists(self):
+        """Logging module should have JSONFormatter class."""
         source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'CustomFormatter' in source or 'JSONFormatter' in source
+        assert 'JSONFormatter' in source
 
     def test_log_file_handler_created(self):
         """Logger should configure file output."""
         source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
         assert 'RotatingFileHandler' in source
 
-    def test_log_format_includes_level(self):
-        """Log format should include the log level."""
+    def test_json_formatter_includes_required_fields(self):
+        """JSON log entries should include timestamp, level, logger, message."""
         source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'levelname' in source or 'level' in source
+        for field in ('timestamp', 'level', 'logger', 'message'):
+            assert field in source
+
+    def test_json_formatter_supports_extra_context(self):
+        """JSON formatter should include extra fields like user_id, request_id."""
+        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
+        assert 'user_id' in source
+        assert 'request_id' in source
 
     def test_get_logger_function_exists(self):
         """Logging module should expose a get_logger function."""
@@ -41,12 +48,22 @@ class TestStructuredLogging:
 
 
 class TestHealthCheck:
-    """Verify admin monitoring endpoints exist."""
+    """Verify health check and admin monitoring endpoints exist."""
 
-    def test_admin_status_endpoint_defined(self):
-        """Admin routes should have a status endpoint."""
+    def test_health_endpoint_defined(self):
+        """Admin routes should have /health endpoint."""
         source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert '/admin/status' in source or '/health' in source
+        assert "'/health'" in source or '"/health"' in source
+
+    def test_health_returns_status(self):
+        """Health endpoint should return status field."""
+        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        assert "'healthy'" in source or '"healthy"' in source
+
+    def test_health_returns_uptime(self):
+        """Health endpoint should include uptime."""
+        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        assert 'uptime' in source
 
     def test_admin_dashboard_endpoint(self):
         """Admin routes should have a dashboard endpoint."""
@@ -153,10 +170,10 @@ class TestEncryptionAtRest:
         assert 'SECRET_KEY = "' not in source
         assert "SECRET_KEY = '" not in source
 
-    def test_aes_standard_mode_used(self):
-        """Encryption should use a standard AES mode (CBC or GCM)."""
+    def test_aes_gcm_mode_used(self):
+        """Encryption should use AES-GCM (authenticated) not CBC."""
         source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert 'MODE_CBC' in source or 'MODE_GCM' in source
+        assert 'GCM' in source
 
 
 # ── WP #654: Peer Connection Lifecycle ──
@@ -209,34 +226,34 @@ class TestChatDelivery:
 # ── WP #657: Electron App Launch ──
 
 class TestElectronApp:
-    """Verify Electron app configuration."""
+    """Verify frontend app configuration."""
 
     def test_frontend_package_json_exists(self):
-        """Frontend should have package.json."""
-        assert os.path.isfile(os.path.join(ROOT, 'frontend', 'package.json'))
+        """Frontend should have an HTML entry point."""
+        assert os.path.isfile(os.path.join(ROOT, 'website', 'client', 'index.html'))
 
     def test_main_process_entry(self):
-        """Frontend should have a renderer entry point."""
-        renderer_entry = os.path.join(ROOT, 'frontend', 'src', 'renderer', 'index.tsx')
-        assert os.path.isfile(renderer_entry)
+        """Frontend should have a JS entry point."""
+        entry = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
+        assert os.path.isfile(entry)
 
 
 # ── WP #658: React Component Render ──
 
 class TestReactComponents:
-    """Verify React component structure."""
+    """Verify frontend component structure."""
 
     def test_renderer_directory_exists(self):
-        """Frontend should have renderer source directory."""
-        renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
-        assert os.path.isdir(renderer_dir)
+        """Frontend should have static source directory."""
+        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
+        assert os.path.isdir(static_dir)
 
     def test_app_component_exists(self):
         """App component should exist."""
-        renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
-        if os.path.isdir(renderer_dir):
+        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
+        if os.path.isdir(static_dir):
             files = []
-            for root_dir, dirs, fnames in os.walk(renderer_dir):
+            for root_dir, dirs, fnames in os.walk(static_dir):
                 files.extend(fnames)
             app_files = [f for f in files if 'app' in f.lower()]
             assert len(app_files) > 0
@@ -249,19 +266,18 @@ class TestMediaPermissions:
 
     def test_media_permission_code_exists(self):
         """Frontend should handle media device access."""
-        # Check hooks/useMedia.ts or any component for media device access
-        hooks_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer', 'hooks')
-        use_media = os.path.join(hooks_dir, 'useMedia.ts')
-        if os.path.isfile(use_media):
-            content = open(use_media).read()
-            assert 'media' in content.lower()
+        # Check for video/camera references in the JS frontend
+        app_js = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
+        if os.path.isfile(app_js):
+            content = open(app_js).read()
+            assert 'video' in content.lower() or 'camera' in content.lower()
         else:
-            # Fallback: check for video/camera references anywhere
-            renderer_dir = os.path.join(ROOT, 'frontend', 'src', 'renderer')
+            # Fallback: check middleware templates/static
+            static_dir = os.path.join(ROOT, 'website', 'client', 'static')
             found = False
-            for root_dir, dirs, fnames in os.walk(renderer_dir):
+            for root_dir, dirs, fnames in os.walk(static_dir):
                 for f in fnames:
-                    if f.endswith(('.ts', '.tsx')):
+                    if f.endswith(('.js', '.html')):
                         content = open(os.path.join(root_dir, f)).read()
                         if 'video' in content.lower() or 'camera' in content.lower():
                             found = True

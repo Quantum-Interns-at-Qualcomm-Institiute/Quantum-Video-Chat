@@ -114,6 +114,7 @@ class TestVideoThread:
     def test_stop_releases_camera(self, mock_state):
         vt = VideoThread(mock_state, 64, 48, device=MOCK_DEVICE_A)
         mock_camera = MagicMock()
+        mock_camera.capture.return_value = None  # Skip frame processing
         vt._camera_source = mock_camera
         vt.start()
         time.sleep(0.15)
@@ -194,6 +195,7 @@ class TestAudioThread:
     def test_stop_releases_mic(self, mock_state):
         at = AudioThread(mock_state, device=MOCK_AUDIO_DEVICE_A)
         mock_mic = MagicMock()
+        mock_mic.capture.return_value = None  # Skip chunk processing
         at._mic_source = mock_mic
         at.start()
         time.sleep(0.2)

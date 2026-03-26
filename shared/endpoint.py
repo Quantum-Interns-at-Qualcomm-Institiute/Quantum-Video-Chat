@@ -28,10 +28,12 @@ class Endpoint:
         return Endpoint(*endpoint)  # Re-instantiating fixes slashes in `route`
 
     def to_string(self):
+        from shared.ssl_utils import get_ssl_context
+        scheme = 'https' if get_ssl_context() else 'http'
         ip = self.ip if self.ip else 'localhost'
         port = f":{self.port}" if self.port else ''
         route = f"/{self.route}" if self.route else ''
-        return f"http://{ip}{port}{route}"
+        return f"{scheme}://{ip}{port}{route}"
 
     def __str__(self):
         return self.to_string()
@@ -44,7 +46,7 @@ class Endpoint:
 
     def __iter__(self):
         yield self.ip if self.ip else 'localhost'
-        if self.port:
+        if self.port is not None:
             yield self.port
         if self.route:
             yield self.route

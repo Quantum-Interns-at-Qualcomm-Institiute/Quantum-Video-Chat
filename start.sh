@@ -77,18 +77,8 @@ run_prefixed() {
 # =============================================================================
 start_client() {
     log "Checking prerequisites..."
-    command -v npm    >/dev/null 2>&1 || { err "npm not found on PATH"; exit 1; }
-    command -v curl   >/dev/null 2>&1 || { err "curl not found on PATH"; exit 1; }
-    [[ -f "$ROOT/frontend/node_modules/.bin/webpack" ]] || {
-        err "Frontend dependencies missing. Run: cd frontend && npm install"
-        exit 1
-    }
-
-    RENDERER_PORT=$(find_free_port "${PORT:-1212}")
-    if [[ "$RENDERER_PORT" != "${PORT:-1212}" ]]; then
-        warn "Port ${PORT:-1212} in use — using $RENDERER_PORT for renderer"
-    fi
-    export PORT="$RENDERER_PORT"
+    command -v python3 >/dev/null 2>&1 || { err "python3 not found on PATH"; exit 1; }
+    command -v curl    >/dev/null 2>&1 || { err "curl not found on PATH"; exit 1; }
 
     MIDDLEWARE_PORT=$(find_free_port "${MIDDLEWARE_PORT:-5001}")
     if [[ "$MIDDLEWARE_PORT" != "${MIDDLEWARE_PORT:-5001}" ]]; then
@@ -109,31 +99,9 @@ start_client() {
         fi
     done
     ok "Middleware ready (${ELAPSED}s)."
+    ok "Client middleware: http://localhost:$MIDDLEWARE_PORT"
 
-    log "Starting webpack renderer on port $RENDERER_PORT..."
-    run_prefixed "renderer" bash -c "cd '$ROOT/frontend' && BROWSER_ONLY=true PORT=$RENDERER_PORT MIDDLEWARE_PORT=$MIDDLEWARE_PORT npm run start:renderer"
-
-    log "Waiting for renderer at http://localhost:$RENDERER_PORT ..."
-    ELAPSED=0
-    until curl -sf "http://localhost:$RENDERER_PORT" >/dev/null 2>&1; do
-        sleep 1
-        (( ELAPSED++ ))
-        if (( ELAPSED >= MAX_WAIT )); then
-            err "Renderer did not start within ${MAX_WAIT}s — check [renderer] output above."
-            exit 1
-        fi
-    done
-    ok "Client ready (${ELAPSED}s)."
-    ok "Client app: http://localhost:$RENDERER_PORT"
-
-    # Open the client app in the default browser (macOS/Linux).
-    if command -v open >/dev/null 2>&1; then
-        open "http://localhost:$RENDERER_PORT"
-    elif command -v xdg-open >/dev/null 2>&1; then
-        xdg-open "http://localhost:$RENDERER_PORT" &
-    fi
-
-    wait "${PIDS[@]}"   # blocks until renderer exits; Ctrl+C triggers cleanup
+    wait "${PIDS[@]}"
 }
 
 # =============================================================================
@@ -160,20 +128,14 @@ EOF
     fi
     export QVC_LOCAL_IP
 
-    # QVC_SERVER_REST_PORT and QVC_SERVER_WS_PORT are read by shared/config.py
+    # QVC_SERVER_REST_PORT is read by shared/config.py
     REST_PORT=$(find_free_port "${QVC_SERVER_REST_PORT:-5050}")
     if [[ "$REST_PORT" != "${QVC_SERVER_REST_PORT:-5050}" ]]; then
         warn "Port ${QVC_SERVER_REST_PORT:-5050} in use — using $REST_PORT for REST API"
     fi
     export QVC_SERVER_REST_PORT="$REST_PORT"
 
-    WS_PORT=$(find_free_port "${QVC_SERVER_WS_PORT:-3000}")
-    if [[ "$WS_PORT" != "${QVC_SERVER_WS_PORT:-3000}" ]]; then
-        warn "Port ${QVC_SERVER_WS_PORT:-3000} in use — using $WS_PORT for WebSocket API"
-    fi
-    export QVC_SERVER_WS_PORT="$WS_PORT"
-
-    log "Starting Python backend server (REST :$REST_PORT, WebSocket :$WS_PORT) on $QVC_LOCAL_IP..."
+    log "Starting Python backend server (REST :$REST_PORT) on $QVC_LOCAL_IP..."
     run_prefixed "server" bash -c "cd '$ROOT/server' && python3 main.py"
 
     log "Waiting for server at http://$QVC_LOCAL_IP:$REST_PORT ..."
