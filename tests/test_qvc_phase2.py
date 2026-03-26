@@ -32,6 +32,7 @@ import os
 import re
 import tempfile
 from collections import Counter
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -51,14 +52,13 @@ from shared.encryption import (
 # Helpers
 # ---------------------------------------------------------------------------
 
-_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 def _read_source(relative_path: str) -> str:
     """Read a source file relative to the QVC project root."""
-    full = os.path.join(_PROJECT_ROOT, relative_path)
-    assert os.path.exists(full), f"Source file not found: {full}"
-    with open(full) as f:
-        return f.read()
+    full = _PROJECT_ROOT / relative_path
+    assert full.exists(), f"Source file not found: {full}"
+    return full.read_text()
 
 
 # ===================================================================
@@ -94,7 +94,7 @@ class TestBB84BasisSelectionRandomness:
             gen.generate_key()
             key = gen.get_key()
             for byte in key:
-                ones += bin(byte).count('1')
+                ones += (byte).bit_count()
                 total_bits += 8
         ratio = ones / total_bits
         # Allow 3% deviation from ideal 0.5
@@ -128,10 +128,10 @@ class TestBB84BasisSelectionRandomness:
     def test_os_urandom_is_source(self):
         """RandomKeyGenerator should delegate to os.urandom."""
         gen = RandomKeyGenerator(key_length=128)
-        with patch('shared.encryption.os.urandom', return_value=b'\xaa' * 16) as mock_ur:
+        with patch("shared.encryption.os.urandom", return_value=b"\xaa" * 16) as mock_ur:
             gen.generate_key()
             mock_ur.assert_called_once_with(16)
-            assert gen.get_key() == b'\xaa' * 16
+            assert gen.get_key() == b"\xaa" * 16
 
 
 class TestKeySiftingCorrectness:
@@ -147,7 +147,7 @@ class TestKeySiftingCorrectness:
         """Sifting mask applied to raw key retains only marked positions."""
         raw_key = bytes([0b10110100, 0b11001010])
         mask = bytes([0b11110000, 0b00001111])
-        sifted = bytes(a & m for a, m in zip(raw_key, mask))
+        sifted = bytes(a & m for a, m in zip(raw_key, mask, strict=False))
         assert sifted == bytes([0b10110000, 0b00001010])
 
     def test_sifted_key_shorter_than_raw(self):
@@ -164,14 +164,14 @@ class TestKeySiftingCorrectness:
         """An all-zero mask should produce an all-zero sifted key."""
         raw = bytes([0xFF] * 16)
         mask = bytes([0x00] * 16)
-        sifted = bytes(a & m for a, m in zip(raw, mask))
+        sifted = bytes(a & m for a, m in zip(raw, mask, strict=False))
         assert sifted == bytes(16)
 
     def test_full_mask_preserves_entire_key(self):
         """An all-one mask should preserve the raw key exactly."""
         raw = os.urandom(16)
         mask = bytes([0xFF] * 16)
-        sifted = bytes(a & m for a, m in zip(raw, mask))
+        sifted = bytes(a & m for a, m in zip(raw, mask, strict=False))
         assert sifted == raw
 
 
@@ -187,7 +187,7 @@ class TestErrorRateEstimation:
         """Compute bit error rate between two byte sequences."""
         total = 0
         errors = 0
-        for a, b in zip(bits_a, bits_b):
+        for a, b in zip(bits_a, bits_b, strict=False):
             for bit in range(8):
                 total += 1
                 if ((a >> bit) & 1) != ((b >> bit) & 1):
@@ -250,8 +250,8 @@ class TestPrivacyAmplification:
         assert len(amplified) == 16
 
     def test_different_inputs_different_outputs(self):
-        a = self._amplify(b'key_material_A_padding_1234567!')
-        b = self._amplify(b'key_material_B_padding_1234567!')
+        a = self._amplify(b"key_material_A_padding_1234567!")
+        b = self._amplify(b"key_material_B_padding_1234567!")
         assert a != b
 
     def test_deterministic_for_same_input(self):
@@ -263,8 +263,8 @@ class TestPrivacyAmplification:
         sifted = os.urandom(32)
         aes_key = self._amplify(sifted, 128)
         enc = AESEncryption()
-        ct = enc.encrypt(b'test data 123456', aes_key)
-        assert enc.decrypt(ct, aes_key) == b'test data 123456'
+        ct = enc.encrypt(b"test data 123456", aes_key)
+        assert enc.decrypt(ct, aes_key) == b"test data 123456"
 
     def test_entropy_reduction(self):
         """Output should be shorter than input (compression)."""
@@ -282,18 +282,18 @@ class TestRealTimeKeyExchangeStatusUI:
 
     def test_qber_monitor_has_summary(self):
         """QBER monitor should provide summary for UI display."""
-        src = _read_source('shared/bb84/qber_monitor.py')
-        assert 'get_summary' in src
+        src = _read_source("shared/bb84/qber_monitor.py")
+        assert "get_summary" in src
 
     def test_qber_monitor_has_history(self):
         """QBER monitor should track history for UI charts."""
-        src = _read_source('shared/bb84/qber_monitor.py')
-        assert 'get_history' in src
+        src = _read_source("shared/bb84/qber_monitor.py")
+        assert "get_history" in src
 
     def test_socket_api_emits_qber_updates(self):
         """Socket API should emit qber-update events."""
-        src = _read_source('server/socket_api.py')
-        assert 'qber' in src.lower()
+        src = _read_source("server/socket_api.py")
+        assert "qber" in src.lower()
 
 
 # ===================================================================
@@ -314,11 +314,11 @@ class TestSRTPKeyIntegration:
         enc = AESEncryption()
         key = os.urandom(16)
         key_idx = 7
-        plaintext = b'audio frame data'
+        plaintext = b"audio frame data"
         ct = enc.encrypt(plaintext, key)
-        wire = key_idx.to_bytes(4, 'big') + ct
+        wire = key_idx.to_bytes(4, "big") + ct
         # Parse
-        parsed_idx = int.from_bytes(wire[:4], 'big')
+        parsed_idx = int.from_bytes(wire[:4], "big")
         parsed_ct = wire[4:]
         assert parsed_idx == 7
         assert enc.decrypt(parsed_ct, key) == plaintext
@@ -330,41 +330,41 @@ class TestSRTPKeyIntegration:
         key = gen.get_key()
         assert len(key) == 16
         enc = AESEncryption()
-        ct = enc.encrypt(b'stream payload!!', key)
-        assert enc.decrypt(ct, key) == b'stream payload!!'
+        ct = enc.encrypt(b"stream payload!!", key)
+        assert enc.decrypt(ct, key) == b"stream payload!!"
 
     def test_encrypt_scheme_registry(self):
         """AES, XOR, DEBUG are all registered in the factory."""
-        aes = create_encrypt_scheme('AES')
-        xor = create_encrypt_scheme('XOR')
-        dbg = create_encrypt_scheme('DEBUG')
+        aes = create_encrypt_scheme("AES")
+        xor = create_encrypt_scheme("XOR")
+        dbg = create_encrypt_scheme("DEBUG")
         assert isinstance(aes, AESEncryption)
         assert isinstance(xor, XOREncryption)
         assert isinstance(dbg, DebugEncryption)
 
     def test_invalid_scheme_raises(self):
         with pytest.raises(ValueError, match="Invalid encryption scheme"):
-            create_encrypt_scheme('NONEXISTENT')
+            create_encrypt_scheme("NONEXISTENT")
 
     def test_key_gen_registry(self):
         """FILE, RANDOM, DEBUG generators are all registered."""
-        for name, cls in [('FILE', FileKeyGenerator),
-                          ('RANDOM', RandomKeyGenerator),
-                          ('DEBUG', DebugKeyGenerator)]:
+        for name, cls in [("FILE", FileKeyGenerator),
+                          ("RANDOM", RandomKeyGenerator),
+                          ("DEBUG", DebugKeyGenerator)]:
             gen = create_key_generator(name)
             assert isinstance(gen, cls)
 
     def test_av_module_uses_key_lock(self):
         """The AV module should use a lock around key access for thread safety."""
-        src = _read_source('server/utils/av.py')
-        assert '_key_lock' in src
-        assert 'Lock' in src
+        src = _read_source("server/utils/av.py")
+        assert "_key_lock" in src
+        assert "Lock" in src
 
     def test_av_module_rotates_keys(self):
         """The AV module should have a key rotation thread."""
-        src = _read_source('server/utils/av.py')
-        assert '_rotate_keys' in src or 'generate_key' in src
-        assert 'Thread' in src
+        src = _read_source("server/utils/av.py")
+        assert "_rotate_keys" in src or "generate_key" in src
+        assert "Thread" in src
 
 
 class TestFileKeyGeneratorResourceManagement:
@@ -383,7 +383,7 @@ class TestFileKeyGeneratorResourceManagement:
             # After exiting, the file should be closed
             assert gen._file is None
         finally:
-            os.unlink(tmpname)
+            Path(tmpname).unlink()
 
     def test_explicit_close(self):
         with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -396,7 +396,7 @@ class TestFileKeyGeneratorResourceManagement:
             gen.close()
             assert gen._file is None
         finally:
-            os.unlink(tmpname)
+            Path(tmpname).unlink()
 
     def test_double_close_is_safe(self):
         with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -409,10 +409,10 @@ class TestFileKeyGeneratorResourceManagement:
             gen.close()  # Should not raise
             assert gen._file is None
         finally:
-            os.unlink(tmpname)
+            Path(tmpname).unlink()
 
     def test_missing_file_raises(self):
-        gen = FileKeyGenerator(file_name='/tmp/nonexistent_qvc_key_file.bin',
+        gen = FileKeyGenerator(file_name="/tmp/nonexistent_qvc_key_file.bin",
                                key_length=128)
         with pytest.raises(FileNotFoundError):
             gen.generate_key()
@@ -435,7 +435,7 @@ class TestFileKeyGeneratorResourceManagement:
             gen.__del__()
             assert file_obj.closed
         finally:
-            os.unlink(tmpname)
+            Path(tmpname).unlink()
 
 
 class TestEncryptionAtRest:
@@ -446,24 +446,24 @@ class TestEncryptionAtRest:
     """
 
     def test_default_encrypt_scheme_is_aes(self):
-        src = _read_source('shared/config.py')
-        assert "encrypt_scheme: str = 'AES'" in src or 'encrypt_scheme.*AES' in src
+        src = _read_source("shared/config.py")
+        assert "encrypt_scheme: str = 'AES'" in src or 'encrypt_scheme: str = "AES"' in src
 
     def test_default_key_length_is_128(self):
-        src = _read_source('shared/config.py')
-        assert 'key_length: int = 128' in src
+        src = _read_source("shared/config.py")
+        assert "key_length: int = 128" in src
 
     def test_config_no_plaintext_secrets(self):
         """Config source should not contain hardcoded encryption keys."""
-        src = _read_source('shared/config.py')
+        src = _read_source("shared/config.py")
         # Should not contain hex key patterns like 0x followed by 16+ hex chars
-        long_hex = re.findall(r'0x[0-9a-fA-F]{32,}', src)
+        long_hex = re.findall(r"0x[0-9a-fA-F]{32,}", src)
         assert len(long_hex) == 0, f"Potential hardcoded key found: {long_hex}"
 
     def test_aes_ciphertext_is_not_plaintext(self):
         enc = AESEncryption()
         key = os.urandom(16)
-        plaintext = b'sensitive key mat'
+        plaintext = b"sensitive key mat"
         ct = enc.encrypt(plaintext, key)
         assert plaintext not in ct
 
@@ -489,24 +489,24 @@ class TestWebRTCPeerConnectionLifecycle:
     """
 
     def test_peer_manager_module_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'server', 'peer_manager.py')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "server" / "peer_manager.py"
+        assert path.exists()
 
     def test_peer_manager_has_connect_and_disconnect(self):
-        src = _read_source('server/peer_manager.py')
-        assert 'def connect(' in src
-        assert 'def disconnect(' in src
+        src = _read_source("server/peer_manager.py")
+        assert "def connect(" in src
+        assert "def disconnect(" in src
 
     def test_self_connection_prevented(self):
         """PeerConnectionManager source should reject self-connections."""
-        src = _read_source('server/peer_manager.py')
-        assert 'user_id == peer_id' in src
+        src = _read_source("server/peer_manager.py")
+        assert "user_id == peer_id" in src
 
     def test_client_states_include_connected(self):
         from shared.state import ClientState
-        assert hasattr(ClientState, 'CONNECTED')
-        assert hasattr(ClientState, 'NEW')
-        assert hasattr(ClientState, 'LIVE')
+        assert hasattr(ClientState, "CONNECTED")
+        assert hasattr(ClientState, "NEW")
+        assert hasattr(ClientState, "LIVE")
 
 
 
@@ -517,35 +517,35 @@ class TestVideoStreamQuality:
     """
 
     def test_video_namespace_uses_ffmpeg(self):
-        src = _read_source('shared/av/namespaces.py')
-        assert 'ffmpeg' in src
+        src = _read_source("shared/av/namespaces.py")
+        assert "ffmpeg" in src
 
     def test_video_codec_is_x264(self):
-        src = _read_source('shared/av/namespaces.py')
-        assert 'libx264' in src
+        src = _read_source("shared/av/namespaces.py")
+        assert "libx264" in src
 
     def test_video_namespace_uses_zerolatency(self):
         """Codec should use zerolatency tune for real-time streaming."""
-        src = _read_source('shared/av/namespaces.py')
-        assert 'zerolatency' in src
+        src = _read_source("shared/av/namespaces.py")
+        assert "zerolatency" in src
 
     def test_video_namespace_uses_ultrafast_preset(self):
-        src = _read_source('shared/av/namespaces.py')
-        assert 'ultrafast' in src
+        src = _read_source("shared/av/namespaces.py")
+        assert "ultrafast" in src
 
     def test_default_video_dimensions(self):
-        src = _read_source('shared/config.py')
-        assert 'video_width: int = 640' in src
-        assert 'video_height: int = 480' in src
+        src = _read_source("shared/config.py")
+        assert "video_width: int = 640" in src
+        assert "video_height: int = 480" in src
 
     def test_default_frame_rate(self):
-        src = _read_source('shared/config.py')
-        assert 'frame_rate: int = 15' in src
+        src = _read_source("shared/config.py")
+        assert "frame_rate: int = 15" in src
 
     def test_default_display_dimensions(self):
-        src = _read_source('shared/config.py')
-        assert 'display_width: int = 960' in src
-        assert 'display_height: int = 720' in src
+        src = _read_source("shared/config.py")
+        assert "display_width: int = 960" in src
+        assert "display_height: int = 720" in src
 
 
 class TestTextChatMessageDelivery:
@@ -556,13 +556,13 @@ class TestTextChatMessageDelivery:
 
     def test_socket_api_handles_message_event(self):
         """Socket API should handle message events."""
-        src = _read_source('server/socket_api.py')
-        assert "'message'" in src
+        src = _read_source("server/socket_api.py")
+        assert "'message'" in src or '"message"' in src
 
     def test_middleware_relays_messages(self):
         """Middleware should relay chat messages."""
-        src = _read_source('middleware/server_comms.py')
-        assert 'message' in src
+        src = _read_source("middleware/server_comms.py")
+        assert "message" in src
 
 
 
@@ -579,18 +579,18 @@ class TestFrontendComponentStructure:
 
     def test_frontend_html_entry_exists(self):
         """Website client should have an HTML entry point."""
-        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'index.html')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "website" / "client" / "index.html"
+        assert path.exists()
 
     def test_frontend_js_entry_exists(self):
         """Website client should have a JS entry point."""
-        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "website" / "client" / "static" / "app.js"
+        assert path.exists()
 
     def test_frontend_css_exists(self):
         """Website client should have a stylesheet."""
-        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'style.css')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "website" / "client" / "static" / "style.css"
+        assert path.exists()
 
 
 class TestCameraMicrophonePermissionHandling:
@@ -598,15 +598,14 @@ class TestCameraMicrophonePermissionHandling:
 
     def test_video_chat_handles_mute_toggle(self):
         """Middleware entrypoint should handle toggle_mute from frontend."""
-        src = _read_source('middleware/events.py')
-        assert 'toggle_mute' in src
+        src = _read_source("middleware/events.py")
+        assert "toggle_mute" in src
 
     def test_frontend_references_video(self):
         """Frontend JS should reference video functionality."""
-        app_js = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
-        with open(app_js) as f:
-            content = f.read()
-        assert 'video' in content.lower()
+        app_js = _PROJECT_ROOT / "website" / "client" / "static" / "app.js"
+        content = app_js.read_text()
+        assert "video" in content.lower()
 
 
 # ===================================================================
@@ -618,19 +617,19 @@ class TestRoomCreationAndJoinFlow:
     """WP #660: Room creation and join flow."""
 
     def test_server_has_peer_connection_manager(self):
-        src = _read_source('server/peer_manager.py')
-        assert 'class PeerConnectionManager' in src
+        src = _read_source("server/peer_manager.py")
+        assert "class PeerConnectionManager" in src
 
     def test_socket_api_handles_room_events(self):
         """Socket API should handle room-based events."""
-        src = _read_source('server/socket_api.py')
-        assert 'join_room' in src
-        assert 'create_session' in src
+        src = _read_source("server/socket_api.py")
+        assert "join_room" in src
+        assert "create_session" in src
 
     def test_rest_api_has_peer_connection(self):
         """REST API should have peer_connection endpoint."""
-        src = _read_source('server/rest_api.py')
-        assert 'peer_connection' in src
+        src = _read_source("server/rest_api.py")
+        assert "peer_connection" in src
 
 
 class TestSessionCleanupAndResourceRelease:
@@ -638,27 +637,27 @@ class TestSessionCleanupAndResourceRelease:
 
     def test_disconnect_from_peer_stops_key_rotation(self):
         """Disconnecting should stop the key rotation thread."""
-        src = _read_source('server/utils/av.py')
-        assert '_key_stop' in src
+        src = _read_source("server/utils/av.py")
+        assert "_key_stop" in src
 
     def test_peer_manager_disconnect_resets_both_users(self):
         """Server-side disconnect should reset both user and peer to IDLE."""
-        src = _read_source('server/peer_manager.py')
-        assert 'IDLE' in src
+        src = _read_source("server/peer_manager.py")
+        assert "IDLE" in src
 
     def test_server_has_graceful_shutdown(self):
-        src = _read_source('server/main.py')
-        assert 'graceful_shutdown' in src or '_shutdown' in src
+        src = _read_source("server/main.py")
+        assert "graceful_shutdown" in src or "_shutdown" in src
 
     def test_signal_handlers_registered(self):
         """Server main should register SIGINT and SIGTERM handlers."""
-        src = _read_source('server/main.py')
-        assert 'SIGINT' in src
-        assert 'SIGTERM' in src
+        src = _read_source("server/main.py")
+        assert "SIGINT" in src
+        assert "SIGTERM" in src
 
     def test_file_key_generator_cleanup_on_del(self):
         """FileKeyGenerator.__del__ should close the file handle."""
-        src = _read_source('shared/encryption.py')
-        assert 'def __del__(' in src
-        assert 'self.close()' in src
+        src = _read_source("shared/encryption.py")
+        assert "def __del__(" in src
+        assert "self.close()" in src
 

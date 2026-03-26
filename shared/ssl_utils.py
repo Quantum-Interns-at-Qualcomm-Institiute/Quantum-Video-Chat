@@ -1,3 +1,5 @@
+"""SSL/TLS context helpers for dev certificate discovery."""
+
 import os
 from pathlib import Path
 

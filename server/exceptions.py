@@ -1,5 +1,7 @@
-from shared.exceptions import InvalidState  # noqa: F401 — re-export
+"""Server-specific exception types."""
+
+from shared.exceptions import InvalidStateError  # noqa: F401 -- re-export
 
 
-class IdentityMismatch(Exception):
-    pass
+class IdentityMismatchError(Exception):
+    """Raised when a user's identity does not match the expected value."""

@@ -1,5 +1,4 @@
-"""
-VideoThread — Captures frames from the local camera and emits them.
+"""VideoThread — Captures frames from the local camera and emits them.
 
 Single responsibility: camera capture loop + frame emission.
 Uses composition (owns a Thread) rather than inheriting from Thread.
@@ -11,15 +10,15 @@ We add the project root to ``sys.path`` so that ``shared.frame_source`` is
 importable at runtime.
 """
 import base64
-import os
 import sys
 import threading
+from pathlib import Path
 
 import cv2
 import gevent
 
 # Ensure the project root is on sys.path so ``shared.*`` imports work.
-_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
@@ -37,13 +36,14 @@ class VideoThread:
     """Captures frames from the local camera and emits them to all browsers."""
 
     def __init__(self, state, width: int, height: int, device: int = 0):
+        """Initialize the video capture thread."""
         self._thread = None
         self._stop_event = threading.Event()
         # Use MockFrameSource for special negative device indices,
         # real CameraSource for physical cameras.
         if device in (MOCK_DEVICE_A, MOCK_DEVICE_B):
             self._camera_source = MockFrameSource(width=width, height=height, looping=True)
-            logger.info('Using MockFrameSource (device=%s)', device)
+            logger.info("Using MockFrameSource (device=%s)", device)
         else:
             self._camera_source = CameraSource(device=device, width=width, height=height)
         self._static_source = StaticNoiseSource(width=width, height=height)
@@ -79,29 +79,30 @@ class VideoThread:
 
             if frame is not None:
                 # Encode frame as JPEG and base64 for efficient transport
-                _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
-                frame_b64 = base64.b64encode(buffer).decode('ascii')
+                _, buffer = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+                frame_b64 = base64.b64encode(buffer).decode("ascii")
                 # Send to local browser (self-view)
-                sio.emit('frame', {
-                    'frame':  frame_b64,
-                    'width':  self.width,
-                    'height': self.height,
-                    'self':   True,
+                sio.emit("frame", {
+                    "frame":  frame_b64,
+                    "width":  self.width,
+                    "height": self.height,
+                    "self":   True,
                 })
                 # Send to QKD server for relay to peer
                 if server_client.connected:
                     try:
-                        server_client.emit('frame', {
-                            'frame':  frame_b64,
-                            'width':  self.width,
-                            'height': self.height,
+                        server_client.emit("frame", {
+                            "frame":  frame_b64,
+                            "width":  self.width,
+                            "height": self.height,
                         })
-                    except Exception:
-                        logger.debug('Frame send failed (server disconnected mid-send)')
+                    except (ConnectionError, OSError):
+                        logger.debug("Frame send failed (server disconnected mid-send)")
             gevent.sleep(interval)
 
         self._camera_source.release()
-        logger.info('Video thread stopped.')
+        logger.info("Video thread stopped.")
 
     def stop(self):
+        """Signal the capture loop to stop."""
         self._stop_event.set()

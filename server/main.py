@@ -1,8 +1,10 @@
-import os
+"""Server entry point -- initializes and runs the QKD server."""
+
 import signal
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import logging
 
@@ -13,16 +15,16 @@ from server import Server
 logger = logging.getLogger(__name__)
 
 
-def _shutdown(sig=None, frame=None):
+def _shutdown(_sig=None, _frame=None):
     """Gracefully stop every running component and exit."""
-    sig_name = signal.Signals(sig).name if sig else 'manual'
-    logger.info(f"Shutting down server (signal={sig_name})...")
+    sig_name = signal.Signals(_sig).name if _sig else "manual"
+    logger.info("Shutting down server (signal=%s)...", sig_name)
     ServerAPI.graceful_shutdown()
     logger.info("Exiting main program execution.\n")
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Register handlers for both SIGINT (Ctrl+C) and SIGTERM (kill).
     # Using signal handlers instead of try/except KeyboardInterrupt
     # ensures shutdown works even when gevent swallows the interrupt.

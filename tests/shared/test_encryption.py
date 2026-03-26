@@ -26,79 +26,79 @@ from shared.encryption import (
 
 class TestXOREncryption:
     def test_encrypt_decrypt_roundtrip(self, xor_scheme):
-        data = b'\xb2\x69\xff\x00'
-        key = b'\x69\xb2\x00\xff'
+        data = b"\xb2\x69\xff\x00"
+        key = b"\x69\xb2\x00\xff"
         encrypted = xor_scheme.encrypt(data, key)
         decrypted = xor_scheme.decrypt(encrypted, key)
         assert decrypted == data
 
     def test_symmetry(self, xor_scheme):
-        data = b'\xf0\xf0'
-        key = b'\xaa\xaa'
+        data = b"\xf0\xf0"
+        key = b"\xaa\xaa"
         assert xor_scheme.encrypt(data, key) == xor_scheme.decrypt(data, key)
 
     def test_xor_correctness(self, xor_scheme):
-        data = b'\xc0'    # 11000000
-        key = b'\xa0'     # 10100000
+        data = b"\xc0"    # 11000000
+        key = b"\xa0"     # 10100000
         result = xor_scheme.encrypt(data, key)
-        assert result == b'\x60'  # 01100000
+        assert result == b"\x60"  # 01100000
 
     def test_key_repeats_for_longer_data(self, xor_scheme):
-        data = b'\xff\xff\xff\xff'
-        key = b'\x0f'
+        data = b"\xff\xff\xff\xff"
+        key = b"\x0f"
         result = xor_scheme.encrypt(data, key)
-        assert result == b'\xf0\xf0\xf0\xf0'
+        assert result == b"\xf0\xf0\xf0\xf0"
 
     def test_get_name(self, xor_scheme):
-        assert xor_scheme.get_name() == 'XOR'
+        assert xor_scheme.get_name() == "XOR"
 
 
 class TestDebugEncryption:
     def test_encrypt_passthrough(self, debug_scheme):
-        data = b'hello world'
-        key = b'anything'
+        data = b"hello world"
+        key = b"anything"
         assert debug_scheme.encrypt(data, key) == data
 
     def test_decrypt_passthrough(self, debug_scheme):
-        data = b'hello world'
-        key = b'anything'
+        data = b"hello world"
+        key = b"anything"
         assert debug_scheme.decrypt(data, key) == data
 
     def test_get_name(self, debug_scheme):
-        assert debug_scheme.get_name() == 'Debug'
+        assert debug_scheme.get_name() == "Debug"
 
 
 class TestAESEncryption:
     def test_encrypt_decrypt_roundtrip(self, aes_scheme):
-        key = b'0123456789abcdef'  # 16 bytes = 128 bits
-        plaintext = b'Hello, World!!!'  # 15 bytes, will be padded
+        key = b"0123456789abcdef"  # 16 bytes = 128 bits
+        plaintext = b"Hello, World!!!"  # 15 bytes, will be padded
         encrypted = aes_scheme.encrypt(plaintext, key)
         decrypted = aes_scheme.decrypt(encrypted, key)
         assert decrypted == plaintext
 
     def test_encrypted_differs_from_plaintext(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'Test data 12345'
+        key = b"0123456789abcdef"
+        plaintext = b"Test data 12345"
         encrypted = aes_scheme.encrypt(plaintext, key)
         assert encrypted != plaintext
 
     def test_get_name(self, aes_scheme):
-        assert aes_scheme.get_name() == 'AES-128'
+        assert aes_scheme.get_name() == "AES-128"
 
     def test_custom_bits(self):
         scheme = AESEncryption(256)
-        assert scheme.get_name() == 'AES-256'
+        assert scheme.get_name() == "AES-256"
 
     def test_nonce_and_tag_prepended_to_ciphertext(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'Hello, World!!!'  # 15 bytes, no padding needed with GCM
+        key = b"0123456789abcdef"
+        plaintext = b"Hello, World!!!"  # 15 bytes, no padding needed with GCM
         encrypted = aes_scheme.encrypt(plaintext, key)
         # 12 bytes nonce + 16 bytes tag + 15 bytes ciphertext
         assert len(encrypted) == 12 + 16 + len(plaintext)
 
     def test_different_nonces_produce_different_ciphertext(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'Same data same data same!'
+        key = b"0123456789abcdef"
+        plaintext = b"Same data same data same!"
         enc1 = aes_scheme.encrypt(plaintext, key)
         enc2 = aes_scheme.encrypt(plaintext, key)
         assert enc1 != enc2
@@ -106,8 +106,8 @@ class TestAESEncryption:
         assert aes_scheme.decrypt(enc2, key) == plaintext
 
     def test_nonce_is_random_bytes(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'test data.......'
+        key = b"0123456789abcdef"
+        plaintext = b"test data......."
         enc1 = aes_scheme.encrypt(plaintext, key)
         enc2 = aes_scheme.encrypt(plaintext, key)
         nonce1 = enc1[:12]
@@ -115,8 +115,8 @@ class TestAESEncryption:
         assert nonce1 != nonce2
 
     def test_tampered_ciphertext_raises(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'authenticated data'
+        key = b"0123456789abcdef"
+        plaintext = b"authenticated data"
         encrypted = aes_scheme.encrypt(plaintext, key)
         # Flip a bit in the ciphertext portion
         tampered = bytearray(encrypted)
@@ -125,8 +125,8 @@ class TestAESEncryption:
             aes_scheme.decrypt(bytes(tampered), key)
 
     def test_tampered_tag_raises(self, aes_scheme):
-        key = b'0123456789abcdef'
-        plaintext = b'authenticated data'
+        key = b"0123456789abcdef"
+        plaintext = b"authenticated data"
         encrypted = aes_scheme.encrypt(plaintext, key)
         # Flip a bit in the tag
         tampered = bytearray(encrypted)
@@ -155,7 +155,7 @@ class TestEncryptFactory:
 
     def test_invalid_type_raises(self):
         factory = EncryptFactory()
-        with pytest.raises(ValueError, match="Invalid encryption"):
+        with pytest.raises(TypeError, match="Invalid encryption"):
             factory.create_encrypt_scheme("INVALID")
 
     def test_context_manager(self):
@@ -168,29 +168,29 @@ class TestEncryptFactory:
 
 class TestEncryptRegistry:
     def test_create_aes(self):
-        scheme = create_encrypt_scheme('AES')
+        scheme = create_encrypt_scheme("AES")
         assert isinstance(scheme, AESEncryption)
 
     def test_create_xor(self):
-        scheme = create_encrypt_scheme('XOR')
+        scheme = create_encrypt_scheme("XOR")
         assert isinstance(scheme, XOREncryption)
 
     def test_create_debug(self):
-        scheme = create_encrypt_scheme('DEBUG')
+        scheme = create_encrypt_scheme("DEBUG")
         assert isinstance(scheme, DebugEncryption)
 
     def test_invalid_name_raises(self):
         with pytest.raises(ValueError, match="Invalid encryption"):
-            create_encrypt_scheme('NONEXISTENT')
+            create_encrypt_scheme("NONEXISTENT")
 
     def test_register_custom_scheme(self):
         class CustomScheme(AbstractEncryptionScheme):
             def encrypt(self, data, key): return data
             def decrypt(self, data, key): return data
-            def get_name(self): return 'Custom'
+            def get_name(self): return "Custom"
 
-        register_encrypt_scheme('CUSTOM', CustomScheme)
-        scheme = create_encrypt_scheme('CUSTOM')
+        register_encrypt_scheme("CUSTOM", CustomScheme)
+        scheme = create_encrypt_scheme("CUSTOM")
         assert isinstance(scheme, CustomScheme)
 
 
@@ -198,38 +198,38 @@ class TestInsecureModeGating:
     """Verify XOR and DEBUG schemes are blocked when QVC_DEVELOPMENT is not set."""
 
     def test_xor_available_in_dev_mode(self):
-        scheme = create_encrypt_scheme('XOR')
+        scheme = create_encrypt_scheme("XOR")
         assert isinstance(scheme, XOREncryption)
 
     def test_debug_available_in_dev_mode(self):
-        scheme = create_encrypt_scheme('DEBUG')
+        scheme = create_encrypt_scheme("DEBUG")
         assert isinstance(scheme, DebugEncryption)
 
     def test_aes_always_available(self):
-        scheme = create_encrypt_scheme('AES')
+        scheme = create_encrypt_scheme("AES")
         assert isinstance(scheme, AESEncryption)
 
 
 class TestKeygenRegistry:
     def test_create_random(self):
-        gen = create_key_generator('RANDOM')
+        gen = create_key_generator("RANDOM")
         assert isinstance(gen, RandomKeyGenerator)
 
     def test_create_debug(self):
-        gen = create_key_generator('DEBUG')
+        gen = create_key_generator("DEBUG")
         assert isinstance(gen, DebugKeyGenerator)
 
     def test_invalid_name_raises(self):
         with pytest.raises(ValueError, match="Invalid key generator"):
-            create_key_generator('NONEXISTENT')
+            create_key_generator("NONEXISTENT")
 
     def test_register_custom_generator(self):
         class CustomGen(AbstractKeyGenerator):
             def generate_key(self, **kwargs): pass
-            def get_key(self): return b'\x00'
+            def get_key(self): return b"\x00"
 
-        register_key_generator('CUSTOM', CustomGen)
-        gen = create_key_generator('CUSTOM')
+        register_key_generator("CUSTOM", CustomGen)
+        gen = create_key_generator("CUSTOM")
         assert isinstance(gen, CustomGen)
 
 
@@ -285,37 +285,37 @@ class TestDebugKeyGenerator:
 
 class TestFileKeyGenerator:
     def test_generate_key_reads_file(self):
-        fake_data = b'\xff\x00\xaa'
-        with patch('builtins.open', mock_open(read_data=fake_data)):
-            gen = FileKeyGenerator(file_name='fake_key.bin')
+        fake_data = b"\xff\x00\xaa"
+        with patch("pathlib.Path.open", mock_open(read_data=fake_data)):
+            gen = FileKeyGenerator(file_name="fake_key.bin")
             gen.generate_key(key_length=16)
             key = gen.get_key()
             assert isinstance(key, bytes)
 
     def test_default_file_path(self):
         gen = FileKeyGenerator()
-        assert gen.file_name.endswith('key.bin')
+        assert gen.file_name.endswith("key.bin")
 
     def test_context_manager_closes_file(self):
-        m = mock_open(read_data=b'\x00' * 32)
-        with patch('builtins.open', m):
-            with FileKeyGenerator(file_name='fake.bin') as gen:
+        m = mock_open(read_data=b"\x00" * 32)
+        with patch("pathlib.Path.open", m):
+            with FileKeyGenerator(file_name="fake.bin") as gen:
                 gen.generate_key(key_length=128)
                 assert gen.get_key() is not None
             # File should be closed after exiting context
             m().close.assert_called()
 
     def test_close_method(self):
-        m = mock_open(read_data=b'\x00' * 32)
-        with patch('builtins.open', m):
-            gen = FileKeyGenerator(file_name='fake.bin')
+        m = mock_open(read_data=b"\x00" * 32)
+        with patch("pathlib.Path.open", m):
+            gen = FileKeyGenerator(file_name="fake.bin")
             gen.generate_key(key_length=128)
             gen.close()
             assert gen._file is None
 
     def test_lazy_open(self):
         """File is not opened until generate_key is called."""
-        gen = FileKeyGenerator(file_name='nonexistent.bin')
+        gen = FileKeyGenerator(file_name="nonexistent.bin")
         assert gen._file is None
 
 
@@ -334,7 +334,7 @@ class TestKeyGenFactory:
 
     def test_invalid_type_raises(self):
         factory = KeyGenFactory()
-        with pytest.raises(ValueError, match="Invalid key generator"):
+        with pytest.raises(TypeError, match="Invalid key generator"):
             factory.create_key_generator("INVALID")
 
     def test_context_manager(self):

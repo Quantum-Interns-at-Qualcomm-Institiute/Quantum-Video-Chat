@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def _format_detail(exc: Exception) -> str:
     """Strip trailing period from exception message for JSON responses."""
     msg = str(exc)
-    return msg.rstrip('.')
+    return msg.rstrip(".")
 
 
 def handle_exceptions(endpoint_handler):
@@ -42,7 +42,7 @@ def handle_exceptions(endpoint_handler):
             return jsonify({"error_code": "400", "error_message": "Bad Request",
                             "details": _format_detail(e)}), 400
         except ServerError as e:
-            logger.error(str(e))
+            logger.exception("Internal server error at %s", endpoint_handler.__name__)
             return jsonify({"error_code": "500", "error_message": "Internal Server Error",
                             "details": _format_detail(e)}), 500
         except InvalidState as e:
@@ -57,8 +57,9 @@ def handle_exceptions(endpoint_handler):
 
 
 def handle_exceptions_with_cls(cls_provider):
-    """Like ``handle_exceptions`` but injects *cls* (from *cls_provider*) as
-    the first argument to the wrapped handler.
+    """Like ``handle_exceptions`` but injects *cls* as the first argument.
+
+    *cls_provider* is called at request time to get the class instance.
 
     Usage in ServerAPI::
 
@@ -82,7 +83,7 @@ def handle_exceptions_with_cls(cls_provider):
                 return jsonify({"error_code": "400", "error_message": "Bad Request",
                                 "details": _format_detail(e)}), 400
             except ServerError as e:
-                cls.logger.error(str(e))
+                cls.logger.exception("Internal server error at %s", endpoint_handler.__name__)
                 return jsonify({"error_code": "500", "error_message": "Internal Server Error",
                                 "details": _format_detail(e)}), 500
             except InvalidState as e:

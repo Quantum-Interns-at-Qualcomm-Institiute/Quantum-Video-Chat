@@ -1,14 +1,14 @@
 """Helper to import middleware modules without sys.path conflicts."""
 import importlib.util
-import os
 import sys
+from pathlib import Path
 
-_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-_MW_DIR = os.path.join(_ROOT, 'middleware')
-_SERVER_DIR = os.path.join(_ROOT, 'server')
+_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+_MW_DIR = str(Path(_ROOT) / "middleware")
+_SERVER_DIR = str(Path(_ROOT) / "server")
 
 # Bare module names that exist in both server/ and middleware/
-_CONFLICTING_NAMES = {'state', 'video', 'audio', 'server_comms', 'events', 'custom_logging'}
+_CONFLICTING_NAMES = {"state", "video", "audio", "server_comms", "events", "custom_logging"}
 
 
 def load_middleware_module(name: str, fresh: bool = False):
@@ -26,8 +26,8 @@ def load_middleware_module(name: str, fresh: bool = False):
 
     Pass fresh=True to force a re-execution (e.g. to pick up changed env vars).
     """
-    path = os.path.join(_MW_DIR, f'{name}.py')
-    mod_name = f'mw_{name}'
+    path = str(Path(_MW_DIR) / f"{name}.py")
+    mod_name = f"mw_{name}"
     if not fresh and mod_name in sys.modules:
         return sys.modules[mod_name]
 

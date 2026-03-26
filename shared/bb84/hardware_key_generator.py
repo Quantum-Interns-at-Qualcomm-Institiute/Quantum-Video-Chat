@@ -20,9 +20,10 @@ class HardwareKeyGenerator(AbstractKeyGenerator):
 
     def __init__(self, bridge: AbstractHardwareBridge | None = None,
                  fallback_config=None):
+        """Initialize with optional hardware bridge and fallback config."""
         self._bridge = bridge
         self._fallback = BB84KeyGenerator(protocol_config=fallback_config)
-        self.key: bytes = b''
+        self.key: bytes = b""
         self._using_hardware = False
 
     @property
@@ -39,17 +40,18 @@ class HardwareKeyGenerator(AbstractKeyGenerator):
         """Connect a hardware bridge at runtime."""
         self._bridge = bridge
 
-    def generate_key(self, key_length=0, **kwargs):
+    def generate_key(self, key_length=0, **_kwargs):
         """Generate a key from hardware if available, else simulate."""
         num_bytes = (key_length + 7) // 8 if key_length else 16
 
         if self.is_hardware_connected:
             try:
                 self.key = self._bridge.get_raw_key_material(num_bytes)
-                self._using_hardware = True
-                return
             except OSError:
                 pass  # Fall through to simulation
+            else:
+                self._using_hardware = True
+                return
 
         # Fallback to BB84 simulation
         self._using_hardware = False
@@ -57,6 +59,7 @@ class HardwareKeyGenerator(AbstractKeyGenerator):
         self.key = self._fallback.get_key()
 
     def get_key(self) -> bytes:
+        """Return the current key."""
         return self.key
 
     @property
