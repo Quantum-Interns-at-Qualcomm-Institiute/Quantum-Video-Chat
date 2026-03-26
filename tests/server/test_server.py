@@ -1,8 +1,10 @@
 """Tests for server/server.py -- Server class."""
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
+
 from shared.endpoint import Endpoint
-from shared.exceptions import ServerError, BadGateway, BadRequest
+from shared.exceptions import BadRequest
 
 
 class TestServer:
@@ -116,7 +118,7 @@ class TestServer:
 
     def test_handle_peer_connection_full_success(self, mock_server):
         """Test the full happy path with mocked get_user."""
-        from utils.user import User, UserState
+        from utils.user import UserState
 
         user_ep = Endpoint('127.0.0.1', 4000)
         peer_ep = Endpoint('127.0.0.1', 4001)
@@ -146,7 +148,7 @@ class TestServer:
 
     def test_handle_peer_connection_forwards_session_settings(self, mock_server):
         """session_settings from the host must be included in the peer contact payload."""
-        from utils.user import User, UserState
+        from utils.user import UserState
 
         mock_user = MagicMock(state=UserState.IDLE, api_endpoint=Endpoint('127.0.0.1', 4000))
         mock_peer = MagicMock(state=UserState.IDLE, api_endpoint=Endpoint('127.0.0.1', 4001))

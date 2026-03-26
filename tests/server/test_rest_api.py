@@ -1,10 +1,11 @@
 """Tests for server/rest_api.py -- ServerAPI Flask routes."""
-import pytest
 import json
-from unittest.mock import MagicMock, patch
-from flask import Flask
-from shared.exceptions import ServerError, BadRequest, BadGateway, BadAuthentication
+from unittest.mock import MagicMock
+
+import pytest
+
 from shared.endpoint import Endpoint
+from shared.exceptions import BadRequest, ServerError
 
 
 class TestServerAPIRoutes:

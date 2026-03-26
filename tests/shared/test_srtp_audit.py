@@ -5,9 +5,7 @@ so there is no SRTP layer. These tests verify the key exchange security
 properties of the BB84-based encryption pipeline that replaces SRTP.
 """
 
-import os
-import pytest
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import mock_open, patch
 
 # ── Key exchange security ──
 
@@ -65,8 +63,9 @@ class TestKeyExchangeSecurity:
 
     def test_aes_gcm_authenticated_encryption(self):
         """AES-GCM must provide authenticated encryption (not just CBC)."""
-        from shared.encryption import AESEncryption
         import inspect
+
+        from shared.encryption import AESEncryption
 
         source = inspect.getsource(AESEncryption)
         # Should use GCM mode, not CBC
@@ -83,8 +82,9 @@ class TestKeyExchangeSecurity:
 
     def test_key_not_logged_or_printed(self):
         """Key material should not appear in log/print statements."""
-        import shared.encryption as enc_module
         import inspect
+
+        import shared.encryption as enc_module
 
         source = inspect.getsource(enc_module)
         # Should not print or log raw key bytes

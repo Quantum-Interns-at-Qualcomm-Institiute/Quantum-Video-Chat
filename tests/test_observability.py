@@ -7,8 +7,6 @@ management concerns.
 
 import os
 import sys
-import json
-import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
@@ -253,7 +251,7 @@ class TestReactComponents:
         static_dir = os.path.join(ROOT, 'website', 'client', 'static')
         if os.path.isdir(static_dir):
             files = []
-            for root_dir, dirs, fnames in os.walk(static_dir):
+            for _, _, fnames in os.walk(static_dir):
                 files.extend(fnames)
             app_files = [f for f in files if 'app' in f.lower()]
             assert len(app_files) > 0
@@ -275,7 +273,7 @@ class TestMediaPermissions:
             # Fallback: check middleware templates/static
             static_dir = os.path.join(ROOT, 'website', 'client', 'static')
             found = False
-            for root_dir, dirs, fnames in os.walk(static_dir):
+            for root_dir, _, fnames in os.walk(static_dir):
                 for f in fnames:
                     if f.endswith(('.js', '.html')):
                         content = open(os.path.join(root_dir, f)).read()

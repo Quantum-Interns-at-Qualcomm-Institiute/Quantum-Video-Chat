@@ -4,10 +4,10 @@ WP #662: Test: encryption key handoff audit
 WP #663: Test: Signaling channel security
 """
 import os
+
 import pytest
-from unittest.mock import patch
-from shared.encryption import AESEncryption, XOREncryption, DebugEncryption
-from Crypto.Cipher import AES
+
+from shared.encryption import AESEncryption, DebugEncryption, XOREncryption
 
 
 class TestAESRandomIV:

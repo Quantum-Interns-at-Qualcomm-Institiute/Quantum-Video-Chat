@@ -12,8 +12,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from shared.endpoint import Endpoint
-from shared.exceptions import ServerError
-
 
 # ---------------------------------------------------------------------------
 # Unit tests: ServerAPI.graceful_shutdown()
@@ -67,6 +65,7 @@ class TestMainShutdown:
 
     def test_shutdown_calls_graceful_shutdown_and_exits(self):
         import importlib
+
         import main as main_mod
         importlib.reload(main_mod)
 
@@ -79,6 +78,7 @@ class TestMainShutdown:
 
     def test_shutdown_with_sigterm(self):
         import importlib
+
         import main as main_mod
         importlib.reload(main_mod)
 
@@ -99,9 +99,9 @@ class TestAdminShutdownEndpoint:
 
     @pytest.fixture(autouse=True)
     def setup_api(self):
+        from admin_routes import init_admin
         from rest_api import ServerAPI
         from state import APIState
-        from admin_routes import init_admin
 
         ServerAPI.state = APIState.INIT
         ServerAPI.server = MagicMock()

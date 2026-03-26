@@ -1,9 +1,10 @@
 """Tests for middleware/video.py and middleware/audio.py — capture threads."""
-import threading
 import time
-import pytest
+from unittest.mock import MagicMock, patch
+
 import numpy as np
-from unittest.mock import MagicMock, patch, PropertyMock
+import pytest
+
 from tests.middleware._helpers import load_middleware_module
 
 mw_video = load_middleware_module('video')
@@ -136,7 +137,7 @@ class TestAudioThread:
 
     def test_init_with_real_device(self, mock_state):
         with patch.object(mw_audio, 'MicrophoneSource') as MockMic:
-            at = AudioThread(mock_state, device=0)
+            _at = AudioThread(mock_state, device=0)
         MockMic.assert_called_once()
 
     def test_is_alive_false_before_start(self, mock_state):

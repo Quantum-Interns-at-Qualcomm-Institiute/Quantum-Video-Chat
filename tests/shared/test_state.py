@@ -1,5 +1,4 @@
 """Tests for shared/state.py — ClientState enum."""
-import pytest
 from shared.state import ClientState
 
 

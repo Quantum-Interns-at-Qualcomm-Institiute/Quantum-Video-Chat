@@ -1,21 +1,30 @@
 import logging
+from threading import Event, Lock, Thread
+
 import numpy as np
-from threading import Thread, Lock, Event
 
 from shared.av.namespaces import (
-    TestFlaskNamespace, TestClientNamespace,
-    BroadcastFlaskNamespace, AVClientNamespace,
-    KeyClientNamespace, AudioClientNamespace,
+    AudioClientNamespace,
+    BroadcastFlaskNamespace,
+    TestClientNamespace,
+    TestFlaskNamespace,
     VideoClientNamespace,
-    display_message,
-)
-from shared.encryption import (
-    create_encrypt_scheme, create_key_generator, BB84KeyGenerator,
 )
 from shared.config import (
-    VIDEO_SHAPE, DISPLAY_SHAPE, FRAME_RATE,
-    SAMPLE_RATE, FRAMES_PER_BUFFER, AUDIO_WAIT,
-    KEY_LENGTH, _scheme_name, _keygen_name,
+    AUDIO_WAIT,
+    DISPLAY_SHAPE,
+    FRAME_RATE,
+    FRAMES_PER_BUFFER,
+    KEY_LENGTH,
+    SAMPLE_RATE,
+    VIDEO_SHAPE,
+    _keygen_name,
+    _scheme_name,
+)
+from shared.encryption import (
+    BB84KeyGenerator,
+    create_encrypt_scheme,
+    create_key_generator,
 )
 
 logger = logging.getLogger(__name__)

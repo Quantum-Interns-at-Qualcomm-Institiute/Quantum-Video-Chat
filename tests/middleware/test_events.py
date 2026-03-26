@@ -1,7 +1,8 @@
 """Tests for middleware/events.py — browser/server event and REST route registration."""
-import json
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock, call
+
 from tests.middleware._helpers import load_middleware_module
 
 mw_state_mod = load_middleware_module('state')
@@ -37,7 +38,7 @@ class TestRegisterBrowserEvents:
         register_browser_events(state)
         state.sio = MagicMock(wraps=state.sio)
         # Get the connect handler
-        handlers = state.sio.handlers.get('/', {})
+        _handlers = state.sio.handlers.get('/', {})
         # Since we wrapped after registration, handlers are on the original sio.
         # Re-register with mocked sio to capture emits.
         state2 = MiddlewareState()
@@ -91,7 +92,7 @@ class TestRegisterBrowserEvents:
         select = handlers.get('select_camera')
         assert select is not None
 
-        with patch.object(mw_events, 'server_comms') as mock_comms:
+        with patch.object(mw_events, 'server_comms') as _mock_comms:
             select('sid1', {'device': 2})
         assert state.camera_device == 2
 
@@ -180,7 +181,7 @@ class TestRegisterRestRoutes:
         register_rest_routes(state)
         client = state.flask_app.test_client()
 
-        with patch.object(mw_events, 'server_comms') as mock_comms, \
+        with patch.object(mw_events, 'server_comms') as _mock_comms, \
              patch.object(mw_events, 'gevent') as mock_gevent:
             resp = client.post('/peer_connection', json={
                 'peer_id': 'peer1',

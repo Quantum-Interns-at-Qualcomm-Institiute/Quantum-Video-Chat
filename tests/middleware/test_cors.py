@@ -1,5 +1,6 @@
 """CORS header tests for the Quantum Video Chat middleware Flask app."""
 import pytest
+
 from tests.middleware._helpers import load_middleware_module
 
 mw_state = load_middleware_module('state')

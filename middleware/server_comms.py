@@ -4,13 +4,16 @@ server_comms — QKD server communication (REST + health checks).
 Single responsibility: HTTP interactions with the QKD server.
 """
 import os
-import sys
-import gevent
-import requests
 import socket as _socket
 
-from state import MiddlewareState, WIDTH, HEIGHT
+import gevent
+import requests
+from state import HEIGHT, WIDTH, MiddlewareState
 from video import VideoThread
+
+from shared.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def _get_local_ip() -> str:
@@ -38,12 +41,12 @@ def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id, session_
     Retries with exponential back-off in case of transient failures.
     """
     ws_host, ws_port = ws_endpoint
-    print(f'(middleware): Connecting to session WebSocket at {ws_host}:{ws_port}')
+    logger.info('Connecting to session WebSocket at %s:%s', ws_host, ws_port)
     if state.server_client.connected:
         try:
             state.server_client.disconnect()
         except Exception:
-            pass
+            logger.debug('Ignoring error during server_client disconnect')
 
     delay = _WS_CONNECT_RETRY_DELAY
     for attempt in range(1, _WS_CONNECT_MAX_ATTEMPTS + 1):
@@ -58,16 +61,16 @@ def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id, session_
                 auth=auth,
                 wait_timeout=10,
             )
-            print(f'(middleware): Session WebSocket connected (attempt {attempt}).')
+            logger.info('Session WebSocket connected (attempt %s).', attempt)
             return  # success
         except Exception as exc:
             if attempt < _WS_CONNECT_MAX_ATTEMPTS:
-                print(f'(middleware): WS connect attempt {attempt} failed ({exc}), '
-                      f'retrying in {delay:.1f}s...')
+                logger.warning('WS connect attempt %s failed (%s), retrying in %.1fs...',
+                               attempt, exc, delay)
                 gevent.sleep(delay)
                 delay = min(delay * 2, 4.0)
             else:
-                print(f'(middleware): WS connect failed after {attempt} attempts: {exc}')
+                logger.error('WS connect failed after %s attempts: %s', attempt, exc)
                 state.sio.emit('server-error',
                                f'Could not connect to session -- {exc}')
 
@@ -76,7 +79,7 @@ def configure_server(state: MiddlewareState, sid, data):
     """Verify the QKD server via its REST /admin/status endpoint."""
     host = data.get('host', '')
     port = int(data.get('port', 7777))
-    print(f'(middleware): configure_server → {host}:{port}')
+    logger.info('configure_server → %s:%s', host, port)
 
     if not host:
         state.sio.emit('server-error', 'No host provided.', room=sid)
@@ -93,18 +96,18 @@ def configure_server(state: MiddlewareState, sid, data):
         state.server_host = host
         state.server_port = port
         info = resp.json()
-        print(f'(middleware): QKD server verified at {host}:{port} — '
-              f'state={info.get("api_state")}, users={info.get("user_count")}')
+        logger.info('QKD server verified at %s:%s — state=%s, users=%s',
+                     host, port, info.get('api_state'), info.get('user_count'))
         state.server_alive = True
         state.sio.emit('server-connected', room=sid)
         start_health_checks(state)
     except requests.ConnectionError:
         msg = f'Could not connect to {host}:{port} — Connection refused'
-        print(f'(middleware): ERROR — {msg}')
+        logger.error(msg)
         state.sio.emit('server-error', msg, room=sid)
     except Exception as exc:
         msg = f'Could not connect to {host}:{port} — {exc}'
-        print(f'(middleware): ERROR — {msg}')
+        logger.error(msg)
         state.sio.emit('server-error', msg, room=sid)
 
 
@@ -120,11 +123,11 @@ def create_user(state: MiddlewareState, sid):
         }, timeout=5)
         resp.raise_for_status()
         state.user_id = resp.json().get('user_id', '')
-        print(f'(middleware): Registered with QKD server as user {state.user_id}')
+        logger.info('Registered with QKD server as user %s', state.user_id)
         state.sio.emit('user-registered', {'user_id': state.user_id}, room=sid)
     except Exception as exc:
         msg = f'Failed to register with server — {exc}'
-        print(f'(middleware): ERROR — {msg}')
+        logger.error(msg)
         state.sio.emit('server-error', msg, room=sid)
 
 
@@ -138,8 +141,8 @@ def join_room(state: MiddlewareState, sid, peer_id=None):
         return
 
     if not peer_id:
-        print(f'(middleware): join_room — start session, waiting for peer. '
-              f'Share user_id={state.user_id}')
+        logger.info('join_room — start session, waiting for peer. Share user_id=%s',
+                     state.user_id)
         state.sio.emit('waiting-for-peer', {'user_id': state.user_id}, room=sid)
         return
 
@@ -147,12 +150,12 @@ def join_room(state: MiddlewareState, sid, peer_id=None):
         msg = (f'Cannot connect to yourself (user_id={state.user_id}). '
                f'For same-device testing, run a second middleware on a '
                f'different port: python3 client.py --port 5002')
-        print(f'(middleware): ERROR — {msg}')
+        logger.error(msg)
         state.sio.emit('server-error', msg, room=sid)
         return
 
-    print(f'(middleware): join_room → requesting peer connection '
-          f'user={state.user_id} peer={peer_id}')
+    logger.info('join_room → requesting peer connection user=%s peer=%s',
+                 state.user_id, peer_id)
 
     try:
         # Use a generous timeout: the server contacts client 1 before responding,
@@ -165,7 +168,7 @@ def join_room(state: MiddlewareState, sid, peer_id=None):
 
         if resp.status_code != 200:
             msg = data.get('details', data.get('error_message', 'Unknown error'))
-            print(f'(middleware): peer_connection error: {msg}')
+            logger.error('peer_connection error: %s', msg)
             state.sio.emit('server-error', msg, room=sid)
             return
 
@@ -175,13 +178,13 @@ def join_room(state: MiddlewareState, sid, peer_id=None):
             connect_to_session_ws(state, ws_endpoint, peer_id, session_id=session_id)
     except Exception as exc:
         msg = f'Peer connection failed — {exc}'
-        print(f'(middleware): ERROR — {msg}')
+        logger.error(msg)
         state.sio.emit('server-error', msg, room=sid)
 
 
 def leave_room(state: MiddlewareState, sid):
     """Browser leaves the room — stop media, disconnect from session WS."""
-    print('(middleware): leave_room → server')
+    logger.info('leave_room → server')
     if state.video_thread is not None:
         state.video_thread.stop()
         state.video_thread = None
@@ -193,7 +196,7 @@ def leave_room(state: MiddlewareState, sid):
         try:
             state.server_client.disconnect()
         except Exception:
-            pass
+            logger.debug('Ignoring error during server_client disconnect in leave_room')
 
     if state.server_host and state.user_id:
         try:
@@ -201,7 +204,7 @@ def leave_room(state: MiddlewareState, sid):
                 'user_id': state.user_id,
             }, timeout=5)
         except Exception as exc:
-            print(f'(middleware): leave_room — disconnect_peer failed: {exc}')
+            logger.warning('leave_room — disconnect_peer failed: %s', exc)
 
 
 def start_video(state: MiddlewareState, room_id):
@@ -282,9 +285,9 @@ def enumerate_audio_devices():
                 devices.append({'index': i, 'label': name})
         pa.terminate()
     except ImportError:
-        pass
+        logger.debug('pyaudio not available for audio device enumeration')
     except Exception:
-        pass
+        logger.debug('Error enumerating audio devices')
 
     # Append mock/test sources so users can select them from the audio picker
     from audio import MOCK_AUDIO_DEVICE_A, MOCK_AUDIO_DEVICE_B
@@ -323,15 +326,15 @@ def _health_check_loop(state: MiddlewareState):
             if not state.server_alive:
                 state.server_alive = True
                 state.sio.emit('server-connected')
-                print('(middleware): Health check — server back online')
+                logger.info('Health check — server back online')
         except Exception:
             consecutive_failures += 1
-            print(f'(middleware): Health check — server unreachable '
-                  f'(failure {consecutive_failures}/{_HEALTH_FAILURE_THRESHOLD})')
+            logger.warning('Health check — server unreachable (failure %s/%s)',
+                           consecutive_failures, _HEALTH_FAILURE_THRESHOLD)
             if consecutive_failures >= _HEALTH_FAILURE_THRESHOLD and state.server_alive:
                 state.server_alive = False
                 state.sio.emit('server-error', 'Server health check failed.')
-                print('(middleware): Health check — declaring server down')
+                logger.error('Health check — declaring server down')
 
 
 def start_health_checks(state: MiddlewareState):

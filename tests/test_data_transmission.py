@@ -5,11 +5,11 @@ These tests verify encryption round-trips, key-index framing, and the
 BroadcastFlaskNamespace relay logic — all of which live in shared/ and
 do not depend on the middleware architecture.
 """
-import pytest
 from unittest.mock import MagicMock, patch
 
-from shared.encryption import AESEncryption, DebugEncryption
+import pytest
 
+from shared.encryption import AESEncryption, DebugEncryption
 
 # ---------------------------------------------------------------------------
 # 1. Encryption round-trip

@@ -1,18 +1,26 @@
 """Tests for shared/encryption.py — encryption schemes, key generators, factories."""
-import os
+from unittest.mock import mock_open, patch
+
 import pytest
-from unittest.mock import patch, mock_open, MagicMock
 
 from shared.encryption import (
-    XOREncryption, DebugEncryption, AESEncryption,
-    EncryptSchemes, EncryptFactory,
-    RandomKeyGenerator, DebugKeyGenerator, FileKeyGenerator,
-    KeyGenerators, KeyGenFactory,
-    AbstractEncryptionScheme, AbstractKeyGenerator,
-    create_encrypt_scheme, create_key_generator,
-    register_encrypt_scheme, register_key_generator,
+    AbstractEncryptionScheme,
+    AbstractKeyGenerator,
+    AESEncryption,
+    DebugEncryption,
+    DebugKeyGenerator,
+    EncryptFactory,
+    EncryptSchemes,
+    FileKeyGenerator,
+    KeyGenerators,
+    KeyGenFactory,
+    RandomKeyGenerator,
+    XOREncryption,
+    create_encrypt_scheme,
+    create_key_generator,
+    register_encrypt_scheme,
+    register_key_generator,
 )
-
 
 # ---- Encryption Schemes ----
 

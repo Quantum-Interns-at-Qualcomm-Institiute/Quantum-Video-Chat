@@ -1,10 +1,12 @@
 """Tests for the BB84 protocol engine."""
 import pytest
 
-from shared.bb84.physical_layer import ChannelParameters, Basis
+from shared.bb84.physical_layer import Basis, ChannelParameters
 from shared.bb84.protocol import (
-    BB84Protocol, BB84ProtocolConfig, EavesdropperSimulator,
+    BB84Protocol,
+    BB84ProtocolConfig,
     BB84RoundResult,
+    EavesdropperSimulator,
 )
 from shared.bb84.utils import binary_entropy
 

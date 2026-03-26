@@ -14,9 +14,7 @@ dependencies).  Each test class corresponds to a work package:
 """
 import os
 import re
-import glob
 import unittest
-from typing import Optional, List
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,7 +23,7 @@ def _read(relpath):
     # type: (str) -> str
     """Read a project file by relative path from the repo root."""
     fullpath = os.path.join(ROOT, relpath)
-    with open(fullpath, "r", encoding="utf-8", errors="replace") as f:
+    with open(fullpath, encoding="utf-8", errors="replace") as f:
         return f.read()
 
 
@@ -40,12 +38,12 @@ def _collect_python_files(*dirs):
     results = []  # type: List[str]
     for d in dirs:
         base = os.path.join(ROOT, d)
-        for dirpath, _, filenames in os.walk(base):
-            for fn in filenames:
-                if fn.endswith(".py"):
-                    results.append(os.path.relpath(
-                        os.path.join(dirpath, fn), ROOT
-                    ))
+        results.extend(
+            os.path.relpath(os.path.join(dirpath, fn), ROOT)
+            for dirpath, _, filenames in os.walk(base)
+            for fn in filenames
+            if fn.endswith(".py")
+        )
     return results
 
 

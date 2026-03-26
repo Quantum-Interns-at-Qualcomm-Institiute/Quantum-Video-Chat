@@ -1,16 +1,21 @@
 import time
+from abc import abstractmethod
+from threading import Thread
+
 import ffmpeg
 import numpy as np
 import pyaudio
-from abc import abstractmethod
 from flask_socketio import send
 from flask_socketio.namespace import Namespace as FlaskNamespace
 from socketio import ClientNamespace
-from threading import Thread
+
+from shared.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def display_message(user_id, msg):
-    print(f"({user_id}): {msg}")
+    logger.info("(%s): %s", user_id, msg)
 
 
 # region --- Tests ---
@@ -195,7 +200,7 @@ class VideoClientNamespace(AVClientNamespace):
                 'pipe:',
                 format='rawvideo',
                 pix_fmt=self.pix_fmt,
-                s='{}x{}'.format(w, h),
+                s=f'{w}x{h}',
                 r=self.av.frame_rate,
             )
             output = ffmpeg.output(

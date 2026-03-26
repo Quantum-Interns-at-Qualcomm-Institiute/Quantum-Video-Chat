@@ -1,7 +1,7 @@
 """Tests for middleware/state.py — MiddlewareState defaults and helpers."""
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 from tests.middleware._helpers import load_middleware_module
 
 mw_state = load_middleware_module('state')

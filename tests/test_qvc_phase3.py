@@ -12,24 +12,17 @@ E2E and Non-Functional Tests:
 import os
 import re
 import time
-import hashlib
+from threading import Event, Thread
+
 import pytest
-from collections import Counter
-from threading import Thread, Event
-from unittest.mock import MagicMock, patch
 
 from shared.encryption import (
     AESEncryption,
-    XOREncryption,
-    DebugEncryption,
     RandomKeyGenerator,
-    FileKeyGenerator,
-    create_encrypt_scheme,
-    create_key_generator,
+    XOREncryption,
 )
-from shared.state import ClientState
 from shared.endpoint import Endpoint
-
+from shared.state import ClientState
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -413,7 +406,7 @@ class TestPerformanceConcurrentSessions:
         enc = AESEncryption()
         key = os.urandom(16)
         errors = []
-        done = Event()
+        _done = Event()
 
         def worker(worker_id):
             try:

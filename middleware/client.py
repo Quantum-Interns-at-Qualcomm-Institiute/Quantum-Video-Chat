@@ -13,16 +13,20 @@ Usage:
 """
 # gevent monkey-patch MUST come before any other imports that use threading/socket
 from gevent import monkey
+
 monkey.patch_all()
 
-import argparse
-import os
-import signal
-import sys
-import requests
-from state import MiddlewareState, MIDDLEWARE_PORT, IS_LOCAL, DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT
-from events import register_browser_events, register_server_events, register_rest_routes
+import argparse  # noqa: E402
+import signal  # noqa: E402
+import sys  # noqa: E402
 
+import requests  # noqa: E402
+from events import register_browser_events, register_rest_routes, register_server_events  # noqa: E402
+from state import DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, IS_LOCAL, MIDDLEWARE_PORT, MiddlewareState  # noqa: E402
+
+from shared.logging import get_logger  # noqa: E402
+
+logger = get_logger(__name__)
 
 # ─── Singleton state ──────────────────────────────────────────────────────────
 mw = MiddlewareState()
@@ -35,22 +39,22 @@ register_rest_routes(mw)
 # ─── Shutdown ─────────────────────────────────────────────────────────────────
 
 def _shutdown(sig=None, _frame=None):
-    print('\n(middleware): Shutting down...')
+    logger.info('Shutting down...')
     if mw.video_thread is not None:
         mw.video_thread.stop()
     if mw.server_client.connected:
         try:
             mw.server_client.disconnect()
         except Exception:
-            pass
+            logger.debug('Ignoring error during server_client disconnect')
     if mw.server_host and mw.user_id:
         try:
             requests.post(mw.server_url('/remove_user'), json={
                 'user_id': mw.user_id,
             }, timeout=3)
-            print(f'(middleware): Deregistered user {mw.user_id} from server.')
+            logger.info('Deregistered user %s from server.', mw.user_id)
         except Exception:
-            pass
+            logger.debug('Failed to deregister user during shutdown')
     sys.exit(0)
 
 
@@ -85,13 +89,13 @@ if __name__ == '__main__':
         original = chosen_port
         while _port_in_use(chosen_port):
             chosen_port += 1
-        print(f'(middleware): Port {original} in use — using {chosen_port} instead')
+        logger.info('Port %s in use — using %s instead', original, chosen_port)
 
     mw.middleware_port = chosen_port
-    print(f'(middleware): Starting socket.io server on port {chosen_port}...')
+    logger.info('Starting socket.io server on port %s...', chosen_port)
     if IS_LOCAL:
-        print(f'(middleware): Local mode — will auto-configure server '
-              f'{DEFAULT_SERVER_HOST}:{DEFAULT_SERVER_PORT}')
+        logger.info('Local mode — will auto-configure server %s:%s',
+                     DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT)
 
     from shared.ssl_utils import get_ssl_context as _get_ssl_context
 

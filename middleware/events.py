@@ -5,10 +5,14 @@ Single responsibility: wiring socket events to handler functions.
 Keeps client.py as a thin entry point.
 """
 import gevent
-from flask import request as flask_request, jsonify
-
-from state import MiddlewareState, DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, IS_LOCAL, WIDTH, HEIGHT
 import server_comms
+from flask import jsonify
+from flask import request as flask_request
+from state import DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, HEIGHT, IS_LOCAL, WIDTH, MiddlewareState
+
+from shared.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def register_browser_events(state: MiddlewareState):
@@ -17,7 +21,7 @@ def register_browser_events(state: MiddlewareState):
 
     @sio.event
     def connect(sid, environ):
-        print(f'(middleware): Browser connected  sid={sid}')
+        logger.info('Browser connected  sid=%s', sid)
         sio.emit('welcome', {
             'host':    DEFAULT_SERVER_HOST,
             'port':    DEFAULT_SERVER_PORT,
@@ -35,23 +39,23 @@ def register_browser_events(state: MiddlewareState):
 
     @sio.event
     def disconnect(sid):
-        print(f'(middleware): Browser disconnected sid={sid}')
+        logger.info('Browser disconnected sid=%s', sid)
 
     @sio.event
     def toggle_camera(sid, data):
         state.camera_enabled = bool(data.get('enabled', True))
-        print(f'(middleware): Camera {"enabled" if state.camera_enabled else "disabled"}')
+        logger.info('Camera %s', 'enabled' if state.camera_enabled else 'disabled')
 
     @sio.event
     def toggle_mute(sid, data):
         state.muted = bool(data.get('muted', False))
-        print(f'(middleware): Microphone {"muted" if state.muted else "unmuted"}')
+        logger.info('Microphone %s', 'muted' if state.muted else 'unmuted')
 
     @sio.event
     def select_camera(sid, data):
         device = int(data.get('device', 0))
         state.camera_device = device
-        print(f'(middleware): Camera device set to {device}')
+        logger.info('Camera device set to %s', device)
         # Start or restart video thread for preview (and in-call use).
         # The thread naturally only sends to the server when connected.
         server_comms.start_video(state, None)
@@ -66,7 +70,7 @@ def register_browser_events(state: MiddlewareState):
     def select_audio(sid, data):
         device = int(data.get('device', 0))
         state.audio_device = device
-        print(f'(middleware): Audio device set to {device}')
+        logger.info('Audio device set to %s', device)
         # If audio thread is running, restart it with the new device
         if state.audio_thread is not None and state.audio_thread.is_alive():
             state.audio_thread.stop()
@@ -102,18 +106,18 @@ def register_server_events(state: MiddlewareState):
 
     @sc.on('connect')
     def _server_connect():
-        print('(middleware): Connected to QKD server.')
+        logger.info('Connected to QKD server.')
 
     @sc.on('disconnect')
     def _server_disconnect():
-        print('(middleware): Disconnected from QKD server session WebSocket.')
+        logger.info('Disconnected from QKD server session WebSocket.')
         # NOTE: We do NOT stop media threads here.  The socketio.Client may
         # reconnect automatically after a transient network blip.  Media
         # threads are stopped explicitly by leave_room or /peer_disconnected.
 
     @sc.on('room-id')
     def _server_room_id(room_id):
-        print(f"(middleware): room-id '{room_id}' — starting media threads.")
+        logger.info("room-id '%s' — starting media threads.", room_id)
         state.sio.emit('room-id', room_id)
         server_comms.start_video(state, room_id)
         server_comms.start_audio(state, room_id)
@@ -154,7 +158,7 @@ def register_rest_routes(state: MiddlewareState):
         peer_id = data.get('peer_id', '')
         ws_endpoint = data.get('socket_endpoint')
         session_id = data.get('session_id')
-        print(f'(middleware): REST /peer_connection -- peer={peer_id} ws={ws_endpoint} session={session_id}')
+        logger.info('REST /peer_connection -- peer=%s ws=%s session=%s', peer_id, ws_endpoint, session_id)
         if ws_endpoint:
             # Spawn asynchronously so we return 200 immediately.
             # The QKD server's contact_client call has no timeout -- if we block
@@ -167,7 +171,7 @@ def register_rest_routes(state: MiddlewareState):
     def _rest_peer_disconnected():
         data = flask_request.get_json(force=True)
         peer_id = data.get('peer_id', '')
-        print(f'(middleware): REST /peer_disconnected — peer={peer_id}')
+        logger.info('REST /peer_disconnected — peer=%s', peer_id)
         # Emit a dedicated event so the browser can cleanly reset session
         # state without marking the server as disconnected.
         state.sio.emit('peer-disconnected', {'peer_id': peer_id})
@@ -181,5 +185,5 @@ def register_rest_routes(state: MiddlewareState):
             try:
                 state.server_client.disconnect()
             except Exception:
-                pass
+                logger.debug('Ignoring error during server_client disconnect')
         return jsonify({'status': 'ok'}), 200

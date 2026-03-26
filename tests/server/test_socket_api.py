@@ -1,7 +1,5 @@
 """Tests for server/socket_api.py -- SocketAPI class."""
-import pytest
-from unittest.mock import MagicMock, patch
-from shared.endpoint import Endpoint
+from unittest.mock import MagicMock
 
 
 def _make_api():

@@ -1,8 +1,7 @@
 """Tests for the QBER monitor and intrusion detection."""
-import pytest
 
-from shared.bb84.qber_monitor import QBERMonitor, QBEREvent, QBERSnapshot
 from shared.bb84.protocol import BB84RoundResult
+from shared.bb84.qber_monitor import QBEREvent, QBERMonitor, QBERSnapshot
 
 
 def _make_result(qber=0.03, aborted=False, abort_reason=None,

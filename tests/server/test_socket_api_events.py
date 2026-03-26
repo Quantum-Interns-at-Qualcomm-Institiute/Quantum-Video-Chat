@@ -1,7 +1,5 @@
 """Tests for SocketAPI event handlers in server/socket_api.py."""
-import pytest
 from unittest.mock import MagicMock, patch
-from shared.endpoint import Endpoint
 
 
 def _make_api():

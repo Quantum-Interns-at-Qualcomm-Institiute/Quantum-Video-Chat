@@ -4,8 +4,8 @@ Reads key material from real QKD hardware via the bridge interface.
 When hardware is not connected, falls back to the BB84 simulation
 for seamless development and demonstration.
 """
-from shared.encryption import AbstractKeyGenerator, BB84KeyGenerator
 from shared.bb84.hardware_bridge import AbstractHardwareBridge
+from shared.encryption import AbstractKeyGenerator, BB84KeyGenerator
 
 
 class HardwareKeyGenerator(AbstractKeyGenerator):
@@ -48,7 +48,7 @@ class HardwareKeyGenerator(AbstractKeyGenerator):
                 self.key = self._bridge.get_raw_key_material(num_bytes)
                 self._using_hardware = True
                 return
-            except (IOError, OSError):
+            except OSError:
                 pass  # Fall through to simulation
 
         # Fallback to BB84 simulation
@@ -72,6 +72,6 @@ class HardwareKeyGenerator(AbstractKeyGenerator):
         if self.is_hardware_connected:
             try:
                 return self._bridge.get_qber_estimate()
-            except (IOError, OSError):
+            except OSError:
                 return None
         return None

@@ -5,12 +5,10 @@ Verifies that 10 deterministic frames from MockFrameSource are correctly
 relayed through the SocketAPI frame handler, arriving at the peer in the
 correct order with the correct content.
 """
+
 import numpy as np
-import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
 
 from shared.frame_source import MockFrameSource
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -34,7 +32,7 @@ def _make_socket_api_stub(user_ids):
     """
     users = {}
     collectors = {}
-    for i, uid in enumerate(user_ids):
+    for _, uid in enumerate(user_ids):
         sid = f'sid_{uid}'
         users[uid] = sid
         collectors[uid] = FrameCollector()

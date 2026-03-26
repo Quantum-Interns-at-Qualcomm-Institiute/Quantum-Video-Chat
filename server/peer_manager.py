@@ -5,9 +5,9 @@ Single responsibility: connecting and disconnecting peers.
 Depends on the server for user lookups, state changes, and client notification.
 """
 from custom_logging import logger
-from utils import BadGateway, BadRequest
-from utils.user_manager import UserState, UserNotFound
 from exceptions import InvalidState
+from utils import BadGateway, BadRequest
+from utils.user_manager import UserNotFound, UserState
 
 
 class PeerConnectionManager:
@@ -26,12 +26,12 @@ class PeerConnectionManager:
 
         try:
             user = self._server.get_user(user_id)
-        except UserNotFound:
-            raise BadRequest(f"User {user_id} does not exist.")
+        except UserNotFound as err:
+            raise BadRequest(f"User {user_id} does not exist.") from err
         try:
             peer = self._server.get_user(peer_id)
-        except UserNotFound:
-            raise BadRequest(f"User {peer_id} does not exist.")
+        except UserNotFound as err:
+            raise BadRequest(f"User {peer_id} does not exist.") from err
 
         if peer.state != UserState.IDLE:
             raise InvalidState(f"Cannot connect to peer User {peer_id}: peer must be IDLE.")
@@ -52,8 +52,8 @@ class PeerConnectionManager:
 
         try:
             response = self._server.contact_client(peer_id, '/peer_connection', json=peer_json)
-        except Exception:
-            raise BadGateway(f"Unable to reach peer User {peer_id}.")
+        except Exception as err:
+            raise BadGateway(f"Unable to reach peer User {peer_id}.") from err
 
         if response.status_code != 200:
             logger.error(f"Peer User {peer_id} refused connection request.")
@@ -75,8 +75,8 @@ class PeerConnectionManager:
         """
         try:
             user = self._server.get_user(user_id)
-        except UserNotFound:
-            raise BadRequest(f"User {user_id} does not exist.")
+        except UserNotFound as err:
+            raise BadRequest(f"User {user_id} does not exist.") from err
 
         peer_id = user.peer
         if peer_id is None:

@@ -6,9 +6,9 @@ import threading
 import time
 from collections import deque
 
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, render_template, request
 
-from shared.config import SERVER_REST_PORT, LOCAL_IP
+from shared.config import LOCAL_IP, SERVER_REST_PORT
 from shared.decorators import handle_exceptions
 
 admin_bp = Blueprint('admin', __name__)
@@ -127,7 +127,7 @@ def admin_logs():
     log_path = getattr(server_logger, 'log_file_path', None)
     if not log_path or not os.path.exists(log_path):
         return jsonify({'lines': [], 'file': log_path or ''}), 200
-    with open(log_path, 'r') as f:
+    with open(log_path) as f:
         all_lines = deque(f, maxlen=lines_count)
     return jsonify({
         'lines': [line.rstrip('\n') for line in all_lines],
@@ -154,7 +154,7 @@ def admin_remove(user_id):
     try:
         _server.disconnect_peer(user_id)
     except Exception:
-        pass  # User may not have a peer
+        logger.debug("User %s may not have a peer", user_id)
     _server.remove_user(user_id)
     return jsonify({'status': 'removed', 'user_id': user_id}), 200
 

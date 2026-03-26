@@ -8,14 +8,19 @@ detection, key recovery, and multi-round key rotation.
 """
 import pytest
 
-from shared.bb84.physical_layer import ChannelParameters, Basis
+from shared.bb84.physical_layer import ChannelParameters
 from shared.bb84.protocol import (
-    BB84Protocol, BB84ProtocolConfig, BB84RoundResult, EavesdropperSimulator,
+    BB84Protocol,
+    BB84ProtocolConfig,
+    BB84RoundResult,
+    EavesdropperSimulator,
 )
-from shared.bb84.qber_monitor import QBERMonitor, QBEREvent
+from shared.bb84.qber_monitor import QBEREvent, QBERMonitor
 from shared.encryption import (
-    BB84KeyGenerator, AESEncryption,
-    create_key_generator, create_encrypt_scheme,
+    AESEncryption,
+    BB84KeyGenerator,
+    create_encrypt_scheme,
+    create_key_generator,
 )
 
 

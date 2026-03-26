@@ -4,7 +4,6 @@ ClientNotifier — Sends HTTP notifications to client middleware APIs.
 Single responsibility: outbound REST communication to client endpoints.
 """
 import requests
-
 from custom_logging import logger
 
 
@@ -35,7 +34,7 @@ class ClientNotifier:
             # normally complete in milliseconds.
             from shared.ssl_utils import get_ssl_context
             # Self-signed certs are expected for internal server-to-middleware calls
-            verify = False if get_ssl_context() else True
+            verify = not get_ssl_context()
             response = requests.post(str(endpoint), json=json, timeout=8, verify=verify)
         except Exception as e:
             logger.error(

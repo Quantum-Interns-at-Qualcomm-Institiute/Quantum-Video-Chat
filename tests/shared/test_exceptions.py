@@ -1,13 +1,21 @@
 """Tests for shared/exceptions.py — exception hierarchy and Errors enum."""
 import pytest
 from flask import Flask
+
 from shared.exceptions import (
-    CustomException, ServerError, BadGateway, BadRequest,
-    ParameterError, InvalidParameter,
-    BadAuthentication, UserNotFound,
-    UnexpectedResponse, ConnectionRefused,
-    InternalClientError, UnknownError,
+    BadAuthentication,
+    BadGateway,
+    BadRequest,
+    ConnectionRefused,
+    CustomException,
     Errors,
+    InternalClientError,
+    InvalidParameter,
+    ParameterError,
+    ServerError,
+    UnexpectedResponse,
+    UnknownError,
+    UserNotFound,
 )
 
 

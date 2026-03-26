@@ -1,12 +1,15 @@
 """Tests for server/utils/user_manager.py — DictUserStorage, UserStorageFactory, UserManager."""
-import pytest
-from unittest.mock import MagicMock, patch
-from utils.user_manager import (
-    DictUserStorage, UserStorageFactory, UserManager,
-    DuplicateUser, UserNotFound, InvalidState,
-)
-from utils.user import UserState
+from unittest.mock import MagicMock
 
+import pytest
+from utils.user import UserState
+from utils.user_manager import (
+    DictUserStorage,
+    DuplicateUser,
+    InvalidState,
+    UserNotFound,
+    UserStorageFactory,
+)
 
 # ---- DictUserStorage ----
 

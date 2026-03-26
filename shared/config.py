@@ -15,13 +15,14 @@ injectable object.  Module-level globals are backward-compatible
 aliases to the default Config instance.
 """
 import configparser
+import logging
 import os
 import socket as _socket
-import psutil as _psutil
 from dataclasses import dataclass
 
-from shared.encryption import EncryptSchemes, KeyGenerators
+import psutil as _psutil
 
+from shared.encryption import EncryptSchemes, KeyGenerators
 
 # ---------------------------------------------------------------------------
 # INI loader
@@ -85,8 +86,8 @@ def get_local_ip() -> str:
         s.close()
         return addr
     except Exception:
-        pass
-    for iface, addrs in _psutil.net_if_addrs().items():
+        logging.debug("UDP probe for local IP failed", exc_info=True)
+    for addrs in _psutil.net_if_addrs().values():
         for prop in addrs:
             if prop.family == 2 and not prop.address.startswith('127.'):
                 return prop.address

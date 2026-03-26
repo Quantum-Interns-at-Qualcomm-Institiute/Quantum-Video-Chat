@@ -1,13 +1,10 @@
 import logging
-import string
 import random
+import string
 import uuid
 
 from flask import request as flask_request
-from flask_socketio import SocketIO, send, join_room, leave_room
-
-from state import SocketState
-from utils import ServerError
+from flask_socketio import SocketIO, join_room, leave_room, send
 from utils.av import generate_flask_namespace
 
 
@@ -32,7 +29,7 @@ class SocketAPI:
 
         # Register AV namespaces
         self.namespaces = generate_flask_namespace(self)
-        ns = sorted(list(self.namespaces.keys()))
+        ns = sorted(self.namespaces.keys())
         for name in ns:
             self.socketio.on_namespace(self.namespaces[name])
 

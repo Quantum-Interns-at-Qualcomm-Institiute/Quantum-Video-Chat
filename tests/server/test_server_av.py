@@ -1,8 +1,5 @@
 """Tests for server/utils/av.py — ServerVideoClientNamespace and AV class."""
-import pytest
-import time
 from unittest.mock import MagicMock, patch
-from threading import Event
 
 
 class TestServerVideoClientNamespace:
@@ -55,7 +52,7 @@ class TestAV:
         from utils.av import AV
         mock_cls = MagicMock()
 
-        av = AV(mock_cls)
+        _av = AV(mock_cls)
         mock_thread.assert_called_once()
         call_kwargs = mock_thread.call_args[1]
         assert call_kwargs['daemon'] is True
@@ -96,7 +93,7 @@ class TestGenerateNamespaces:
         try:
             av_mod.testing = True
             mock_cls = MagicMock()
-            result = generate_flask_namespace = av_mod.generate_flask_namespace(mock_cls)
+            result = av_mod.generate_flask_namespace(mock_cls)
             assert '/test' in result
             assert '/video' not in result
         finally:
