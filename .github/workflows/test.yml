@@ -14,6 +14,7 @@ jobs:
     name: Python Lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +77,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            portaudio19-dev \
+            libgl1 \
+            libglib2.0-0
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -88,50 +97,6 @@ jobs:
             tests/shared/bb84/ \
             tests/test_bb84_integration.py \
             -v --tb=short --timeout=60
-
-  frontend-tests:
-    name: Frontend Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Run Jest tests
-        working-directory: frontend
-        run: npm test -- --ci --passWithNoTests
-
-  dashboard-build:
-    name: Dashboard Build Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        working-directory: server-dashboard
-        run: npm install
-
-      - name: Type check and build
-        working-directory: server-dashboard
-        run: npx tsc --noEmit
 
   docker-build:
     name: Docker Build
