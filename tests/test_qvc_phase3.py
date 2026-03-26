@@ -96,23 +96,16 @@ class TestE2EVideoSessionLifecycle:
         assert 'UserState.CONNECTED' in src
         assert 'UserState.IDLE' in src
 
-    def test_main_screen_switches_lobby_and_incall(self):
-        """MainScreen should toggle between Lobby and InCall based on roomId."""
-        src = _read_source('frontend/src/renderer/screens/MainScreen.tsx')
-        assert 'Lobby' in src
-        assert 'InCall' in src
+    def test_socket_api_handles_disconnect(self):
+        """Socket API should handle disconnect events for session cleanup."""
+        src = _read_source('server/socket_api.py')
+        assert '_on_disconnect' in src
 
-    def test_frontend_handles_peer_disconnected(self):
-        """ClientContext should handle peer-disconnected events."""
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        assert "'peer-disconnected'" in src or '"peer-disconnected"' in src
-
-    def test_leave_room_clears_state(self):
-        """useSession.leaveRoom should clear roomId and waitingForPeer."""
-        src = _read_source('frontend/src/renderer/hooks/useSession.ts')
-        # leaveRoom should reset state
-        assert 'setWaitingForPeer(false)' in src
-        assert "_setRoomId('')" in src or '_setRoomId("")' in src
+    def test_peer_manager_handles_disconnect(self):
+        """Peer manager should support disconnect lifecycle."""
+        src = _read_source('server/peer_manager.py')
+        assert 'def disconnect(' in src
+        assert 'IDLE' in src
 
 
 # ===================================================================
@@ -208,22 +201,21 @@ class TestE2EQKDKeyExchange:
 class TestSecurityPenetrationEncryption:
     """WP #641: Security penetration tests for the encryption layer."""
 
-    def test_aes_cbc_used_not_ecb(self):
-        """AES should use CBC mode, not ECB (which leaks patterns)."""
+    def test_aes_gcm_used_not_ecb(self):
+        """AES should use GCM mode, not ECB (which leaks patterns)."""
         src = _read_source('shared/encryption.py')
-        assert 'MODE_CBC' in src
+        assert 'MODE_GCM' in src
         assert 'MODE_ECB' not in src
 
-    def test_iv_is_random_per_encryption(self):
-        """Each AES encryption call must use a fresh random IV."""
+    def test_nonce_is_random_per_encryption(self):
+        """Each AES-GCM encryption call must use a fresh random nonce."""
         src = _read_source('shared/encryption.py')
-        assert 'os.urandom(AES.block_size)' in src
+        assert 'os.urandom(self.NONCE_SIZE)' in src
 
-    def test_padding_used(self):
-        """AES CBC requires padding (PKCS7 via pycryptodome)."""
+    def test_authentication_tag_verified(self):
+        """AES-GCM decryption must verify the authentication tag."""
         src = _read_source('shared/encryption.py')
-        assert 'pad(' in src
-        assert 'unpad(' in src
+        assert 'decrypt_and_verify' in src
 
     def test_known_plaintext_attack_resistance(self):
         """Same plaintext encrypted twice should produce different ciphertexts."""
@@ -234,15 +226,13 @@ class TestSecurityPenetrationEncryption:
         ct2 = enc.encrypt(pt, key)
         assert ct1 != ct2  # Different IVs
 
-    def test_ciphertext_length_hides_plaintext_length(self):
-        """Ciphertext = IV (16) + padded blocks. Short plaintexts pad up."""
+    def test_ciphertext_includes_nonce_and_tag(self):
+        """Ciphertext = nonce (12) + tag (16) + ciphertext."""
         enc = AESEncryption()
         key = os.urandom(16)
-        ct_short = enc.encrypt(b'x', key)      # 1 byte
-        ct_block = enc.encrypt(b'x' * 16, key)  # exactly 1 block
-        # Both should be at least 32 bytes (IV + 1 block)
-        assert len(ct_short) >= 32
-        assert len(ct_block) >= 32
+        ct = enc.encrypt(b'x', key)
+        # nonce (12) + tag (16) + ciphertext (>= 1)
+        assert len(ct) >= 29
 
     def test_wrong_key_decryption_fails(self):
         enc = AESEncryption()
@@ -306,14 +296,14 @@ class TestCrossBrowserPlatformCompatibility:
     and configuration.
     """
 
-    def test_webpack_config_exists(self):
-        """Webpack configuration should exist for cross-platform bundling."""
-        path = os.path.join(_PROJECT_ROOT, 'frontend', '.erb', 'configs',
-                            'webpack.config.base.ts')
+    def test_website_client_exists(self):
+        """Website client frontend should exist."""
+        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'index.html')
         assert os.path.exists(path)
 
-    def test_preload_script_exists(self):
-        path = os.path.join(_PROJECT_ROOT, 'frontend', '.erb', 'dll', 'preload.js')
+    def test_website_client_has_js(self):
+        """Website client should have JavaScript entry point."""
+        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
         assert os.path.exists(path)
 
     def test_endpoint_handles_localhost_default(self):
@@ -364,27 +354,15 @@ class TestNetworkResilience:
         src = _read_source('server/peer_manager.py')
         assert 'except Exception' in src
 
-    def test_server_error_event_handled(self):
-        """Frontend should handle server-error events gracefully."""
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        assert "'server-error'" in src or '"server-error"' in src
+    def test_middleware_emits_server_error(self):
+        """Middleware should emit server-error events on failure."""
+        src = _read_source('middleware/server_comms.py')
+        assert 'server-error' in src
 
-    def test_connect_error_event_handled(self):
-        """useConnection should handle connect_error events."""
-        src = _read_source('frontend/src/renderer/hooks/useConnection.ts')
-        assert "'connect_error'" in src or '"connect_error"' in src
-
-    def test_error_message_displayed_to_user(self):
-        """Errors should surface to the user via errorMessage state."""
-        src = _read_source('frontend/src/renderer/utils/ClientContext.tsx')
-        assert 'setErrorMessage' in src
-        assert 'errorMessage' in src
-
-    def test_toast_component_for_errors(self):
-        """MainScreen should render a Toast component for error display."""
-        src = _read_source('frontend/src/renderer/screens/MainScreen.tsx')
-        assert 'Toast' in src
-        assert 'errorMessage' in src
+    def test_middleware_handles_connection_error(self):
+        """Middleware should handle ConnectionError gracefully."""
+        src = _read_source('middleware/server_comms.py')
+        assert 'ConnectionError' in src
 
 
 # ===================================================================
