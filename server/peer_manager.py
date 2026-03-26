@@ -1,5 +1,5 @@
 """
-PeerConnectionManager — Orchestrates peer-to-peer session lifecycle.
+PeerConnectionManager -- Orchestrates peer-to-peer session lifecycle.
 
 Single responsibility: connecting and disconnecting peers.
 Depends on the server for user lookups, state changes, and client notification.
@@ -19,7 +19,7 @@ class PeerConnectionManager:
     def connect(self, user_id, peer_id, session_settings=None):
         """Orchestrate a peer connection between two users.
 
-        Returns the websocket endpoint for the session.
+        Returns (api_endpoint, session_id) for the session.
         """
         if user_id == peer_id:
             raise BadRequest(f"Cannot intermediate connection between User {user_id} and self.")
@@ -40,11 +40,12 @@ class PeerConnectionManager:
 
         logger.info(f"Contacting User {peer_id} to connect to User {user_id}.")
 
-        self._server.start_websocket(users=(user_id, peer_id))
+        session_id = self._server.start_websocket(users=(user_id, peer_id))
 
         peer_json = {
             'peer_id': user_id,
-            'socket_endpoint': tuple(self._server.websocket_endpoint),
+            'socket_endpoint': tuple(self._server.api_endpoint),
+            'session_id': session_id,
         }
         if session_settings is not None:
             peer_json['session_settings'] = session_settings
@@ -64,7 +65,7 @@ class PeerConnectionManager:
         self._server.set_user_state(peer_id, UserState.CONNECTED, peer=user_id)
         self._server._log_event('peer_connected', user_id=user_id, peer_id=peer_id)
 
-        return self._server.websocket_endpoint
+        return self._server.api_endpoint, session_id
 
     def disconnect(self, user_id):
         """Disconnect a user from their active peer session.
@@ -79,7 +80,7 @@ class PeerConnectionManager:
 
         peer_id = user.peer
         if peer_id is None:
-            logger.info(f"User {user_id} has no active peer — nothing to disconnect.")
+            logger.info(f"User {user_id} has no active peer -- nothing to disconnect.")
             return
 
         # Reset both users to IDLE

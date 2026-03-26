@@ -1,3 +1,4 @@
+import json
 import os
 from logging import Formatter, getLogger, DEBUG, INFO, StreamHandler
 from logging.handlers import RotatingFileHandler
@@ -42,7 +43,27 @@ def get_logger(name: str, log_dir: str = 'logs'):
                 record.message = record.getMessage()
             return super().format(record)
 
+    class JSONFormatter(Formatter):
+        """Structured JSON log formatter for machine-readable output."""
+        def format(self, record):
+            entry = {
+                'timestamp': self.formatTime(record, self.datefmt),
+                'level': record.levelname,
+                'logger': record.name,
+                'module': record.module,
+                'function': getattr(record, 'funcName', ''),
+                'message': record.getMessage(),
+            }
+            # Include extra fields if present (e.g. user_id, request_id)
+            for key in ('user_id', 'request_id', 'peer_id', 'qber', 'event'):
+                if hasattr(record, key):
+                    entry[key] = getattr(record, key)
+            if record.exc_info and record.exc_info[1]:
+                entry['exception'] = str(record.exc_info[1])
+            return json.dumps(entry)
+
     formatter = CustomFormatter('[%(asctime)s] (%(levelname)s) %(message)s')
+    json_formatter = JSONFormatter()
 
     stream_handler = StreamHandler()
     stream_handler.setLevel(INFO)
@@ -57,5 +78,16 @@ def get_logger(name: str, log_dir: str = 'logs'):
     file_handler.setLevel(DEBUG)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+
+    # Structured JSON log alongside the human-readable one
+    json_log_path = log_file_path.replace('.log', '.json.log')
+    json_handler = RotatingFileHandler(
+        json_log_path, mode='a',
+        maxBytes=10 * 1024 * 1024,
+        backupCount=5,
+    )
+    json_handler.setLevel(DEBUG)
+    json_handler.setFormatter(json_formatter)
+    logger.addHandler(json_handler)
 
     return logger

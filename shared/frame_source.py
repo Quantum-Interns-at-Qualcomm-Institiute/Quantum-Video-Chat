@@ -151,7 +151,7 @@ class MicrophoneSource(AudioSource):
     """Captures audio from a hardware microphone via PyAudio."""
 
     def __init__(self, device_index: int = 0,
-                 sample_rate: int = 8196,
+                 sample_rate: int = 8000,
                  frames_per_buffer: int = 1366):
         import pyaudio
         self._pa = pyaudio.PyAudio()
@@ -212,7 +212,7 @@ class MockAudioSource(AudioSource):
     NUM_CHUNKS = 10
     BASE_FREQ = 200  # Hz — chunk N uses (N+1) * 200 Hz (max 2000 < Nyquist)
 
-    def __init__(self, sample_rate: int = 8196,
+    def __init__(self, sample_rate: int = 8000,
                  frames_per_buffer: int = 1366,
                  looping: bool = False):
         self.sample_rate = sample_rate
@@ -245,7 +245,7 @@ class MockAudioSource(AudioSource):
         return self._index
 
     @staticmethod
-    def chunk_id(chunk: np.ndarray, sample_rate: int = 8196,
+    def chunk_id(chunk: np.ndarray, sample_rate: int = 8000,
                  frames_per_buffer: int = 1366) -> int:
         """Extract the sequence number (0–9) from a MockAudioSource chunk.
 

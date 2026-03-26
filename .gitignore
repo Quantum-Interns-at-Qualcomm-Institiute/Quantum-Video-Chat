@@ -1,21 +1,24 @@
-# Hidden files
+# all hidden directories
 .*
 !.git*
+!.dashboard.yaml
 
-# Dependencies
-node_modules/
-
-# Build output
-dist/
-dist-electron/
-
-# Python
-__pycache__/
+__pycache__
 
 # Logs
+logs
 *.log
 
-# Secrets
-key.bin
+# Runtime data
+pids
+*.pid
+*.seed
+
+# OSX
+**/.DS_Store
+
+# Project specific exclusions
 settings.ini
-config.yaml
+settings*.ini
+**/dev_python_config.json
+key.bin

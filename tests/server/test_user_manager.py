@@ -89,16 +89,6 @@ class TestUserManager:
         assert isinstance(uid, str)
         assert len(uid) == 5
 
-    def test_generate_token_deterministic(self, user_manager):
-        token1 = user_manager.generate_token('test_user')
-        token2 = user_manager.generate_token('test_user')
-        assert token1 == token2
-
-    def test_generate_token_is_hex(self, user_manager):
-        token = user_manager.generate_token('test_user')
-        assert len(token) == 64  # SHA-256 hex
-        int(token, 16)  # Should not raise
-
     def test_set_user_state_idle_with_none_peer(self, user_manager):
         uid = user_manager.add_user(('127.0.0.1', 4000))
         # Store a mock user object with state and peer attributes

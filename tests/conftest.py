@@ -7,6 +7,9 @@ The project uses sys.path.insert at runtime (in main.py, video_chat.py, etc.) to
 import sys
 import os
 
+# Enable dev-only encryption modes (XOR, DEBUG) for testing
+os.environ.setdefault('QVC_DEVELOPMENT', 'true')
+
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Add root first so `shared.xyz` imports work

@@ -1,0 +1,10 @@
+# Ruff configuration for QVC
+# Only enforce rules that catch real bugs, not style nits.
+
+[lint]
+select = [
+    "E9",    # Runtime errors (syntax errors, etc.)
+    "F63",   # Invalid comparisons
+    "F7",    # Syntax errors in type annotations
+    "F82",   # Undefined names
+]

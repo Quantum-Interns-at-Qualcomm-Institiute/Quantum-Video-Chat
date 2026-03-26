@@ -9,6 +9,7 @@ Mirrors VideoThread in video.py.
 import os
 import sys
 import threading
+import base64
 import gevent
 
 # Ensure the project root is on sys.path so ``shared.*`` imports work.
@@ -23,7 +24,7 @@ MOCK_AUDIO_DEVICE_A = -1
 MOCK_AUDIO_DEVICE_B = -2
 
 # Default audio parameters
-DEFAULT_SAMPLE_RATE = 8196
+DEFAULT_SAMPLE_RATE = 8000
 DEFAULT_FRAMES_PER_BUFFER = DEFAULT_SAMPLE_RATE // 6  # ~1366
 
 
@@ -83,10 +84,11 @@ class AudioThread:
             chunk = source.capture()
 
             if chunk is not None:
-                chunk_list = chunk.tolist()
+                # Encode audio as base64 for efficient transport
+                chunk_b64 = base64.b64encode(chunk.tobytes()).decode('ascii')
                 # Send to local browser (self-monitor)
                 sio.emit('audio-frame', {
-                    'audio':       chunk_list,
+                    'audio':       chunk_b64,
                     'sample_rate': self.sample_rate,
                     'self':        True,
                 })
@@ -94,7 +96,7 @@ class AudioThread:
                 if server_client.connected:
                     try:
                         server_client.emit('audio-frame', {
-                            'audio':       chunk_list,
+                            'audio':       chunk_b64,
                             'sample_rate': self.sample_rate,
                         })
                     except Exception:

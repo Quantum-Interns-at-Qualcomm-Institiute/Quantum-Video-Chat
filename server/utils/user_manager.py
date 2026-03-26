@@ -1,8 +1,8 @@
 # from __future__ import annotations
 
 # region --- Logging ---
-import hashlib
 import random
+import threading
 from abc import ABC, abstractmethod
 from .user import User
 from .user import UserState
@@ -58,32 +58,39 @@ class DictUserStorage(UserStorageInterface):
 
     def __init__(self):
         self.users = {}
+        self._lock = threading.Lock()
 
     def add_user(self, user_id, user_info):
-        if user_id in self.users:
-            raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
-        self.users[user_id] = user_info
+        with self._lock:
+            if user_id in self.users:
+                raise DuplicateUser(f"Cannot add user {user_id}: User already exists.")
+            self.users[user_id] = user_info
 
     def update_user(self, user_id, user_info):
-        if user_id not in self.users:
-            raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
-        self.users[user_id] = user_info
+        with self._lock:
+            if user_id not in self.users:
+                raise UserNotFound(f"Cannot update user {user_id}: User does not exist.")
+            self.users[user_id] = user_info
 
     def get_user(self, user_id):
-        if user_id not in self.users:
-            raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
-        return self.users.get(user_id, None)
+        with self._lock:
+            if user_id not in self.users:
+                raise UserNotFound(f"Cannot get user {user_id}: User does not exist.")
+            return self.users.get(user_id, None)
 
     def remove_user(self, user_id):
-        if user_id not in self.users:
-            raise UserNotFound(f"Cannot remove user {user_id}: User does not exist.")
-        del self.users[user_id]
+        with self._lock:
+            if user_id not in self.users:
+                raise UserNotFound(f"Cannot remove user {user_id}: User does not exist.")
+            del self.users[user_id]
 
     def has_user(self, user_id):
-        return user_id in self.users
+        with self._lock:
+            return user_id in self.users
 
     def get_all_users(self):
-        return dict(self.users)
+        with self._lock:
+            return dict(self.users)
 
 
 class UserStorageFactory:
@@ -121,15 +128,6 @@ class UserManager:
         # Fallback: expand to 6 digits if 5-digit space is exhausted
         return str(random.randint(100000, 999999))
 
-    # Token uniqueness is not strictly necessary, so a simple SHA-256 of the
-    # user_id is sufficient here.
-    def generate_token(self, user_id):
-        logger.debug(f"Generating token for User {user_id}.")
-        hash_object = hashlib.sha256(user_id.encode())
-        token = hash_object.hexdigest()
-
-        return token
-
     def add_user(self, api_endpoint):
         user_id = self.generate_user_id()
         try:
@@ -141,7 +139,7 @@ class UserManager:
             raise e
 
     def set_user_state(self, user_id, state: UserState, peer=None):
-        if (state == UserState.IDLE) ^ (peer == None):
+        if (state == UserState.IDLE) ^ (peer is None):
             raise InvalidState(f"Cannot set state {state} ({peer}) for User {user_id}: Invalid state.")
 
         try:
