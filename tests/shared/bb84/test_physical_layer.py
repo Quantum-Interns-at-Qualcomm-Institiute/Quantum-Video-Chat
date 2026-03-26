@@ -1,11 +1,15 @@
 """Tests for the BB84 physical layer simulation."""
 import numpy as np
-import pytest
 
 from shared.bb84.physical_layer import (
-    ChannelParameters, Basis, Polarization, DetectionEvent,
-    PhotonSource, QuantumChannel, SinglePhotonDetector,
+    Basis,
+    ChannelParameters,
+    DetectionEvent,
+    PhotonSource,
     PhysicalLayerSimulator,
+    Polarization,
+    QuantumChannel,
+    SinglePhotonDetector,
 )
 
 
