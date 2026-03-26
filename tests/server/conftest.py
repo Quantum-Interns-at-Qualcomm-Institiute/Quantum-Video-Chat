@@ -25,7 +25,7 @@ def mock_server():
     """
     MockSocketAPI = MagicMock()
 
-    with patch('server.SocketAPI', MockSocketAPI):
+    with patch("server.SocketAPI", MockSocketAPI):
         import importlib
 
         import server as server_mod
@@ -35,5 +35,5 @@ def mock_server():
         Server = server_mod.Server
 
         mock_socketio = MagicMock()
-        s = Server(Endpoint('127.0.0.1', 5050), socketio=mock_socketio)
+        s = Server(Endpoint("127.0.0.1", 5050), socketio=mock_socketio)
         yield s

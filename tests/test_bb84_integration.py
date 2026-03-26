@@ -86,7 +86,7 @@ class TestBB84ToAESRoundtrip:
         assert len(key) >= 16
 
         aes = AESEncryption()
-        plaintext = b'Hello, quantum world! This is a test message for AES.'
+        plaintext = b"Hello, quantum world! This is a test message for AES."
 
         # Use first 16 bytes of key for AES-128
         aes_key = key[:16]
@@ -95,10 +95,10 @@ class TestBB84ToAESRoundtrip:
         assert decrypted == plaintext
 
     def test_bb84_key_with_registry(self, ideal_config):
-        gen = create_key_generator('BB84')
+        gen = create_key_generator("BB84")
         assert isinstance(gen, BB84KeyGenerator)
 
-        scheme = create_encrypt_scheme('AES')
+        scheme = create_encrypt_scheme("AES")
         assert isinstance(scheme, AESEncryption)
 
     def test_different_rounds_produce_different_keys(self, ideal_config):
@@ -122,7 +122,7 @@ class TestBB84ToAESRoundtrip:
 
         if key and len(key) >= 32:
             aes = AESEncryption(bits=256)
-            plaintext = b'AES-256 with quantum key distribution'
+            plaintext = b"AES-256 with quantum key distribution"
             aes_key = key[:32]
             ciphertext = aes.encrypt(plaintext, aes_key)
             assert aes.decrypt(ciphertext, aes_key) == plaintext
@@ -182,8 +182,8 @@ class TestBB84FullProtocolFlow:
         # Key should encrypt/decrypt successfully
         aes = AESEncryption()
         aes_key = key[:16]
-        ct = aes.encrypt(b'test', aes_key)
-        assert aes.decrypt(ct, aes_key) == b'test'
+        ct = aes.encrypt(b"test", aes_key)
+        assert aes.decrypt(ct, aes_key) == b"test"
 
 
 # ---- Eavesdropper detection ----
@@ -199,7 +199,7 @@ class TestBB84EavesdropperDetection:
         assert result.aborted
         assert result.qber > 0.11
         assert result.key is None
-        assert 'QBER' in result.abort_reason
+        assert "QBER" in result.abort_reason
 
     def test_full_interception_qber_near_25_percent(self, ideal_config):
         """Full intercept-resend should cause ~25% QBER."""
@@ -261,7 +261,7 @@ class TestBB84QBERMonitorIntegration:
         gen.generate_key(key_length=128)
 
         summary = monitor.get_summary()
-        assert summary['intrusion_count'] >= 1
+        assert summary["intrusion_count"] >= 1
 
         # Check that the intrusion event was recorded
         history = monitor.get_history()
@@ -284,7 +284,7 @@ class TestBB84QBERMonitorIntegration:
 
         # Old key still works for encryption
         aes = AESEncryption()
-        plaintext = b'Still encrypted during intrusion'
+        plaintext = b"Still encrypted during intrusion"
         aes_key = good_key[:16]
         ciphertext = aes.encrypt(plaintext, aes_key)
         assert aes.decrypt(ciphertext, aes_key) == plaintext
@@ -320,8 +320,8 @@ class TestBB84QBERMonitorIntegration:
         assert len(history) == 5
 
         summary = monitor.get_summary()
-        assert summary['total_rounds'] == 5
-        assert summary['average_qber_last_10'] < 0.11
+        assert summary["total_rounds"] == 5
+        assert summary["average_qber_last_10"] < 0.11
 
 
 # ---- Edge cases ----
@@ -425,9 +425,9 @@ class TestBB84KeyRotation:
         gen = BB84KeyGenerator(protocol_config=ideal_config)
         aes = AESEncryption()
         messages = [
-            b'Message 1: initial key',
-            b'Message 2: rotated key',
-            b'Message 3: rotated again',
+            b"Message 1: initial key",
+            b"Message 2: rotated key",
+            b"Message 3: rotated again",
         ]
 
         for msg in messages:

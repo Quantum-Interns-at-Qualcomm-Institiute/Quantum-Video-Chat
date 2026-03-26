@@ -17,21 +17,21 @@ class TestKeyExchangeSecurity:
         """WP #356: FileKeyGenerator must support context manager protocol."""
         from shared.encryption import FileKeyGenerator
 
-        fake_data = b'\xff' * 64
-        with patch('builtins.open', mock_open(read_data=fake_data)):
-            gen = FileKeyGenerator(file_name='fake.bin')
-            assert hasattr(gen, '__enter__')
-            assert hasattr(gen, '__exit__')
-            assert hasattr(gen, 'close')
+        fake_data = b"\xff" * 64
+        with patch("builtins.open", mock_open(read_data=fake_data)):
+            gen = FileKeyGenerator(file_name="fake.bin")
+            assert hasattr(gen, "__enter__")
+            assert hasattr(gen, "__exit__")
+            assert hasattr(gen, "close")
             gen.close()
 
     def test_file_key_generator_closes_on_context_exit(self):
         """WP #356: File handle must close when leaving context manager."""
         from shared.encryption import FileKeyGenerator
 
-        fake_data = b'\xff' * 64
-        with patch('builtins.open', mock_open(read_data=fake_data)):
-            with FileKeyGenerator(file_name='fake.bin') as gen:
+        fake_data = b"\xff" * 64
+        with patch("pathlib.Path.open", mock_open(read_data=fake_data)):
+            with FileKeyGenerator(file_name="fake.bin") as gen:
                 gen.generate_key(key_length=32)
                 key = gen.get_key()
                 assert len(key) > 0
@@ -42,9 +42,9 @@ class TestKeyExchangeSecurity:
         """Calling close() multiple times should not raise."""
         from shared.encryption import FileKeyGenerator
 
-        fake_data = b'\xff' * 64
-        with patch('builtins.open', mock_open(read_data=fake_data)):
-            gen = FileKeyGenerator(file_name='fake.bin')
+        fake_data = b"\xff" * 64
+        with patch("builtins.open", mock_open(read_data=fake_data)):
+            gen = FileKeyGenerator(file_name="fake.bin")
             gen.close()
             gen.close()  # Should not raise
 
@@ -69,7 +69,7 @@ class TestKeyExchangeSecurity:
 
         source = inspect.getsource(AESEncryption)
         # Should use GCM mode, not CBC
-        assert 'GCM' in source or 'gcm' in source
+        assert "GCM" in source or "gcm" in source
 
     def test_encryption_key_length_minimum(self):
         """Encryption keys must be at least 128 bits."""
@@ -88,8 +88,8 @@ class TestKeyExchangeSecurity:
 
         source = inspect.getsource(enc_module)
         # Should not print or log raw key bytes
-        assert 'print(self.key)' not in source
-        assert 'print(key)' not in source
+        assert "print(self.key)" not in source
+        assert "print(key)" not in source
 
 
 class TestBB84KeyExchange:
@@ -97,27 +97,27 @@ class TestBB84KeyExchange:
 
     def test_bb84_key_generator_exists(self):
         """BB84 key generator class must be defined in encryption module."""
-        import os
-        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        source = open(os.path.join(root, 'shared', 'encryption.py')).read()
-        assert 'class BB84KeyGenerator' in source
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent.parent
+        source = (root / "shared" / "encryption.py").read_text()
+        assert "class BB84KeyGenerator" in source
 
     def test_bb84_protocol_module_exists(self):
         """BB84 protocol implementation must exist."""
-        import os
-        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        bb84_dir = os.path.join(root, 'shared', 'bb84')
-        assert os.path.isdir(bb84_dir)
-        protocol_file = os.path.join(bb84_dir, 'protocol.py')
-        assert os.path.isfile(protocol_file)
-        source = open(protocol_file).read()
-        assert 'BB84Protocol' in source or 'bb84_round' in source or 'def ' in source
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent.parent
+        bb84_dir = root / "shared" / "bb84"
+        assert bb84_dir.is_dir()
+        protocol_file = bb84_dir / "protocol.py"
+        assert protocol_file.is_file()
+        source = protocol_file.read_text()
+        assert "BB84Protocol" in source or "bb84_round" in source or "def " in source
 
     def test_qber_monitor_exists(self):
         """QBER monitor module should exist for eavesdropping detection."""
-        import os
-        root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        qber_file = os.path.join(root, 'shared', 'bb84', 'qber_monitor.py')
-        assert os.path.isfile(qber_file)
-        source = open(qber_file).read()
-        assert 'QBER' in source or 'qber' in source
+        from pathlib import Path
+        root = Path(__file__).resolve().parent.parent.parent
+        qber_file = root / "shared" / "bb84" / "qber_monitor.py"
+        assert qber_file.is_file()
+        source = qber_file.read_text()
+        assert "QBER" in source or "qber" in source

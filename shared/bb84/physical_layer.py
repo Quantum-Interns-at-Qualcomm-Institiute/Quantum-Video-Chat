@@ -85,6 +85,7 @@ class PhotonSource:
     """
 
     def __init__(self, params: ChannelParameters, rng: np.random.Generator | None = None):
+        """Initialize laser source with channel parameters."""
         self.mu = params.source_intensity_mu
         self._rng = rng or np.random.default_rng()
 
@@ -107,6 +108,7 @@ class QuantumChannel:
     """
 
     def __init__(self, params: ChannelParameters, rng: np.random.Generator | None = None):
+        """Initialize quantum channel with loss parameters."""
         total_loss_db = params.attenuation_db_per_km * params.fiber_length_km
         self.transmission_prob = 10 ** (-total_loss_db / 10)
         self._rng = rng or np.random.default_rng()
@@ -132,6 +134,7 @@ class SinglePhotonDetector:
     """
 
     def __init__(self, params: ChannelParameters, rng: np.random.Generator | None = None):
+        """Initialize detector with noise and efficiency parameters."""
         self.params = params
         self._rng = rng or np.random.default_rng()
         self._last_detection_index: int | None = None
@@ -144,7 +147,6 @@ class SinglePhotonDetector:
     def detect(self, n_photons: int, sent_polarization: Polarization,
                measurement_basis: Basis, pulse_index: int) -> DetectionEvent:
         """Attempt to detect photons and measure the polarization state."""
-
         # Dead time check: if detector hasn't recovered, no detection
         if self._last_detection_index is not None and pulse_index - self._last_detection_index < self._dead_time_pulses:
                 return DetectionEvent(
@@ -169,7 +171,7 @@ class SinglePhotonDetector:
         photon_detected = False
         if n_photons > 0:
             photon_detected = self._rng.binomial(
-                n_photons, self.params.detector_efficiency
+                n_photons, self.params.detector_efficiency,
             ) > 0
 
         # Overall click: dark count OR photon detection OR afterpulse
@@ -194,10 +196,7 @@ class SinglePhotonDetector:
             measured_bit = int(self._rng.integers(0, 2))
         elif measurement_basis == sent_basis:
             # Correct basis: deterministic (with small misalignment error)
-            if self._rng.random() < self._misalignment_error_prob:
-                measured_bit = 1 - sent_bit  # Misalignment error
-            else:
-                measured_bit = sent_bit
+            measured_bit = 1 - sent_bit if self._rng.random() < self._misalignment_error_prob else sent_bit
         else:
             # Wrong basis: 50/50 random outcome (quantum mechanics)
             measured_bit = int(self._rng.integers(0, 2))
@@ -229,6 +228,7 @@ class PhysicalLayerSimulator:
 
     def __init__(self, params: ChannelParameters | None = None,
                  seed: int | None = None):
+        """Initialize simulator with channel parameters and random seed."""
         self.params = params or ChannelParameters()
         self._rng = np.random.default_rng(seed)
         self.source = PhotonSource(self.params, self._rng)
@@ -240,8 +240,7 @@ class PhysicalLayerSimulator:
         """Simulate a single photon pulse through the full optical chain."""
         n_photons, polarization = self.source.emit_pulse(bit, alice_basis)
         n_surviving = self.channel.transmit(n_photons)
-        event = self.detector.detect(n_surviving, polarization, bob_basis, pulse_index)
-        return event
+        return self.detector.detect(n_surviving, polarization, bob_basis, pulse_index)
 
     def simulate_n_pulses(self, n: int,
                           alice_bits: list[int],
@@ -261,7 +260,7 @@ class PhysicalLayerSimulator:
         events = []
         for i in range(n):
             event = self.simulate_pulse(
-                alice_bits[i], alice_bases[i], bob_bases[i], pulse_index=i
+                alice_bits[i], alice_bases[i], bob_bases[i], pulse_index=i,
             )
             events.append(event)
         return events

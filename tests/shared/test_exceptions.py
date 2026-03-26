@@ -58,8 +58,7 @@ class TestInheritance:
 class TestInfoMethod:
     @pytest.fixture
     def app(self):
-        app = Flask(__name__)
-        return app
+        return Flask(__name__)
 
     def test_info_returns_tuple(self, app):
         with app.app_context():
@@ -70,9 +69,9 @@ class TestInfoMethod:
         with app.app_context():
             response, code = ServerError().info("something broke")
             data = response.get_json()
-            assert data['error_code'] == 500
-            assert data['error_message'] == 'Internal Server Error'
-            assert data['details'] == 'something broke'
+            assert data["error_code"] == 500
+            assert data["error_message"] == "Internal Server Error"
+            assert data["details"] == "something broke"
 
 
 class TestErrorsEnum:

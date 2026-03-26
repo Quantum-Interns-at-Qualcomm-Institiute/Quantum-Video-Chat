@@ -1,18 +1,19 @@
 """Tests for shared/config.py — get_local_ip(), env var overrides, INI loading."""
 import os
 import tempfile
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 
 class TestGetLocalIp:
     def test_socket_success(self):
         mock_socket = MagicMock()
-        mock_socket.getsockname.return_value = ('192.168.1.5', 0)
+        mock_socket.getsockname.return_value = ("192.168.1.5", 0)
 
-        with patch('shared.config._socket.socket', return_value=mock_socket):
+        with patch("shared.config._socket.socket", return_value=mock_socket):
             from shared.config import get_local_ip
             result = get_local_ip()
-            assert result == '192.168.1.5'
+            assert result == "192.168.1.5"
 
     def test_socket_fails_psutil_fallback(self):
         mock_socket = MagicMock()
@@ -20,14 +21,14 @@ class TestGetLocalIp:
 
         mock_addr = MagicMock()
         mock_addr.family = 2
-        mock_addr.address = '10.0.0.5'
+        mock_addr.address = "10.0.0.5"
 
-        with patch('shared.config._socket.socket', return_value=mock_socket):
-            with patch('shared.config._psutil.net_if_addrs',
-                       return_value={'eth0': [mock_addr]}):
-                from shared.config import get_local_ip
-                result = get_local_ip()
-                assert result == '10.0.0.5'
+        with (patch("shared.config._socket.socket", return_value=mock_socket),
+              patch("shared.config._psutil.net_if_addrs",
+                    return_value={"eth0": [mock_addr]})):
+            from shared.config import get_local_ip
+            result = get_local_ip()
+            assert result == "10.0.0.5"
 
     def test_psutil_skips_loopback(self):
         mock_socket = MagicMock()
@@ -35,28 +36,28 @@ class TestGetLocalIp:
 
         loopback = MagicMock()
         loopback.family = 2
-        loopback.address = '127.0.0.1'
+        loopback.address = "127.0.0.1"
 
         real_addr = MagicMock()
         real_addr.family = 2
-        real_addr.address = '10.0.0.5'
+        real_addr.address = "10.0.0.5"
 
-        with patch('shared.config._socket.socket', return_value=mock_socket):
-            with patch('shared.config._psutil.net_if_addrs',
-                       return_value={'lo': [loopback], 'eth0': [real_addr]}):
-                from shared.config import get_local_ip
-                result = get_local_ip()
-                assert result == '10.0.0.5'
+        with (patch("shared.config._socket.socket", return_value=mock_socket),
+              patch("shared.config._psutil.net_if_addrs",
+                    return_value={"lo": [loopback], "eth0": [real_addr]})):
+            from shared.config import get_local_ip
+            result = get_local_ip()
+            assert result == "10.0.0.5"
 
     def test_all_fail_returns_localhost(self):
         mock_socket = MagicMock()
         mock_socket.connect.side_effect = OSError("No route")
 
-        with patch('shared.config._socket.socket', return_value=mock_socket):
-            with patch('shared.config._psutil.net_if_addrs', return_value={}):
-                from shared.config import get_local_ip
-                result = get_local_ip()
-                assert result == '127.0.0.1'
+        with (patch("shared.config._socket.socket", return_value=mock_socket),
+              patch("shared.config._psutil.net_if_addrs", return_value={})):
+            from shared.config import get_local_ip
+            result = get_local_ip()
+            assert result == "127.0.0.1"
 
 
 class TestDefaultPorts:
@@ -97,43 +98,43 @@ class TestDefaults:
 
     def test_defaults_has_all_sections(self):
         from shared.config import DEFAULTS
-        assert 'network' in DEFAULTS
-        assert 'video' in DEFAULTS
-        assert 'audio' in DEFAULTS
-        assert 'encryption' in DEFAULTS
+        assert "network" in DEFAULTS
+        assert "video" in DEFAULTS
+        assert "audio" in DEFAULTS
+        assert "encryption" in DEFAULTS
 
     def test_defaults_network_values(self):
         from shared.config import DEFAULTS
-        assert DEFAULTS['network']['middleware_port'] == 5001
-        assert DEFAULTS['network']['server_rest_port'] == 5050
-        assert DEFAULTS['network']['client_api_port'] == 4000
+        assert DEFAULTS["network"]["middleware_port"] == 5001
+        assert DEFAULTS["network"]["server_rest_port"] == 5050
+        assert DEFAULTS["network"]["client_api_port"] == 4000
 
     def test_defaults_video_values(self):
         from shared.config import DEFAULTS
-        assert DEFAULTS['video']['video_width'] == 640
-        assert DEFAULTS['video']['video_height'] == 480
-        assert DEFAULTS['video']['frame_rate'] == 15
+        assert DEFAULTS["video"]["video_width"] == 640
+        assert DEFAULTS["video"]["video_height"] == 480
+        assert DEFAULTS["video"]["frame_rate"] == 15
 
     def test_defaults_encryption_values(self):
         from shared.config import DEFAULTS
-        assert DEFAULTS['encryption']['key_length'] == 128
-        assert DEFAULTS['encryption']['encrypt_scheme'] == 'AES'
-        assert DEFAULTS['encryption']['key_generator'] == 'FILE'
+        assert DEFAULTS["encryption"]["key_length"] == 128
+        assert DEFAULTS["encryption"]["encrypt_scheme"] == "AES"
+        assert DEFAULTS["encryption"]["key_generator"] == "FILE"
 
 
 class TestIniLoading:
     def test_get_helper_returns_default_when_no_ini(self):
         """_get returns default when INI has no matching section/key."""
         from shared.config import _get
-        result = _get('nonexistent', 'key', 42, cast=int)
+        result = _get("nonexistent", "key", 42, cast=int)
         assert result == 42
 
     def test_get_helper_env_var_takes_precedence(self):
         """_get returns env var value over INI and default."""
         from shared.config import _get
-        with patch.dict(os.environ, {'QVC_TEST_VAR': '9999'}):
-            result = _get('network', 'middleware_port', 5001,
-                         env_key='QVC_TEST_VAR', cast=int)
+        with patch.dict(os.environ, {"QVC_TEST_VAR": "9999"}):
+            result = _get("network", "middleware_port", 5001,
+                         env_key="QVC_TEST_VAR", cast=int)
             assert result == 9999
 
     def test_load_ini_returns_configparser(self):
@@ -176,8 +177,8 @@ class TestConfigDataclass:
 
     def test_from_ini_with_file(self):
         from shared.config import Config
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.ini', delete=False) as f:
-            f.write('[video]\nvideo_width = 320\nframe_rate = 30\n')
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".ini", delete=False) as f:
+            f.write("[video]\nvideo_width = 320\nframe_rate = 30\n")
             f.flush()
             try:
                 cfg = Config.from_ini(f.name)
@@ -186,7 +187,7 @@ class TestConfigDataclass:
                 # Other values should be defaults
                 assert cfg.video_height == 480
             finally:
-                os.unlink(f.name)
+                Path(f.name).unlink()
 
     def test_default_instance_matches_globals(self):
         from shared.config import FRAME_RATE, KEY_LENGTH, VIDEO_SHAPE, _default

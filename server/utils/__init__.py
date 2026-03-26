@@ -1,4 +1,4 @@
-# Re-export shared types so existing server imports continue to work.
+"""Re-export shared types so existing server imports continue to work."""
 from shared.config import get_local_ip as get_local_ip
 from shared.endpoint import Endpoint as Endpoint
 from shared.exceptions import (

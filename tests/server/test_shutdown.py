@@ -7,6 +7,7 @@ import subprocess
 import sys
 import time
 from collections import deque
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -27,7 +28,7 @@ class TestGracefulShutdown:
         ServerAPI.state = APIState.INIT
         ServerAPI.server = None
         ServerAPI.socketio = None
-        ServerAPI.endpoint = Endpoint('127.0.0.1', 5050)
+        ServerAPI.endpoint = Endpoint("127.0.0.1", 5050)
         yield
         ServerAPI.state = APIState.INIT
         ServerAPI.server = None
@@ -69,9 +70,9 @@ class TestMainShutdown:
         import main as main_mod
         importlib.reload(main_mod)
 
-        with patch('rest_api.ServerAPI.graceful_shutdown') as mock_gs, \
+        with patch("rest_api.ServerAPI.graceful_shutdown") as mock_gs, \
              pytest.raises(SystemExit) as exc_info:
-            main_mod._shutdown(sig=signal.SIGINT, frame=None)
+            main_mod._shutdown(_sig=signal.SIGINT, _frame=None)
 
         mock_gs.assert_called_once()
         assert exc_info.value.code == 0
@@ -82,9 +83,9 @@ class TestMainShutdown:
         import main as main_mod
         importlib.reload(main_mod)
 
-        with patch('rest_api.ServerAPI.graceful_shutdown') as mock_gs, \
+        with patch("rest_api.ServerAPI.graceful_shutdown") as mock_gs, \
              pytest.raises(SystemExit) as exc_info:
-            main_mod._shutdown(sig=signal.SIGTERM, frame=None)
+            main_mod._shutdown(_sig=signal.SIGTERM, _frame=None)
 
         mock_gs.assert_called_once()
         assert exc_info.value.code == 0
@@ -108,7 +109,7 @@ class TestAdminShutdownEndpoint:
         ServerAPI.server.start_time = time.time()
         ServerAPI.server.user_manager.get_all_users.return_value = {}
         ServerAPI.server.event_log = deque(maxlen=500)
-        ServerAPI.endpoint = Endpoint('127.0.0.1', 5050)
+        ServerAPI.endpoint = Endpoint("127.0.0.1", 5050)
         ServerAPI.socketio = MagicMock()
         ServerAPI.state = APIState.IDLE
 
@@ -125,18 +126,18 @@ class TestAdminShutdownEndpoint:
         ServerAPI.state = APIState.INIT
 
     def test_shutdown_returns_200(self):
-        response = self.client.post('/admin/shutdown')
+        response = self.client.post("/admin/shutdown")
         assert response.status_code == 200
         data = json.loads(response.data)
-        assert data['status'] == 'shutting_down'
+        assert data["status"] == "shutting_down"
 
     def test_shutdown_triggers_callback(self):
         """The shutdown function is scheduled (via Timer) after response."""
-        with patch('admin_routes.threading.Timer') as MockTimer:
+        with patch("admin_routes.threading.Timer") as MockTimer:
             mock_timer_instance = MagicMock()
             MockTimer.return_value = mock_timer_instance
 
-            response = self.client.post('/admin/shutdown')
+            response = self.client.post("/admin/shutdown")
             assert response.status_code == 200
 
             MockTimer.assert_called_once()
@@ -150,7 +151,7 @@ class TestAdminShutdownEndpoint:
         from admin_routes import init_admin
         init_admin(self.api.server, lambda: self.api.state, shutdown_fn=None)
 
-        response = self.client.post('/admin/shutdown')
+        response = self.client.post("/admin/shutdown")
         assert response.status_code == 503
 
 
@@ -163,22 +164,19 @@ class TestServerProcessShutdown:
 
     @pytest.fixture
     def server_dir(self):
-        return os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            'server',
-        )
+        return str(Path(__file__).resolve().parent.parent.parent / "server")
 
     def _start_server(self, server_dir, rest_port):
         """Start server/main.py and wait for it to begin listening."""
-        logs_dir = os.path.join(server_dir, 'logs')
-        os.makedirs(logs_dir, exist_ok=True)
+        logs_dir = Path(server_dir) / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
 
         env = os.environ.copy()
-        env['QVC_LOCAL_IP'] = '127.0.0.1'
-        env['QVC_SERVER_REST_PORT'] = str(rest_port)
+        env["QVC_LOCAL_IP"] = "127.0.0.1"
+        env["QVC_SERVER_REST_PORT"] = str(rest_port)
 
         proc = subprocess.Popen(
-            [sys.executable, 'main.py'],
+            [sys.executable, "main.py"],
             cwd=server_dir,
             env=env,
             stdout=subprocess.PIPE,
@@ -195,11 +193,12 @@ class TestServerProcessShutdown:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(0.2)
-                s.connect(('127.0.0.1', rest_port))
+                s.connect(("127.0.0.1", rest_port))
                 s.close()
-                return proc, None
             except (ConnectionRefusedError, OSError):
                 pass
+            else:
+                return proc, None
 
         proc.kill()
         proc.wait(timeout=2)

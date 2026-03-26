@@ -9,8 +9,8 @@ when real hardware is available, a HardwareKeyGenerator reads key
 material through the bridge; when hardware is absent, it falls back
 to the BB84 simulation.
 """
-import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class AbstractHardwareBridge(ABC):
@@ -35,7 +35,6 @@ class AbstractHardwareBridge(ABC):
         Raises:
             IOError: If hardware is not connected or read fails.
         """
-        pass
 
     @abstractmethod
     def get_qber_estimate(self) -> float:
@@ -44,12 +43,10 @@ class AbstractHardwareBridge(ABC):
         Returns:
             QBER as a float between 0.0 and 1.0.
         """
-        pass
 
     @abstractmethod
     def is_connected(self) -> bool:
         """Check if hardware is connected and responsive."""
-        pass
 
 
 class MATLABBridge(AbstractHardwareBridge):
@@ -75,11 +72,12 @@ class MATLABBridge(AbstractHardwareBridge):
     """
 
     def __init__(self, data_dir: str,
-                 key_filename: str = 'sifted_key.bin',
-                 qber_filename: str = 'qber.txt'):
-        self.data_dir = data_dir
-        self.key_path = os.path.join(data_dir, key_filename)
-        self.qber_path = os.path.join(data_dir, qber_filename)
+                 key_filename: str = "sifted_key.bin",
+                 qber_filename: str = "qber.txt"):
+        """Initialize with data directory and file names."""
+        self.data_dir = Path(data_dir)
+        self.key_path = self.data_dir / key_filename
+        self.qber_path = self.data_dir / qber_filename
         self._file_handle = None
 
     def get_raw_key_material(self, length_bytes: int) -> bytes:
@@ -89,9 +87,10 @@ class MATLABBridge(AbstractHardwareBridge):
         when the end is reached (for continuous key generation).
         """
         if self._file_handle is None or self._file_handle.closed:
-            if not os.path.exists(self.key_path):
-                raise OSError(f"Key file not found: {self.key_path}")
-            self._file_handle = open(self.key_path, 'rb')
+            if not self.key_path.exists():
+                msg = f"Key file not found: {self.key_path}"
+                raise OSError(msg)
+            self._file_handle = self.key_path.open("rb")
 
         data = self._file_handle.read(length_bytes)
         if len(data) < length_bytes:
@@ -107,15 +106,14 @@ class MATLABBridge(AbstractHardwareBridge):
 
         Expects a single float value in the file.
         """
-        if not os.path.exists(self.qber_path):
+        if not self.qber_path.exists():
             return 0.0
-        with open(self.qber_path) as f:
-            return float(f.read().strip())
+        return float(self.qber_path.read_text().strip())
 
     def is_connected(self) -> bool:
         """Check if the MATLAB data directory and key file exist."""
-        return (os.path.isdir(self.data_dir)
-                and os.path.exists(self.key_path))
+        return (self.data_dir.is_dir()
+                and self.key_path.exists())
 
     def close(self):
         """Close the key file handle."""
@@ -142,6 +140,8 @@ class QiskitValidator:
             expected_sifted_rate=0.5,
         )
     """
+    _RATE_TOLERANCE = 0.1
+    _ACCURACY_THRESHOLD = 0.95
 
     def validate_bb84_round(self, alice_bits: list[int],
                             alice_bases: list,
@@ -163,18 +163,18 @@ class QiskitValidator:
               - details: Per-basis statistics
         """
         try:
-            from qiskit import QuantumCircuit
-            from qiskit_aer import AerSimulator
+            from qiskit import QuantumCircuit  # noqa: PLC0415
+            from qiskit_aer import AerSimulator  # noqa: PLC0415
         except ImportError:
             return {
-                'error': 'qiskit and/or qiskit_aer not installed',
-                'match': None,
-                'details': 'Install qiskit and qiskit-aer for validation',
+                "error": "qiskit and/or qiskit_aer not installed",
+                "match": None,
+                "details": "Install qiskit and qiskit-aer for validation",
             }
 
         n = len(alice_bits)
         matching_bases = sum(
-            1 for a, b in zip(alice_bases, bob_bases)
+            1 for a, b in zip(alice_bases, bob_bases, strict=False)
             if a == b
         )
         qiskit_sifted_rate = matching_bases / n if n > 0 else 0.0
@@ -213,11 +213,11 @@ class QiskitValidator:
         accuracy = correct_measurements / total_checks if total_checks > 0 else 1.0
 
         return {
-            'qiskit_sifted_rate': round(qiskit_sifted_rate, 4),
-            'expected_sifted_rate': expected_sifted_rate,
-            'rate_match': abs(qiskit_sifted_rate - expected_sifted_rate) < 0.1,
-            'measurement_accuracy': round(accuracy, 4),
-            'measurements_checked': total_checks,
-            'correct_measurements': correct_measurements,
-            'match': accuracy > 0.95,
+            "qiskit_sifted_rate": round(qiskit_sifted_rate, 4),
+            "expected_sifted_rate": expected_sifted_rate,
+            "rate_match": abs(qiskit_sifted_rate - expected_sifted_rate) < self._RATE_TOLERANCE,
+            "measurement_accuracy": round(accuracy, 4),
+            "measurements_checked": total_checks,
+            "correct_measurements": correct_measurements,
+            "match": accuracy > self._ACCURACY_THRESHOLD,
         }

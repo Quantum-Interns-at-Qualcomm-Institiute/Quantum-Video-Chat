@@ -1,50 +1,57 @@
 # Ruff linter configuration for QVC
 
 line-length = 120
+target-version = "py311"
 
 [lint]
-select = [
-    "E",      # pycodestyle errors
-    "F",      # pyflakes (unused imports, undefined names, etc.)
-    "I",      # isort (import sorting)
-    "UP",     # pyupgrade (modern Python idioms)
-    "B",      # bugbear (common bug patterns)
-    "SIM",    # simplify (code simplification)
-    "T201",   # print statements (should use logging)
-    "RUF",    # ruff-specific rules
-    "N",      # pep8-naming
-    "S110",   # try-except-pass (silent exception swallowing)
-    "C4",     # flake8-comprehensions
-    "PERF",   # performance anti-patterns
-]
+select = ["ALL"]
 ignore = [
-    "E501",    # line length (handled by line-length setting above)
-    "E731",    # lambda assignment (sometimes clearer)
-    "N805",    # first argument naming (false positives on descriptors)
-    "N806",    # non-lowercase variable in function (common for constants)
-    "N818",    # exception naming convention (not enforcing suffix)
-    "RUF002",  # ambiguous unicode in docstrings (false positives)
-    "RUF012",  # mutable class default (dataclass fields are fine)
-    "RUF013",  # implicit optional (PEP 484 style is fine)
-    "SIM105",  # contextlib.suppress (try/except is often clearer)
-    "SIM108",  # ternary (multi-line if/else is often clearer)
-    "SIM114",  # combinable if branches (sometimes clearer separate)
-    "SIM115",  # open context manager (not always practical)
-    "B017",    # pytest.raises(Exception) (acceptable in tests)
-    "B905",    # zip strict (not always needed)
-    "PERF203", # try-except in loop (sometimes necessary)
+    # Incompatible rule pairs
+    "D203",    # conflicts with D211 (no-blank-line-before-class)
+    "D213",    # conflicts with D212 (multi-line-summary-first-line)
+
+    # Not applicable to this project
+    "ANN",     # type annotations (not enforced yet across codebase)
+    "INP001",  # implicit namespace package (__init__.py not required)
+    "S101",    # assert in non-test code (used intentionally)
+    "FIX002",  # line-contains-todo (TODOs are acceptable)
+    "TD002",   # missing-todo-author
+    "TD003",   # missing-todo-link
+
+    # Overly strict for this codebase
+    "D100",    # undocumented public module
+    "D104",    # undocumented public package
+    "ERA001",  # commented-out code (region markers)
 ]
 
 [lint.per-file-ignores]
 "tests/**" = [
-    "S101",    # assert is expected in tests
-    "T201",    # print in tests is fine for debugging
-    "F811",    # redefined names from fixtures
-    "SIM",     # simplification rules too noisy in tests
-    "N",       # naming conventions relaxed in tests
-    "RUF059",  # unused unpacked variables in tests
+    "D",       # docstring rules relaxed in tests
+    "S",       # security rules relaxed in tests
+    "SLF001",  # private member access (testing internals)
+    "PLR2004", # magic values in assertions
+    "PT009",   # pytest unittest assertion (mixed test styles)
+    "PT011",   # pytest.raises too broad
+    "ARG",     # unused arguments (fixtures, callbacks)
+    "B017",    # assert raises Exception
+    "N",       # naming conventions relaxed
+    "T201",    # print in tests
+    "F811",    # redefined fixture names
+    "E501",    # line length in tests
+    "RUF059",  # unused unpacked variables
+    "PLC0415", # import outside top level
+    "PERF203", # try-except in loop
+    "C901",    # complex structure in tests
+    "PLR0913", # too many arguments
+    "FBT",     # boolean args in tests
 ]
-"middleware/audio.py" = ["E402"]  # sys.path manipulation before imports
+"middleware/client.py" = ["E402"]   # gevent monkey.patch_all() before imports
+"middleware/audio.py" = ["E402"]
 "middleware/video.py" = ["E402"]
 "middleware/events.py" = ["E402"]
 "middleware/server_comms.py" = ["E402"]
+"server/rest_api.py" = ["E402"]     # sys.path before imports
+"tests/conftest.py" = ["E402"]
+
+[lint.pydocstyle]
+convention = "google"

@@ -61,10 +61,10 @@ def toeplitz_hash(bits: list[int], output_length: int,
     m = output_length
 
     if m <= 0 or n <= 0:
-        return b''
+        return b""
 
     rng = np.random.default_rng(
-        int.from_bytes(seed, 'big') if seed else None
+        int.from_bytes(seed, "big") if seed else None,
     )
 
     # Generate random bits for Toeplitz matrix definition

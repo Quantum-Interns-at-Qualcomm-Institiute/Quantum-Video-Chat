@@ -21,7 +21,7 @@ class FrameCollector:
         self.received_frames = []
 
     def emit(self, event, data, **kwargs):
-        if event == 'frame':
+        if event == "frame":
             self.received_frames.append(data)
 
 
@@ -33,7 +33,7 @@ def _make_socket_api_stub(user_ids):
     users = {}
     collectors = {}
     for _, uid in enumerate(user_ids):
-        sid = f'sid_{uid}'
+        sid = f"sid_{uid}"
         users[uid] = sid
         collectors[uid] = FrameCollector()
 
@@ -44,11 +44,11 @@ def _make_socket_api_stub(user_ids):
         sender_id = sids.get(sender_sid)
         for uid, sid in users.items():
             if sid and sid != sender_sid:
-                collectors[uid].emit('frame', {
-                    'frame': data.get('frame'),
-                    'width': data.get('width'),
-                    'height': data.get('height'),
-                    'sender': sender_id,
+                collectors[uid].emit("frame", {
+                    "frame": data.get("frame"),
+                    "width": data.get("width"),
+                    "height": data.get("height"),
+                    "sender": sender_id,
                 })
 
     return users, collectors, relay_frame
@@ -65,26 +65,26 @@ class TestMockFrameDeliveryThroughRelay:
         """Sender captures 10 frames, relay forwards each, peer receives
         all 10 in strict sequential order."""
         src = MockFrameSource(width=8, height=6)
-        users, collectors, relay = _make_socket_api_stub(['sender', 'receiver'])
-        sender_sid = users['sender']
+        users, collectors, relay = _make_socket_api_stub(["sender", "receiver"])
+        sender_sid = users["sender"]
 
         for _ in range(10):
             frame = src.capture()
             assert frame is not None
             relay(
-                {'frame': frame.tolist(), 'width': 8, 'height': 6},
+                {"frame": frame.tolist(), "width": 8, "height": 6},
                 sender_sid,
             )
 
         # Sender should NOT have received its own frames
-        assert len(collectors['sender'].received_frames) == 0
+        assert len(collectors["sender"].received_frames) == 0
 
         # Receiver should have all 10 frames in order
-        received = collectors['receiver'].received_frames
+        received = collectors["receiver"].received_frames
         assert len(received) == 10
 
         for i, data in enumerate(received):
-            frame_array = np.array(data['frame'], dtype=np.uint8)
+            frame_array = np.array(data["frame"], dtype=np.uint8)
             seq = MockFrameSource.frame_id(frame_array)
             assert seq == i, f"Frame {i}: expected seq={i}, got {seq}"
 
@@ -93,66 +93,66 @@ class TestMockFrameDeliveryThroughRelay:
         other's 10 frames in order."""
         src_a = MockFrameSource(width=4, height=4)
         src_b = MockFrameSource(width=4, height=4)
-        users, collectors, relay = _make_socket_api_stub(['alice', 'bob'])
+        users, collectors, relay = _make_socket_api_stub(["alice", "bob"])
 
         for _ in range(10):
             # Alice sends
             fa = src_a.capture()
             relay(
-                {'frame': fa.tolist(), 'width': 4, 'height': 4},
-                users['alice'],
+                {"frame": fa.tolist(), "width": 4, "height": 4},
+                users["alice"],
             )
             # Bob sends
             fb = src_b.capture()
             relay(
-                {'frame': fb.tolist(), 'width': 4, 'height': 4},
-                users['bob'],
+                {"frame": fb.tolist(), "width": 4, "height": 4},
+                users["bob"],
             )
 
         # Bob receives Alice's 10 frames
-        bob_received = collectors['bob'].received_frames
+        bob_received = collectors["bob"].received_frames
         assert len(bob_received) == 10
         for i, data in enumerate(bob_received):
-            frame_array = np.array(data['frame'], dtype=np.uint8)
+            frame_array = np.array(data["frame"], dtype=np.uint8)
             assert MockFrameSource.frame_id(frame_array) == i
 
         # Alice receives Bob's 10 frames
-        alice_received = collectors['alice'].received_frames
+        alice_received = collectors["alice"].received_frames
         assert len(alice_received) == 10
         for i, data in enumerate(alice_received):
-            frame_array = np.array(data['frame'], dtype=np.uint8)
+            frame_array = np.array(data["frame"], dtype=np.uint8)
             assert MockFrameSource.frame_id(frame_array) == i
 
     def test_frame_dimensions_preserved(self):
         """Width and height metadata survive the relay."""
         src = MockFrameSource(width=16, height=12)
-        users, collectors, relay = _make_socket_api_stub(['sender', 'receiver'])
+        users, collectors, relay = _make_socket_api_stub(["sender", "receiver"])
 
         frame = src.capture()
         relay(
-            {'frame': frame.tolist(), 'width': 16, 'height': 12},
-            users['sender'],
+            {"frame": frame.tolist(), "width": 16, "height": 12},
+            users["sender"],
         )
 
-        received = collectors['receiver'].received_frames[0]
-        assert received['width'] == 16
-        assert received['height'] == 12
-        frame_array = np.array(received['frame'], dtype=np.uint8)
+        received = collectors["receiver"].received_frames[0]
+        assert received["width"] == 16
+        assert received["height"] == 12
+        frame_array = np.array(received["frame"], dtype=np.uint8)
         assert frame_array.shape == (12, 16, 3)
 
     def test_sender_identified_in_relay(self):
         """The relay tags each frame with the sender's user ID."""
         src = MockFrameSource(width=4, height=4)
-        users, collectors, relay = _make_socket_api_stub(['sender', 'receiver'])
+        users, collectors, relay = _make_socket_api_stub(["sender", "receiver"])
 
         frame = src.capture()
         relay(
-            {'frame': frame.tolist(), 'width': 4, 'height': 4},
-            users['sender'],
+            {"frame": frame.tolist(), "width": 4, "height": 4},
+            users["sender"],
         )
 
-        received = collectors['receiver'].received_frames[0]
-        assert received['sender'] == 'sender'
+        received = collectors["receiver"].received_frames[0]
+        assert received["sender"] == "sender"
 
 
 # ---------------------------------------------------------------------------
@@ -207,14 +207,14 @@ class TestFullE2EMockFrames:
         the other's frames in order."""
         src_a = MockFrameSource(width=4, height=4)
         src_b = MockFrameSource(width=4, height=4)
-        users, collectors, relay = _make_socket_api_stub(['clientA', 'clientB'])
+        users, collectors, relay = _make_socket_api_stub(["clientA", "clientB"])
 
         # Interleave: A sends 3, B sends 2, A sends 7, B sends 8
         schedule = [
-            ('clientA', src_a, 3),
-            ('clientB', src_b, 2),
-            ('clientA', src_a, 7),
-            ('clientB', src_b, 8),
+            ("clientA", src_a, 3),
+            ("clientB", src_b, 2),
+            ("clientA", src_a, 7),
+            ("clientB", src_b, 8),
         ]
 
         for sender_id, src, count in schedule:
@@ -223,24 +223,24 @@ class TestFullE2EMockFrames:
                 if frame is None:
                     break
                 relay(
-                    {'frame': frame.tolist(), 'width': 4, 'height': 4},
+                    {"frame": frame.tolist(), "width": 4, "height": 4},
                     users[sender_id],
                 )
 
         # clientB should have received all 10 of clientA's frames in order
-        b_received = collectors['clientB'].received_frames
+        b_received = collectors["clientB"].received_frames
         assert len(b_received) == 10
         for i, data in enumerate(b_received):
-            arr = np.array(data['frame'], dtype=np.uint8)
+            arr = np.array(data["frame"], dtype=np.uint8)
             assert MockFrameSource.frame_id(arr) == i, (
                 f"clientB frame {i}: expected id={i}, got {MockFrameSource.frame_id(arr)}"
             )
 
         # clientA should have received all 10 of clientB's frames in order
-        a_received = collectors['clientA'].received_frames
+        a_received = collectors["clientA"].received_frames
         assert len(a_received) == 10
         for i, data in enumerate(a_received):
-            arr = np.array(data['frame'], dtype=np.uint8)
+            arr = np.array(data["frame"], dtype=np.uint8)
             assert MockFrameSource.frame_id(arr) == i, (
                 f"clientA frame {i}: expected id={i}, got {MockFrameSource.frame_id(arr)}"
             )
