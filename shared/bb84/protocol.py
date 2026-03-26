@@ -23,6 +23,7 @@ from shared.bb84.physical_layer import (
 )
 from shared.bb84.utils import binary_entropy, toeplitz_hash
 
+_MIN_SIFTED_BITS = 10  # Minimum sifted bits required to proceed
 
 @dataclass
 class BB84ProtocolConfig:
@@ -82,7 +83,8 @@ class EavesdropperSimulator:
 
     def __init__(self, interception_rate: float = 1.0,
                  seed: int | None = None):
-        """
+        """Initialize eavesdropper with interception rate and random seed.
+
         Args:
             interception_rate: Fraction of pulses Eve intercepts (0-1).
                 1.0 = full intercept-resend attack.
@@ -91,7 +93,7 @@ class EavesdropperSimulator:
         self.interception_rate = interception_rate
         self._rng = np.random.default_rng(seed)
 
-    def intercept_resend(self, bit: int, alice_basis: Basis
+    def intercept_resend(self, bit: int, alice_basis: Basis,
                          ) -> tuple[int, Basis]:
         """Eve intercepts and re-sends a photon.
 
@@ -102,12 +104,8 @@ class EavesdropperSimulator:
         # Eve picks a random basis
         eve_basis = Basis(int(self._rng.integers(0, 2)))
 
-        if eve_basis == alice_basis:
-            # Eve measures correctly
-            eve_bit = bit
-        else:
-            # Wrong basis: 50/50 random outcome
-            eve_bit = int(self._rng.integers(0, 2))
+        # Eve measures correctly if her basis matches, otherwise random outcome
+        eve_bit = bit if eve_basis == alice_basis else int(self._rng.integers(0, 2))
 
         return eve_bit, eve_basis
 
@@ -131,10 +129,11 @@ class BB84Protocol:
 
     def __init__(self, config: BB84ProtocolConfig | None = None,
                  seed: int | None = None):
+        """Initialize BB84 protocol with configuration and random seed."""
         self.config = config or BB84ProtocolConfig()
         self._rng = np.random.default_rng(seed)
 
-    def run_round(self, eavesdropper: EavesdropperSimulator | None = None
+    def run_round(self, eavesdropper: EavesdropperSimulator | None = None,
                   ) -> BB84RoundResult:
         """Execute one complete BB84 protocol round."""
         t_start = time.monotonic()
@@ -157,7 +156,7 @@ class BB84Protocol:
             for i in range(n):
                 if self._rng.random() < eavesdropper.interception_rate:
                     eve_bit, eve_basis = eavesdropper.intercept_resend(
-                        alice_bits[i], alice_bases[i]
+                        alice_bits[i], alice_bases[i],
                     )
                     eve_bits.append(eve_bit)
                     eve_bases.append(eve_basis)
@@ -188,7 +187,7 @@ class BB84Protocol:
         # Step 4: Sifting — keep only matching-basis detections
         sifted = self._sift_keys(alice_bits, alice_bases, bob_bases, events)
 
-        if len(sifted.alice_sifted_bits) < 10:
+        if len(sifted.alice_sifted_bits) < _MIN_SIFTED_BITS:
             return BB84RoundResult(
                 key=None, qber=1.0, is_secure=False,
                 raw_bits_generated=n, sifted_bits=len(sifted.alice_sifted_bits),
@@ -202,7 +201,7 @@ class BB84Protocol:
         # Step 5: QBER estimation
         qber_est = self._estimate_qber(
             sifted.alice_sifted_bits, sifted.bob_sifted_bits,
-            self.config.qber_sample_fraction
+            self.config.qber_sample_fraction,
         )
 
         if not qber_est.is_secure:
@@ -229,12 +228,12 @@ class BB84Protocol:
 
         # Step 7: Error correction (simplified Cascade)
         corrected_bits = self._error_correct_cascade(
-            alice_remaining, bob_remaining, qber_est.qber
+            alice_remaining, bob_remaining, qber_est.qber,
         )
 
         # Step 8: Privacy amplification
         key = self._privacy_amplify(
-            corrected_bits, qber_est.qber, self.config.target_key_length_bits
+            corrected_bits, qber_est.qber, self.config.target_key_length_bits,
         )
 
         if key is None:
@@ -341,10 +340,7 @@ class BB84Protocol:
             block_size = min(initial_block_size * (2 ** pass_num), n)
 
             # Shuffle indices for this pass (except first pass)
-            if pass_num == 0:
-                indices = list(range(n))
-            else:
-                indices = list(self._rng.permutation(n))
+            indices = list(range(n)) if pass_num == 0 else list(self._rng.permutation(n))
 
             # Process blocks
             for block_start in range(0, n, block_size):
@@ -358,7 +354,7 @@ class BB84Protocol:
                 if alice_parity != bob_parity:
                     # Binary search for the error
                     self._binary_search_correct(
-                        alice_bits, corrected, block_indices
+                        alice_bits, corrected, block_indices,
                     )
 
         return corrected

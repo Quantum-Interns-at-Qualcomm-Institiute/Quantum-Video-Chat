@@ -4,7 +4,7 @@ import os
 import pytest
 
 # Enable dev-only encryption modes (XOR, DEBUG) for testing
-os.environ.setdefault('QVC_DEVELOPMENT', 'true')
+os.environ.setdefault("QVC_DEVELOPMENT", "true")
 
 
 @pytest.fixture

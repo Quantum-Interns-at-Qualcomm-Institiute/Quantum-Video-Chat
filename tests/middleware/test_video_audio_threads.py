@@ -7,8 +7,8 @@ import pytest
 
 from tests.middleware._helpers import load_middleware_module
 
-mw_video = load_middleware_module('video')
-mw_audio = load_middleware_module('audio')
+mw_video = load_middleware_module("video")
+mw_audio = load_middleware_module("audio")
 
 VideoThread = mw_video.VideoThread
 AudioThread = mw_audio.AudioThread
@@ -42,10 +42,10 @@ class TestVideoThread:
         assert vt.width == 640
         assert vt.height == 480
         # Should use MockFrameSource for negative device indices
-        assert 'MockFrameSource' in type(vt._camera_source).__name__
+        assert "MockFrameSource" in type(vt._camera_source).__name__
 
     def test_init_with_real_device(self, mock_state):
-        with patch.object(mw_video, 'CameraSource') as MockCam:
+        with patch.object(mw_video, "CameraSource") as MockCam:
             vt = VideoThread(mock_state, 320, 240, device=0)
         assert vt.width == 320
         assert vt.height == 240
@@ -74,14 +74,14 @@ class TestVideoThread:
 
         # Should have emitted at least one frame
         calls = mock_state.sio.emit.call_args_list
-        frame_calls = [c for c in calls if c[0][0] == 'frame']
+        frame_calls = [c for c in calls if c[0][0] == "frame"]
         assert len(frame_calls) > 0
         # First frame should be self-view
         first_frame = frame_calls[0][0][1]
-        assert first_frame['self'] is True
-        assert 'frame' in first_frame
-        assert first_frame['width'] == 64
-        assert first_frame['height'] == 48
+        assert first_frame["self"] is True
+        assert "frame" in first_frame
+        assert first_frame["width"] == 64
+        assert first_frame["height"] == 48
 
     def test_emits_to_server_when_connected(self, mock_state):
         """When server_client is connected, frames are also sent to server."""
@@ -94,7 +94,7 @@ class TestVideoThread:
 
         mock_state.server_client.emit.assert_called()
         call_args = mock_state.server_client.emit.call_args_list[0]
-        assert call_args[0][0] == 'frame'
+        assert call_args[0][0] == "frame"
 
     def test_uses_static_noise_when_camera_disabled(self, mock_state):
         """When camera is disabled, should use StaticNoiseSource."""
@@ -133,10 +133,10 @@ class TestAudioThread:
 
     def test_init_with_mock_device(self, mock_state):
         at = AudioThread(mock_state, device=MOCK_AUDIO_DEVICE_A)
-        assert 'MockAudioSource' in type(at._mic_source).__name__
+        assert "MockAudioSource" in type(at._mic_source).__name__
 
     def test_init_with_real_device(self, mock_state):
-        with patch.object(mw_audio, 'MicrophoneSource') as MockMic:
+        with patch.object(mw_audio, "MicrophoneSource") as MockMic:
             _at = AudioThread(mock_state, device=0)
         MockMic.assert_called_once()
 
@@ -160,12 +160,12 @@ class TestAudioThread:
         at.join(timeout=2)
 
         calls = mock_state.sio.emit.call_args_list
-        audio_calls = [c for c in calls if c[0][0] == 'audio-frame']
+        audio_calls = [c for c in calls if c[0][0] == "audio-frame"]
         assert len(audio_calls) > 0
         first = audio_calls[0][0][1]
-        assert first['self'] is True
-        assert 'audio' in first
-        assert 'sample_rate' in first
+        assert first["self"] is True
+        assert "audio" in first
+        assert "sample_rate" in first
 
     def test_emits_to_server_when_connected(self, mock_state):
         mock_state.server_client.connected = True
@@ -177,7 +177,7 @@ class TestAudioThread:
 
         mock_state.server_client.emit.assert_called()
         call_args = mock_state.server_client.emit.call_args_list[0]
-        assert call_args[0][0] == 'audio-frame'
+        assert call_args[0][0] == "audio-frame"
 
     def test_uses_silence_when_muted(self, mock_state):
         mock_state.muted = True

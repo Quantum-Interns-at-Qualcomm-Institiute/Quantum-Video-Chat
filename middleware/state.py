@@ -1,9 +1,9 @@
-"""
-MiddlewareState — Single mutable state container for the middleware.
+"""MiddlewareState — Single mutable state container for the middleware.
 
 Replaces scattered module-level globals with a single, inspectable object.
 """
 import os
+from pathlib import Path
 
 import socketio
 from flask import Flask
@@ -13,24 +13,25 @@ MIDDLEWARE_PORT = 5001
 WIDTH  = 640
 HEIGHT = 480
 
-DEFAULT_SERVER_HOST = os.environ.get('QUANTUM_SERVER_HOST', '127.0.0.1')
-DEFAULT_SERVER_PORT = int(os.environ.get('QUANTUM_SERVER_PORT', '5050'))
-IS_LOCAL = os.environ.get('QVC_AUTO_CONNECT', '').lower() in ('1', 'true', 'yes')
+DEFAULT_SERVER_HOST = os.environ.get("QUANTUM_SERVER_HOST", "127.0.0.1")
+DEFAULT_SERVER_PORT = int(os.environ.get("QUANTUM_SERVER_PORT", "5050"))
+IS_LOCAL = os.environ.get("QVC_AUTO_CONNECT", "").lower() in ("1", "true", "yes")
 
 
 class MiddlewareState:
     """Holds all mutable runtime state for the middleware process."""
 
     def __init__(self):
+        """Initialize all middleware runtime state."""
         # ── Socket.io server (browsers connect here) ─────────────────────
-        _dir = os.path.dirname(__file__)
+        _dir = Path(__file__).parent
         self.flask_app = Flask(__name__,
-                               template_folder=os.path.join(_dir, 'templates'),
-                               static_folder=os.path.join(_dir, 'static'))
-        CORS(self.flask_app, origins=os.environ.get('QVC_CORS_ORIGINS', 'http://localhost:5001,http://localhost:3000').split(','))
+                               template_folder=str(_dir / "templates"),
+                               static_folder=str(_dir / "static"))
+        CORS(self.flask_app, origins=os.environ.get("QVC_CORS_ORIGINS", "http://localhost:5001,http://localhost:3000").split(","))
         self.sio = socketio.Server(
-            cors_allowed_origins=os.environ.get('QVC_CORS_ORIGINS', 'http://localhost:5001,http://localhost:3000').split(','),
-            async_mode='gevent',
+            cors_allowed_origins=os.environ.get("QVC_CORS_ORIGINS", "http://localhost:5001,http://localhost:3000").split(","),
+            async_mode="gevent",
             logger=False,
             engineio_logger=False,
         )
@@ -40,12 +41,12 @@ class MiddlewareState:
         self.server_client = socketio.Client(logger=False, engineio_logger=False)
 
         # ── QKD server address ───────────────────────────────────────────
-        self.server_host: str = ''
+        self.server_host: str = ""
         self.server_port: int = 0
         self.server_alive: bool = False
 
         # ── Identity ─────────────────────────────────────────────────────
-        self.user_id: str = ''
+        self.user_id: str = ""
         self.middleware_port: int = MIDDLEWARE_PORT
 
         # ── Video ────────────────────────────────────────────────────────
@@ -63,6 +64,6 @@ class MiddlewareState:
 
     def server_url(self, path: str) -> str:
         """Build a full URL for the QKD server's REST API."""
-        from shared.ssl_utils import get_ssl_context
-        scheme = 'https' if get_ssl_context() else 'http'
-        return f'{scheme}://{self.server_host}:{self.server_port}{path}'
+        from shared.ssl_utils import get_ssl_context  # noqa: PLC0415
+        scheme = "https" if get_ssl_context() else "http"
+        return f"{scheme}://{self.server_host}:{self.server_port}{path}"

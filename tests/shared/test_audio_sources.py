@@ -145,7 +145,7 @@ class TestChunkId:
         for expected_id in range(10):
             chunk = src.capture()
             assert MockAudioSource.chunk_id(
-                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER
+                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER,
             ) == expected_id
 
     def test_rejects_silence(self):
@@ -204,7 +204,7 @@ class TestMockAudioSourceLooping:
         for _ in range(20):
             chunk = src.capture()
             ids.append(MockAudioSource.chunk_id(
-                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER
+                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER,
             ))
         assert ids == list(range(10)) + list(range(10))
 

@@ -4,10 +4,10 @@ from shared.state import ClientState
 
 class TestClientState:
     def test_members_exist(self):
-        assert ClientState.NEW.value == 'NEW'
-        assert ClientState.INIT.value == 'INIT'
-        assert ClientState.LIVE.value == 'LIVE'
-        assert ClientState.CONNECTED.value == 'CONNECTED'
+        assert ClientState.NEW.value == "NEW"
+        assert ClientState.INIT.value == "INIT"
+        assert ClientState.LIVE.value == "LIVE"
+        assert ClientState.CONNECTED.value == "CONNECTED"
 
     def test_ordering_lt(self):
         assert ClientState.NEW < ClientState.INIT
@@ -20,7 +20,7 @@ class TestClientState:
 
     def test_ordering_eq(self):
         assert ClientState.NEW == ClientState.NEW
-        assert not (ClientState.NEW == ClientState.INIT)
+        assert ClientState.NEW != ClientState.INIT
 
     def test_ordering_le(self):
         assert ClientState.NEW <= ClientState.NEW
@@ -31,7 +31,7 @@ class TestClientState:
         assert ClientState.CONNECTED >= ClientState.NEW
 
     def test_cross_type_returns_not_implemented(self):
-        result = ClientState.NEW.__lt__('string')
+        result = ClientState.NEW.__lt__("string")
         assert result is NotImplemented
 
     def test_total_members(self):

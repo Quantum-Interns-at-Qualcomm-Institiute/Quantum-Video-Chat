@@ -7,9 +7,10 @@ management concerns.
 
 import os
 import sys
+from pathlib import Path
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, ROOT)
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
 
 # ── WP #369: Structured Logging, Metrics, Health Check ──
@@ -19,30 +20,30 @@ class TestStructuredLogging:
 
     def test_json_formatter_exists(self):
         """Logging module should have JSONFormatter class."""
-        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'JSONFormatter' in source
+        source = (ROOT / "shared" / "logging.py").read_text()
+        assert "JSONFormatter" in source
 
     def test_log_file_handler_created(self):
         """Logger should configure file output."""
-        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'RotatingFileHandler' in source
+        source = (ROOT / "shared" / "logging.py").read_text()
+        assert "RotatingFileHandler" in source
 
     def test_json_formatter_includes_required_fields(self):
         """JSON log entries should include timestamp, level, logger, message."""
-        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        for field in ('timestamp', 'level', 'logger', 'message'):
+        source = (ROOT / "shared" / "logging.py").read_text()
+        for field in ("timestamp", "level", "logger", "message"):
             assert field in source
 
     def test_json_formatter_supports_extra_context(self):
         """JSON formatter should include extra fields like user_id, request_id."""
-        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'user_id' in source
-        assert 'request_id' in source
+        source = (ROOT / "shared" / "logging.py").read_text()
+        assert "user_id" in source
+        assert "request_id" in source
 
     def test_get_logger_function_exists(self):
         """Logging module should expose a get_logger function."""
-        source = open(os.path.join(ROOT, 'shared', 'logging.py')).read()
-        assert 'def get_logger' in source
+        source = (ROOT / "shared" / "logging.py").read_text()
+        assert "def get_logger" in source
 
 
 class TestHealthCheck:
@@ -50,28 +51,28 @@ class TestHealthCheck:
 
     def test_health_endpoint_defined(self):
         """Admin routes should have /health endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        source = (ROOT / "server" / "admin_routes.py").read_text()
         assert "'/health'" in source or '"/health"' in source
 
     def test_health_returns_status(self):
         """Health endpoint should return status field."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
+        source = (ROOT / "server" / "admin_routes.py").read_text()
         assert "'healthy'" in source or '"healthy"' in source
 
     def test_health_returns_uptime(self):
         """Health endpoint should include uptime."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'uptime' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "uptime" in source
 
     def test_admin_dashboard_endpoint(self):
         """Admin routes should have a dashboard endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'dashboard' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "dashboard" in source
 
     def test_admin_uses_blueprint(self):
         """Admin routes should use Flask Blueprint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'Blueprint' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "Blueprint" in source
 
 
 class TestMetrics:
@@ -79,18 +80,18 @@ class TestMetrics:
 
     def test_quantum_metrics_endpoint(self):
         """Admin should have quantum metrics endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'quantum/metrics' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "quantum/metrics" in source
 
     def test_admin_status_endpoint(self):
         """Admin should have status endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'admin/status' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "admin/status" in source
 
     def test_event_log_endpoint(self):
         """Admin should have events endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'admin_routes.py')).read()
-        assert 'admin/events' in source
+        source = (ROOT / "server" / "admin_routes.py").read_text()
+        assert "admin/events" in source
 
 
 # ── WP #650: Real-time Key Exchange Status UI ──
@@ -100,18 +101,18 @@ class TestKeyExchangeStatusUI:
 
     def test_qber_update_event_emitted(self):
         """Socket API should emit qber-update events."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'qber' in source.lower()
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "qber" in source.lower()
 
     def test_qber_monitor_has_summary(self):
         """QBER monitor should provide summary for UI display."""
-        source = open(os.path.join(ROOT, 'shared', 'bb84', 'qber_monitor.py')).read()
-        assert 'get_summary' in source
+        source = (ROOT / "shared" / "bb84" / "qber_monitor.py").read_text()
+        assert "get_summary" in source
 
     def test_qber_monitor_has_history(self):
         """QBER monitor should track history for UI charts."""
-        source = open(os.path.join(ROOT, 'shared', 'bb84', 'qber_monitor.py')).read()
-        assert 'get_history' in source
+        source = (ROOT / "shared" / "bb84" / "qber_monitor.py").read_text()
+        assert "get_history" in source
 
 
 # ── WP #651: SRTP Key Integration from QKD ──
@@ -121,16 +122,16 @@ class TestKeyIntegration:
 
     def test_bb84_key_generator_registered(self):
         """BB84 key generator should be in keygen registry."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert 'BB84KeyGenerator' in source
-        assert 'bb84' in source.lower()
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "BB84KeyGenerator" in source
+        assert "bb84" in source.lower()
 
     def test_key_generator_abstract_interface(self):
         """All key generators implement AbstractKeyGenerator."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert 'AbstractKeyGenerator' in source
-        assert 'generate_key' in source
-        assert 'get_key' in source
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "AbstractKeyGenerator" in source
+        assert "generate_key" in source
+        assert "get_key" in source
 
 
 # ── WP #652: FileKeyGenerator Resource Management ──
@@ -140,19 +141,19 @@ class TestFileKeyGeneratorResources:
 
     def test_context_manager_support(self):
         """FileKeyGenerator must implement context manager."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert '__enter__' in source
-        assert '__exit__' in source
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "__enter__" in source
+        assert "__exit__" in source
 
     def test_close_method_exists(self):
         """FileKeyGenerator must have close() method."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert 'def close(self)' in source
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "def close(self)" in source
 
     def test_destructor_closes_file(self):
         """FileKeyGenerator should close file in __del__."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert '__del__' in source
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "__del__" in source
 
 
 # ── WP #653: Encryption at Rest for Stored Keys ──
@@ -162,16 +163,15 @@ class TestEncryptionAtRest:
 
     def test_no_plaintext_key_in_config(self):
         """Config files should not contain plaintext encryption keys."""
-        config_path = os.path.join(ROOT, 'shared', 'config.py')
-        source = open(config_path).read()
+        source = (ROOT / "shared" / "config.py").read_text()
         # Should not have hardcoded keys
         assert 'SECRET_KEY = "' not in source
         assert "SECRET_KEY = '" not in source
 
     def test_aes_gcm_mode_used(self):
         """Encryption should use AES-GCM (authenticated) not CBC."""
-        source = open(os.path.join(ROOT, 'shared', 'encryption.py')).read()
-        assert 'GCM' in source
+        source = (ROOT / "shared" / "encryption.py").read_text()
+        assert "GCM" in source
 
 
 # ── WP #654: Peer Connection Lifecycle ──
@@ -181,17 +181,17 @@ class TestPeerConnectionLifecycle:
 
     def test_peer_manager_exists(self):
         """Peer manager module should exist."""
-        assert os.path.isfile(os.path.join(ROOT, 'server', 'peer_manager.py'))
+        assert (ROOT / "server" / "peer_manager.py").is_file()
 
     def test_peer_connection_endpoint(self):
         """REST API should have peer_connection endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'rest_api.py')).read()
-        assert 'peer_connection' in source
+        source = (ROOT / "server" / "rest_api.py").read_text()
+        assert "peer_connection" in source
 
     def test_disconnect_endpoint(self):
         """REST API should have disconnect endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'rest_api.py')).read()
-        assert 'disconnect' in source.lower()
+        source = (ROOT / "server" / "rest_api.py").read_text()
+        assert "disconnect" in source.lower()
 
 
 # ── WP #655: Video Stream Quality ──
@@ -201,13 +201,13 @@ class TestVideoStreamQuality:
 
     def test_frame_event_handler(self):
         """Socket API should handle frame events."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'frame' in source
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "frame" in source
 
     def test_audio_frame_handler(self):
         """Socket API should handle audio-frame events."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'audio' in source.lower()
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "audio" in source.lower()
 
 
 # ── WP #656: Text Chat Message Delivery ──
@@ -217,8 +217,8 @@ class TestChatDelivery:
 
     def test_message_handler_exists(self):
         """Socket API should handle message events."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'message' in source
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "message" in source
 
 
 # ── WP #657: Electron App Launch ──
@@ -228,12 +228,12 @@ class TestElectronApp:
 
     def test_frontend_package_json_exists(self):
         """Frontend should have an HTML entry point."""
-        assert os.path.isfile(os.path.join(ROOT, 'website', 'client', 'index.html'))
+        assert (ROOT / "website" / "client" / "index.html").is_file()
 
     def test_main_process_entry(self):
         """Frontend should have a JS entry point."""
-        entry = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
-        assert os.path.isfile(entry)
+        entry = ROOT / "website" / "client" / "static" / "app.js"
+        assert entry.is_file()
 
 
 # ── WP #658: React Component Render ──
@@ -243,17 +243,17 @@ class TestReactComponents:
 
     def test_renderer_directory_exists(self):
         """Frontend should have static source directory."""
-        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
-        assert os.path.isdir(static_dir)
+        static_dir = ROOT / "website" / "client" / "static"
+        assert static_dir.is_dir()
 
     def test_app_component_exists(self):
         """App component should exist."""
-        static_dir = os.path.join(ROOT, 'website', 'client', 'static')
-        if os.path.isdir(static_dir):
+        static_dir = ROOT / "website" / "client" / "static"
+        if static_dir.is_dir():
             files = []
             for _, _, fnames in os.walk(static_dir):
                 files.extend(fnames)
-            app_files = [f for f in files if 'app' in f.lower()]
+            app_files = [f for f in files if "app" in f.lower()]
             assert len(app_files) > 0
 
 
@@ -265,19 +265,19 @@ class TestMediaPermissions:
     def test_media_permission_code_exists(self):
         """Frontend should handle media device access."""
         # Check for video/camera references in the JS frontend
-        app_js = os.path.join(ROOT, 'website', 'client', 'static', 'app.js')
-        if os.path.isfile(app_js):
-            content = open(app_js).read()
-            assert 'video' in content.lower() or 'camera' in content.lower()
+        app_js = ROOT / "website" / "client" / "static" / "app.js"
+        if app_js.is_file():
+            content = app_js.read_text()
+            assert "video" in content.lower() or "camera" in content.lower()
         else:
             # Fallback: check middleware templates/static
-            static_dir = os.path.join(ROOT, 'website', 'client', 'static')
+            static_dir = ROOT / "website" / "client" / "static"
             found = False
             for root_dir, _, fnames in os.walk(static_dir):
                 for f in fnames:
-                    if f.endswith(('.js', '.html')):
-                        content = open(os.path.join(root_dir, f)).read()
-                        if 'video' in content.lower() or 'camera' in content.lower():
+                    if f.endswith((".js", ".html")):
+                        content = (Path(root_dir) / f).read_text()
+                        if "video" in content.lower() or "camera" in content.lower():
                             found = True
                             break
                 if found:
@@ -292,13 +292,13 @@ class TestRoomManagement:
 
     def test_create_user_endpoint(self):
         """REST API should have create_user endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'rest_api.py')).read()
-        assert 'create_user' in source
+        source = (ROOT / "server" / "rest_api.py").read_text()
+        assert "create_user" in source
 
     def test_room_id_generated(self):
         """Socket API should generate room IDs."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'room' in source.lower()
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "room" in source.lower()
 
 
 # ── WP #661: Session Cleanup and Resource Release ──
@@ -308,17 +308,17 @@ class TestSessionCleanup:
 
     def test_disconnect_handler_exists(self):
         """Socket API should handle disconnect events."""
-        source = open(os.path.join(ROOT, 'server', 'socket_api.py')).read()
-        assert 'disconnect' in source
+        source = (ROOT / "server" / "socket_api.py").read_text()
+        assert "disconnect" in source
 
     def test_remove_user_endpoint(self):
         """REST API should have remove_user endpoint."""
-        source = open(os.path.join(ROOT, 'server', 'rest_api.py')).read()
-        assert 'remove_user' in source
+        source = (ROOT / "server" / "rest_api.py").read_text()
+        assert "remove_user" in source
 
     def test_user_manager_cleanup(self):
         """User manager should support removing users."""
-        user_mgr_path = os.path.join(ROOT, 'server', 'user_manager.py')
-        if os.path.isfile(user_mgr_path):
-            source = open(user_mgr_path).read()
-            assert 'remove' in source.lower()
+        user_mgr_path = ROOT / "server" / "user_manager.py"
+        if user_mgr_path.is_file():
+            source = user_mgr_path.read_text()
+            assert "remove" in source.lower()
