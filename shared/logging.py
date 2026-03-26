@@ -1,13 +1,14 @@
+"""Shared logging setup with file rotation and JSON output."""
+
 import json
-import os
-from logging import Formatter, getLogger, DEBUG, INFO, StreamHandler
+from datetime import UTC, datetime
+from logging import DEBUG, INFO, Formatter, StreamHandler, getLogger
 from logging.handlers import RotatingFileHandler
-from datetime import datetime
+from pathlib import Path
 
 
-def get_logger(name: str, log_dir: str = 'logs'):
-    """
-    Create and return a configured logger.
+def get_logger(name: str, log_dir: str = "logs"):
+    """Create and return a configured logger.
 
     Parameters
     ----------
@@ -16,15 +17,14 @@ def get_logger(name: str, log_dir: str = 'logs'):
     log_dir : str
         Directory to write log files into (relative to CWD or absolute).
     """
-    now = datetime.now()
+    now = datetime.now(tz=UTC)
     current_time = now.strftime("%m-%d_%H-%M-%S")
-    log_file_path = os.path.join(log_dir, f"{current_time}-{name}.log")
+    log_file_path = Path(log_dir) / f"{current_time}-{name}.log"
 
-    os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+    log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if not os.path.exists(log_file_path):
-        with open(log_file_path, 'w') as f:
-            f.write('-' * 50 + '\n')
+    if not log_file_path.exists():
+        log_file_path.write_text("-" * 50 + "\n")
 
     logger = getLogger(name)
     logger.setLevel(DEBUG)
@@ -37,7 +37,7 @@ def get_logger(name: str, log_dir: str = 'logs'):
 
     class CustomFormatter(Formatter):
         def format(self, record):
-            if hasattr(record, 'funcName'):
+            if hasattr(record, "funcName"):
                 record.message = f"{record.module}.{record.funcName} - {record.getMessage()}"
             else:
                 record.message = record.getMessage()
@@ -47,22 +47,22 @@ def get_logger(name: str, log_dir: str = 'logs'):
         """Structured JSON log formatter for machine-readable output."""
         def format(self, record):
             entry = {
-                'timestamp': self.formatTime(record, self.datefmt),
-                'level': record.levelname,
-                'logger': record.name,
-                'module': record.module,
-                'function': getattr(record, 'funcName', ''),
-                'message': record.getMessage(),
+                "timestamp": self.formatTime(record, self.datefmt),
+                "level": record.levelname,
+                "logger": record.name,
+                "module": record.module,
+                "function": getattr(record, "funcName", ""),
+                "message": record.getMessage(),
             }
             # Include extra fields if present (e.g. user_id, request_id)
-            for key in ('user_id', 'request_id', 'peer_id', 'qber', 'event'):
+            for key in ("user_id", "request_id", "peer_id", "qber", "event"):
                 if hasattr(record, key):
                     entry[key] = getattr(record, key)
             if record.exc_info and record.exc_info[1]:
-                entry['exception'] = str(record.exc_info[1])
+                entry["exception"] = str(record.exc_info[1])
             return json.dumps(entry)
 
-    formatter = CustomFormatter('[%(asctime)s] (%(levelname)s) %(message)s')
+    formatter = CustomFormatter("[%(asctime)s] (%(levelname)s) %(message)s")
     json_formatter = JSONFormatter()
 
     stream_handler = StreamHandler()
@@ -71,7 +71,7 @@ def get_logger(name: str, log_dir: str = 'logs'):
     logger.addHandler(stream_handler)
 
     file_handler = RotatingFileHandler(
-        log_file_path, mode='a',
+        log_file_path, mode="a",
         maxBytes=10 * 1024 * 1024,  # 10 MB
         backupCount=5,
     )
@@ -80,9 +80,9 @@ def get_logger(name: str, log_dir: str = 'logs'):
     logger.addHandler(file_handler)
 
     # Structured JSON log alongside the human-readable one
-    json_log_path = log_file_path.replace('.log', '.json.log')
+    json_log_path = log_file_path.with_suffix(".json.log")
     json_handler = RotatingFileHandler(
-        json_log_path, mode='a',
+        json_log_path, mode="a",
         maxBytes=10 * 1024 * 1024,
         backupCount=5,
     )

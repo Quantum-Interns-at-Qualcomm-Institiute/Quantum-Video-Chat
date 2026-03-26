@@ -1,12 +1,13 @@
 """Tests for the BB84KeyGenerator."""
 import pytest
 
-from shared.encryption import (
-    BB84KeyGenerator, AbstractKeyGenerator,
-    create_key_generator, register_key_generator,
-)
-from shared.bb84.protocol import BB84ProtocolConfig, EavesdropperSimulator
 from shared.bb84.physical_layer import ChannelParameters
+from shared.bb84.protocol import BB84ProtocolConfig, EavesdropperSimulator
+from shared.encryption import (
+    AbstractKeyGenerator,
+    BB84KeyGenerator,
+    create_key_generator,
+)
 
 
 @pytest.fixture
@@ -32,7 +33,7 @@ class TestBB84KeyGenerator:
         assert isinstance(gen, AbstractKeyGenerator)
 
     def test_registry_lookup(self):
-        gen = create_key_generator('BB84')
+        gen = create_key_generator("BB84")
         assert isinstance(gen, BB84KeyGenerator)
 
     def test_generate_key_produces_bytes(self, ideal_config):
@@ -47,8 +48,8 @@ class TestBB84KeyGenerator:
         gen.generate_key(key_length=128)
         result = gen.last_round_result
         assert result is not None
-        assert hasattr(result, 'qber')
-        assert hasattr(result, 'aborted')
+        assert hasattr(result, "qber")
+        assert hasattr(result, "aborted")
 
     def test_eavesdropper_causes_abort(self, ideal_config):
         gen = BB84KeyGenerator(protocol_config=ideal_config)
@@ -78,7 +79,7 @@ class TestBB84KeyGenerator:
     def test_metrics_callback_called(self, ideal_config):
         results = []
         gen = BB84KeyGenerator(protocol_config=ideal_config)
-        gen.set_metrics_callback(lambda r: results.append(r))
+        gen.set_metrics_callback(results.append)
         gen.generate_key(key_length=128)
         assert len(results) == 1
         assert results[0].raw_bits_generated == ideal_config.num_raw_bits

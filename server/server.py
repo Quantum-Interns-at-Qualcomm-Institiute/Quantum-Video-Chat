@@ -1,25 +1,27 @@
+"""QKD server -- manages users, peer connections, and WebSocket sessions."""
+
 import time
 from collections import deque
-from datetime import datetime
+from datetime import UTC, datetime
 
-from exceptions import InvalidState
-
-from custom_logging import logger
-from utils import ServerError, Endpoint
-from utils.user_manager import UserManager, UserStorageFactory, UserState
-from utils.user_manager import DuplicateUser, UserNotFound
-from shared.config import LOCAL_IP
-from peer_manager import PeerConnectionManager
 from client_notifier import ClientNotifier
+from custom_logging import logger
+from exceptions import InvalidStateError
+from peer_manager import PeerConnectionManager
 from socket_api import SocketAPI
+from utils import Endpoint, ServerError
+from utils.user_manager import DuplicateUserError, UserManager, UserNotFoundError, UserState, UserStorageFactory
 
 
 # region --- Server ---
 class Server:
+    """Core QKD server managing users, sessions, and peer connections."""
+
     # TODO: make user storage type pull from config file
     def __init__(self, api_endpoint, user_storage="DICT", socketio=None):
+        """Initialize the server with endpoint, user storage, and optional WebSocket."""
         self.api_endpoint = Endpoint(*api_endpoint)
-        logger.info(f"Initializing server with API Endpoint {self.api_endpoint}")
+        logger.info("Initializing server with API Endpoint %s", self.api_endpoint)
 
         self.start_time = time.time()
         self.event_log = deque(maxlen=500)
@@ -38,46 +40,52 @@ class Server:
 
     def _log_event(self, event, **details):
         self.event_log.append({
-            'timestamp': datetime.now().isoformat(),
-            'event': event,
+            "timestamp": datetime.now(tz=UTC).isoformat(),
+            "event": event,
             **details,
         })
 
     def add_user(self, api_endpoint):
+        """Add a new user and return their generated user ID."""
         try:
             user_id = self.user_manager.add_user(api_endpoint)
-            logger.info(f"User {user_id} added.")
-            self._log_event('user_added', user_id=user_id)
-            return user_id
-        except DuplicateUser as e:
+            logger.info("User %s added.", user_id)
+            self._log_event("user_added", user_id=user_id)
+        except DuplicateUserError as e:
             logger.error(str(e))
-            raise e
+            raise
+        else:
+            return user_id
 
     def get_user(self, user_id):
+        """Retrieve a user by ID."""
         try:
             user_info = self.user_manager.get_user(user_id)
-            logger.info(f"Retrieved user with ID {user_id}.")
-            return user_info
-        except UserNotFound as e:
+            logger.info("Retrieved user with ID %s.", user_id)
+        except UserNotFoundError as e:
             logger.error(str(e))
-            raise e
+            raise
+        else:
+            return user_info
 
     def remove_user(self, user_id):
+        """Remove a user from the server."""
         try:
             self.user_manager.remove_user(user_id)
-            logger.info(f"User {user_id} removed successfully.")
-            self._log_event('user_removed', user_id=user_id)
-        except UserNotFound as e:
+            logger.info("User %s removed successfully.", user_id)
+            self._log_event("user_removed", user_id=user_id)
+        except UserNotFoundError as e:
             logger.error(str(e))
-            raise e
+            raise
 
     def set_user_state(self, user_id, state: UserState, peer=None):
+        """Update a user's connection state and optional peer."""
         try:
             self.user_manager.set_user_state(user_id, state, peer)
-            logger.info(f"Updated User {user_id} state: {state} ({peer}).")
-        except (UserNotFound, InvalidState) as e:
+            logger.info("Updated User %s state: %s (%s).", user_id, state, peer)
+        except (UserNotFoundError, InvalidStateError) as e:
             logger.error(str(e))
-            raise e
+            raise
 
     def contact_client(self, user_id, route, json):
         """Delegate to ClientNotifier."""
@@ -87,9 +95,9 @@ class Server:
         """Create a new session room for the given users. Returns session_id."""
         logger.info("Creating WebSocket session.")
         if self.socket_api is None:
-            raise ServerError("Cannot start WebSocket session without SocketAPI.")
-        session_id = self.socket_api.create_session(users)
-        return session_id
+            msg = "Cannot start WebSocket session without SocketAPI."
+            raise ServerError(msg)
+        return self.socket_api.create_session(users)
 
     def disconnect_peer(self, user_id):
         """Delegate to PeerConnectionManager."""

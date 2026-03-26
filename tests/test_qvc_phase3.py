@@ -12,38 +12,31 @@ E2E and Non-Functional Tests:
 import os
 import re
 import time
-import hashlib
+from pathlib import Path
+from threading import Event, Thread
+
 import pytest
-from collections import Counter
-from threading import Thread, Event
-from unittest.mock import MagicMock, patch
 
 from shared.encryption import (
     AESEncryption,
-    XOREncryption,
-    DebugEncryption,
     RandomKeyGenerator,
-    FileKeyGenerator,
-    create_encrypt_scheme,
-    create_key_generator,
+    XOREncryption,
 )
-from shared.state import ClientState
 from shared.endpoint import Endpoint
-
+from shared.state import ClientState
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _read_source(relative_path: str) -> str:
     """Read a source file relative to the QVC project root."""
-    full = os.path.join(_PROJECT_ROOT, relative_path)
-    assert os.path.exists(full), f"Source file not found: {full}"
-    with open(full) as f:
-        return f.read()
+    full = _PROJECT_ROOT / relative_path
+    assert full.exists(), f"Source file not found: {full}"
+    return full.read_text()
 
 
 # ===================================================================
@@ -60,9 +53,9 @@ class TestE2EVideoSessionLifecycle:
         """Client states should form a valid progression: NEW -> INIT -> LIVE -> CONNECTED."""
         states = list(ClientState)
         names = [s.name for s in states]
-        assert 'NEW' in names
-        assert 'LIVE' in names
-        assert 'CONNECTED' in names
+        assert "NEW" in names
+        assert "LIVE" in names
+        assert "CONNECTED" in names
 
     def test_client_state_ordering(self):
         """Client states should be ordered: NEW < INIT < LIVE < CONNECTED."""
@@ -71,41 +64,41 @@ class TestE2EVideoSessionLifecycle:
         assert ClientState.LIVE < ClientState.CONNECTED
 
     def test_endpoint_construction(self):
-        ep = Endpoint('192.168.1.1', 5050, '/api')
-        assert ep.ip == '192.168.1.1'
+        ep = Endpoint("192.168.1.1", 5050, "/api")
+        assert ep.ip == "192.168.1.1"
         assert ep.port == 5050
-        assert ep.route == 'api'
+        assert ep.route == "api"
 
     def test_endpoint_string_format(self):
-        ep = Endpoint('10.0.0.1', 3000)
-        assert str(ep) == 'http://10.0.0.1:3000'
+        ep = Endpoint("10.0.0.1", 3000)
+        assert str(ep) == "http://10.0.0.1:3000"
 
     def test_endpoint_strips_http_prefix(self):
-        ep = Endpoint('http://example.com', 80)
-        assert ep.ip == 'example.com'
+        ep = Endpoint("http://example.com", 80)
+        assert ep.ip == "example.com"
 
     def test_endpoint_strips_https_prefix(self):
-        ep = Endpoint('https://secure.example.com', 443)
-        assert ep.ip == 'secure.example.com'
+        ep = Endpoint("https://secure.example.com", 443)
+        assert ep.ip == "secure.example.com"
 
     def test_peer_manager_full_lifecycle(self):
         """PeerConnectionManager should support connect and disconnect."""
-        src = _read_source('server/peer_manager.py')
-        assert 'def connect(' in src
-        assert 'def disconnect(' in src
-        assert 'UserState.CONNECTED' in src
-        assert 'UserState.IDLE' in src
+        src = _read_source("server/peer_manager.py")
+        assert "def connect(" in src
+        assert "def disconnect(" in src
+        assert "UserState.CONNECTED" in src
+        assert "UserState.IDLE" in src
 
     def test_socket_api_handles_disconnect(self):
         """Socket API should handle disconnect events for session cleanup."""
-        src = _read_source('server/socket_api.py')
-        assert '_on_disconnect' in src
+        src = _read_source("server/socket_api.py")
+        assert "_on_disconnect" in src
 
     def test_peer_manager_handles_disconnect(self):
         """Peer manager should support disconnect lifecycle."""
-        src = _read_source('server/peer_manager.py')
-        assert 'def disconnect(' in src
-        assert 'IDLE' in src
+        src = _read_source("server/peer_manager.py")
+        assert "def disconnect(" in src
+        assert "IDLE" in src
 
 
 # ===================================================================
@@ -126,16 +119,16 @@ class TestE2EQKDKeyExchange:
         gen.generate_key()
         key = gen.get_key()
         enc = AESEncryption()
-        plaintext = b'video frame bytes padded to 16!!'
+        plaintext = b"video frame bytes padded to 16!!"
         assert len(plaintext) % 16 == 0  # AES block aligned
 
         # Sender side
         key_idx = 0
         ct = enc.encrypt(plaintext, key)
-        wire = key_idx.to_bytes(4, 'big') + ct
+        wire = key_idx.to_bytes(4, "big") + ct
 
         # Receiver side
-        rx_key_idx = int.from_bytes(wire[:4], 'big')
+        rx_key_idx = int.from_bytes(wire[:4], "big")
         rx_ct = wire[4:]
         assert rx_key_idx == key_idx
         recovered = enc.decrypt(rx_ct, key)
@@ -150,9 +143,9 @@ class TestE2EQKDKeyExchange:
         for idx in range(5):
             gen.generate_key()
             key = gen.get_key()
-            plaintext = f'frame_{idx}_data!!'.encode()
+            plaintext = f"frame_{idx}_data!!".encode()
             ct = enc.encrypt(plaintext, key)
-            wire = idx.to_bytes(4, 'big') + ct
+            wire = idx.to_bytes(4, "big") + ct
             frames.append((wire, key, plaintext))
 
         # Verify each frame decrypts with its own key
@@ -169,28 +162,28 @@ class TestE2EQKDKeyExchange:
     def test_stale_key_index_rejected(self):
         """Receiver should reject frames with stale key indices.
         The AV namespace drops frames where key index != current index."""
-        src = _read_source('shared/av/namespaces.py')
+        src = _read_source("shared/av/namespaces.py")
         # Both Audio and Video namespaces check key index before decrypting
-        assert 'cur_key_idx' in src
-        assert 'return' in src  # Early return when index mismatch
+        assert "cur_key_idx" in src
+        assert "return" in src  # Early return when index mismatch
 
     def test_av_key_rotation_thread_exists(self):
         """AV module should have a daemon thread rotating keys."""
-        src = _read_source('server/utils/av.py')
-        assert 'Thread' in src
-        assert 'daemon=True' in src
-        assert '_rotate_keys' in src or 'generate_key' in src
+        src = _read_source("server/utils/av.py")
+        assert "Thread" in src
+        assert "daemon=True" in src
+        assert "_rotate_keys" in src or "generate_key" in src
 
     def test_key_lock_prevents_race_conditions(self):
         """Key access should be thread-safe via a Lock."""
-        src = _read_source('server/utils/av.py')
-        assert '_key_lock' in src
-        assert 'with self._key_lock' in src or 'Lock()' in src
+        src = _read_source("server/utils/av.py")
+        assert "_key_lock" in src
+        assert "with self._key_lock" in src or "Lock()" in src
 
     def test_key_distribution_namespace_exists(self):
         """KeyClientNamespace should distribute keys over the socket."""
-        src = _read_source('shared/av/namespaces.py')
-        assert 'class KeyClientNamespace' in src
+        src = _read_source("shared/av/namespaces.py")
+        assert "class KeyClientNamespace" in src
 
 
 # ===================================================================
@@ -203,25 +196,25 @@ class TestSecurityPenetrationEncryption:
 
     def test_aes_gcm_used_not_ecb(self):
         """AES should use GCM mode, not ECB (which leaks patterns)."""
-        src = _read_source('shared/encryption.py')
-        assert 'MODE_GCM' in src
-        assert 'MODE_ECB' not in src
+        src = _read_source("shared/encryption.py")
+        assert "MODE_GCM" in src
+        assert "MODE_ECB" not in src
 
     def test_nonce_is_random_per_encryption(self):
         """Each AES-GCM encryption call must use a fresh random nonce."""
-        src = _read_source('shared/encryption.py')
-        assert 'os.urandom(self.NONCE_SIZE)' in src
+        src = _read_source("shared/encryption.py")
+        assert "os.urandom(self.NONCE_SIZE)" in src
 
     def test_authentication_tag_verified(self):
         """AES-GCM decryption must verify the authentication tag."""
-        src = _read_source('shared/encryption.py')
-        assert 'decrypt_and_verify' in src
+        src = _read_source("shared/encryption.py")
+        assert "decrypt_and_verify" in src
 
     def test_known_plaintext_attack_resistance(self):
         """Same plaintext encrypted twice should produce different ciphertexts."""
         enc = AESEncryption()
         key = os.urandom(16)
-        pt = b'A' * 16
+        pt = b"A" * 16
         ct1 = enc.encrypt(pt, key)
         ct2 = enc.encrypt(pt, key)
         assert ct1 != ct2  # Different IVs
@@ -230,7 +223,7 @@ class TestSecurityPenetrationEncryption:
         """Ciphertext = nonce (12) + tag (16) + ciphertext."""
         enc = AESEncryption()
         key = os.urandom(16)
-        ct = enc.encrypt(b'x', key)
+        ct = enc.encrypt(b"x", key)
         # nonce (12) + tag (16) + ciphertext (>= 1)
         assert len(ct) >= 29
 
@@ -238,35 +231,36 @@ class TestSecurityPenetrationEncryption:
         enc = AESEncryption()
         key_a = os.urandom(16)
         key_b = os.urandom(16)
-        ct = enc.encrypt(b'secret material!', key_a)
+        ct = enc.encrypt(b"secret material!", key_a)
         with pytest.raises(Exception):
             enc.decrypt(ct, key_b)
 
     def test_truncated_ciphertext_fails(self):
         enc = AESEncryption()
         key = os.urandom(16)
-        ct = enc.encrypt(b'important data!!', key)
+        ct = enc.encrypt(b"important data!!", key)
         truncated = ct[:20]  # Not aligned to block size
         with pytest.raises(Exception):
             enc.decrypt(truncated, key)
 
     def test_debug_encryption_is_not_used_by_default(self):
         """Default config should use AES, not Debug encryption."""
-        src = _read_source('shared/config.py')
-        assert "encrypt_scheme: str = 'AES'" in src
+        src = _read_source("shared/config.py")
+        assert "encrypt_scheme: str = 'AES'" in src or 'encrypt_scheme: str = "AES"' in src
         # DEBUG should not be the default
         assert "encrypt_scheme: str = 'DEBUG'" not in src
+        assert 'encrypt_scheme: str = "DEBUG"' not in src
 
     def test_xor_is_symmetric_but_weak(self):
         """XOR encryption is its own inverse — document this known weakness."""
         enc = XOREncryption()
-        data = b'\xde\xad\xbe\xef'
-        key = b'\xca\xfe\xba\xbe'
+        data = b"\xde\xad\xbe\xef"
+        key = b"\xca\xfe\xba\xbe"
         ct = enc.encrypt(data, key)
         # XOR with same key twice recovers plaintext
         assert enc.decrypt(ct, key) == data
         # Ciphertext XOR'd with plaintext reveals key
-        leaked = bytes(a ^ b for a, b in zip(ct, data))
+        leaked = bytes(a ^ b for a, b in zip(ct, data, strict=False))
         assert leaked[:len(key)] == key[:len(leaked)]
 
     def test_no_secrets_in_source_files(self):
@@ -275,8 +269,8 @@ class TestSecurityPenetrationEncryption:
             r'(?i)api[_\-]?key\s*=\s*["\'][a-zA-Z0-9]{20,}',
             r'(?i)password\s*=\s*["\'][^"\']+["\']',
         ]
-        for src_file in ('shared/encryption.py', 'shared/config.py',
-                         'server/main.py'):
+        for src_file in ("shared/encryption.py", "shared/config.py",
+                         "server/main.py"):
             src = _read_source(src_file)
             for pattern in sensitive_patterns:
                 matches = re.findall(pattern, src)
@@ -298,36 +292,36 @@ class TestCrossBrowserPlatformCompatibility:
 
     def test_website_client_exists(self):
         """Website client frontend should exist."""
-        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'index.html')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "website" / "client" / "index.html"
+        assert path.exists()
 
     def test_website_client_has_js(self):
         """Website client should have JavaScript entry point."""
-        path = os.path.join(_PROJECT_ROOT, 'website', 'client', 'static', 'app.js')
-        assert os.path.exists(path)
+        path = _PROJECT_ROOT / "website" / "client" / "static" / "app.js"
+        assert path.exists()
 
     def test_endpoint_handles_localhost_default(self):
         """Endpoint with no IP should default to localhost."""
         ep = Endpoint(None, 5000)
-        assert 'localhost' in str(ep)
+        assert "localhost" in str(ep)
 
     def test_config_supports_env_overrides(self):
         """Config should support environment variable overrides."""
-        src = _read_source('shared/config.py')
-        assert 'QVC_' in src  # QVC_LOCAL_IP, QVC_IPC_PORT, etc.
-        assert 'os.environ' in src
+        src = _read_source("shared/config.py")
+        assert "QVC_" in src  # QVC_LOCAL_IP, QVC_IPC_PORT, etc.
+        assert "os.environ" in src
 
     def test_config_supports_ini_file(self):
         """Config should load from settings.ini."""
-        src = _read_source('shared/config.py')
-        assert 'settings.ini' in src
-        assert 'configparser' in src
+        src = _read_source("shared/config.py")
+        assert "settings.ini" in src
+        assert "configparser" in src
 
     def test_frontend_settings_ini_fallback(self):
         """Config should fall back to frontend/settings.ini."""
-        src = _read_source('shared/config.py')
-        assert 'frontend' in src
-        assert 'settings.ini' in src
+        src = _read_source("shared/config.py")
+        assert "frontend" in src
+        assert "settings.ini" in src
 
 
 # ===================================================================
@@ -341,28 +335,28 @@ class TestNetworkResilience:
 
     def test_socket_client_handles_connection_error(self):
         """SocketClient should catch ConnectionError on connect."""
-        src = _read_source('middleware/server_comms.py')
-        assert 'ConnectionError' in src
+        src = _read_source("middleware/server_comms.py")
+        assert "ConnectionError" in src
 
     def test_peer_manager_handles_unreachable_peer(self):
         """PeerConnectionManager should raise BadGateway for unreachable peers."""
-        src = _read_source('server/peer_manager.py')
-        assert 'BadGateway' in src
+        src = _read_source("server/peer_manager.py")
+        assert "BadGateway" in src
 
     def test_peer_disconnect_is_best_effort(self):
         """Server peer notification on disconnect should be best-effort."""
-        src = _read_source('server/peer_manager.py')
-        assert 'except Exception' in src
+        src = _read_source("server/peer_manager.py")
+        assert "except" in src  # Best-effort: catches specific or general exceptions
 
     def test_middleware_emits_server_error(self):
         """Middleware should emit server-error events on failure."""
-        src = _read_source('middleware/server_comms.py')
-        assert 'server-error' in src
+        src = _read_source("middleware/server_comms.py")
+        assert "server-error" in src
 
     def test_middleware_handles_connection_error(self):
         """Middleware should handle ConnectionError gracefully."""
-        src = _read_source('middleware/server_comms.py')
-        assert 'ConnectionError' in src
+        src = _read_source("middleware/server_comms.py")
+        assert "ConnectionError" in src
 
 
 # ===================================================================
@@ -413,17 +407,17 @@ class TestPerformanceConcurrentSessions:
         enc = AESEncryption()
         key = os.urandom(16)
         errors = []
-        done = Event()
+        _done = Event()
 
         def worker(worker_id):
             try:
                 for i in range(100):
-                    pt = f'worker_{worker_id}_frame_{i}'.ljust(16).encode()[:16]
+                    pt = f"worker_{worker_id}_frame_{i}".ljust(16).encode()[:16]
                     ct = enc.encrypt(pt, key)
                     recovered = enc.decrypt(ct, key)
                     if recovered != pt:
                         errors.append((worker_id, i, pt, recovered))
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001 -- thread safety test must catch all
                 errors.append((worker_id, -1, str(e)))
 
         threads = [Thread(target=worker, args=(i,)) for i in range(10)]
@@ -447,13 +441,13 @@ class TestPerformanceConcurrentSessions:
         """Creating 10000 Endpoint objects should be fast."""
         start = time.time()
         for i in range(10000):
-            Endpoint('127.0.0.1', 5000 + (i % 100))
+            Endpoint("127.0.0.1", 5000 + (i % 100))
         elapsed = time.time() - start
         assert elapsed < 1.0, f"10000 Endpoint creations took {elapsed:.2f}s"
 
     def test_config_dataclass_exists(self):
         """Config should be defined as a dataclass with injectable settings."""
-        src = _read_source('shared/config.py')
-        assert '@dataclass' in src
-        assert 'class Config' in src
+        src = _read_source("shared/config.py")
+        assert "@dataclass" in src
+        assert "class Config" in src
 

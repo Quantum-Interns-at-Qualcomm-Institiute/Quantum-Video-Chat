@@ -1,16 +1,17 @@
 """CORS header tests for the Quantum Video Chat middleware Flask app."""
 import pytest
+
 from tests.middleware._helpers import load_middleware_module
 
-mw_state = load_middleware_module('state')
+mw_state = load_middleware_module("state")
 MiddlewareState = mw_state.MiddlewareState
 
 
-@pytest.fixture()
+@pytest.fixture
 def client():
     state = MiddlewareState()
     state.flask_app.config["TESTING"] = True
-    yield state.flask_app.test_client()
+    return state.flask_app.test_client()
 
 
 class TestCORS:

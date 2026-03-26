@@ -1,6 +1,7 @@
 """Tests for shared/adapters.py — FrontendAdapter, VideoSink, StatusSink ABCs."""
 import pytest
-from shared.adapters import FrontendAdapter, VideoSink, StatusSink
+
+from shared.adapters import FrontendAdapter, StatusSink, VideoSink
 
 
 class TestVideoSink:

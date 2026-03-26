@@ -12,26 +12,22 @@ dependencies).  Each test class corresponds to a work package:
   WP #645  Network resilience test suite
   WP #644  Performance and load test: concurrent sessions
 """
-import os
 import re
-import glob
 import unittest
-from typing import Optional, List
+from pathlib import Path
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def _read(relpath):
     # type: (str) -> str
     """Read a project file by relative path from the repo root."""
-    fullpath = os.path.join(ROOT, relpath)
-    with open(fullpath, "r", encoding="utf-8", errors="replace") as f:
-        return f.read()
+    return (ROOT / relpath).read_text(encoding="utf-8", errors="replace")
 
 
 def _file_exists(relpath):
     # type: (str) -> bool
-    return os.path.isfile(os.path.join(ROOT, relpath))
+    return (ROOT / relpath).is_file()
 
 
 def _collect_python_files(*dirs):
@@ -39,13 +35,11 @@ def _collect_python_files(*dirs):
     """Return relative paths of all .py files under the given directories."""
     results = []  # type: List[str]
     for d in dirs:
-        base = os.path.join(ROOT, d)
-        for dirpath, _, filenames in os.walk(base):
-            for fn in filenames:
-                if fn.endswith(".py"):
-                    results.append(os.path.relpath(
-                        os.path.join(dirpath, fn), ROOT
-                    ))
+        base = ROOT / d
+        results.extend(
+            str(p.relative_to(ROOT))
+            for p in base.rglob("*.py")
+        )
     return results
 
 
@@ -86,23 +80,33 @@ class TestSessionLifecycle(unittest.TestCase):
 
     def test_socket_connect_event(self):
         """Socket API handles 'connect' event."""
-        self.assertIn("'connect'", self.socket_src)
+        self.assertTrue(
+            "'connect'" in self.socket_src or '"connect"' in self.socket_src,
+        )
 
     def test_socket_disconnect_event(self):
         """Socket API handles 'disconnect' event."""
-        self.assertIn("'disconnect'", self.socket_src)
+        self.assertTrue(
+            "'disconnect'" in self.socket_src or '"disconnect"' in self.socket_src,
+        )
 
     def test_socket_frame_event(self):
         """Socket API handles 'frame' event for video relay."""
-        self.assertIn("'frame'", self.socket_src)
+        self.assertTrue(
+            "'frame'" in self.socket_src or '"frame"' in self.socket_src,
+        )
 
     def test_socket_audio_frame_event(self):
         """Socket API handles 'audio-frame' event for audio relay."""
-        self.assertIn("'audio-frame'", self.socket_src)
+        self.assertTrue(
+            "'audio-frame'" in self.socket_src or '"audio-frame"' in self.socket_src,
+        )
 
     def test_socket_message_event(self):
         """Socket API handles 'message' event for chat."""
-        self.assertIn("'message'", self.socket_src)
+        self.assertTrue(
+            "'message'" in self.socket_src or '"message"' in self.socket_src,
+        )
 
     # -- Middleware calls the lifecycle endpoints -------------------------
 
@@ -122,8 +126,8 @@ class TestSessionLifecycle(unittest.TestCase):
         """Socket API uses a declarative EVENT_HANDLERS dict."""
         self.assertIn("EVENT_HANDLERS", self.socket_src)
         for event in ("connect", "message", "frame", "audio-frame", "disconnect"):
-            self.assertIn(
-                repr(event), self.socket_src,
+            self.assertTrue(
+                repr(event) in self.socket_src or f'"{event}"' in self.socket_src,
                 f"EVENT_HANDLERS missing '{event}'",
             )
 
@@ -184,7 +188,10 @@ class TestQKDProtocol(unittest.TestCase):
 
     def test_bb84_key_generator_registered(self):
         """BB84 key generator is registered in the keygen registry."""
-        self.assertIn("register_key_generator('BB84'", self.encrypt_src)
+        self.assertTrue(
+            "register_key_generator('BB84'" in self.encrypt_src
+            or 'register_key_generator("BB84"' in self.encrypt_src,
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -207,7 +214,7 @@ class TestSecurityEncryptionLayer(unittest.TestCase):
         for path in self.py_files:
             src = _read(path)
             # Match eval( but not "evaluate" or comments
-            matches = re.findall(r'(?<!\w)eval\s*\(', src)
+            matches = re.findall(r"(?<!\w)eval\s*\(", src)
             self.assertEqual(
                 len(matches), 0,
                 f"eval() found in {path}",
@@ -217,7 +224,7 @@ class TestSecurityEncryptionLayer(unittest.TestCase):
         """No usage of exec() in production Python files."""
         for path in self.py_files:
             src = _read(path)
-            matches = re.findall(r'(?<!\w)exec\s*\(', src)
+            matches = re.findall(r"(?<!\w)exec\s*\(", src)
             self.assertEqual(
                 len(matches), 0,
                 f"exec() found in {path}",
@@ -288,7 +295,7 @@ class TestSecurityEncryptionLayer(unittest.TestCase):
         lines = self.encrypt_src.splitlines()
         aes_reg_line = None
         for i, line in enumerate(lines):
-            if "register_encrypt_scheme('AES'" in line:
+            if "register_encrypt_scheme('AES'" in line or 'register_encrypt_scheme("AES"' in line:
                 aes_reg_line = i
                 break
         self.assertIsNotNone(aes_reg_line, "AES registration not found")
@@ -306,15 +313,13 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
         # Collect all non-vendor CSS files from the website client
         cls.css_files = []  # type: List[str]
         for search_dir in ("website/client/static", "middleware/static"):
-            base = os.path.join(ROOT, search_dir)
-            if not os.path.isdir(base):
+            base = ROOT / search_dir
+            if not base.is_dir():
                 continue
-            for dirpath, _, filenames in os.walk(base):
-                for fn in filenames:
-                    if fn.endswith(".css"):
-                        cls.css_files.append(os.path.relpath(
-                            os.path.join(dirpath, fn), ROOT
-                        ))
+            cls.css_files.extend(
+                str(p.relative_to(ROOT))
+                for p in base.rglob("*.css")
+            )
         cls.rest_src = _read("server/rest_api.py")
 
     def test_css_files_exist(self):
@@ -324,7 +329,7 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
     def test_no_vendor_prefix_only_properties(self):
         """CSS files do not rely on vendor-prefix-only properties
         without a standard fallback on the next line."""
-        vendor_re = re.compile(r'^\s*(-webkit-|-moz-|-ms-|-o-)(\S+)\s*:')
+        vendor_re = re.compile(r"^\s*(-webkit-|-moz-|-ms-|-o-)(\S+)\s*:")
         for path in self.css_files:
             src = _read(path)
             lines = src.splitlines()
@@ -335,7 +340,7 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
                     # Check if the standard property appears nearby (within 3 lines)
                     context = "\n".join(lines[max(0, i - 1):i + 4])
                     has_std = re.search(
-                        r'(?<![a-z-])' + re.escape(std_prop) + r'\s*:',
+                        r"(?<![a-z-])" + re.escape(std_prop) + r"\s*:",
                         context,
                     )
                     if not has_std:
@@ -345,7 +350,7 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
                         if std_prop not in known_exceptions:
                             self.fail(
                                 f"Vendor-prefix-only property '-{m.group(1)}{std_prop}' "
-                                f"without standard fallback in {path}:{i+1}"
+                                f"without standard fallback in {path}:{i+1}",
                             )
 
     def test_standard_websocket_usage(self):
@@ -367,8 +372,8 @@ class TestCrossBrowserCompatibility(unittest.TestCase):
 
     def test_tsx_components_exist(self):
         """Frontend has JS/HTML components for cross-platform UI."""
-        static_dir = os.path.join(ROOT, "website", "client", "static")
-        js_files = [f for f in os.listdir(static_dir) if f.endswith(".js")]
+        static_dir = ROOT / "website" / "client" / "static"
+        js_files = [p.name for p in static_dir.iterdir() if p.suffix == ".js"]
         self.assertGreater(len(js_files), 0, "No JS frontend files found")
 
 

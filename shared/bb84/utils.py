@@ -4,6 +4,7 @@ Provides binary entropy, Toeplitz hashing for privacy amplification,
 and bit/byte conversion helpers.
 """
 import math
+
 import numpy as np
 
 
@@ -37,11 +38,7 @@ def bits_to_bytes(bits: list[int]) -> bytes:
 
 def bytes_to_bits(data: bytes) -> list[int]:
     """Convert bytes to a list of bits (0/1 ints), MSB first."""
-    bits = []
-    for byte in data:
-        for i in range(7, -1, -1):
-            bits.append((byte >> i) & 1)
-    return bits
+    return [(byte >> i) & 1 for byte in data for i in range(7, -1, -1)]
 
 
 def toeplitz_hash(bits: list[int], output_length: int,
@@ -64,10 +61,10 @@ def toeplitz_hash(bits: list[int], output_length: int,
     m = output_length
 
     if m <= 0 or n <= 0:
-        return b''
+        return b""
 
     rng = np.random.default_rng(
-        int.from_bytes(seed, 'big') if seed else None
+        int.from_bytes(seed, "big") if seed else None,
     )
 
     # Generate random bits for Toeplitz matrix definition

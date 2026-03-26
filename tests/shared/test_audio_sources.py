@@ -11,10 +11,8 @@ Verifies:
   7. Looping mode auto-resets after exhaustion
 """
 import numpy as np
-import pytest
 
-from shared.frame_source import SilenceSource, MockAudioSource
-
+from shared.frame_source import MockAudioSource, SilenceSource
 
 SAMPLE_RATE = 8000
 FRAMES_PER_BUFFER = SAMPLE_RATE // 6  # 1366
@@ -147,7 +145,7 @@ class TestChunkId:
         for expected_id in range(10):
             chunk = src.capture()
             assert MockAudioSource.chunk_id(
-                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER
+                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER,
             ) == expected_id
 
     def test_rejects_silence(self):
@@ -206,7 +204,7 @@ class TestMockAudioSourceLooping:
         for _ in range(20):
             chunk = src.capture()
             ids.append(MockAudioSource.chunk_id(
-                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER
+                chunk, SAMPLE_RATE, FRAMES_PER_BUFFER,
             ))
         assert ids == list(range(10)) + list(range(10))
 
