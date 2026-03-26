@@ -248,6 +248,7 @@ class TestSecurityEncryptionLayer(unittest.TestCase):
         """AES decryption verifies the authentication tag."""
         self.assertIn("decrypt_and_verify", self.encrypt_src)
 
+
     # -- No hardcoded secrets --------------------------------------------
 
     def test_no_hardcoded_api_keys(self):

@@ -4,7 +4,6 @@
 !.dashboard.yaml
 
 __pycache__
-config.yaml
 
 # Logs
 logs
