@@ -1,22 +1,26 @@
-"""
-FrameSource / AudioSource — Abstract protocols for video and audio producers.
+"""FrameSource / AudioSource -- Abstract protocols for video and audio producers.
 
 Decouples frame/chunk consumers (video threads, audio threads, AV namespaces)
 from the specific source (camera, microphone, static noise, test patterns).
 
 Implementing classes must provide ``capture()`` and ``release()``.
 """
+import logging
 from abc import ABC, abstractmethod
-from typing import Optional
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+_MIN_CHUNK_LEN = 2
+_FFT_TOLERANCE = 0.3
 
 
 class FrameSource(ABC):
     """Abstract base class for video frame sources."""
 
     @abstractmethod
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         """Return the next BGR frame, or None if unavailable."""
 
     @abstractmethod
@@ -28,20 +32,23 @@ class CameraSource(FrameSource):
     """Captures frames from a hardware camera via OpenCV."""
 
     def __init__(self, device: int = 0, width: int = 640, height: int = 480):
-        from cv2 import VideoCapture, resize
+        """Initialize camera capture with device index and frame dimensions."""
+        from cv2 import VideoCapture, resize  # noqa: PLC0415
         self._VideoCapture = VideoCapture
         self._resize = resize
         self.cap = VideoCapture(device)
         self.width = width
         self.height = height
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
+        """Capture and resize a frame from the camera."""
         ret, frame = self.cap.read()
         if not ret:
             return None
         return self._resize(frame, dsize=(self.width, self.height))
 
     def release(self) -> None:
+        """Release the camera handle."""
         self.cap.release()
 
 
@@ -49,21 +56,24 @@ class StaticNoiseSource(FrameSource):
     """Generates TV-static frames (random grey noise)."""
 
     def __init__(self, width: int = 640, height: int = 480):
+        """Initialize with frame dimensions."""
         self.width = width
         self.height = height
+        self._rng = np.random.default_rng()
 
-    def capture(self) -> Optional[np.ndarray]:
-        return np.random.randint(
+    def capture(self) -> np.ndarray | None:
+        """Generate a random noise frame."""
+        return self._rng.integers(
             30, 200, (self.height, self.width, 3), dtype=np.uint8)
 
     def release(self) -> None:
-        pass  # no resources to release
+        """Release resources (no-op for static noise source)."""
 
 
 class MockFrameSource(FrameSource):
     """Produces a fixed sequence of 10 deterministic, verifiable test frames.
 
-    Frame N (0–9) has every pixel set to ``(N * 25, N * 25, N * 25)`` so each
+    Frame N (0-9) has every pixel set to ``(N * 25, N * 25, N * 25)`` so each
     frame is visually distinct and trivially identifiable.  After all 10 frames
     have been emitted, ``capture()`` returns ``None``.
 
@@ -77,13 +87,15 @@ class MockFrameSource(FrameSource):
     NUM_FRAMES = 10
     PIXEL_STEP = 25  # brightness increment per frame
 
-    def __init__(self, width: int = 640, height: int = 480, looping: bool = False):
+    def __init__(self, width: int = 640, height: int = 480, *, looping: bool = False):
+        """Initialize with frame dimensions and optional looping."""
         self.width = width
         self.height = height
         self.looping = looping
         self._index = 0
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
+        """Return the next deterministic test frame, or None when exhausted."""
         if self._index >= self.NUM_FRAMES:
             if self.looping:
                 self._index = 0
@@ -97,7 +109,7 @@ class MockFrameSource(FrameSource):
         return frame
 
     def release(self) -> None:
-        pass  # no resources to release
+        """Release resources (no-op for mock source)."""
 
     def reset(self) -> None:
         """Reset the source to re-emit all 10 frames."""
@@ -110,7 +122,7 @@ class MockFrameSource(FrameSource):
 
     @staticmethod
     def frame_id(frame: np.ndarray) -> int:
-        """Extract the sequence number (0–9) from a MockFrameSource frame.
+        """Extract the sequence number (0-9) from a MockFrameSource frame.
 
         Returns -1 if the frame does not match the expected pattern.
         """
@@ -126,9 +138,9 @@ class MockFrameSource(FrameSource):
         return seq
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 # Audio Sources
-# ═══════════════════════════════════════════════════════════════════════════════
+# ===============================================================================
 
 
 class AudioSource(ABC):
@@ -139,7 +151,7 @@ class AudioSource(ABC):
     """
 
     @abstractmethod
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
         """Return the next audio chunk, or None if unavailable."""
 
     @abstractmethod
@@ -153,7 +165,8 @@ class MicrophoneSource(AudioSource):
     def __init__(self, device_index: int = 0,
                  sample_rate: int = 8000,
                  frames_per_buffer: int = 1366):
-        import pyaudio
+        """Initialize microphone capture stream."""
+        import pyaudio  # noqa: PLC0415
         self._pa = pyaudio.PyAudio()
         self.sample_rate = sample_rate
         self.frames_per_buffer = frames_per_buffer
@@ -166,43 +179,48 @@ class MicrophoneSource(AudioSource):
             frames_per_buffer=frames_per_buffer,
         )
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
+        """Capture a chunk of audio from the microphone."""
         try:
             data = self._stream.read(self.frames_per_buffer,
                                      exception_on_overflow=False)
-            return np.frombuffer(data, dtype=np.float32)
-        except Exception:
+        except OSError:
             return None
+        else:
+            return np.frombuffer(data, dtype=np.float32)
 
     def release(self) -> None:
+        """Stop the audio stream and terminate PyAudio."""
         try:
             self._stream.stop_stream()
             self._stream.close()
-        except Exception:
-            pass
+        except OSError:
+            logger.debug("Failed to close audio stream", exc_info=True)
         try:
             self._pa.terminate()
-        except Exception:
-            pass
+        except OSError:
+            logger.debug("Failed to terminate PyAudio", exc_info=True)
 
 
 class SilenceSource(AudioSource):
     """Produces silent audio chunks (all zeros). Used when muted."""
 
     def __init__(self, frames_per_buffer: int = 1366):
+        """Initialize with the given buffer size."""
         self.frames_per_buffer = frames_per_buffer
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
+        """Return a silent (all-zeros) audio chunk."""
         return np.zeros(self.frames_per_buffer, dtype=np.float32)
 
     def release(self) -> None:
-        pass
+        """Release resources (no-op for silence source)."""
 
 
 class MockAudioSource(AudioSource):
     """Produces 10 deterministic pure-tone audio chunks for testing.
 
-    Chunk N (0–9) is a sine wave at frequency ``(N + 1) * BASE_FREQ`` Hz.
+    Chunk N (0-9) is a sine wave at frequency ``(N + 1) * BASE_FREQ`` Hz.
     After all 10 chunks have been emitted, ``capture()`` returns ``None``
     (unless ``looping=True``).
 
@@ -210,17 +228,19 @@ class MockAudioSource(AudioSource):
     sequence number from any chunk produced by this source.
     """
     NUM_CHUNKS = 10
-    BASE_FREQ = 200  # Hz — chunk N uses (N+1) * 200 Hz (max 2000 < Nyquist)
+    BASE_FREQ = 200  # Hz - chunk N uses (N+1) * 200 Hz (max 2000 < Nyquist)
 
     def __init__(self, sample_rate: int = 8000,
                  frames_per_buffer: int = 1366,
-                 looping: bool = False):
+                 *, looping: bool = False):
+        """Initialize with audio parameters and optional looping."""
         self.sample_rate = sample_rate
         self.frames_per_buffer = frames_per_buffer
         self.looping = looping
         self._index = 0
 
-    def capture(self) -> Optional[np.ndarray]:
+    def capture(self) -> np.ndarray | None:
+        """Return the next sine-wave test chunk, or None when exhausted."""
         if self._index >= self.NUM_CHUNKS:
             if self.looping:
                 self._index = 0
@@ -233,7 +253,7 @@ class MockAudioSource(AudioSource):
         return chunk
 
     def release(self) -> None:
-        pass
+        """Release resources (no-op for mock source)."""
 
     def reset(self) -> None:
         """Reset the source to re-emit all 10 chunks."""
@@ -246,23 +266,23 @@ class MockAudioSource(AudioSource):
 
     @staticmethod
     def chunk_id(chunk: np.ndarray, sample_rate: int = 8000,
-                 frames_per_buffer: int = 1366) -> int:
-        """Extract the sequence number (0–9) from a MockAudioSource chunk.
+                 _frames_per_buffer: int = 1366) -> int:
+        """Extract the sequence number (0-9) from a MockAudioSource chunk.
 
         Uses FFT to find the dominant frequency and maps it back to the
         chunk index.  Returns -1 if the chunk doesn't match.
         """
-        if len(chunk) < 2:
+        if len(chunk) < _MIN_CHUNK_LEN:
             return -1
         fft_mag = np.abs(np.fft.rfft(chunk))
         freqs = np.fft.rfftfreq(len(chunk), d=1.0 / sample_rate)
         dominant_freq = freqs[np.argmax(fft_mag)]
-        # Map back: freq = (N+1) * BASE_FREQ → N = freq/BASE_FREQ - 1
+        # Map back: freq = (N+1) * BASE_FREQ -> N = freq/BASE_FREQ - 1
         n_float = dominant_freq / MockAudioSource.BASE_FREQ - 1
         n = round(n_float)
         if n < 0 or n >= MockAudioSource.NUM_CHUNKS:
             return -1
         # Allow small tolerance for FFT bin rounding
-        if abs(n_float - n) > 0.3:
+        if abs(n_float - n) > _FFT_TOLERANCE:
             return -1
         return n

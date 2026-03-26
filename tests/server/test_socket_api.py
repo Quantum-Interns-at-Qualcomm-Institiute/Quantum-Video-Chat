@@ -1,7 +1,5 @@
 """Tests for server/socket_api.py -- SocketAPI class."""
-import pytest
-from unittest.mock import MagicMock, patch
-from shared.endpoint import Endpoint
+from unittest.mock import MagicMock
 
 
 def _make_api():
@@ -10,8 +8,7 @@ def _make_api():
 
     mock_server = MagicMock()
     mock_socketio = MagicMock()
-    api = SocketAPI(mock_server, mock_socketio)
-    return api
+    return SocketAPI(mock_server, mock_socketio)
 
 
 class TestSocketAPI:
@@ -22,12 +19,12 @@ class TestSocketAPI:
 
     def test_create_session(self):
         api = _make_api()
-        session_id = api.create_session(('u1', 'u2'))
+        session_id = api.create_session(("u1", "u2"))
         assert session_id in api.sessions
-        assert api.sessions[session_id] == {'u1', 'u2'}
+        assert api.sessions[session_id] == {"u1", "u2"}
 
     def test_create_session_returns_unique_ids(self):
         api = _make_api()
-        s1 = api.create_session(('u1', 'u2'))
-        s2 = api.create_session(('u3', 'u4'))
+        s1 = api.create_session(("u1", "u2"))
+        s2 = api.create_session(("u3", "u4"))
         assert s1 != s2

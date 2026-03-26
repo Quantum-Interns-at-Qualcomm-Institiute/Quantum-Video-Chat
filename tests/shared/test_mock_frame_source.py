@@ -10,7 +10,6 @@ Verifies:
   6. Frames arrive in strict sequential order
 """
 import numpy as np
-import pytest
 
 from shared.frame_source import MockFrameSource
 

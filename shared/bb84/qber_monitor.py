@@ -6,10 +6,10 @@ for dashboard display.
 """
 import time
 from collections import deque
-from dataclasses import dataclass, asdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
 from enum import Enum
 from threading import Lock
-from typing import Callable
 
 from shared.bb84.protocol import BB84RoundResult
 
@@ -37,8 +37,9 @@ class QBERSnapshot:
     abort_reason: str | None = None
 
     def to_dict(self) -> dict:
+        """Convert the snapshot to a dictionary."""
         d = asdict(self)
-        d['event'] = self.event.value
+        d["event"] = self.event.value
         return d
 
 
@@ -60,6 +61,7 @@ class QBERMonitor:
     def __init__(self, threshold: float = 0.11,
                  warning_threshold: float = 0.05,
                  history_size: int = 100):
+        """Initialize QBER monitor with detection thresholds."""
         self.threshold = threshold
         self.warning_threshold = warning_threshold
         self._history: deque[QBERSnapshot] = deque(maxlen=history_size)
@@ -78,7 +80,7 @@ class QBERMonitor:
 
     def remove_listener(self, callback: Callable[[QBERSnapshot], None]):
         """Unregister a previously added callback."""
-        self._listeners = [l for l in self._listeners if l is not callback]
+        self._listeners = [listener for listener in self._listeners if listener is not callback]
 
     def record_round(self, result: BB84RoundResult) -> QBERSnapshot:
         """Process a BB84 round result and emit appropriate events.
@@ -88,10 +90,7 @@ class QBERMonitor:
         """
         # Classify the event
         if result.aborted:
-            if result.qber >= self.threshold:
-                event = QBEREvent.INTRUSION_DETECTED
-            else:
-                event = QBEREvent.KEY_GENERATION_FAILED
+            event = QBEREvent.INTRUSION_DETECTED if result.qber >= self.threshold else QBEREvent.KEY_GENERATION_FAILED
         elif result.qber >= self.warning_threshold:
             event = QBEREvent.WARNING
         else:
@@ -148,17 +147,17 @@ class QBERMonitor:
         latest = history[-1] if history else None
 
         return {
-            'total_rounds': self._total_rounds,
-            'successful_rounds': self._successful_rounds,
-            'failed_rounds': self._failed_rounds,
-            'intrusion_count': self._intrusion_count,
-            'current_qber': latest.qber if latest else None,
-            'average_qber_last_10': round(avg_qber, 6),
-            'total_sifted_bits': self._total_sifted_bits,
-            'total_final_bits': self._total_final_bits,
-            'latest_event': latest.event.value if latest else None,
-            'threshold': self.threshold,
-            'warning_threshold': self.warning_threshold,
+            "total_rounds": self._total_rounds,
+            "successful_rounds": self._successful_rounds,
+            "failed_rounds": self._failed_rounds,
+            "intrusion_count": self._intrusion_count,
+            "current_qber": latest.qber if latest else None,
+            "average_qber_last_10": round(avg_qber, 6),
+            "total_sifted_bits": self._total_sifted_bits,
+            "total_final_bits": self._total_final_bits,
+            "latest_event": latest.event.value if latest else None,
+            "threshold": self.threshold,
+            "warning_threshold": self.warning_threshold,
         }
 
     def reset(self):

@@ -1,10 +1,10 @@
 """Tests for middleware/state.py — MiddlewareState defaults and helpers."""
 import os
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 from tests.middleware._helpers import load_middleware_module
 
-mw_state = load_middleware_module('state')
+mw_state = load_middleware_module("state")
 MiddlewareState = mw_state.MiddlewareState
 MIDDLEWARE_PORT = mw_state.MIDDLEWARE_PORT
 WIDTH = mw_state.WIDTH
@@ -20,26 +20,26 @@ class TestConstants:
         assert MIDDLEWARE_PORT == 5001
 
     def test_default_server_host_from_env(self):
-        with patch.dict(os.environ, {'QUANTUM_SERVER_HOST': '10.0.0.5'}):
-            mod = load_middleware_module('state', fresh=True)
-            assert mod.DEFAULT_SERVER_HOST == '10.0.0.5'
+        with patch.dict(os.environ, {"QUANTUM_SERVER_HOST": "10.0.0.5"}):
+            mod = load_middleware_module("state", fresh=True)
+            assert mod.DEFAULT_SERVER_HOST == "10.0.0.5"
 
     def test_default_server_port_from_env(self):
-        with patch.dict(os.environ, {'QUANTUM_SERVER_PORT': '9999'}):
-            mod = load_middleware_module('state', fresh=True)
+        with patch.dict(os.environ, {"QUANTUM_SERVER_PORT": "9999"}):
+            mod = load_middleware_module("state", fresh=True)
             assert mod.DEFAULT_SERVER_PORT == 9999
 
 
 class TestMiddlewareStateDefaults:
     def test_server_fields_default(self):
         s = MiddlewareState()
-        assert s.server_host == ''
+        assert s.server_host == ""
         assert s.server_port == 0
         assert s.server_alive is False
 
     def test_identity_defaults(self):
         s = MiddlewareState()
-        assert s.user_id == ''
+        assert s.user_id == ""
         assert s.middleware_port == MIDDLEWARE_PORT
 
     def test_video_defaults(self):
@@ -67,21 +67,21 @@ class TestMiddlewareStateDefaults:
 
 
 class TestServerUrl:
-    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
-    def test_builds_url_with_path(self, _mock_ssl):
+    @patch("shared.ssl_utils.get_ssl_context", return_value=None)
+    def test_builds_url_with_path(self, _mock_ssl):  # noqa: PT019
         s = MiddlewareState()
-        s.server_host = 'example.com'
+        s.server_host = "example.com"
         s.server_port = 8080
-        assert s.server_url('/admin/status') == 'http://example.com:8080/admin/status'
+        assert s.server_url("/admin/status") == "http://example.com:8080/admin/status"
 
-    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
-    def test_builds_url_root(self, _mock_ssl):
+    @patch("shared.ssl_utils.get_ssl_context", return_value=None)
+    def test_builds_url_root(self, _mock_ssl):  # noqa: PT019
         s = MiddlewareState()
-        s.server_host = '192.168.1.1'
+        s.server_host = "192.168.1.1"
         s.server_port = 5050
-        assert s.server_url('/') == 'http://192.168.1.1:5050/'
+        assert s.server_url("/") == "http://192.168.1.1:5050/"
 
-    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
-    def test_empty_host_still_formats(self, _mock_ssl):
+    @patch("shared.ssl_utils.get_ssl_context", return_value=None)
+    def test_empty_host_still_formats(self, _mock_ssl):  # noqa: PT019
         s = MiddlewareState()
-        assert s.server_url('/test') == 'http://:0/test'
+        assert s.server_url("/test") == "http://:0/test"

@@ -1,10 +1,57 @@
-# Ruff configuration for QVC
-# Only enforce rules that catch real bugs, not style nits.
+# Ruff linter configuration for QVC
+
+line-length = 120
+target-version = "py311"
 
 [lint]
-select = [
-    "E9",    # Runtime errors (syntax errors, etc.)
-    "F63",   # Invalid comparisons
-    "F7",    # Syntax errors in type annotations
-    "F82",   # Undefined names
+select = ["ALL"]
+ignore = [
+    # Incompatible rule pairs
+    "D203",    # conflicts with D211 (no-blank-line-before-class)
+    "D213",    # conflicts with D212 (multi-line-summary-first-line)
+
+    # Not applicable to this project
+    "ANN",     # type annotations (not enforced yet across codebase)
+    "INP001",  # implicit namespace package (__init__.py not required)
+    "S101",    # assert in non-test code (used intentionally)
+    "FIX002",  # line-contains-todo (TODOs are acceptable)
+    "TD002",   # missing-todo-author
+    "TD003",   # missing-todo-link
+
+    # Overly strict for this codebase
+    "D100",    # undocumented public module
+    "D104",    # undocumented public package
+    "ERA001",  # commented-out code (region markers)
 ]
+
+[lint.per-file-ignores]
+"tests/**" = [
+    "D",       # docstring rules relaxed in tests
+    "S",       # security rules relaxed in tests
+    "SLF001",  # private member access (testing internals)
+    "PLR2004", # magic values in assertions
+    "PT009",   # pytest unittest assertion (mixed test styles)
+    "PT011",   # pytest.raises too broad
+    "ARG",     # unused arguments (fixtures, callbacks)
+    "B017",    # assert raises Exception
+    "N",       # naming conventions relaxed
+    "T201",    # print in tests
+    "F811",    # redefined fixture names
+    "E501",    # line length in tests
+    "RUF059",  # unused unpacked variables
+    "PLC0415", # import outside top level
+    "PERF203", # try-except in loop
+    "C901",    # complex structure in tests
+    "PLR0913", # too many arguments
+    "FBT",     # boolean args in tests
+]
+"middleware/client.py" = ["E402"]   # gevent monkey.patch_all() before imports
+"middleware/audio.py" = ["E402"]
+"middleware/video.py" = ["E402"]
+"middleware/events.py" = ["E402"]
+"middleware/server_comms.py" = ["E402"]
+"server/rest_api.py" = ["E402"]     # sys.path before imports
+"tests/conftest.py" = ["E402"]
+
+[lint.pydocstyle]
+convention = "google"
