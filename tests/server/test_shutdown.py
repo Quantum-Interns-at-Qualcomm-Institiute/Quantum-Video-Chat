@@ -1,4 +1,4 @@
-"""Tests for server graceful shutdown — main.py, ServerAPI.graceful_shutdown(),
+"""Tests for server graceful shutdown -- main.py, ServerAPI.graceful_shutdown(),
 and the /admin/shutdown endpoint."""
 import json
 import os
@@ -20,7 +20,7 @@ from shared.exceptions import ServerError
 # ---------------------------------------------------------------------------
 
 class TestGracefulShutdown:
-    """ServerAPI.graceful_shutdown() stops WebSocket + REST cleanly."""
+    """ServerAPI.graceful_shutdown() stops the combined REST+WS server."""
 
     @pytest.fixture(autouse=True)
     def setup_api(self):
@@ -28,104 +28,34 @@ class TestGracefulShutdown:
         from state import APIState
         ServerAPI.state = APIState.INIT
         ServerAPI.server = None
-        ServerAPI.http_server = None
+        ServerAPI.socketio = None
         ServerAPI.endpoint = Endpoint('127.0.0.1', 5050)
         yield
         ServerAPI.state = APIState.INIT
         ServerAPI.server = None
 
-    def test_stops_rest_api_when_live(self):
+    def test_stops_api_when_live(self):
         from rest_api import ServerAPI
         from state import APIState
 
         ServerAPI.state = APIState.LIVE
-        ServerAPI.http_server = MagicMock()
-        ServerAPI.server = MagicMock(spec=[])  # no websocket_instance attr
+        ServerAPI.socketio = MagicMock()
+        ServerAPI.server = MagicMock(spec=[])
 
         ServerAPI.graceful_shutdown()
 
-        ServerAPI.http_server.stop.assert_called_once()
+        ServerAPI.socketio.stop.assert_called_once()
         assert ServerAPI.state == APIState.IDLE
 
-    def test_stops_websocket_before_rest(self):
-        from rest_api import ServerAPI
-        from state import APIState
-
-        ServerAPI.state = APIState.LIVE
-        ServerAPI.http_server = MagicMock()
-
-        mock_ws = MagicMock()
-        mock_ws.is_alive.return_value = True
-        mock_server = MagicMock()
-        mock_server.websocket_instance = mock_ws
-        ServerAPI.server = mock_server
-
-        ServerAPI.graceful_shutdown()
-
-        mock_ws.kill.assert_called_once()
-        mock_ws.join.assert_called_once_with(timeout=3)
-        ServerAPI.http_server.stop.assert_called_once()
-
-    def test_skips_websocket_when_not_alive(self):
-        from rest_api import ServerAPI
-        from state import APIState
-
-        ServerAPI.state = APIState.LIVE
-        ServerAPI.http_server = MagicMock()
-
-        mock_ws = MagicMock()
-        mock_ws.is_alive.return_value = False
-        mock_server = MagicMock()
-        mock_server.websocket_instance = mock_ws
-        ServerAPI.server = mock_server
-
-        ServerAPI.graceful_shutdown()
-
-        mock_ws.kill.assert_not_called()
-
-    def test_skips_websocket_when_none(self):
-        from rest_api import ServerAPI
-        from state import APIState
-
-        ServerAPI.state = APIState.LIVE
-        ServerAPI.http_server = MagicMock()
-
-        mock_server = MagicMock()
-        mock_server.websocket_instance = None
-        ServerAPI.server = mock_server
-
-        ServerAPI.graceful_shutdown()
-
-        ServerAPI.http_server.stop.assert_called_once()
-
-    def test_does_not_raise_when_rest_not_live(self):
+    def test_does_not_raise_when_not_live(self):
         from rest_api import ServerAPI
         from state import APIState
 
         ServerAPI.state = APIState.IDLE
         ServerAPI.server = None
 
-        # Should not raise — kill() failure is caught
+        # Should not raise -- kill() failure is caught
         ServerAPI.graceful_shutdown()
-
-    def test_survives_websocket_kill_exception(self):
-        from rest_api import ServerAPI
-        from state import APIState
-
-        ServerAPI.state = APIState.LIVE
-        ServerAPI.http_server = MagicMock()
-
-        mock_ws = MagicMock()
-        mock_ws.is_alive.return_value = True
-        mock_ws.kill.side_effect = Exception("ws crash")
-        mock_server = MagicMock()
-        mock_server.websocket_instance = mock_ws
-        ServerAPI.server = mock_server
-
-        # Should not raise
-        ServerAPI.graceful_shutdown()
-        # REST API should still be stopped
-        ServerAPI.http_server.stop.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
@@ -179,6 +109,7 @@ class TestAdminShutdownEndpoint:
         ServerAPI.server.user_manager.get_all_users.return_value = {}
         ServerAPI.server.event_log = deque(maxlen=500)
         ServerAPI.endpoint = Endpoint('127.0.0.1', 5050)
+        ServerAPI.socketio = MagicMock()
         ServerAPI.state = APIState.IDLE
 
         self._shutdown_called = False
@@ -228,11 +159,7 @@ class TestAdminShutdownEndpoint:
 # ---------------------------------------------------------------------------
 
 class TestServerProcessShutdown:
-    """Integration test: start the real server process and verify Ctrl+C works.
-
-    These tests are marked slow and will be skipped if the server can't start
-    (e.g. missing dependencies in CI).
-    """
+    """Integration test: start the real server process and verify Ctrl+C works."""
 
     @pytest.fixture
     def server_dir(self):
@@ -241,7 +168,7 @@ class TestServerProcessShutdown:
             'server',
         )
 
-    def _start_server(self, server_dir, rest_port, ws_port):
+    def _start_server(self, server_dir, rest_port):
         """Start server/main.py and wait for it to begin listening."""
         logs_dir = os.path.join(server_dir, 'logs')
         os.makedirs(logs_dir, exist_ok=True)
@@ -249,7 +176,6 @@ class TestServerProcessShutdown:
         env = os.environ.copy()
         env['QVC_LOCAL_IP'] = '127.0.0.1'
         env['QVC_SERVER_REST_PORT'] = str(rest_port)
-        env['QVC_SERVER_WS_PORT'] = str(ws_port)
 
         proc = subprocess.Popen(
             [sys.executable, 'main.py'],
@@ -281,7 +207,7 @@ class TestServerProcessShutdown:
 
     def test_sigint_exits_cleanly(self, server_dir):
         """Start server/main.py, send SIGINT, assert process exits within 5s."""
-        proc, err = self._start_server(server_dir, 15050, 15051)
+        proc, err = self._start_server(server_dir, 15050)
         if proc is None:
             pytest.skip(err)
 
@@ -302,7 +228,7 @@ class TestServerProcessShutdown:
 
     def test_sigterm_exits_cleanly(self, server_dir):
         """Start server/main.py, send SIGTERM, assert process exits within 5s."""
-        proc, err = self._start_server(server_dir, 15052, 15053)
+        proc, err = self._start_server(server_dir, 15052)
         if proc is None:
             pytest.skip(err)
 

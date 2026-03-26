@@ -19,24 +19,20 @@ def user_manager():
 def mock_server():
     """Create a Server with SocketAPI mocked out.
 
-    Server.__init__ does a late `from socket_api import SocketAPI`, so we
-    patch at the module level where it's imported from.
+    Server.__init__ imports SocketAPI at top level, so we patch it
+    at the module level where it's imported from.
     """
     MockSocketAPI = MagicMock()
-    MockSocketAPI.DEFAULT_ENDPOINT = MagicMock()
-    MockSocketAPI.DEFAULT_ENDPOINT.__iter__ = MagicMock(
-        return_value=iter(('127.0.0.1', 3000)))
 
-    with patch.dict('sys.modules', {'socket_api': MagicMock(SocketAPI=MockSocketAPI)}):
+    with patch('server.SocketAPI', MockSocketAPI):
         from server import Server
         from shared.endpoint import Endpoint
 
-        # Need to reimport since we patched the module
         import importlib
         import server as server_mod
         importlib.reload(server_mod)
         Server = server_mod.Server
 
-        s = Server(Endpoint('127.0.0.1', 5050))
-        s._SocketAPI = MockSocketAPI
+        mock_socketio = MagicMock()
+        s = Server(Endpoint('127.0.0.1', 5050), socketio=mock_socketio)
         yield s

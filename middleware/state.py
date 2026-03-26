@@ -13,9 +13,9 @@ MIDDLEWARE_PORT = 5001
 WIDTH  = 640
 HEIGHT = 480
 
-DEFAULT_SERVER_HOST = os.environ.get('QUANTUM_SERVER_HOST', '192.168.1.28')
+DEFAULT_SERVER_HOST = os.environ.get('QUANTUM_SERVER_HOST', '127.0.0.1')
 DEFAULT_SERVER_PORT = int(os.environ.get('QUANTUM_SERVER_PORT', '5050'))
-IS_LOCAL = DEFAULT_SERVER_HOST != ''
+IS_LOCAL = os.environ.get('QVC_AUTO_CONNECT', '').lower() in ('1', 'true', 'yes')
 
 
 class MiddlewareState:
@@ -27,9 +27,9 @@ class MiddlewareState:
         self.flask_app = Flask(__name__,
                                template_folder=os.path.join(_dir, 'templates'),
                                static_folder=os.path.join(_dir, 'static'))
-        CORS(self.flask_app)
+        CORS(self.flask_app, origins=os.environ.get('QVC_CORS_ORIGINS', 'http://localhost:5001,http://localhost:3000').split(','))
         self.sio = socketio.Server(
-            cors_allowed_origins='*',
+            cors_allowed_origins=os.environ.get('QVC_CORS_ORIGINS', 'http://localhost:5001,http://localhost:3000').split(','),
             async_mode='gevent',
             logger=False,
             engineio_logger=False,
@@ -63,4 +63,6 @@ class MiddlewareState:
 
     def server_url(self, path: str) -> str:
         """Build a full URL for the QKD server's REST API."""
-        return f'http://{self.server_host}:{self.server_port}{path}'
+        from shared.ssl_utils import get_ssl_context
+        scheme = 'https' if get_ssl_context() else 'http'
+        return f'{scheme}://{self.server_host}:{self.server_port}{path}'

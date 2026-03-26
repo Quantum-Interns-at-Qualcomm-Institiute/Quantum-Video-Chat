@@ -30,7 +30,7 @@ class MockMiddleware:
     """Simulates one middleware process with mock A/V sources."""
 
     def __init__(self, user_id, width=8, height=6,
-                 sample_rate=8196, frames_per_buffer=1366):
+                 sample_rate=8000, frames_per_buffer=1366):
         self.user_id = user_id
         self.video_src = MockFrameSource(width=width, height=height)
         self.audio_src = MockAudioSource(
@@ -116,18 +116,15 @@ class MockSocketAPIRelay:
 def mock_server():
     """Create a Server with SocketAPI mocked out."""
     MockSocketAPI = MagicMock()
-    MockSocketAPI.DEFAULT_ENDPOINT = MagicMock()
-    MockSocketAPI.DEFAULT_ENDPOINT.__iter__ = MagicMock(
-        return_value=iter(('127.0.0.1', 3000)))
 
-    with patch.dict('sys.modules', {'socket_api': MagicMock(SocketAPI=MockSocketAPI)}):
+    with patch('server.SocketAPI', MockSocketAPI):
         import importlib
         import server as server_mod
         importlib.reload(server_mod)
         Server = server_mod.Server
 
-        s = Server(Endpoint('127.0.0.1', 5050))
-        s._SocketAPI = MockSocketAPI
+        mock_socketio = MagicMock()
+        s = Server(Endpoint('127.0.0.1', 5050), socketio=mock_socketio)
         yield s
 
 
@@ -322,7 +319,7 @@ class TestCombinedAVDelivery:
 
     def test_tolist_roundtrip_preserves_audio_identity(self):
         """chunk.tolist() → np.array() roundtrip preserves chunk_id."""
-        src = MockAudioSource(sample_rate=8196, frames_per_buffer=1366)
+        src = MockAudioSource(sample_rate=8000, frames_per_buffer=1366)
         for expected_id in range(10):
             chunk = src.capture()
             serialized = chunk.tolist()

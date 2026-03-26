@@ -33,7 +33,10 @@ class ClientNotifier:
             # 8-second timeout: middleware /peer_connection returns immediately
             # (WebSocket connect runs in a background greenlet), so this should
             # normally complete in milliseconds.
-            response = requests.post(str(endpoint), json=json, timeout=8)
+            from shared.ssl_utils import get_ssl_context
+            # Self-signed certs are expected for internal server-to-middleware calls
+            verify = False if get_ssl_context() else True
+            response = requests.post(str(endpoint), json=json, timeout=8, verify=verify)
         except Exception as e:
             logger.error(
                 f"Unable to reach Client API for User {user_id} at endpoint {endpoint}.")

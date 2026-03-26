@@ -1,4 +1,4 @@
-"""Tests for server/server.py — Server class."""
+"""Tests for server/server.py -- Server class."""
 import pytest
 from unittest.mock import MagicMock, patch, PropertyMock
 from shared.endpoint import Endpoint
@@ -20,12 +20,6 @@ class TestServer:
         assert user.api_endpoint.ip == '127.0.0.1'
 
     def test_remove_user_nonexistent_silently(self, mock_server):
-        """UserManager.remove_user swallows UserNotFound (doesn't re-raise),
-        but Server.remove_user wraps it and DOES re-raise."""
-        # The server.remove_user calls user_manager.remove_user which catches
-        # UserNotFound and doesn't re-raise. But server.remove_user also catches
-        # it from user_manager and re-raises. Since user_manager doesn't re-raise,
-        # server.remove_user logs success silently.
         mock_server.remove_user('nonexistent')  # should not raise
 
     def test_handle_peer_connection_self(self, mock_server):
@@ -69,19 +63,13 @@ class TestServer:
         with pytest.raises(ConnectionError):
             mock_server.contact_client('uid', '/test', json={})
 
-    def test_set_websocket_endpoint(self, mock_server):
-        ep = Endpoint('10.0.0.1', 9000)
-        mock_server.set_websocket_endpoint(ep)
-        assert mock_server.websocket_endpoint.ip == '10.0.0.1'
-        assert mock_server.websocket_endpoint.port == 9000
-
     def test_start_websocket(self, mock_server):
-        mock_instance = MagicMock()
-        mock_server._SocketAPI.return_value = mock_instance
+        mock_server.socket_api = MagicMock()
+        mock_server.socket_api.create_session.return_value = 'test-session-id'
 
-        mock_server.start_websocket(users=('u1', 'u2'))
-        mock_server._SocketAPI.assert_called_once()
-        mock_instance.start.assert_called_once()
+        session_id = mock_server.start_websocket(users=('u1', 'u2'))
+        mock_server.socket_api.create_session.assert_called_once_with(('u1', 'u2'))
+        assert session_id == 'test-session-id'
 
     def test_disconnect_peer_resets_both_users(self, mock_server):
         """disconnect_peer sets both user and peer to IDLE."""
@@ -140,7 +128,7 @@ class TestServer:
             return {'u1': mock_user, 'u2': mock_peer}[uid]
 
         mock_server.get_user = MagicMock(side_effect=side_effect)
-        mock_server.start_websocket = MagicMock()
+        mock_server.start_websocket = MagicMock(return_value='test-session-id')
         mock_server.set_user_state = MagicMock()
 
         mock_response = MagicMock()
@@ -149,6 +137,8 @@ class TestServer:
 
         result = mock_server.handle_peer_connection('u1', 'u2')
         assert result is not None
+        endpoint, session_id = result
+        assert session_id == 'test-session-id'
         mock_server.start_websocket.assert_called_once()
         mock_server.contact_client.assert_called_once()
         # Verify both users were set to CONNECTED
@@ -167,7 +157,7 @@ class TestServer:
             return {'u1': mock_user, 'u2': mock_peer}[uid]
 
         mock_server.get_user = MagicMock(side_effect=side_effect)
-        mock_server.start_websocket = MagicMock()
+        mock_server.start_websocket = MagicMock(return_value='test-session-id')
         mock_server.set_user_state = MagicMock()
 
         mock_response = MagicMock()

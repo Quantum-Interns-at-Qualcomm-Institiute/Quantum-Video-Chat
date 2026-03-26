@@ -139,7 +139,7 @@ def register_server_events(state: MiddlewareState):
         if audio is not None:
             state.sio.emit('audio-frame', {
                 'audio':       audio,
-                'sample_rate': data.get('sample_rate', 8196),
+                'sample_rate': data.get('sample_rate', 8000),
                 'self':        False,
             })
 
@@ -153,13 +153,14 @@ def register_rest_routes(state: MiddlewareState):
         data = flask_request.get_json(force=True)
         peer_id = data.get('peer_id', '')
         ws_endpoint = data.get('socket_endpoint')
-        print(f'(middleware): REST /peer_connection — peer={peer_id} ws={ws_endpoint}')
+        session_id = data.get('session_id')
+        print(f'(middleware): REST /peer_connection -- peer={peer_id} ws={ws_endpoint} session={session_id}')
         if ws_endpoint:
             # Spawn asynchronously so we return 200 immediately.
-            # The QKD server's contact_client call has no timeout — if we block
+            # The QKD server's contact_client call has no timeout -- if we block
             # here waiting for the WebSocket handshake, the server stalls and
             # the calling peer's 10-second request timeout fires first.
-            gevent.spawn(server_comms.connect_to_session_ws, state, ws_endpoint, peer_id)
+            gevent.spawn(server_comms.connect_to_session_ws, state, ws_endpoint, peer_id, session_id=session_id)
         return jsonify({'status': 'ok'}), 200
 
     @flask_app.route('/peer_disconnected', methods=['POST'])

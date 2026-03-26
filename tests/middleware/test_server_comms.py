@@ -148,12 +148,15 @@ class TestJoinRoom:
         state.user_id = 'user1'
         mock_resp = MagicMock()
         mock_resp.status_code = 200
-        mock_resp.json.return_value = {'socket_endpoint': ('localhost', 4000)}
+        mock_resp.json.return_value = {
+            'socket_endpoint': ('localhost', 4000),
+            'session_id': 'sess-123',
+        }
         mock_requests.post.return_value = mock_resp
 
         with patch.object(mw_comms, 'connect_to_session_ws') as mock_connect:
             join_room(state, 'sid1', peer_id='user2')
-            mock_connect.assert_called_once_with(state, ('localhost', 4000), 'user2')
+            mock_connect.assert_called_once_with(state, ('localhost', 4000), 'user2', session_id='sess-123')
 
     @patch('mw_server_comms.requests')
     def test_peer_connection_server_error(self, mock_requests, state):
@@ -207,8 +210,23 @@ class TestLeaveRoom:
 # ─── connect_to_session_ws ───────────────────────────────────────────────────
 
 class TestConnectToSessionWs:
+    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
     @patch('mw_server_comms.gevent')
-    def test_successful_first_attempt(self, mock_gevent, state):
+    def test_successful_first_attempt(self, mock_gevent, _mock_ssl, state):
+        state.server_client.connected = False
+        state.user_id = 'user1'
+        state.server_client.connect = MagicMock()
+
+        connect_to_session_ws(state, ('localhost', 4000), 'peer1', session_id='sess-123')
+        state.server_client.connect.assert_called_once_with(
+            'http://localhost:4000',
+            auth={'user_id': 'user1', 'session_id': 'sess-123'},
+            wait_timeout=10,
+        )
+
+    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
+    @patch('mw_server_comms.gevent')
+    def test_successful_without_session_id(self, mock_gevent, _mock_ssl, state):
         state.server_client.connected = False
         state.user_id = 'user1'
         state.server_client.connect = MagicMock()
@@ -225,7 +243,7 @@ class TestConnectToSessionWs:
         state.server_client.connected = True
         state.user_id = 'user1'
 
-        connect_to_session_ws(state, ('localhost', 4000), 'peer1')
+        connect_to_session_ws(state, ('localhost', 4000), 'peer1', session_id='sess-123')
         state.server_client.disconnect.assert_called_once()
 
     @patch('mw_server_comms.gevent')
@@ -236,7 +254,7 @@ class TestConnectToSessionWs:
         state.server_client.connect = MagicMock(
             side_effect=[Exception('fail'), Exception('fail'), None])
 
-        connect_to_session_ws(state, ('localhost', 4000), 'peer1')
+        connect_to_session_ws(state, ('localhost', 4000), 'peer1', session_id='sess-123')
         assert state.server_client.connect.call_count == 3
 
     @patch('mw_server_comms.gevent')
@@ -245,7 +263,7 @@ class TestConnectToSessionWs:
         state.user_id = 'user1'
         state.server_client.connect = MagicMock(side_effect=Exception('fail'))
 
-        connect_to_session_ws(state, ('localhost', 4000), 'peer1')
+        connect_to_session_ws(state, ('localhost', 4000), 'peer1', session_id='sess-123')
         assert state.server_client.connect.call_count == 5
         state.sio.emit.assert_called_once()
         assert state.sio.emit.call_args[0][0] == 'server-error'

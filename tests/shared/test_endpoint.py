@@ -1,5 +1,6 @@
 """Tests for shared/endpoint.py — Endpoint class."""
 import pytest
+from unittest.mock import patch
 from shared.endpoint import Endpoint
 
 
@@ -46,24 +47,25 @@ class TestEndpointConstructor:
         assert ep.route == 'api/v1'
 
 
+@patch('shared.ssl_utils.get_ssl_context', return_value=None)
 class TestEndpointToString:
-    def test_full(self):
+    def test_full(self, _mock_ssl):
         ep = Endpoint('1.2.3.4', 80, 'api')
         assert ep.to_string() == 'http://1.2.3.4:80/api'
 
-    def test_none_ip_falls_back_to_localhost(self):
+    def test_none_ip_falls_back_to_localhost(self, _mock_ssl):
         ep = Endpoint(None, 5000)
         assert ep.to_string() == 'http://localhost:5000'
 
-    def test_none_port_omitted(self):
+    def test_none_port_omitted(self, _mock_ssl):
         ep = Endpoint('1.2.3.4', None)
         assert ep.to_string() == 'http://1.2.3.4'
 
-    def test_none_route_omitted(self):
+    def test_none_route_omitted(self, _mock_ssl):
         ep = Endpoint('1.2.3.4', 80)
         assert ep.to_string() == 'http://1.2.3.4:80'
 
-    def test_all_none(self):
+    def test_all_none(self, _mock_ssl):
         ep = Endpoint(None, None)
         assert ep.to_string() == 'http://localhost'
 
@@ -112,11 +114,12 @@ class TestEndpointIter:
         assert tuple(ep) == ('1.2.3.4',)
 
 
+@patch('shared.ssl_utils.get_ssl_context', return_value=None)
 class TestEndpointStringMethods:
-    def test_str(self):
+    def test_str(self, _mock_ssl):
         ep = Endpoint('1.2.3.4', 80)
         assert str(ep) == 'http://1.2.3.4:80'
 
-    def test_repr(self):
+    def test_repr(self, _mock_ssl):
         ep = Endpoint('1.2.3.4', 80)
         assert repr(ep) == 'http://1.2.3.4:80'

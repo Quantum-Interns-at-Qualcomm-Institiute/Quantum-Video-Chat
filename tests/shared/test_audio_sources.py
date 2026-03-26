@@ -16,7 +16,7 @@ import pytest
 from shared.frame_source import SilenceSource, MockAudioSource
 
 
-SAMPLE_RATE = 8196
+SAMPLE_RATE = 8000
 FRAMES_PER_BUFFER = SAMPLE_RATE // 6  # 1366
 
 

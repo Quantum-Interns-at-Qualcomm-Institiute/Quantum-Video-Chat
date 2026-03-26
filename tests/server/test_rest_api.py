@@ -1,4 +1,4 @@
-"""Tests for server/rest_api.py — ServerAPI Flask routes."""
+"""Tests for server/rest_api.py -- ServerAPI Flask routes."""
 import pytest
 import json
 from unittest.mock import MagicMock, patch
@@ -18,6 +18,7 @@ class TestServerAPIRoutes:
         ServerAPI.state = APIState.INIT
         ServerAPI.server = MagicMock()
         ServerAPI.endpoint = Endpoint('127.0.0.1', 5050)
+        ServerAPI.socketio = MagicMock()
         ServerAPI.state = APIState.IDLE
 
         self.api = ServerAPI
@@ -49,8 +50,8 @@ class TestServerAPIRoutes:
 
     def test_peer_connection_success(self):
         mock_endpoint = MagicMock()
-        mock_endpoint.__iter__ = MagicMock(return_value=iter(('127.0.0.1', 3000)))
-        self.api.server.handle_peer_connection.return_value = mock_endpoint
+        mock_endpoint.__iter__ = MagicMock(return_value=iter(('127.0.0.1', 5050)))
+        self.api.server.handle_peer_connection.return_value = (mock_endpoint, 'test-session-id')
 
         response = self.client.post('/peer_connection',
             data=json.dumps({'user_id': 'u1', 'peer_id': 'u2'}),
@@ -58,6 +59,8 @@ class TestServerAPIRoutes:
         assert response.status_code == 200
         data = json.loads(response.data)
         assert 'socket_endpoint' in data
+        assert 'session_id' in data
+        assert data['session_id'] == 'test-session-id'
 
     def test_peer_connection_bad_request(self):
         self.api.server.handle_peer_connection.side_effect = BadRequest("bad")

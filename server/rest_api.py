@@ -1,10 +1,12 @@
 import logging
+import os
+import threading
 import time
 from collections import defaultdict
 from functools import wraps
 
 from flask import Flask, jsonify, request
-from gevent.pywsgi import WSGIServer
+from flask_socketio import SocketIO
 
 from server import Server
 from state import APIState
@@ -20,16 +22,20 @@ class RateLimiter:
         self.max_requests = max_requests
         self.window = window_seconds
         self._requests: dict[str, list[float]] = defaultdict(list)
+        self._lock = threading.Lock()
 
     def is_allowed(self, key: str) -> bool:
         now = time.time()
-        timestamps = self._requests[key]
-        # Prune old entries
-        self._requests[key] = [t for t in timestamps if now - t < self.window]
-        if len(self._requests[key]) >= self.max_requests:
-            return False
-        self._requests[key].append(now)
-        return True
+        with self._lock:
+            timestamps = self._requests[key]
+            # Prune old entries
+            self._requests[key] = [t for t in timestamps if now - t < self.window]
+            if not self._requests[key]:
+                del self._requests[key]
+            if len(self._requests.get(key, [])) >= self.max_requests:
+                return False
+            self._requests[key].append(now)
+            return True
 
 
 _rate_limiter = RateLimiter()
@@ -46,18 +52,7 @@ def rate_limit(f):
     return wrapper
 
 
-def _get_ssl_context():
-    """Return (cert, key) paths if dev certs exist, else None."""
-    import os
-    from pathlib import Path
-    for d in [
-        Path(os.environ.get("DEV_CERT_DIR", "")),
-        Path(__file__).resolve().parents[2] / ".certs",
-    ]:
-        cert, key = d / "cert.pem", d / "key.pem"
-        if cert.is_file() and key.is_file():
-            return (str(cert), str(key))
-    return None
+from shared.ssl_utils import get_ssl_context as _get_ssl_context
 from admin_routes import admin_bp, init_admin
 from shared.config import LOCAL_IP, SERVER_REST_PORT
 from shared.decorators import handle_exceptions_with_cls
@@ -70,28 +65,42 @@ class ServerAPI:
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.register_blueprint(admin_bp)
 
-    http_server = None
+    socketio = None
     server = None
     endpoint = None
     state = APIState.INIT
 
     logger = logging.getLogger('ServerAPI')
 
+    _allowed_origins = [
+        o.strip() for o in
+        os.environ.get('QVC_CORS_ORIGINS', 'http://localhost:5001,http://localhost:3000').split(',')
+    ]
+
     @app.after_request
     def add_cors_headers(response):
-        response.headers['Access-Control-Allow-Origin'] = '*'
+        origin = request.headers.get('Origin', '')
+        if origin in ServerAPI._allowed_origins:
+            response.headers['Access-Control-Allow-Origin'] = origin
         response.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response
 
     # Shared exception-handling decorator that injects ``cls = ServerAPI``
     HandleExceptions = handle_exceptions_with_cls(lambda: ServerAPI)
 
     @classmethod
+    def init_socketio(cls):
+        """Create the shared SocketIO instance (must be called before Server construction)."""
+        if cls.socketio is None:
+            cls.socketio = SocketIO(cls.app, cors_allowed_origins=cls._allowed_origins, async_mode='gevent')
+
+    @classmethod
     def init(cls, server: Server):
         cls.logger.info(f"Initializing Server API with endpoint {server.api_endpoint}.")
         if cls.state == APIState.LIVE:
             raise ServerError("Cannot reconfigure API during server runtime.")
+        cls.init_socketio()
         cls.server = server
         cls.endpoint = server.api_endpoint
         cls.state = APIState.IDLE
@@ -108,38 +117,26 @@ class ServerAPI:
         cls.state = APIState.LIVE
         ssl_ctx = _get_ssl_context()
         ssl_args = {"certfile": ssl_ctx[0], "keyfile": ssl_ctx[1]} if ssl_ctx else {}
-        cls.http_server = WSGIServer(tuple(cls.endpoint), cls.app, **ssl_args)
-        cls.http_server.serve_forever()
+        cls.socketio.run(cls.app, host=cls.endpoint.ip, port=cls.endpoint.port, **ssl_args)
 
     @classmethod
     def kill(cls):
         cls.logger.info("Killing Server API.")
         if cls.state != APIState.LIVE:
             raise ServerError(f"Cannot kill Server API when not {APIState.LIVE}.")
-        cls.http_server.stop()
+        cls.socketio.stop()
         cls.state = APIState.IDLE
 
     @classmethod
     def graceful_shutdown(cls):
-        """Stop the WebSocket API, then the REST API. Safe to call from any context."""
+        """Stop the server. Safe to call from any context."""
         cls.logger.info("Initiating graceful shutdown...")
 
-        # Stop WebSocket API if running
-        if cls.server is not None:
-            ws = getattr(cls.server, 'websocket_instance', None)
-            if ws is not None:
-                try:
-                    if ws.is_alive():
-                        ws.kill()
-                        ws.join(timeout=3)
-                except Exception as e:
-                    cls.logger.warning(f"Error stopping WebSocket API: {e}")
-
-        # Stop REST API
+        # Stop the combined REST + WebSocket API
         try:
             cls.kill()
         except Exception as e:
-            cls.logger.warning(f"Error stopping REST API: {e}")
+            cls.logger.warning(f"Error stopping Server API: {e}")
 
     # region --- API Endpoints ---
 
@@ -161,8 +158,8 @@ class ServerAPI:
         user_id, peer_id = get_parameters(request.json, 'user_id', 'peer_id')
         session_settings = request.json.get('session_settings')
         cls.logger.info(f"Received request from User {user_id} to connect with User {peer_id}.")
-        endpoint = cls.server.handle_peer_connection(user_id, peer_id, session_settings=session_settings)
-        return jsonify({'socket_endpoint': tuple(endpoint)}), 200
+        endpoint, session_id = cls.server.handle_peer_connection(user_id, peer_id, session_settings=session_settings)
+        return jsonify({'socket_endpoint': tuple(endpoint), 'session_id': session_id}), 200
 
     @app.route('/disconnect_peer', methods=['POST'])
     @rate_limit

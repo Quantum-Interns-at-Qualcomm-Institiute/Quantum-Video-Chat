@@ -1,7 +1,7 @@
 """Tests for middleware/state.py — MiddlewareState defaults and helpers."""
 import os
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from tests.middleware._helpers import load_middleware_module
 
 mw_state = load_middleware_module('state')
@@ -67,18 +67,21 @@ class TestMiddlewareStateDefaults:
 
 
 class TestServerUrl:
-    def test_builds_url_with_path(self):
+    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
+    def test_builds_url_with_path(self, _mock_ssl):
         s = MiddlewareState()
         s.server_host = 'example.com'
         s.server_port = 8080
         assert s.server_url('/admin/status') == 'http://example.com:8080/admin/status'
 
-    def test_builds_url_root(self):
+    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
+    def test_builds_url_root(self, _mock_ssl):
         s = MiddlewareState()
         s.server_host = '192.168.1.1'
         s.server_port = 5050
         assert s.server_url('/') == 'http://192.168.1.1:5050/'
 
-    def test_empty_host_still_formats(self):
+    @patch('shared.ssl_utils.get_ssl_context', return_value=None)
+    def test_empty_host_still_formats(self, _mock_ssl):
         s = MiddlewareState()
         assert s.server_url('/test') == 'http://:0/test'

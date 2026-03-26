@@ -185,12 +185,16 @@ class TestRegisterRestRoutes:
             resp = client.post('/peer_connection', json={
                 'peer_id': 'peer1',
                 'socket_endpoint': ['localhost', 4000],
+                'session_id': 'sess-123',
             })
 
         assert resp.status_code == 200
         data = resp.get_json()
         assert data['status'] == 'ok'
         mock_gevent.spawn.assert_called_once()
+        # Verify session_id is passed through
+        spawn_args = mock_gevent.spawn.call_args
+        assert spawn_args[1].get('session_id') == 'sess-123' or 'sess-123' in str(spawn_args)
 
     def test_peer_disconnected_route(self, state):
         register_rest_routes(state)

@@ -56,7 +56,6 @@ class TestAdminEndpoints:
         assert 'api_state' in data
         assert 'config' in data
         assert 'rest_port' in data['config']
-        assert 'websocket_port' in data['config']
         assert 'local_ip' in data['config']
 
     # ---- /admin/users ----
@@ -179,6 +178,7 @@ class TestAdminEndpoints:
     # ---- CORS ----
 
     def test_cors_headers_present(self):
-        response = self.client.get('/admin/status')
-        assert response.headers.get('Access-Control-Allow-Origin') == '*'
+        response = self.client.get('/admin/status',
+                                   headers={'Origin': 'http://localhost:5001'})
+        assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:5001'
         assert 'GET' in response.headers.get('Access-Control-Allow-Methods', '')

@@ -40,28 +40,35 @@ const state = {
   qberHistory: [],
   bb84Active: false,
   eavesdropperEnabled: false,
+  serverHost: '',
+  serverPort: 5050,
 };
 
 let elapsedInterval = null;
 let noiseRaf = null;
 let socket = null;
 
-/* ── Backend Connect Widget ──────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', function() {
-  var el = document.getElementById('backend-connect');
-  if (el && window.UIKit && UIKit.initConnect) {
-    window.backendConnect = UIKit.initConnect(el, {
-      service: 'qvc',
-      defaultHost: 'localhost',
-      defaultPort: 5002,
-      label: 'Backend',
-      onConnect: function(info) {
-        // Reinit socket with new URL
-        if (socket) { socket.disconnect(); }
-        initSocket(info.url);
-      }
-    });
+/* ── Navbar Connect (Server menu in site-nav) ────────────────────────── */
+document.addEventListener('navbar:connect-ready', function(e) {
+  if (e.detail.service !== 'qvc') return;
+  window.backendConnect = e.detail.widget;
+  if (socket && socket.connected) {
+    window.backendConnect.setStatus('connected');
   }
+});
+
+document.addEventListener('navbar:connect', function(e) {
+  if (e.detail.service !== 'qvc') return;
+  if (socket) { socket.disconnect(); }
+  initSocket(e.detail.url);
+});
+
+document.addEventListener('navbar:disconnect', function(e) {
+  if (e.detail.service !== 'qvc') return;
+  if (socket) { socket.disconnect(); }
+  state.middlewareConnected = false;
+  state.serverConnected = false;
+  render();
 });
 
 /* ── Socket.IO ──────────────────────────────────────────────────────────── */
@@ -90,10 +97,8 @@ function initSocket(url) {
     state.middlewareConnected = true;
     state.registrationEmitted = false;
     if (cfg && cfg.host) {
-      const hostEl = document.getElementById('server-host');
-      const portEl = document.getElementById('server-port');
-      if (hostEl) hostEl.value = cfg.host;
-      if (portEl) portEl.value = cfg.port || 5050;
+      state.serverHost = cfg.host;
+      state.serverPort = cfg.port || 5050;
     }
     if (cfg && cfg.isLocal) {
       connectToServer(cfg.host, cfg.port);
@@ -394,19 +399,6 @@ function render() {
 
     html += `<h2 class="lobby-title">QKD Video Chat</h2>`;
 
-    // Server connect form
-    html += `<form class="lobby-form" onsubmit="handleConnect(event)">
-      <label for="server-host" class="lobby-label">Server</label>
-      <div class="lobby-server-inputs">
-        <input id="server-host" type="text" class="lobby-input lobby-input--host" placeholder="192.168.x.x" value="${document.getElementById('server-host')?.value || '192.168.1.28'}" spellcheck="false" autocomplete="off">
-        <span class="lobby-colon">:</span>
-        <input id="server-port" type="number" class="lobby-input lobby-input--port" placeholder="5050" value="${document.getElementById('server-port')?.value || '5050'}" min="1" max="65535">
-      </div>
-      <button type="submit" class="lobby-btn lobby-connect-btn ${isConnected ? 'lobby-connect-btn--connected' : ''}">${isConnected ? ICONS.check + ' Connected' : 'Connect'}</button>
-    </form>`;
-
-    html += `<div class="lobby-divider"></div>`;
-
     // Room join form
     html += `<form class="lobby-form" onsubmit="handleJoin(event)">
       <label for="join-room-id" class="lobby-label">Room ID</label>
@@ -499,19 +491,13 @@ function render() {
   }
 
   // Preserve input values before re-render
-  const hostVal = document.getElementById('server-host')?.value;
-  const portVal = document.getElementById('server-port')?.value;
   const joinVal = document.getElementById('join-room-id')?.value;
 
   app.innerHTML = html;
 
   // Restore input values
   if (!inCall) {
-    const h = document.getElementById('server-host');
-    const p = document.getElementById('server-port');
     const j = document.getElementById('join-room-id');
-    if (h && hostVal) h.value = hostVal;
-    if (p && portVal) p.value = portVal;
     if (j && joinVal) j.value = joinVal;
   }
 
@@ -645,8 +631,8 @@ function drawQBERChart() {
 function toggleEavesdropper() {
   state.eavesdropperEnabled = !state.eavesdropperEnabled;
   // Send to server admin API
-  const serverHost = document.getElementById('server-host')?.value || 'localhost';
-  const serverPort = document.getElementById('server-port')?.value || '5050';
+  const serverHost = state.serverHost || 'localhost';
+  const serverPort = state.serverPort || '5050';
   const url = `http://${serverHost}:${serverPort}/admin/quantum/eavesdropper`;
   fetch(url, {
     method: 'POST',
@@ -663,14 +649,6 @@ function toggleEavesdropper() {
 }
 
 /* ── Form handlers ──────────────────────────────────────────────────────── */
-function handleConnect(e) {
-  e.preventDefault();
-  const host = document.getElementById('server-host').value;
-  const port = document.getElementById('server-port').value;
-  if (!host) { showToast('Please enter a server address.'); return; }
-  connectToServer(host, port);
-}
-
 function handleJoin(e) {
   e.preventDefault();
   const id = document.getElementById('join-room-id').value.trim();

@@ -13,6 +13,8 @@ importable at runtime.
 import os
 import sys
 import threading
+import base64
+import cv2
 import gevent
 
 # Ensure the project root is on sys.path so ``shared.*`` imports work.
@@ -72,10 +74,12 @@ class VideoThread:
             frame = source.capture()
 
             if frame is not None:
-                frame_list = frame.tolist()
+                # Encode frame as JPEG and base64 for efficient transport
+                _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+                frame_b64 = base64.b64encode(buffer).decode('ascii')
                 # Send to local browser (self-view)
                 sio.emit('frame', {
-                    'frame':  frame_list,
+                    'frame':  frame_b64,
                     'width':  self.width,
                     'height': self.height,
                     'self':   True,
@@ -84,7 +88,7 @@ class VideoThread:
                 if server_client.connected:
                     try:
                         server_client.emit('frame', {
-                            'frame':  frame_list,
+                            'frame':  frame_b64,
                             'width':  self.width,
                             'height': self.height,
                         })
