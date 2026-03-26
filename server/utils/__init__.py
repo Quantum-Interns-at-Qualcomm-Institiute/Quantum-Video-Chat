@@ -9,10 +9,3 @@ from shared.exceptions import (
 )
 from shared.parameters import get_parameters, is_type
 from shared.config import get_local_ip
-
-
-def remove_last_period(string):
-    string = str(string)
-    if string[-1] == ".":
-        return string[0:-1]
-    return string

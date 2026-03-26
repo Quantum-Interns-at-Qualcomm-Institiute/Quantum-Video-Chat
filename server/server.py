@@ -8,22 +8,19 @@ from custom_logging import logger
 from utils import ServerError, Endpoint
 from utils.user_manager import UserManager, UserStorageFactory, UserState
 from utils.user_manager import DuplicateUser, UserNotFound
-from shared.config import LOCAL_IP, SERVER_WEBSOCKET_PORT
+from shared.config import LOCAL_IP
 from peer_manager import PeerConnectionManager
 from client_notifier import ClientNotifier
+from socket_api import SocketAPI
 
 
 # region --- Server ---
 class Server:
     # TODO: make user storage type pull from config file
-    def __init__(self, api_endpoint, user_storage="DICT"):
-        from socket_api import SocketAPI  # late import to avoid circular dependency
-        self._SocketAPI = SocketAPI
-
+    def __init__(self, api_endpoint, user_storage="DICT", socketio=None):
         self.api_endpoint = Endpoint(*api_endpoint)
-        logger.info(f"Intializing server with API Endpoint {self.api_endpoint}")
+        logger.info(f"Initializing server with API Endpoint {self.api_endpoint}")
 
-        self.websocket_endpoint = Endpoint(LOCAL_IP, SERVER_WEBSOCKET_PORT)
         self.start_time = time.time()
         self.event_log = deque(maxlen=500)
 
@@ -35,6 +32,9 @@ class Server:
 
         self.notifier = ClientNotifier(self)
         self.peer_manager = PeerConnectionManager(self)
+
+        # Create the single SocketAPI instance if socketio is provided
+        self.socket_api = SocketAPI(self, socketio) if socketio is not None else None
 
     def _log_event(self, event, **details):
         self.event_log.append({
@@ -83,35 +83,13 @@ class Server:
         """Delegate to ClientNotifier."""
         return self.notifier.notify(user_id, route, json)
 
-    def set_websocket_endpoint(self, endpoint):
-        self.websocket_endpoint = Endpoint(*endpoint)
-        if hasattr(self, 'websocket_instance') and self.websocket_instance:
-            self.websocket_instance.endpoint = self.websocket_endpoint
-        logger.info(f"Setting Web Socket endpoint: {self.websocket_endpoint}")
-
     def start_websocket(self, users):
-        logger.info("Starting WebSocket API.")
-        if not self.websocket_endpoint:
-            raise ServerError("Cannot start WebSocket API without defined endpoint.")
-
-        # Kill any previous SocketAPI instance so we don't leak threads and ports.
-        if hasattr(self, 'websocket_instance') and self.websocket_instance is not None:
-            try:
-                self.websocket_instance.kill()
-                logger.info("Killed previous WebSocket API instance.")
-            except Exception as e:
-                logger.warning(f"Could not kill previous WebSocket API: {e}")
-            # Reset the endpoint back to the default so the new instance doesn't
-            # inherit a bumped port from a previous session.
-            self.websocket_endpoint = Endpoint(LOCAL_IP, SERVER_WEBSOCKET_PORT)
-
-        self.websocket_instance = self._SocketAPI(self, users)
-        self.websocket_instance.start()
-        # Wait until the WebSocket server is actually accepting connections
-        # before returning the endpoint to callers.
-        if not self.websocket_instance.wait_until_ready(timeout=5.0):
-            logger.warning("WebSocket API did not become ready within 5s — "
-                           "clients may need to retry.")
+        """Create a new session room for the given users. Returns session_id."""
+        logger.info("Creating WebSocket session.")
+        if self.socket_api is None:
+            raise ServerError("Cannot start WebSocket session without SocketAPI.")
+        session_id = self.socket_api.create_session(users)
+        return session_id
 
     def disconnect_peer(self, user_id):
         """Delegate to PeerConnectionManager."""

@@ -63,14 +63,14 @@ class TestKeyExchangeSecurity:
         assert key1 != key2
         assert len(key1) == 32  # 256 bits = 32 bytes
 
-    def test_aes_encryption_uses_standard_mode(self):
-        """AES encryption must use a recognized block cipher mode."""
+    def test_aes_gcm_authenticated_encryption(self):
+        """AES-GCM must provide authenticated encryption (not just CBC)."""
         from shared.encryption import AESEncryption
         import inspect
 
         source = inspect.getsource(AESEncryption)
-        # Should use a standard AES mode (CBC or GCM)
-        assert 'CBC' in source or 'GCM' in source or 'cbc' in source or 'gcm' in source
+        # Should use GCM mode, not CBC
+        assert 'GCM' in source or 'gcm' in source
 
     def test_encryption_key_length_minimum(self):
         """Encryption keys must be at least 128 bits."""

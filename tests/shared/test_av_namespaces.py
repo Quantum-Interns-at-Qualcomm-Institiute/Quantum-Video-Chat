@@ -149,7 +149,7 @@ class TestAudioClientNamespaceFiltering:
         mock_av._key_lock = MagicMock()
         mock_av.key = (0, b'0' * 16)
         mock_av.encryption = MagicMock()
-        mock_av.sample_rate = 8196
+        mock_av.sample_rate = 8000
         mock_av.frames_per_buffer = 1366
         mock_av.audio_wait = 0.125
         mock_av.mute_audio = False

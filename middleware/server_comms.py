@@ -32,12 +32,10 @@ _WS_CONNECT_MAX_ATTEMPTS = 5
 _WS_CONNECT_RETRY_DELAY  = 0.5  # seconds (doubles each attempt)
 
 
-def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id):
+def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id, session_id=None):
     """Connect this middleware's server_client to the session WebSocket.
 
-    Retries with exponential back-off because the SocketAPI server-thread
-    may not be listening yet when the callback arrives (race condition between
-    ``start_websocket()`` spawning the thread and this greenlet running).
+    Retries with exponential back-off in case of transient failures.
     """
     ws_host, ws_port = ws_endpoint
     print(f'(middleware): Connecting to session WebSocket at {ws_host}:{ws_port}')
@@ -50,9 +48,14 @@ def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id):
     delay = _WS_CONNECT_RETRY_DELAY
     for attempt in range(1, _WS_CONNECT_MAX_ATTEMPTS + 1):
         try:
+            from shared.ssl_utils import get_ssl_context
+            ws_scheme = 'https' if get_ssl_context() else 'http'
+            auth = {'user_id': state.user_id}
+            if session_id:
+                auth['session_id'] = session_id
             state.server_client.connect(
-                f'http://{ws_host}:{ws_port}',
-                auth={'user_id': state.user_id},
+                f'{ws_scheme}://{ws_host}:{ws_port}',
+                auth=auth,
                 wait_timeout=10,
             )
             print(f'(middleware): Session WebSocket connected (attempt {attempt}).')
@@ -60,13 +63,13 @@ def connect_to_session_ws(state: MiddlewareState, ws_endpoint, peer_id):
         except Exception as exc:
             if attempt < _WS_CONNECT_MAX_ATTEMPTS:
                 print(f'(middleware): WS connect attempt {attempt} failed ({exc}), '
-                      f'retrying in {delay:.1f}s…')
+                      f'retrying in {delay:.1f}s...')
                 gevent.sleep(delay)
                 delay = min(delay * 2, 4.0)
             else:
                 print(f'(middleware): WS connect failed after {attempt} attempts: {exc}')
                 state.sio.emit('server-error',
-                               f'Could not connect to session — {exc}')
+                               f'Could not connect to session -- {exc}')
 
 
 def configure_server(state: MiddlewareState, sid, data):
@@ -81,7 +84,11 @@ def configure_server(state: MiddlewareState, sid, data):
 
     url = f'http://{host}:{port}/admin/status'
     try:
-        resp = requests.get(url, timeout=5)
+        headers = {}
+        admin_key = os.environ.get('QVC_ADMIN_KEY', '')
+        if admin_key:
+            headers['Authorization'] = f'Bearer {admin_key}'
+        resp = requests.get(url, headers=headers, timeout=5)
         resp.raise_for_status()
         state.server_host = host
         state.server_port = port
@@ -163,8 +170,9 @@ def join_room(state: MiddlewareState, sid, peer_id=None):
             return
 
         ws_endpoint = data.get('socket_endpoint')
+        session_id = data.get('session_id')
         if ws_endpoint:
-            connect_to_session_ws(state, ws_endpoint, peer_id)
+            connect_to_session_ws(state, ws_endpoint, peer_id, session_id=session_id)
     except Exception as exc:
         msg = f'Peer connection failed — {exc}'
         print(f'(middleware): ERROR — {msg}')
@@ -305,7 +313,11 @@ def _health_check_loop(state: MiddlewareState):
                 state.sio.emit('server-error', 'Server connection lost.')
             continue
         try:
-            resp = requests.get(state.server_url('/admin/status'), timeout=5)
+            headers = {}
+            admin_key = os.environ.get('QVC_ADMIN_KEY', '')
+            if admin_key:
+                headers['Authorization'] = f'Bearer {admin_key}'
+            resp = requests.get(state.server_url('/admin/status'), headers=headers, timeout=5)
             resp.raise_for_status()
             consecutive_failures = 0
             if not state.server_alive:
