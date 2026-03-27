@@ -2,6 +2,7 @@
 .*
 !.git*
 !.dashboard.yaml
+!.dockerignore
 
 __pycache__
 
