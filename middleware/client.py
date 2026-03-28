@@ -21,9 +21,9 @@ import sys
 
 import requests
 from events import register_browser_events, register_rest_routes, register_server_events
-from shared import find_available_port
 from state import DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, IS_LOCAL, MiddlewareState
 
+from shared import find_available_port
 from shared.logging import get_logger
 
 logger = get_logger(__name__)

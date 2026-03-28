@@ -15,6 +15,7 @@ from shared.decorators import handle_exceptions
 admin_bp = Blueprint("admin", __name__)
 
 from shared.logging import get_logger
+
 logger = get_logger(__name__)
 
 _ADMIN_KEY = os.environ.get("QVC_ADMIN_KEY", "")

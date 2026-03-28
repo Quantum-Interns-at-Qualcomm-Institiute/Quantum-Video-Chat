@@ -7,14 +7,14 @@ import gevent
 import server_comms
 from flask import jsonify
 from flask import request as flask_request
-from state import DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, HEIGHT, IS_LOCAL, WIDTH, MiddlewareState  # noqa: F401
+from state import DEFAULT_SERVER_HOST, DEFAULT_SERVER_PORT, HEIGHT, IS_LOCAL, WIDTH, MiddlewareState
 
 from shared.logging import get_logger
 
 logger = get_logger(__name__)
 
 
-def register_browser_events(state: MiddlewareState):  # noqa: C901 -- event registration is inherently multi-branched
+def register_browser_events(state: MiddlewareState):
     """Register browser <-> middleware socket.io event handlers."""
     import time
     import uuid

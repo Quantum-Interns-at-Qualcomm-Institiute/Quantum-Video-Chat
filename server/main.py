@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from rest_api import ServerAPI
+
 from server import Server
 from shared.logging import get_logger
 

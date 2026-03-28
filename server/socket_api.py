@@ -7,6 +7,7 @@ import uuid
 from flask import request as flask_request
 from flask_socketio import SocketIO, join_room, leave_room, send
 from utils.av import generate_flask_namespace
+
 from shared.logging import get_logger
 
 _ROOM_ID_CHARS = string.ascii_uppercase + string.digits

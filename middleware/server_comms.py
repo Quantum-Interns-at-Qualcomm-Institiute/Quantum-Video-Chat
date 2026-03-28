@@ -59,7 +59,7 @@ def connect_to_session_ws(state: MiddlewareState, ws_endpoint, _peer_id, session
     delay = _WS_CONNECT_RETRY_DELAY
     for attempt in range(1, _WS_CONNECT_MAX_ATTEMPTS + 1):
         try:
-            from shared.ssl_utils import get_ssl_context  # noqa: PLC0415
+            from shared.ssl_utils import get_ssl_context
             ws_scheme = "https" if get_ssl_context() else "http"
             auth = {"user_id": state.user_id}
             if session_id:
@@ -273,7 +273,7 @@ def enumerate_cameras(max_devices: int = 8):
     logger.debug("enumerate_cameras: probing up to %d devices", max_devices)
     devices = []
     try:
-        import cv2  # noqa: PLC0415
+        import cv2
     except ImportError:
         logger.debug("cv2 not available -- skipping camera enumeration")
         return devices
@@ -297,7 +297,7 @@ def enumerate_cameras(max_devices: int = 8):
         os.close(saved_stderr_fd)
 
     # Append mock/test sources so users can select them from the camera picker
-    from video import MOCK_DEVICE_A, MOCK_DEVICE_B  # noqa: PLC0415
+    from video import MOCK_DEVICE_A, MOCK_DEVICE_B
     devices.append({"index": MOCK_DEVICE_A, "label": "Test Pattern A"})
     devices.append({"index": MOCK_DEVICE_B, "label": "Test Pattern B"})
 
@@ -308,7 +308,7 @@ def enumerate_cameras(max_devices: int = 8):
 def start_audio(state: MiddlewareState, _room_id):
     """Start or restart the audio thread after a room is assigned."""
     logger.info("start_audio  device=%s  room=%s", state.audio_device, _room_id)
-    from audio import AudioThread  # noqa: PLC0415
+    from audio import AudioThread
     if state.audio_thread is not None and state.audio_thread.is_alive():
         logger.debug("Stopping existing audio thread before restart")
         state.audio_thread.stop()
@@ -325,7 +325,7 @@ def enumerate_audio_devices():
     logger.debug("enumerate_audio_devices: probing")
     devices = []
     try:
-        import pyaudio  # noqa: PLC0415
+        import pyaudio
         pa = pyaudio.PyAudio()
         count = pa.get_device_count()
         logger.debug("PyAudio found %d device(s)", count)
@@ -341,7 +341,7 @@ def enumerate_audio_devices():
         logger.debug("Error enumerating audio devices", exc_info=True)
 
     # Append mock/test sources so users can select them from the audio picker
-    from audio import MOCK_AUDIO_DEVICE_A, MOCK_AUDIO_DEVICE_B  # noqa: PLC0415
+    from audio import MOCK_AUDIO_DEVICE_A, MOCK_AUDIO_DEVICE_B
     devices.append({"index": MOCK_AUDIO_DEVICE_A, "label": "Test Tone A"})
     devices.append({"index": MOCK_AUDIO_DEVICE_B, "label": "Test Tone B"})
 

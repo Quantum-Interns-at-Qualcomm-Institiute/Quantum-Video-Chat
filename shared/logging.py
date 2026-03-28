@@ -18,7 +18,7 @@ verbose logs are available on disk even when the console is quiet.
 import json
 import os
 from datetime import UTC, datetime
-from logging import DEBUG, INFO, WARNING, ERROR, Formatter, StreamHandler, getLogger
+from logging import DEBUG, ERROR, INFO, WARNING, Formatter, StreamHandler, getLogger
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -31,7 +31,7 @@ _LEVEL_MAP = {
 }
 
 _console_level = _LEVEL_MAP.get(
-    os.environ.get("QVC_LOG_LEVEL", "DEBUG").upper(), DEBUG
+    os.environ.get("QVC_LOG_LEVEL", "DEBUG").upper(), DEBUG,
 )
 
 

@@ -17,8 +17,6 @@ from flask_cors import CORS
 
 from shared.logging import get_logger
 
-from shared import find_available_port
-
 logger = get_logger(__name__)
 
 WIDTH  = 640
@@ -94,6 +92,6 @@ class MiddlewareState:
 
     def server_url(self, path: str) -> str:
         """Build a full URL for the QKD server's REST API."""
-        from shared.ssl_utils import get_ssl_context  # noqa: PLC0415
+        from shared.ssl_utils import get_ssl_context
         scheme = "https" if get_ssl_context() else "http"
         return f"{scheme}://{self.server_host}:{self.server_port}{path}"

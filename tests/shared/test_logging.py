@@ -43,6 +43,7 @@ class TestGetLogger:
         monkeypatch.setenv("QVC_LOG_LEVEL", "INFO")
         # Reload the module so _console_level is recalculated
         import importlib
+
         import shared.logging as _logging_mod
         importlib.reload(_logging_mod)
         logger = _logging_mod.get_logger("test_stream_level_env", log_dir=str(tmp_path))

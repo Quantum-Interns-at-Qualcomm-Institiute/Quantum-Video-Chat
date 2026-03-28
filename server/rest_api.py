@@ -96,9 +96,8 @@ class ServerAPI:
         origin = request.headers.get("Origin", "")
         if any(fnmatch.fnmatch(origin, pat) for pat in ServerAPI._allowed_origins):
             self.headers["Access-Control-Allow-Origin"] = origin
-        else:
-            if origin:
-                _logger.debug("CORS rejected origin: %s", origin)
+        elif origin:
+            _logger.debug("CORS rejected origin: %s", origin)
         self.headers["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS"
         self.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         return self

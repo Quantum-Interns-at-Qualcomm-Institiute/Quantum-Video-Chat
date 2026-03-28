@@ -150,7 +150,7 @@ class TestRoomFlow:
         # Mock the server communication layer
         state.sio = MagicMock(wraps=state.sio)
         with patch.object(state, "server_host", "127.0.0.1"), patch.object(
-            state, "server_port", 5050
+            state, "server_port", 5050,
         ):
             try:
                 handler("sid-1", {"peer_id": "peer-123"})

@@ -13,8 +13,8 @@ _PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from shared import find_available_port  # noqa: E402
-from signaling.server import create_app  # noqa: E402
+from shared import find_available_port
+from signaling.server import create_app
 
 logging.basicConfig(
     level=logging.DEBUG if os.environ.get("QVC_DEBUG") else logging.INFO,
