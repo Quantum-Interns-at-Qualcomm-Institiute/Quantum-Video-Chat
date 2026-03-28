@@ -17,6 +17,9 @@ from utils import (
 )
 
 from server import Server
+from shared.logging import get_logger
+
+_logger = get_logger(__name__)
 
 
 class RateLimiter:
@@ -34,11 +37,11 @@ class RateLimiter:
         now = time.time()
         with self._lock:
             timestamps = self._requests[key]
-            # Prune old entries
             self._requests[key] = [t for t in timestamps if now - t < self.window]
             if not self._requests[key]:
                 del self._requests[key]
             if len(self._requests.get(key, [])) >= self.max_requests:
+                _logger.warning("Rate limit exceeded for %s", key)
                 return False
             self._requests[key].append(now)
             return True
@@ -83,15 +86,19 @@ class ServerAPI:
 
     _allowed_origins = [  # noqa: RUF012
         o.strip() for o in
-        os.environ.get("QVC_CORS_ORIGINS", "http://localhost:5001,http://localhost:3000").split(",")
+        os.environ.get("QVC_CORS_ORIGINS", "http://localhost:*,https://localhost:*,https://andypeterson.dev").split(",")
     ]
 
     @app.after_request
     def add_cors_headers(self):
         """Add CORS headers to every response."""
+        import fnmatch
         origin = request.headers.get("Origin", "")
-        if origin in ServerAPI._allowed_origins:
+        if any(fnmatch.fnmatch(origin, pat) for pat in ServerAPI._allowed_origins):
             self.headers["Access-Control-Allow-Origin"] = origin
+        else:
+            if origin:
+                _logger.debug("CORS rejected origin: %s", origin)
         self.headers["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS"
         self.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         return self
@@ -103,7 +110,17 @@ class ServerAPI:
     def init_socketio(cls):
         """Create the shared SocketIO instance (must be called before Server construction)."""
         if cls.socketio is None:
-            cls.socketio = SocketIO(cls.app, cors_allowed_origins=cls._allowed_origins, async_mode="gevent")
+            # Expand glob patterns for python-socketio (it only does exact matching)
+            sio_origins = []
+            for o in cls._allowed_origins:
+                if o.endswith(":*"):
+                    prefix = o[:-1]
+                    sio_origins.extend(prefix + str(p) for p in [3000, 4321, 5001, 5002, 5003, 5050, 8000, 8080])
+                else:
+                    sio_origins.append(o)
+            _logger.debug("SocketIO CORS origins (expanded): %s", sio_origins)
+            cls.socketio = SocketIO(cls.app, cors_allowed_origins=sio_origins, async_mode="gevent")
+            _logger.debug("SocketIO initialized")
 
     @classmethod
     def init(cls, server: Server):
@@ -162,9 +179,10 @@ class ServerAPI:
     @HandleExceptions
     def create_user(self):
         """Create and store a user with unique user_id. Returns user_id."""
+        _logger.debug("POST /create_user  body=%s", request.json)
         (api_endpoint,) = get_parameters(request.json, "api_endpoint")
         user_id = self.server.add_user(api_endpoint)
-        self.logger.info("Created a user with ID: %s", user_id)
+        _logger.info("POST /create_user -> user_id=%s  endpoint=%s", user_id, api_endpoint)
         return jsonify({"user_id": user_id}), 200
 
     @app.route("/peer_connection", methods=["POST"])
@@ -174,12 +192,12 @@ class ServerAPI:
         """Instruct peer to connect to user's provided socket endpoint."""
         user_id, peer_id = get_parameters(request.json, "user_id", "peer_id")
         session_settings = request.json.get("session_settings")
-        self.logger.info(
-            "Received request from User %s to connect with User %s.", user_id, peer_id,
-        )
+        _logger.info("POST /peer_connection  user=%s -> peer=%s  settings=%s",
+                      user_id, peer_id, session_settings)
         endpoint, session_id = self.server.handle_peer_connection(
             user_id, peer_id, session_settings=session_settings,
         )
+        _logger.info("POST /peer_connection -> ws=%s  session=%s", endpoint, session_id)
         return jsonify({"socket_endpoint": tuple(endpoint), "session_id": session_id}), 200
 
     @app.route("/disconnect_peer", methods=["POST"])
@@ -188,8 +206,9 @@ class ServerAPI:
     def disconnect_peer(self):
         """Disconnect a user from their active peer session."""
         (user_id,) = get_parameters(request.json, "user_id")
+        _logger.info("POST /disconnect_peer  user=%s", user_id)
         self.server.disconnect_peer(user_id)
-        self.logger.info("Disconnected user %s from peer.", user_id)
+        _logger.debug("POST /disconnect_peer -> done  user=%s", user_id)
         return jsonify({"status": "disconnected", "user_id": user_id}), 200
 
     @app.route("/remove_user", methods=["POST", "DELETE"])
@@ -198,8 +217,9 @@ class ServerAPI:
     def remove_user(self):
         """Remove a user from the server's user store on client shutdown."""
         (user_id,) = get_parameters(request.json, "user_id")
+        _logger.info("POST /remove_user  user=%s", user_id)
         self.server.remove_user(user_id)
-        self.logger.info("Removed user with ID: %s", user_id)
+        _logger.debug("POST /remove_user -> done  user=%s", user_id)
         return jsonify({"status": "removed", "user_id": user_id}), 200
 
     # endregion

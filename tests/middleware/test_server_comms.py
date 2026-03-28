@@ -40,12 +40,15 @@ class TestConfigureServer:
         configure_server(state, "sid1", {"host": "", "port": 5050})
         state.sio.emit.assert_called_once_with("server-error", "No host provided.", room="sid1")
 
-    @patch("mw_server_comms.requests")
-    def test_successful_connection(self, mock_requests, state):
+    @patch("mw_server_comms.urllib.request.urlopen")
+    def test_successful_connection(self, mock_urlopen, state):
+        import json
         mock_resp = MagicMock()
-        mock_resp.json.return_value = {"api_state": "idle", "user_count": 0}
-        mock_requests.get.return_value = mock_resp
-        mock_requests.ConnectionError = ConnectionError
+        mock_resp.__enter__ = MagicMock(return_value=mock_resp)
+        mock_resp.__exit__ = MagicMock(return_value=False)
+        mock_resp.read.return_value = json.dumps({"api_state": "idle", "user_count": 0}).encode()
+        mock_resp.status = 200
+        mock_urlopen.return_value = mock_resp
 
         with patch.object(mw_comms, "start_health_checks"):
             configure_server(state, "sid1", {"host": "10.0.0.1", "port": 5050})
@@ -55,24 +58,20 @@ class TestConfigureServer:
         assert state.server_alive is True
         state.sio.emit.assert_called_with("server-connected", room="sid1")
 
-    @patch("mw_server_comms.requests")
-    def test_connection_refused(self, mock_requests, state):
-        mock_requests.get.side_effect = ConnectionError("refused")
-        mock_requests.ConnectionError = ConnectionError
+    @patch("mw_server_comms.urllib.request.urlopen")
+    def test_connection_refused(self, mock_urlopen, state):
+        mock_urlopen.side_effect = ConnectionError("refused")
 
         configure_server(state, "sid1", {"host": "10.0.0.1", "port": 9999})
         state.sio.emit.assert_called_once_with(
             "server-error",
-            "Could not connect to 10.0.0.1:9999 -- Connection refused",
+            "Could not connect to 10.0.0.1:9999 -- refused",
             room="sid1",
         )
 
-    @patch("mw_server_comms.requests")
-    def test_generic_exception(self, mock_requests, state):
-        import requests as real_requests
-        mock_requests.get.side_effect = real_requests.RequestException("timeout")
-        mock_requests.ConnectionError = ConnectionError
-        mock_requests.RequestException = real_requests.RequestException
+    @patch("mw_server_comms.urllib.request.urlopen")
+    def test_generic_exception(self, mock_urlopen, state):
+        mock_urlopen.side_effect = OSError("timeout")
 
         configure_server(state, "sid1", {"host": "10.0.0.1", "port": 9999})
         call_args = state.sio.emit.call_args

@@ -19,6 +19,7 @@ class ClientNotifier:
             that has an ``api_endpoint(route)`` method.
         """
         self._server = server
+        logger.debug("ClientNotifier initialized")
 
     def notify(self, user_id, route, json):
         """POST a JSON payload to a client's API endpoint.
@@ -27,15 +28,13 @@ class ClientNotifier:
         Raises on connection failure so callers can handle errors.
         """
         endpoint = self._server.get_user(user_id).api_endpoint(route)
-        logger.info("Contacting Client API for User %s at %s.", user_id, endpoint)
+        logger.info("Notifying user %s: POST %s", user_id, endpoint)
+        logger.debug("Notify payload: %s", json)
         try:
-            # 8-second timeout: middleware /peer_connection returns immediately
-            # (WebSocket connect runs in a background greenlet), so this should
-            # normally complete in milliseconds.
             from shared.ssl_utils import get_ssl_context  # noqa: PLC0415
-            # Self-signed certs are expected for internal server-to-middleware calls
             verify = not get_ssl_context()
             response = requests.post(str(endpoint), json=json, timeout=8, verify=verify)
+            logger.debug("Notify response: %s %s", response.status_code, response.reason)
         except requests.RequestException:
             logger.error(
                 "Unable to reach Client API for User %s at endpoint %s.", user_id, endpoint)

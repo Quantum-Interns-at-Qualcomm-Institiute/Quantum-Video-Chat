@@ -38,6 +38,8 @@ class AudioThread:
                  frames_per_buffer: int = DEFAULT_FRAMES_PER_BUFFER,
                  device: int = 0):
         """Initialize the audio capture thread."""
+        logger.debug("AudioThread.__init__  device=%s  rate=%s  buf=%s",
+                     device, sample_rate, frames_per_buffer)
         self._thread = None
         self._stop_event = threading.Event()
         self.sample_rate = sample_rate
@@ -53,6 +55,7 @@ class AudioThread:
             )
             logger.info("Using MockAudioSource (device=%s)", device)
         else:
+            logger.info("Using MicrophoneSource (device=%s)", device)
             self._mic_source = MicrophoneSource(
                 device_index=device,
                 sample_rate=sample_rate,
@@ -60,11 +63,13 @@ class AudioThread:
             )
         self._silence_source = SilenceSource(frames_per_buffer=frames_per_buffer)
         self._state = state
+        logger.debug("AudioThread initialized")
 
     # ── Thread delegation ─────────────────────────────────────────────────
 
     def start(self):
         """Launch the capture loop on a background daemon thread."""
+        logger.info("AudioThread starting capture loop")
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
 
@@ -74,6 +79,7 @@ class AudioThread:
 
     def join(self, timeout=None):
         """Block until the background thread terminates."""
+        logger.debug("AudioThread.join(timeout=%s)", timeout)
         if self._thread is not None:
             self._thread.join(timeout=timeout)
 
@@ -112,4 +118,5 @@ class AudioThread:
 
     def stop(self):
         """Signal the capture loop to stop."""
+        logger.info("AudioThread stopping")
         self._stop_event.set()

@@ -37,6 +37,7 @@ class VideoThread:
 
     def __init__(self, state, width: int, height: int, device: int = 0):
         """Initialize the video capture thread."""
+        logger.debug("VideoThread.__init__  device=%s  %dx%d", device, width, height)
         self._thread = None
         self._stop_event = threading.Event()
         # Use MockFrameSource for special negative device indices,
@@ -45,16 +46,19 @@ class VideoThread:
             self._camera_source = MockFrameSource(width=width, height=height, looping=True)
             logger.info("Using MockFrameSource (device=%s)", device)
         else:
+            logger.info("Using CameraSource (device=%s, %dx%d)", device, width, height)
             self._camera_source = CameraSource(device=device, width=width, height=height)
         self._static_source = StaticNoiseSource(width=width, height=height)
         self.width  = width
         self.height = height
         self._state = state
+        logger.debug("VideoThread initialized")
 
     # ── Thread delegation ─────────────────────────────────────────────────
 
     def start(self):
         """Launch the capture loop on a background daemon thread."""
+        logger.info("VideoThread starting capture loop")
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
 
@@ -64,6 +68,7 @@ class VideoThread:
 
     def join(self, timeout=None):
         """Block until the background thread terminates."""
+        logger.debug("VideoThread.join(timeout=%s)", timeout)
         if self._thread is not None:
             self._thread.join(timeout=timeout)
 
@@ -105,4 +110,5 @@ class VideoThread:
 
     def stop(self):
         """Signal the capture loop to stop."""
+        logger.info("VideoThread stopping")
         self._stop_event.set()
