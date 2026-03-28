@@ -13,8 +13,8 @@ _PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from shared import find_available_port
-from signaling.server import create_app
+from shared import find_available_port  # noqa: E402
+from signaling.server import create_app  # noqa: E402
 
 logging.basicConfig(
     level=logging.DEBUG if os.environ.get("QVC_DEBUG") else logging.INFO,
@@ -29,7 +29,7 @@ def main() -> None:
     host = os.environ.get("QVC_HOST", "127.0.0.1")
     port = int(os.environ.get("QVC_SERVER_REST_PORT") or 0) or find_available_port(host)
 
-    flask_app, sio, rooms = create_app()
+    flask_app, _sio, _rooms = create_app()
 
     def _shutdown(_sig=None, _frame=None):
         sig_name = signal.Signals(_sig).name if _sig else "manual"
@@ -41,12 +41,12 @@ def main() -> None:
 
     logger.info("Signaling server starting on %s:%d", host, port)
 
-    import eventlet
-    import eventlet.wsgi
+    import eventlet  # noqa: PLC0415
+    import eventlet.wsgi  # noqa: PLC0415
 
     eventlet.wsgi.server(
         eventlet.listen((host, port)),
-        flask_app.wsgi_app,
+        flask_app.sio_wsgi_app,
         log_output=False,
     )
 

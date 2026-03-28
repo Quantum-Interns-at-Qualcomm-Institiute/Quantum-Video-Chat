@@ -6,7 +6,6 @@ from tests.middleware._helpers import load_middleware_module
 
 mw_state = load_middleware_module("state")
 MiddlewareState = mw_state.MiddlewareState
-MIDDLEWARE_PORT = mw_state.MIDDLEWARE_PORT
 WIDTH = mw_state.WIDTH
 HEIGHT = mw_state.HEIGHT
 
@@ -15,9 +14,6 @@ class TestConstants:
     def test_default_dimensions(self):
         assert WIDTH == 640
         assert HEIGHT == 480
-
-    def test_default_middleware_port(self):
-        assert MIDDLEWARE_PORT == 5001
 
     def test_default_server_host_from_env(self):
         with patch.dict(os.environ, {"QUANTUM_SERVER_HOST": "10.0.0.5"}):
@@ -40,7 +36,7 @@ class TestMiddlewareStateDefaults:
     def test_identity_defaults(self):
         s = MiddlewareState()
         assert s.user_id == ""
-        assert s.middleware_port == MIDDLEWARE_PORT
+        assert s.middleware_port == 0
 
     def test_video_defaults(self):
         s = MiddlewareState()

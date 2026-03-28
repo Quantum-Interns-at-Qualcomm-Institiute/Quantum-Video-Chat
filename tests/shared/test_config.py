@@ -105,9 +105,9 @@ class TestDefaults:
 
     def test_defaults_network_values(self):
         from shared.config import DEFAULTS
-        assert DEFAULTS["network"]["middleware_port"] == 5001
-        assert DEFAULTS["network"]["server_rest_port"] == 5050
-        assert DEFAULTS["network"]["client_api_port"] == 4000
+        assert DEFAULTS["network"]["middleware_port"] == 0
+        assert DEFAULTS["network"]["server_rest_port"] == 0
+        assert DEFAULTS["network"]["client_api_port"] == 0
 
     def test_defaults_video_values(self):
         from shared.config import DEFAULTS

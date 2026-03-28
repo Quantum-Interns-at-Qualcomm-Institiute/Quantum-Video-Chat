@@ -19,7 +19,7 @@ import os
 import re
 
 import socketio
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 from signaling.rooms import RoomManager
@@ -41,7 +41,7 @@ def _check_origin(origin: str) -> bool:
     return _LOCALHOST_RE.match(origin) is not None or origin in _EXTRA_ORIGINS
 
 
-def create_app() -> tuple[Flask, socketio.Server, RoomManager]:
+def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, PLR0915
     """Create and configure the signaling server.
 
     Returns:
@@ -76,9 +76,9 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:
     # ── Socket.IO events ────────────────────────────────────────────
 
     @sio.event
-    def connect(sid, environ):
+    def connect(sid, _environ):
         """Handle new peer connection."""
-        peer = rooms.register_peer(sid)
+        rooms.register_peer(sid)
         logger.info("Peer connected: %s (total: %d)", sid, rooms.peer_count)
         sio.emit("welcome", {"sid": sid}, room=sid)
 

@@ -9,11 +9,10 @@ from __future__ import annotations
 import secrets
 import string
 from dataclasses import dataclass, field
-from typing import Optional
-
 
 _ROOM_ID_LENGTH = 5
 _ROOM_ID_ALPHABET = string.ascii_uppercase + string.digits
+_MAX_PEERS_PER_ROOM = 2
 
 
 @dataclass
@@ -21,7 +20,7 @@ class Peer:
     """A connected peer in the signaling server."""
 
     sid: str
-    room_id: Optional[str] = None
+    room_id: str | None = None
 
 
 @dataclass
@@ -34,14 +33,14 @@ class Room:
     @property
     def is_full(self) -> bool:
         """Return True if the room has two peers."""
-        return len(self.peers) >= 2
+        return len(self.peers) >= _MAX_PEERS_PER_ROOM
 
     @property
     def is_empty(self) -> bool:
         """Return True if the room has no peers."""
         return len(self.peers) == 0
 
-    def other_peer(self, sid: str) -> Optional[str]:
+    def other_peer(self, sid: str) -> str | None:
         """Return the sid of the other peer in the room, or None.
 
         Only returns a peer that is actually in this room.
@@ -62,6 +61,7 @@ class RoomManager:
     """
 
     def __init__(self) -> None:
+        """Initialize empty room and peer registries."""
         self._rooms: dict[str, Room] = {}
         self._peers: dict[str, Peer] = {}
 
@@ -85,7 +85,7 @@ class RoomManager:
         self._peers[sid] = peer
         return peer
 
-    def unregister_peer(self, sid: str) -> Optional[str]:
+    def unregister_peer(self, sid: str) -> str | None:
         """Remove a peer and leave any room they were in.
 
         Args:
@@ -106,7 +106,7 @@ class RoomManager:
                 del self._rooms[room_id]
         return room_id
 
-    def create_room(self, sid: str) -> Optional[Room]:
+    def create_room(self, sid: str) -> Room | None:
         """Create a new room with the given peer as the first occupant.
 
         Args:
@@ -124,7 +124,7 @@ class RoomManager:
         peer.room_id = room_id
         return room
 
-    def join_room(self, sid: str, room_id: str) -> Optional[Room]:
+    def join_room(self, sid: str, room_id: str) -> Room | None:
         """Join an existing room.
 
         Args:
@@ -145,7 +145,7 @@ class RoomManager:
         peer.room_id = room_id
         return room
 
-    def leave_room(self, sid: str) -> Optional[str]:
+    def leave_room(self, sid: str) -> str | None:
         """Remove a peer from their current room.
 
         Args:
@@ -167,15 +167,15 @@ class RoomManager:
                 del self._rooms[room_id]
         return room_id
 
-    def get_room(self, room_id: str) -> Optional[Room]:
+    def get_room(self, room_id: str) -> Room | None:
         """Get a room by ID."""
         return self._rooms.get(room_id)
 
-    def get_peer(self, sid: str) -> Optional[Peer]:
+    def get_peer(self, sid: str) -> Peer | None:
         """Get a peer by SID."""
         return self._peers.get(sid)
 
-    def get_peer_room(self, sid: str) -> Optional[Room]:
+    def get_peer_room(self, sid: str) -> Room | None:
         """Get the room a peer is in."""
         peer = self._peers.get(sid)
         if peer is None or peer.room_id is None:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from signaling.rooms import Peer, Room, RoomManager
+from signaling.rooms import Room, RoomManager
 
 
 class TestRoom:
@@ -31,7 +31,7 @@ class TestRoom:
 class TestRoomManager:
     """RoomManager lifecycle operations."""
 
-    @pytest.fixture()
+    @pytest.fixture
     def mgr(self):
         return RoomManager()
 

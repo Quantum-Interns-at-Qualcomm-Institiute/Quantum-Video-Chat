@@ -47,17 +47,15 @@ class FakePeer:
                 handler(self.sid)
 
 
-@pytest.fixture()
+@pytest.fixture
 def env():
     """Set up signaling server with event capture."""
     flask_app, sio, rooms = create_app()
 
     captured = []
-    original_emit = sio.emit
 
     def tracking_emit(event, data=None, room=None, **kwargs):
         captured.append({"event": event, "data": data, "room": room})
-        # Don't call original_emit — it would try to send via real transport
 
     sio.emit = tracking_emit
 
@@ -244,8 +242,10 @@ class TestSignalingFlow:
         answers = events_of(env["captured"], "answer")
         ice = events_of(env["captured"], "ice-candidate")
 
-        assert len(offers) == 1 and offers[0]["room"] == "sid2"
-        assert len(answers) == 1 and answers[0]["room"] == "sid1"
+        assert len(offers) == 1
+        assert offers[0]["room"] == "sid2"
+        assert len(answers) == 1
+        assert answers[0]["room"] == "sid1"
         assert len(ice) == 2
         ice_rooms = {e["room"] for e in ice}
         assert ice_rooms == {"sid1", "sid2"}
