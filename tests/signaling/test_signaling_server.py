@@ -1,0 +1,256 @@
+"""Integration tests for the signaling server.
+
+Tests the full Socket.IO event flow: connect, create/join rooms,
+SDP relay, ICE relay, disconnect notification.
+
+Uses a thin wrapper around the Socket.IO server to simulate peers
+and capture emitted events without needing real WebSocket connections.
+"""
+
+import pytest
+
+from signaling.server import create_app
+
+
+class FakePeer:
+    """Simulates a connected Socket.IO peer for testing.
+
+    Registers event handlers on the sio server, then invokes them
+    via the server's internal _trigger_event to simulate client behavior.
+    """
+
+    def __init__(self, sid, sio, captured):
+        self.sid = sid
+        self.sio = sio
+        self.captured = captured
+
+    def connect(self):
+        """Simulate a peer connecting."""
+        # Manually call the registered connect handler
+        handler = self.sio.handlers.get("/", {}).get("connect")
+        if handler:
+            handler(self.sid, {})
+
+    def disconnect(self):
+        """Simulate a peer disconnecting."""
+        handler = self.sio.handlers.get("/", {}).get("disconnect")
+        if handler:
+            handler(self.sid)
+
+    def emit_event(self, event, data=None):
+        """Simulate the peer emitting an event to the server."""
+        handler = self.sio.handlers.get("/", {}).get(event)
+        if handler:
+            if data is not None:
+                handler(self.sid, data)
+            else:
+                handler(self.sid)
+
+
+@pytest.fixture()
+def env():
+    """Set up signaling server with event capture."""
+    flask_app, sio, rooms = create_app()
+
+    captured = []
+    original_emit = sio.emit
+
+    def tracking_emit(event, data=None, room=None, **kwargs):
+        captured.append({"event": event, "data": data, "room": room})
+        # Don't call original_emit — it would try to send via real transport
+
+    sio.emit = tracking_emit
+
+    def make_peer(sid):
+        peer = FakePeer(sid, sio, captured)
+        peer.connect()
+        return peer
+
+    return {
+        "flask_app": flask_app,
+        "sio": sio,
+        "rooms": rooms,
+        "captured": captured,
+        "make_peer": make_peer,
+    }
+
+
+def events_of(captured, event_name):
+    """Filter captured events by name."""
+    return [e for e in captured if e["event"] == event_name]
+
+
+class TestAdminEndpoint:
+    """REST /admin/status endpoint."""
+
+    def test_status_returns_ok(self):
+        flask_app, _, _ = create_app()
+        client = flask_app.test_client()
+        resp = client.get("/admin/status")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["status"] == "ok"
+        assert data["rooms"] == 0
+        assert data["peers"] == 0
+
+
+class TestSignalingFlow:
+    """Socket.IO signaling event integration tests."""
+
+    def test_connect_sends_welcome(self, env):
+        env["make_peer"]("sid1")
+        assert env["rooms"].peer_count == 1
+        welcomes = events_of(env["captured"], "welcome")
+        assert len(welcomes) == 1
+        assert welcomes[0]["data"]["sid"] == "sid1"
+
+    def test_create_room_emits_room_created(self, env):
+        peer = env["make_peer"]("sid1")
+        peer.emit_event("create_room")
+        assert env["rooms"].room_count == 1
+        created = events_of(env["captured"], "room-created")
+        assert len(created) == 1
+        assert len(created[0]["data"]["room_id"]) == 5
+
+    def test_join_room_notifies_both_peers(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+
+        p2.emit_event("join_room", {"room_id": room_id})
+        joined = events_of(env["captured"], "room-joined")
+        assert len(joined) == 2
+        initiators = {e["data"]["initiator"] for e in joined}
+        assert initiators == {True, False}
+
+    def test_offer_relayed_to_peer(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p1.emit_event("offer", {"sdp": "offer-sdp-data"})
+        offers = events_of(env["captured"], "offer")
+        assert len(offers) == 1
+        assert offers[0]["data"]["sdp"] == "offer-sdp-data"
+        assert offers[0]["data"]["from"] == "sid1"
+        assert offers[0]["room"] == "sid2"
+
+    def test_answer_relayed_to_peer(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p2.emit_event("answer", {"sdp": "answer-sdp-data"})
+        answers = events_of(env["captured"], "answer")
+        assert len(answers) == 1
+        assert answers[0]["data"]["sdp"] == "answer-sdp-data"
+        assert answers[0]["data"]["from"] == "sid2"
+        assert answers[0]["room"] == "sid1"
+
+    def test_ice_candidate_relayed_to_peer(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p1.emit_event("ice_candidate", {"candidate": "candidate:1 1 udp ..."})
+        ice = events_of(env["captured"], "ice-candidate")
+        assert len(ice) == 1
+        assert ice[0]["room"] == "sid2"
+
+    def test_disconnect_notifies_peer(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p1.disconnect()
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 1
+        assert disconnects[0]["room"] == "sid2"
+
+    def test_leave_room_notifies_peer(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p1.emit_event("leave_room")
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 1
+        assert disconnects[0]["room"] == "sid2"
+
+    def test_offer_without_room_is_silent(self, env):
+        p1 = env["make_peer"]("sid1")
+        env["captured"].clear()
+        p1.emit_event("offer", {"sdp": "orphan"})
+        offers = events_of(env["captured"], "offer")
+        assert len(offers) == 0
+
+    def test_create_room_error_when_already_in_room(self, env):
+        p1 = env["make_peer"]("sid1")
+        p1.emit_event("create_room")
+        env["captured"].clear()
+
+        p1.emit_event("create_room")
+        errors = events_of(env["captured"], "error")
+        assert len(errors) == 1
+
+    def test_join_nonexistent_room_error(self, env):
+        p1 = env["make_peer"]("sid1")
+        env["captured"].clear()
+        p1.emit_event("join_room", {"room_id": "ZZZZZ"})
+        errors = events_of(env["captured"], "error")
+        assert len(errors) == 1
+
+    def test_full_signaling_flow(self, env):
+        """Integration: create room → join → offer → answer → ICE → leave."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+
+        # Create room
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        assert room_id is not None
+
+        # Join room
+        p2.emit_event("join_room", {"room_id": room_id})
+        assert env["rooms"].get_room(room_id).is_full
+
+        env["captured"].clear()
+
+        # SDP exchange
+        p1.emit_event("offer", {"sdp": "offer-data"})
+        p2.emit_event("answer", {"sdp": "answer-data"})
+
+        # ICE exchange (both directions)
+        p1.emit_event("ice_candidate", {"candidate": "ice-from-1"})
+        p2.emit_event("ice_candidate", {"candidate": "ice-from-2"})
+
+        offers = events_of(env["captured"], "offer")
+        answers = events_of(env["captured"], "answer")
+        ice = events_of(env["captured"], "ice-candidate")
+
+        assert len(offers) == 1 and offers[0]["room"] == "sid2"
+        assert len(answers) == 1 and answers[0]["room"] == "sid1"
+        assert len(ice) == 2
+        ice_rooms = {e["room"] for e in ice}
+        assert ice_rooms == {"sid1", "sid2"}
+
+        # Leave
+        env["captured"].clear()
+        p1.emit_event("leave_room")
+        assert events_of(env["captured"], "peer-disconnected")[0]["room"] == "sid2"

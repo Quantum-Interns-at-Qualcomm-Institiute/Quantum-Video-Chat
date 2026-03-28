@@ -22,6 +22,7 @@ from pathlib import Path
 
 import psutil as _psutil
 
+from shared import find_available_port
 from shared.encryption import EncryptSchemes, KeyGenerators
 
 logger = logging.getLogger(__name__)
@@ -109,9 +110,9 @@ class Config:
 
     # Network
     local_ip: str = ""
-    middleware_port: int = 5001
-    server_rest_port: int = 5050
-    client_api_port: int = 4000
+    middleware_port: int = 0
+    server_rest_port: int = 0
+    client_api_port: int = 0
 
     # Video
     video_width: int = 640
@@ -187,14 +188,15 @@ class Config:
             except (configparser.NoSectionError, configparser.NoOptionError):
                 return default
 
+        _local_ip = os.environ.get("QVC_LOCAL_IP") or get_local_ip()
         return cls(
-            local_ip=os.environ.get("QVC_LOCAL_IP") or get_local_ip(),
-            middleware_port=get("network", "middleware_port", 5001,
-                                  env_key="QVC_IPC_PORT", cast=int),
-            server_rest_port=get("network", "server_rest_port", 5050,
-                                 env_key="QVC_SERVER_REST_PORT", cast=int),
-            client_api_port=get("network", "client_api_port", 4000,
-                                env_key="QVC_CLIENT_API_PORT", cast=int),
+            local_ip=_local_ip,
+            middleware_port=get("network", "middleware_port", 0,
+                                  env_key="QVC_IPC_PORT", cast=int) or find_available_port(_local_ip),
+            server_rest_port=get("network", "server_rest_port", 0,
+                                 env_key="QVC_SERVER_REST_PORT", cast=int) or find_available_port(_local_ip),
+            client_api_port=get("network", "client_api_port", 0,
+                                env_key="QVC_CLIENT_API_PORT", cast=int) or find_available_port(_local_ip),
             video_width=get("video", "video_width", 640, cast=int),
             video_height=get("video", "video_height", 480, cast=int),
             display_width=get("video", "display_width", 960, cast=int),
@@ -263,9 +265,9 @@ MUTE_AUDIO: bool = _default.mute_audio
 
 DEFAULTS = {
     "network": {
-        "middleware_port": 5001,
-        "server_rest_port": 5050,
-        "client_api_port": 4000,
+        "middleware_port": 0,
+        "server_rest_port": 0,
+        "client_api_port": 0,
     },
     "video": {
         "video_width": 640,

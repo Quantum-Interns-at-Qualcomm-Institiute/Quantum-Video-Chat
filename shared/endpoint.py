@@ -1,5 +1,7 @@
 """Network endpoint representation with URL construction."""
 
+from __future__ import annotations
+
 
 class Endpoint:
     """Represents a network endpoint with IP, port, and optional route."""
