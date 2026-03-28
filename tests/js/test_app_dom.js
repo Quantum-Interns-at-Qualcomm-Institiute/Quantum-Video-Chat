@@ -14,10 +14,12 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const APP_JS_PATH = resolve(
-  __dirname,
-  '../../../../public/video-chat/js/app.js',
-);
+
+// app.js lives in the parent website repo (public/video-chat/js/app.js).
+// When running in CI on the standalone QVC repo, it won't exist — skip tests.
+import { existsSync } from 'node:fs';
+const APP_JS_PATH = resolve(__dirname, '../../../../public/video-chat/js/app.js');
+const APP_JS_EXISTS = existsSync(APP_JS_PATH);
 
 // Stub globals that app.js expects
 function setupGlobals() {
@@ -124,7 +126,9 @@ function loadApp() {
   return script();
 }
 
-describe('App DOM Rendering', () => {
+const describeIfAppExists = APP_JS_EXISTS ? describe : describe.skip;
+
+describeIfAppExists('App DOM Rendering', () => {
   let app;
 
   beforeEach(() => {
