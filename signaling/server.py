@@ -19,7 +19,8 @@ import os
 import re
 
 import socketio
-from flask import Flask, jsonify, request as flask_req
+from flask import Flask, jsonify
+from flask import request as flask_req
 from flask_cors import CORS
 
 from signaling.rooms import RoomManager
