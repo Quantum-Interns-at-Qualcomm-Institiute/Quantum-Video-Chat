@@ -19,7 +19,7 @@ import os
 import re
 
 import socketio
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request as flask_req
 from flask_cors import CORS
 
 from signaling.rooms import RoomManager
@@ -79,7 +79,6 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
     @flask_app.route("/admin/events")
     def admin_events():
         """Return recent events for the dashboard."""
-        from flask import request as flask_req
         limit = int(flask_req.args.get("limit", 20))
         return jsonify({"events": rooms.get_events(limit)})
 
