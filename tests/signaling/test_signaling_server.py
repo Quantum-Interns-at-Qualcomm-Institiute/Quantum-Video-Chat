@@ -108,7 +108,9 @@ class TestSignalingFlow:
         assert env["rooms"].room_count == 1
         created = events_of(env["captured"], "room-created")
         assert len(created) == 1
-        assert len(created[0]["data"]["room_id"]) == 5
+        room_id = created[0]["data"]["room_id"]
+        assert len(room_id) == 5
+        assert room_id.isdigit()
 
     def test_join_room_notifies_both_peers(self, env):
         p1 = env["make_peer"]("sid1")
@@ -458,3 +460,141 @@ class TestCleanSessionTeardown:
         p1.emit_event("ice_candidate", {"candidate": "late-ice"})
         assert len(events_of(env["captured"], "offer")) == 0
         assert len(events_of(env["captured"], "ice-candidate")) == 0
+
+
+class TestDashboardEndpoints:
+    """REST admin endpoints for the server dashboard."""
+
+    def test_status_includes_uptime(self):
+        flask_app, _, _ = create_app()
+        client = flask_app.test_client()
+        resp = client.get("/admin/status")
+        data = resp.get_json()
+        assert data["status"] == "ok"
+        assert "uptime_seconds" in data
+        assert data["uptime_seconds"] >= 0
+
+    def test_events_endpoint_empty(self):
+        flask_app, _, _ = create_app()
+        client = flask_app.test_client()
+        resp = client.get("/admin/events")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["events"] == []
+
+    def test_events_endpoint_with_limit(self, env):
+        p1 = env["make_peer"]("sid1")
+        p1.emit_event("create_room")
+        p1.emit_event("leave_room")
+
+        client = env["flask_app"].test_client()
+        resp = client.get("/admin/events?limit=1")
+        data = resp.get_json()
+        assert len(data["events"]) == 1
+
+    def test_events_track_full_lifecycle(self, env):
+        """Events are logged for connect, room create, join, leave, disconnect."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        p1.emit_event("leave_room")
+        p2.disconnect()
+
+        events = env["rooms"].get_events(50)
+        event_types = [e["event"] for e in events]
+        assert "peer_connected" in event_types
+        assert "room_created" in event_types
+        assert "peer_joined" in event_types
+        assert "peer_left" in event_types
+        assert "peer_disconnected" in event_types
+
+    def test_rooms_endpoint_empty(self):
+        flask_app, _, _ = create_app()
+        client = flask_app.test_client()
+        resp = client.get("/admin/rooms")
+        assert resp.status_code == 200
+        assert resp.get_json()["rooms"] == []
+
+    def test_rooms_endpoint_with_active_room(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        client = env["flask_app"].test_client()
+        resp = client.get("/admin/rooms")
+        data = resp.get_json()
+        assert len(data["rooms"]) == 1
+        assert data["rooms"][0]["room_id"] == room_id
+        assert data["rooms"][0]["is_full"] is True
+        assert len(data["rooms"][0]["peers"]) == 2
+
+    def test_peers_endpoint_empty(self):
+        flask_app, _, _ = create_app()
+        client = flask_app.test_client()
+        resp = client.get("/admin/peers")
+        assert resp.status_code == 200
+        assert resp.get_json()["peers"] == []
+
+    def test_peers_endpoint_with_connected_peers(self, env):
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        client = env["flask_app"].test_client()
+        resp = client.get("/admin/peers")
+        data = resp.get_json()
+        assert len(data["peers"]) == 2
+        sids = {p["sid"] for p in data["peers"]}
+        assert sids == {"sid1", "sid2"}
+        # Each peer should see the other
+        for p in data["peers"]:
+            assert p["room_id"] == room_id
+            assert p["peer"] is not None
+
+    def test_peers_after_disconnect(self, env):
+        p1 = env["make_peer"]("sid1")
+        p1.disconnect()
+
+        client = env["flask_app"].test_client()
+        resp = client.get("/admin/peers")
+        assert resp.get_json()["peers"] == []
+
+    def test_status_counts_update_through_lifecycle(self, env):
+        """Status endpoint reflects room/peer counts at each stage."""
+        client = env["flask_app"].test_client()
+
+        # Initial
+        assert client.get("/admin/status").get_json()["peers"] == 0
+
+        # Connect peers
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        status = client.get("/admin/status").get_json()
+        assert status["peers"] == 2
+        assert status["rooms"] == 0
+
+        # Create room
+        p1.emit_event("create_room")
+        status = client.get("/admin/status").get_json()
+        assert status["rooms"] == 1
+
+        # Join
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        status = client.get("/admin/status").get_json()
+        assert status["rooms"] == 1
+        assert status["peers"] == 2
+
+        # Leave + disconnect both
+        p1.emit_event("leave_room")
+        p1.disconnect()
+        p2.disconnect()
+        status = client.get("/admin/status").get_json()
+        assert status["rooms"] == 0
+        assert status["peers"] == 0

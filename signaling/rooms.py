@@ -7,11 +7,12 @@ and provides room lifecycle operations (create, join, leave, query).
 from __future__ import annotations
 
 import secrets
-import string
+import time
 from dataclasses import dataclass, field
 
 _ROOM_ID_LENGTH = 5
-_ROOM_ID_ALPHABET = string.ascii_uppercase + string.digits
+_ROOM_ID_MIN = 10000
+_ROOM_ID_MAX = 99999
 _MAX_PEERS_PER_ROOM = 2
 
 
@@ -64,11 +65,14 @@ class RoomManager:
         """Initialize empty room and peer registries."""
         self._rooms: dict[str, Room] = {}
         self._peers: dict[str, Peer] = {}
+        self._events: list[dict] = []
+        self._start_time: float = time.monotonic()
+        self._max_events: int = 100
 
     def _generate_room_id(self) -> str:
-        """Generate a unique room ID."""
+        """Generate a unique 5-digit numeric room ID."""
         while True:
-            room_id = "".join(secrets.choice(_ROOM_ID_ALPHABET) for _ in range(_ROOM_ID_LENGTH))
+            room_id = str(secrets.randbelow(_ROOM_ID_MAX - _ROOM_ID_MIN + 1) + _ROOM_ID_MIN)
             if room_id not in self._rooms:
                 return room_id
 
@@ -191,3 +195,42 @@ class RoomManager:
     def peer_count(self) -> int:
         """Number of registered peers."""
         return len(self._peers)
+
+    @property
+    def uptime_seconds(self) -> float:
+        """Seconds since the RoomManager was created."""
+        return time.monotonic() - self._start_time
+
+    def log_event(self, event: str, **kwargs) -> None:
+        """Record an event for the dashboard."""
+        entry = {"timestamp": time.time(), "event": event, **kwargs}
+        self._events.append(entry)
+        if len(self._events) > self._max_events:
+            self._events = self._events[-self._max_events:]
+
+    def get_events(self, limit: int = 20) -> list[dict]:
+        """Return the most recent events."""
+        return self._events[-limit:]
+
+    def get_rooms_summary(self) -> list[dict]:
+        """Return a summary of all active rooms for the dashboard."""
+        result = []
+        for room_id, room in self._rooms.items():
+            result.append({
+                "room_id": room_id,
+                "peers": list(room.peers),
+                "is_full": room.is_full,
+            })
+        return result
+
+    def get_peers_summary(self) -> list[dict]:
+        """Return a summary of all registered peers for the dashboard."""
+        result = []
+        for sid, peer in self._peers.items():
+            room = self._rooms.get(peer.room_id) if peer.room_id else None
+            result.append({
+                "sid": sid,
+                "room_id": peer.room_id,
+                "peer": room.other_peer(sid) if room else None,
+            })
+        return result

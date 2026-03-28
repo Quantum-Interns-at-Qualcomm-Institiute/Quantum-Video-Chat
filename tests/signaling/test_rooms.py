@@ -51,6 +51,8 @@ class TestRoomManager:
         room = mgr.create_room("sid1")
         assert room is not None
         assert len(room.room_id) == 5
+        assert room.room_id.isdigit()
+        assert 10000 <= int(room.room_id) <= 99999
         assert room.peers == ["sid1"]
         assert mgr.room_count == 1
         assert mgr.get_peer("sid1").room_id == room.room_id

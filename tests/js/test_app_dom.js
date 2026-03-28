@@ -168,20 +168,21 @@ describeIfAppExists('App DOM Rendering', () => {
       expect(joinBtn.disabled).toBe(false);
     });
 
-    test('start session button is disabled when not connected', () => {
-      app.state.connected = false;
-      app.render();
-
-      const startBtn = document.querySelector('.lobby-start-btn');
-      expect(startBtn.disabled).toBe(true);
-    });
-
-    test('start session button is enabled when connected', () => {
+    test('no separate start session button (empty join creates room)', () => {
       app.state.connected = true;
       app.render();
 
       const startBtn = document.querySelector('.lobby-start-btn');
-      expect(startBtn.disabled).toBe(false);
+      expect(startBtn).toBeNull();
+    });
+
+    test('room ID input accepts numeric only', () => {
+      app.state.connected = true;
+      app.render();
+
+      const input = document.getElementById('join-room-id');
+      expect(input.getAttribute('inputmode')).toBe('numeric');
+      expect(input.getAttribute('maxlength')).toBe('5');
     });
 
     test('shows waiting spinner when waitingForPeer', () => {
@@ -215,37 +216,13 @@ describeIfAppExists('App DOM Rendering', () => {
       expect(document.querySelector('.noise-label').textContent).toBe('Camera Off');
     });
 
-    test('shows connection status dot', () => {
+    test('no redundant connection status indicator in lobby', () => {
       app.state.connected = true;
       app.render();
 
-      const dot = document.querySelector('.conn-dot');
-      expect(dot).not.toBeNull();
-      expect(dot.classList.contains('conn-dot--ok')).toBe(true);
-    });
-
-    test('shows disconnected status dot when not connected', () => {
-      app.state.connected = false;
-      app.render();
-
-      const dot = document.querySelector('.conn-dot');
-      expect(dot.classList.contains('conn-dot--off')).toBe(true);
-    });
-
-    test('state label shows "ready" when connected', () => {
-      app.state.connected = true;
-      app.render();
-
-      const label = document.querySelector('.conn-state');
-      expect(label.textContent).toBe('ready');
-    });
-
-    test('state label shows "disconnected" when not connected', () => {
-      app.state.connected = false;
-      app.render();
-
-      const label = document.querySelector('.conn-state');
-      expect(label.textContent).toBe('disconnected');
+      // Connection status is handled by the navbar, not the lobby
+      expect(document.querySelector('.conn-dot')).toBeNull();
+      expect(document.querySelector('.conn-state')).toBeNull();
     });
 
     test('media toggle buttons render correctly', () => {

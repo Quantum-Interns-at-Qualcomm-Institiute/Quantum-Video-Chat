@@ -71,9 +71,27 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
         """Return server health and stats."""
         return jsonify({
             "status": "ok",
+            "uptime_seconds": rooms.uptime_seconds,
             "rooms": rooms.room_count,
             "peers": rooms.peer_count,
         })
+
+    @flask_app.route("/admin/events")
+    def admin_events():
+        """Return recent events for the dashboard."""
+        from flask import request as flask_req
+        limit = int(flask_req.args.get("limit", 20))
+        return jsonify({"events": rooms.get_events(limit)})
+
+    @flask_app.route("/admin/rooms")
+    def admin_rooms():
+        """Return active rooms for the dashboard."""
+        return jsonify({"rooms": rooms.get_rooms_summary()})
+
+    @flask_app.route("/admin/peers")
+    def admin_peers():
+        """Return connected peers for the dashboard."""
+        return jsonify({"peers": rooms.get_peers_summary()})
 
     # ── Socket.IO events ────────────────────────────────────────────
 
@@ -81,6 +99,7 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
     def connect(sid, _environ):
         """Handle new peer connection."""
         rooms.register_peer(sid)
+        rooms.log_event("peer_connected", sid=sid)
         logger.info("Peer connected: %s (total: %d)", sid, rooms.peer_count)
         sio.emit("welcome", {"sid": sid}, room=sid)
 
@@ -90,6 +109,7 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
         room = rooms.get_peer_room(sid)
         other_sid = room.other_peer(sid) if room else None
         room_id = rooms.unregister_peer(sid)
+        rooms.log_event("peer_disconnected", sid=sid, room_id=room_id)
         if other_sid:
             sio.emit("peer-disconnected", {"room_id": room_id}, room=other_sid)
         logger.info("Peer disconnected: %s (total: %d)", sid, rooms.peer_count)
@@ -101,6 +121,7 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
         if room is None:
             sio.emit("error", {"message": "Cannot create room"}, room=sid)
             return
+        rooms.log_event("room_created", sid=sid, room_id=room.room_id)
         logger.info("Room created: %s by %s", room.room_id, sid)
         sio.emit("room-created", {"room_id": room.room_id}, room=sid)
 
@@ -113,6 +134,7 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
             sio.emit("error", {"message": f"Cannot join room {room_id}"}, room=sid)
             return
         other_sid = room.other_peer(sid)
+        rooms.log_event("peer_joined", sid=sid, room_id=room_id)
         logger.info("Peer %s joined room %s", sid, room_id)
         # Notify both peers
         sio.emit("room-joined", {"room_id": room_id, "initiator": True}, room=other_sid)
@@ -124,6 +146,7 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
         room = rooms.get_peer_room(sid)
         other_sid = room.other_peer(sid) if room else None
         room_id = rooms.leave_room(sid)
+        rooms.log_event("peer_left", sid=sid, room_id=room_id)
         if room_id and other_sid:
             sio.emit("peer-disconnected", {"room_id": room_id}, room=other_sid)
         logger.info("Peer %s left room %s", sid, room_id)
