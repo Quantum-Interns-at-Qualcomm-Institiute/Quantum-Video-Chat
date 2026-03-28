@@ -50,9 +50,11 @@ def create_app() -> tuple[Flask, socketio.Server, RoomManager]:  # noqa: C901, P
     flask_app = Flask(__name__)
     CORS(flask_app, origins=_CORS_LIST)
 
+    # Use eventlet in production (Docker), threading for tests/local dev
+    _async_mode = os.environ.get("SIO_ASYNC_MODE", "threading")
     sio = socketio.Server(
         cors_allowed_origins=_check_origin,
-        async_mode="threading",
+        async_mode=_async_mode,
         logger=False,
         engineio_logger=False,
     )

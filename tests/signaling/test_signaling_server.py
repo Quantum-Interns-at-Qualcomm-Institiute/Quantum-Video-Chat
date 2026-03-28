@@ -254,3 +254,207 @@ class TestSignalingFlow:
         env["captured"].clear()
         p1.emit_event("leave_room")
         assert events_of(env["captured"], "peer-disconnected")[0]["room"] == "sid2"
+
+
+class TestConnectionLoss:
+    """Scenarios where peers disconnect unexpectedly (crash, network loss)."""
+
+    def test_initiator_crashes_mid_call(self, env):
+        """Initiator disconnects without leave_room — peer gets notified, room cleaned."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        # Abrupt disconnect (no leave_room)
+        p1.disconnect()
+
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 1
+        assert disconnects[0]["room"] == "sid2"
+        assert disconnects[0]["data"]["room_id"] == room_id
+
+        # Server cleaned up: p1 gone, room still exists with p2
+        assert env["rooms"].get_peer("sid1") is None
+        assert env["rooms"].peer_count == 1
+        # p2 should still be in the room (can wait for reconnect or leave)
+        assert env["rooms"].get_peer("sid2").room_id == room_id
+
+    def test_joiner_crashes_mid_call(self, env):
+        """Joiner disconnects without leave_room — initiator gets notified."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        env["captured"].clear()
+
+        p2.disconnect()
+
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 1
+        assert disconnects[0]["room"] == "sid1"
+        assert env["rooms"].get_peer("sid2") is None
+        # Initiator still in room
+        assert env["rooms"].get_peer("sid1").room_id == room_id
+
+    def test_both_peers_crash(self, env):
+        """Both peers disconnect — room fully cleaned up."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        p1.disconnect()
+        p2.disconnect()
+
+        assert env["rooms"].peer_count == 0
+        assert env["rooms"].room_count == 0
+        assert env["rooms"].get_room(room_id) is None
+
+    def test_creator_disconnects_before_anyone_joins(self, env):
+        """Creator disconnects while waiting — room cleaned up, no notifications sent."""
+        p1 = env["make_peer"]("sid1")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        env["captured"].clear()
+
+        p1.disconnect()
+
+        # Room should be fully cleaned up
+        assert env["rooms"].get_room(room_id) is None
+        assert env["rooms"].room_count == 0
+        # No peer-disconnected since no one else was in the room
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 0
+
+    def test_peer_disconnects_during_sdp_exchange(self, env):
+        """Peer disconnects after offer but before answer — clean teardown."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        # Offer sent but p2 crashes before answering
+        p1.emit_event("offer", {"sdp": "offer-data"})
+        env["captured"].clear()
+
+        p2.disconnect()
+
+        disconnects = events_of(env["captured"], "peer-disconnected")
+        assert len(disconnects) == 1
+        assert disconnects[0]["room"] == "sid1"
+
+
+class TestCleanSessionTeardown:
+    """Clean session end: leave → rejoin → repeated cycles."""
+
+    def test_leave_and_rejoin_same_room(self, env):
+        """After leaving, a peer can rejoin the same room if it still exists."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        # p2 leaves
+        p2.emit_event("leave_room")
+        assert env["rooms"].get_peer("sid2").room_id is None
+        assert env["rooms"].get_room(room_id) is not None  # p1 still in it
+
+        # p2 rejoins
+        joined = env["rooms"].join_room("sid2", room_id)
+        assert joined is not None
+        assert joined.is_full
+
+    def test_leave_and_create_new_room(self, env):
+        """After leaving, a peer can create a fresh room."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        # Both leave
+        p1.emit_event("leave_room")
+        p2.emit_event("leave_room")
+        assert env["rooms"].room_count == 0
+
+        # p1 creates new room
+        p1.emit_event("create_room")
+        new_room_id = env["rooms"].get_peer("sid1").room_id
+        assert new_room_id is not None
+        assert new_room_id != room_id
+
+    def test_multiple_call_cycles(self, env):
+        """Two peers can do multiple create→join→leave cycles cleanly."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+
+        for _cycle in range(3):
+            p1.emit_event("create_room")
+            room_id = env["rooms"].get_peer("sid1").room_id
+            p2.emit_event("join_room", {"room_id": room_id})
+            assert env["rooms"].get_room(room_id).is_full
+
+            p1.emit_event("leave_room")
+            p2.emit_event("leave_room")
+            assert env["rooms"].room_count == 0
+
+        assert env["rooms"].peer_count == 2  # peers still registered
+
+    def test_admin_status_reflects_room_changes(self, env):
+        """Admin endpoint tracks room/peer count through full lifecycle."""
+        flask_app = env["flask_app"]
+        client = flask_app.test_client()
+
+        # Empty
+        resp = client.get("/admin/status")
+        assert resp.get_json()["peers"] == 0
+        assert resp.get_json()["rooms"] == 0
+
+        # After connections + room creation
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        resp = client.get("/admin/status")
+        assert resp.get_json()["peers"] == 2
+        assert resp.get_json()["rooms"] == 0
+
+        p1.emit_event("create_room")
+        resp = client.get("/admin/status")
+        assert resp.get_json()["rooms"] == 1
+
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+        resp = client.get("/admin/status")
+        assert resp.get_json()["rooms"] == 1
+        assert resp.get_json()["peers"] == 2
+
+        # After disconnect
+        p1.disconnect()
+        p2.disconnect()
+        resp = client.get("/admin/status")
+        assert resp.get_json()["peers"] == 0
+        assert resp.get_json()["rooms"] == 0
+
+    def test_signaling_after_room_partner_left(self, env):
+        """SDP/ICE events are silently dropped if partner already left."""
+        p1 = env["make_peer"]("sid1")
+        p2 = env["make_peer"]("sid2")
+        p1.emit_event("create_room")
+        room_id = env["rooms"].get_peer("sid1").room_id
+        p2.emit_event("join_room", {"room_id": room_id})
+
+        # p2 leaves
+        p2.emit_event("leave_room")
+        env["captured"].clear()
+
+        # p1 sends offer — should be silently dropped (no peer to relay to)
+        p1.emit_event("offer", {"sdp": "late-offer"})
+        p1.emit_event("ice_candidate", {"candidate": "late-ice"})
+        assert len(events_of(env["captured"], "offer")) == 0
+        assert len(events_of(env["captured"], "ice-candidate")) == 0

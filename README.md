@@ -66,7 +66,7 @@ pip install pytest
 python -m pytest tests/signaling/ -v
 ```
 
-31 tests: room management unit tests + signaling flow integration tests.
+41 tests: room management unit tests + signaling flow integration tests (including connection loss and clean teardown scenarios).
 
 ### JavaScript (crypto, BB84, metrics)
 
@@ -76,7 +76,7 @@ npm install
 NODE_OPTIONS="--experimental-vm-modules" npx jest tests/js/ --verbose
 ```
 
-23 tests: AES-GCM frame crypto, BB84 protocol over ideal/simulated channels, metrics collector.
+37 tests: AES-GCM frame crypto, BB84 protocol over ideal/simulated channels, metrics collector, signaling client.
 
 ## Project Structure
 
