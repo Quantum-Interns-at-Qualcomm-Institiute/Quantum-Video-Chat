@@ -4,15 +4,15 @@ services:
       context: .
       dockerfile: Dockerfile.server
     ports:
-      - "127.0.0.1:${QVC_SERVER_REST_PORT:-5050}:${QVC_SERVER_REST_PORT:-5050}"
+      - "127.0.0.1:${QVC_SERVER_PORT}:${QVC_SERVER_PORT}"
     environment:
-      QVC_SERVER_REST_PORT: ${QVC_SERVER_REST_PORT:-5050}
+      QVC_SERVER_REST_PORT: "${QVC_SERVER_PORT}"
       QVC_LOCAL_IP: "0.0.0.0"
       DEV_CERT_DIR: ""
     volumes:
       - ./logs:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${QVC_SERVER_REST_PORT:-5050}/admin/status"]
+      test: ["CMD", "curl", "-f", "http://localhost:${QVC_SERVER_PORT}/admin/status"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,12 +22,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.client
-    command: ["python", "middleware/client.py", "--port", "${QVC_MIDDLEWARE_PORT:-5002}"]
+    command: ["python", "middleware/client.py", "--port", "${QVC_CLIENT_PORT}"]
     ports:
-      - "127.0.0.1:${QVC_MIDDLEWARE_PORT:-5002}:${QVC_MIDDLEWARE_PORT:-5002}"
+      - "127.0.0.1:${QVC_CLIENT_PORT}:${QVC_CLIENT_PORT}"
     environment:
       QUANTUM_SERVER_HOST: server
-      QUANTUM_SERVER_PORT: ${QVC_SERVER_REST_PORT:-5050}
+      QUANTUM_SERVER_PORT: "${QVC_SERVER_PORT}"
       DEV_CERT_DIR: ""
     depends_on:
       server:

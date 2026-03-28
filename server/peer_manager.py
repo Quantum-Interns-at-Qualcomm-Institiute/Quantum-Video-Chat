@@ -17,12 +17,14 @@ class PeerConnectionManager:
     def __init__(self, server):
         """Initialize with a reference to the server."""
         self._server = server
+        logger.debug("PeerConnectionManager initialized")
 
     def connect(self, user_id, peer_id, session_settings=None):
         """Orchestrate a peer connection between two users.
 
         Returns (api_endpoint, session_id) for the session.
         """
+        logger.info("PeerConnect: user=%s -> peer=%s  settings=%s", user_id, peer_id, session_settings)
         if user_id == peer_id:
             msg = f"Cannot intermediate connection between User {user_id} and self."
             raise BadRequest(msg)
@@ -82,6 +84,7 @@ class PeerConnectionManager:
         Resets both the user and their peer to IDLE state and sends a
         best-effort notification to the peer's client API.
         """
+        logger.info("PeerDisconnect: user=%s", user_id)
         try:
             user = self._server.get_user(user_id)
         except UserNotFoundError as err:

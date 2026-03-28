@@ -1,10 +1,38 @@
-"""Shared logging setup with file rotation and JSON output."""
+"""Shared logging setup with file rotation and JSON output.
+
+Log level is controlled by the ``QVC_LOG_LEVEL`` environment variable.
+
++-----------+--------------------------------------------------+
+| Value     | Console shows                                    |
++-----------+--------------------------------------------------+
+| ``DEBUG`` | Everything (verbose)                             |
+| ``INFO``  | Lifecycle, REST hits, connections, state changes |
+| ``WARN``  | Warnings and errors only                         |
+| ``ERROR`` | Errors only                                      |
++-----------+--------------------------------------------------+
+
+File handlers *always* capture DEBUG regardless of the env var so that
+verbose logs are available on disk even when the console is quiet.
+"""
 
 import json
+import os
 from datetime import UTC, datetime
-from logging import DEBUG, INFO, Formatter, StreamHandler, getLogger
+from logging import DEBUG, ERROR, INFO, WARNING, Formatter, StreamHandler, getLogger
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+
+_LEVEL_MAP = {
+    "DEBUG": DEBUG,
+    "INFO": INFO,
+    "WARN": WARNING,
+    "WARNING": WARNING,
+    "ERROR": ERROR,
+}
+
+_console_level = _LEVEL_MAP.get(
+    os.environ.get("QVC_LOG_LEVEL", "DEBUG").upper(), DEBUG,
+)
 
 
 def get_logger(name: str, log_dir: str = "logs"):
@@ -55,7 +83,8 @@ def get_logger(name: str, log_dir: str = "logs"):
                 "message": record.getMessage(),
             }
             # Include extra fields if present (e.g. user_id, request_id)
-            for key in ("user_id", "request_id", "peer_id", "qber", "event"):
+            for key in ("user_id", "request_id", "peer_id", "qber", "event",
+                        "sid", "client_id", "host", "port", "room_id"):
                 if hasattr(record, key):
                     entry[key] = getattr(record, key)
             if record.exc_info and record.exc_info[1]:
@@ -65,11 +94,13 @@ def get_logger(name: str, log_dir: str = "logs"):
     formatter = CustomFormatter("[%(asctime)s] (%(levelname)s) %(message)s")
     json_formatter = JSONFormatter()
 
+    # Console handler — level controlled by QVC_LOG_LEVEL
     stream_handler = StreamHandler()
-    stream_handler.setLevel(INFO)
+    stream_handler.setLevel(_console_level)
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 
+    # Human-readable file handler — always DEBUG
     file_handler = RotatingFileHandler(
         log_file_path, mode="a",
         maxBytes=10 * 1024 * 1024,  # 10 MB
@@ -79,7 +110,7 @@ def get_logger(name: str, log_dir: str = "logs"):
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
-    # Structured JSON log alongside the human-readable one
+    # Structured JSON log alongside the human-readable one — always DEBUG
     json_log_path = log_file_path.with_suffix(".json.log")
     json_handler = RotatingFileHandler(
         json_log_path, mode="a",

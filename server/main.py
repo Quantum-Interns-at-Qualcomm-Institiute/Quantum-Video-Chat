@@ -6,13 +6,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import logging
-
 from rest_api import ServerAPI
 
 from server import Server
+from shared.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def _shutdown(_sig=None, _frame=None):
@@ -31,11 +30,13 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
+    logger.info("Initializing QKD server")
+    logger.debug("Default endpoint: %s", ServerAPI.DEFAULT_ENDPOINT)
     ServerAPI.init_socketio()
     server = Server(ServerAPI.DEFAULT_ENDPOINT, socketio=ServerAPI.socketio)
     ServerAPI.init(server)
 
-
+    logger.info("Starting QKD server (blocking)")
     try:
         ServerAPI.start()  # Blocking
     except KeyboardInterrupt:

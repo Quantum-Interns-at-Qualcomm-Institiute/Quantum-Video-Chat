@@ -417,7 +417,7 @@ class TestPerformanceConcurrentSessions:
                     recovered = enc.decrypt(ct, key)
                     if recovered != pt:
                         errors.append((worker_id, i, pt, recovered))
-            except Exception as e:  # noqa: BLE001 -- thread safety test must catch all
+            except Exception as e:
                 errors.append((worker_id, -1, str(e)))
 
         threads = [Thread(target=worker, args=(i,)) for i in range(10)]

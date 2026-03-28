@@ -1,403 +1,110 @@
 # Quantum Video Chat
 
-A secure, peer-to-peer video chat application with a full **BB84 quantum key distribution** simulation. Encrypted audio and video streams are exchanged between peers using AES-128 keys generated through a realistic quantum optical channel simulation — including Poissonian photon statistics, fiber attenuation, single-photon detector noise, and the complete BB84 protocol (sifting, QBER estimation, Cascade error correction, Toeplitz privacy amplification).
+Browser-native, peer-to-peer video chat with **BB84 quantum key distribution**. Video and audio flow directly between browsers via WebRTC — encrypted frame-by-frame with AES-128-GCM keys derived from a simulated quantum optical channel.
 
-The system detects eavesdropping in real time: when the quantum bit error rate (QBER) exceeds the 11% threshold, the key is automatically rejected and redistributed — all while the video stream continues uninterrupted.
-
----
-
-## Quantum Key Distribution (BB84)
-
-The BB84 simulation (`shared/bb84/`) models the full optical chain:
-
-| Component | Description |
-|-----------|-------------|
-| **PhotonSource** | Mode-locked laser with Poisson statistics (μ ≈ 0.1) to minimize PNS attacks |
-| **QuantumChannel** | Fiber-optic channel with configurable attenuation (0.2 dB/km) |
-| **SinglePhotonDetector** | InGaAs APD model with efficiency (10%), dark counts, afterpulsing, dead time, jitter |
-| **EavesdropperSimulator** | Intercept-resend attack raising QBER to ~25% for detection |
-
-The protocol engine runs the full BB84 key exchange:
-1. **Random basis/bit generation** — Alice and Bob independently choose rectilinear (+) or diagonal (×) bases
-2. **Sifting** — Discard bits where bases don't match (~50% survival rate)
-3. **QBER estimation** — Sacrifice 10% of sifted bits to detect eavesdropping
-4. **Error correction** — Cascade protocol (binary search, 4 passes) reconciles remaining errors
-5. **Privacy amplification** — Toeplitz hashing removes Eve's information
-
-The QBER monitor tracks channel quality in real time and classifies each round as NORMAL (<5%), WARNING (5-11%), or INTRUSION DETECTED (>11%). An eavesdropper toggle is available for live demos.
-
-For the formal security analysis, see [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md).
-
----
+The system models real quantum hardware: Poissonian photon statistics, fiber attenuation, single-photon APD detectors, and intercept-resend eavesdropping. When the quantum bit error rate (QBER) exceeds the 11% security threshold, keys are rejected and re-exchanged automatically.
 
 ## Architecture
 
-Three processes collaborate at runtime:
+```
+Browser A ◄══ WebRTC (P2P encrypted media) ══► Browser B
+    │                                              │
+    └──── Socket.IO signaling ────► Server ◄───────┘
+                                  (SDP + ICE relay only)
+```
 
-![System Architecture](docs/diagrams/architecture.svg)
+- **Signaling server** (Python/Flask): room management, SDP/ICE relay. No media touches the server.
+- **WebRTC**: peer-to-peer video/audio via `RTCPeerConnection`
+- **Insertable Streams**: AES-128-GCM frame encryption in a Web Worker (`RTCRtpScriptTransform`)
+- **DataChannel**: BB84 key exchange messages flow peer-to-peer
+- **BB84 Protocol** (JavaScript): sifting, QBER estimation, Cascade error correction, Toeplitz privacy amplification
 
-All three processes share a common Python library (`shared/`) that provides encryption, endpoint handling, state enums, AV namespace logic, and centralised configuration.
+## Quick Start
 
-> Diagrams are maintained as [PlantUML](https://plantuml.com/) sources in [`docs/diagrams/`](docs/diagrams/) and auto-rendered by CI on push.
+### Prerequisites
 
----
+- Python 3.9+
+- Node.js 20+ (for JS tests only; not needed at runtime)
+- pip packages: `flask flask-cors python-socketio eventlet`
+
+### Run the signaling server
+
+```bash
+cd packages/qvc
+pip install flask flask-cors python-socketio eventlet
+python signaling/main.py
+```
+
+The server starts on a dynamically assigned port (or set `QVC_SERVER_REST_PORT=5050`).
+
+### Run with Docker
+
+```bash
+# From the website root
+docker compose up -d
+```
+
+Port assignments are in `.env`. Set `DEV=1` in `.env` to also serve the Astro frontend.
+
+### Open the client
+
+Navigate to the page that serves `website/client/index.html`. In Docker, this is served by the Astro dev server at `localhost:4322/projects/quantum-video-chat/client/`.
+
+1. Two browser tabs → both connect to the signaling server
+2. Tab A clicks **Start Session** → gets a room code
+3. Tab B enters the room code → clicks **Join**
+4. WebRTC peer connection establishes → video flows P2P
+5. BB84 key exchange runs over DataChannel → frames encrypted
+
+## Tests
+
+### Python (signaling server)
+
+```bash
+cd packages/qvc
+pip install pytest
+python -m pytest tests/signaling/ -v
+```
+
+41 tests: room management unit tests + signaling flow integration tests (including connection loss and clean teardown scenarios).
+
+### JavaScript (crypto, BB84, metrics)
+
+```bash
+cd packages/qvc
+npm install
+NODE_OPTIONS="--experimental-vm-modules" npx jest tests/js/ --verbose
+```
+
+37 tests: AES-GCM frame crypto, BB84 protocol over ideal/simulated channels, metrics collector, signaling client.
 
 ## Project Structure
 
 ```
-quantum-video-chat/
-├── start.sh                              # Dev launcher (bash start.sh client|server)
-├── pytest.ini                            # Pytest config (paths, markers)
-│
-├── shared/                               # Shared Python library
-│   ├── adapters.py                       # FrontendAdapter ABC
-│   ├── config.py                         # Centralised config (ports, AV, crypto)
-│   ├── decorators.py                     # Shared exception-handling decorators
-│   ├── encryption.py                     # AES/XOR/Debug encryption + key generators
-│   ├── endpoint.py                       # Endpoint URL builder
-│   ├── exceptions.py                     # Unified exception hierarchy + Errors enum
-│   ├── logging.py                        # Shared logging setup
-│   ├── parameters.py                     # Request parameter extraction
-│   ├── state.py                          # ClientState enum
-│   ├── av/
-│   │   └── namespaces.py                 # Audio/Video/Key client + Flask namespaces
-│   └── bb84/                             # BB84 quantum key distribution
-│       ├── physical_layer.py             # Optical chain simulator (source, channel, detector)
-│       ├── protocol.py                   # Full BB84 protocol (sifting, QBER, Cascade, PA)
-│       ├── qber_monitor.py               # Real-time QBER tracking + intrusion detection
-│       ├── hardware_bridge.py            # Abstract hardware interface + MATLAB/Qiskit stubs
-│       ├── hardware_key_generator.py     # Hardware-backed key generator with sim fallback
-│       └── utils.py                      # Binary entropy, Toeplitz hashing
-│
-├── server/                               # Backend server
-│   ├── main.py                           # Entry point
-│   ├── rest_api.py                       # ServerAPI (Flask REST, :5050)
-│   ├── socket_api.py                     # SocketAPI (Flask-SocketIO, :3000)
-│   ├── server.py                         # User lifecycle, WebSocket management
-│   ├── peer_manager.py                   # PeerConnectionManager (connect/disconnect orchestration)
-│   ├── state.py                          # APIState, SocketState enums
-│   ├── exceptions.py                     # Server-specific exceptions
-│   ├── custom_logging.py                 # Server logging config
-│   └── utils/
-│       ├── av.py                         # Server AV namespace generation
-│       ├── encryption.py                 # Re-exports from shared
-│       ├── user.py                       # User model + UserState enum
-│       └── user_manager.py               # In-memory user storage + manager
-│
-├── middleware/                           # Python middleware (browser ↔ server bridge)
-│   ├── video_chat.py                     # Entry point — connects to browser via Socket.IO
-│   ├── custom_logging.py                 # Middleware logging config
-│   ├── dev_python_config.json            # Dev server endpoint config
-│   ├── python_config.json                # Production server endpoint config
-│   ├── requirements.txt                  # Python dependencies
-│   ├── adapters/
-│   │   └── socket_adapter.py             # SocketAdapter (FrontendAdapter impl)
-│   └── client/
-│       ├── client.py                     # Client orchestrator (connect, disconnect, kill)
-│       ├── socket_client.py              # SocketClient (WebSocket connection)
-│       ├── server_comms.py               # ServerCommsMixin (REST to backend)
-│       ├── api.py                        # ClientAPI (Flask, :4000)
-│       ├── av.py                         # Client AV (key rotation, video encode)
-│       ├── endpoint.py                   # Re-exports from shared
-│       ├── errors.py                     # Client error enum
-│       └── util.py                       # ClientState, parameter helpers
-│
-├── frontend/                             # React browser app
-│   ├── settings.ini                      # Persisted user settings (INI format)
-│   ├── package.json                      # npm dependencies + scripts
-│   ├── src/
-│   │   ├── middleware/                    # Lightweight Python middleware (browser-facing)
-│   │   │   ├── client.py                 # Entry point + port detection + shutdown
-│   │   │   ├── state.py                  # MiddlewareState — centralised mutable state
-│   │   │   ├── video.py                  # VideoThread — camera capture + frame emission
-│   │   │   ├── server_comms.py           # QKD server REST communication + health checks
-│   │   │   └── events.py                 # Socket.io + REST event handler registration
-│   │   ├── renderer/
-│   │   │   ├── App.tsx                   # Router + global connection status state
-│   │   │   ├── platform.ts              # Browser platform API (settings, events)
-│   │   │   ├── screens/
-│   │   │   │   ├── MainScreen.tsx        # Single-screen layout (composes sub-components)
-│   │   │   │   ├── Start.tsx             # Home — start or join a session
-│   │   │   │   ├── Join.tsx              # Session code entry form
-│   │   │   │   ├── Session.tsx           # Active session — video, chat, hang up
-│   │   │   │   └── Settings.tsx          # Settings panel (network, AV, crypto, debug)
-│   │   │   ├── hooks/
-│   │   │   │   ├── useConnection.ts      # Middleware/server connectivity lifecycle
-│   │   │   │   ├── useSession.ts         # User registration, room join/leave, frames
-│   │   │   │   └── useMedia.ts           # Camera/mic toggle state
-│   │   │   ├── utils/
-│   │   │   │   ├── ClientContext.tsx      # Composes hooks into single React context
-│   │   │   │   ├── socket.ts             # Socket.io client connection utilities
-│   │   │   │   ├── canvas.ts             # Canvas drawing helpers (toRGBA, drawOnCanvas)
-│   │   │   │   └── theme.ts              # Theme persistence + DOM management
-│   │   │   └── components/
-│   │   │       ├── Header.tsx            # Status-aware header bar
-│   │   │       ├── ControlBar.tsx        # Server connect + room join forms
-│   │   │       ├── MediaControls.tsx     # Camera/mic toggle buttons
-│   │   │       ├── ErrorPanel.tsx        # Collapsible error log panel
-│   │   │       ├── StatusBar.tsx         # Session status display (user/room/port)
-│   │   │       ├── VideoPlayer.tsx       # Video stream display
-│   │   │       ├── ConnectionStatus.tsx  # ServerBadge + PeerBanner + ConnStatus type
-│   │   │       ├── StatusPopup.tsx       # Connection status overlay
-│   │   │       ├── chat/                 # Chat panel (Chat.tsx, Message.tsx)
-│   │   │       └── widgets/              # QKD metric widgets (Circle, Rectangle, Status)
-│   │   └── __tests__/                    # Jest tests for components + screens
-│   └── ...
-│
-├── docs/diagrams/                        # PlantUML sources + rendered SVG/PNG
-│
-├── tests/                                # Python test suite
-│   ├── conftest.py                       # Root fixtures + path setup
-│   ├── server/                           # Server unit tests
-│   │   ├── test_rest_api.py              # REST endpoint tests
-│   │   ├── test_server.py                # Server logic + disconnect tests
-│   │   ├── test_socket_api.py            # WebSocket API tests
-│   │   ├── test_socket_api_events.py     # WebSocket event handler + run tests
-│   │   ├── test_user.py                  # User model tests
-│   │   ├── test_user_manager.py          # Storage + manager tests
-│   │   └── test_state.py                 # State enum tests
-│   ├── middleware/                        # Middleware unit tests
-│   │   ├── test_client.py                # Client + disconnect tests
-│   │   ├── test_client_api.py            # ClientAPI endpoint tests
-│   │   ├── test_socket_client.py         # SocketClient tests
-│   │   ├── test_server_comms.py          # Server communication tests
-│   │   ├── test_av.py                    # AV pipeline tests
-│   │   ├── test_socket_adapter.py        # Adapter tests
-│   │   └── test_util.py                  # Utility tests
-│   ├── shared/                           # Shared library unit tests
-│   │   ├── test_encryption.py            # Encryption round-trip tests
-│   │   ├── test_endpoint.py              # Endpoint tests
-│   │   ├── test_config.py                # Config loading tests
-│   │   └── ...
-│   ├── test_connection_flow.py           # Integration: connect + disconnect lifecycle
-│   ├── test_data_transmission.py         # Integration: encrypted AV data flow
-│   └── test_live_e2e.py                  # Live e2e: real processes, video + messaging
-│
-└── icebox/                               # Experimental / legacy code
+signaling/
+  server.py          # Flask + Socket.IO signaling server
+  rooms.py           # Room management (create, join, leave)
+  main.py            # Entry point
+
+website/client/
+  index.html         # Frontend entry point
+  static/
+    app.js           # Main application (state, render, actions)
+    style.css        # Styles
+    js/
+      webrtc.js      # RTCPeerConnection lifecycle + DataChannel
+      crypto.js      # AES-128-GCM frame encrypt/decrypt
+      crypto-worker.js  # Insertable Streams Web Worker
+      metrics.js     # MetricsCollector (rolling windows, thresholds)
+      bb84/
+        protocol.js  # BB84: sifting, QBER, error correction, privacy amp
+        channel.js   # QuantumChannel + ClassicalChannel interfaces
+        simulated.js # SimulatedQuantumChannel (photon source, fiber, APD)
+        metrics.js   # BB84Metrics data class
+
+shared/              # Legacy shared code (BB84 reference, encryption)
+tests/
+  signaling/         # Python signaling tests
+  js/                # JavaScript tests (jest)
+    bb84/            # BB84 protocol + simulation tests
 ```
-
----
-
-## Session Flow
-
-### Connecting
-
-![Session Connection Flow](docs/diagrams/session-connect.svg)
-
-1. **Host** clicks "Start Session" — a random session code is generated and displayed.
-2. **Client** enters the code on the Join screen.
-3. The browser emits `connect_to_peer` to the Python middleware over Socket.IO (:5001).
-4. Middleware calls `POST /peer_connection` on the backend server.
-5. Server starts a shared WebSocket namespace and contacts the peer's ClientAPI (:4000).
-6. Both clients connect to the shared WebSocket and begin streaming encrypted AV.
-
-### Disconnecting
-
-![Session Disconnect Flow](docs/diagrams/session-disconnect.svg)
-
-1. Either user clicks "Hang Up" in the Session screen.
-2. The browser emits `disconnect_call` to the middleware via Socket.IO.
-3. Middleware calls `Client.disconnect_from_peer()`:
-   - Stops AV key rotation (`_key_stop.set()`)
-   - Disconnects from the WebSocket
-   - Sends `POST /disconnect_peer` to the backend server
-   - Emits `peer_disconnected` status to the frontend
-4. Server resets both users to `IDLE` and sends `POST /peer_disconnected` to the peer's ClientAPI.
-5. The peer's middleware cleans up its WebSocket and emits `peer_disconnected` to its frontend.
-6. Both clients return to `LIVE` state, ready for a new call.
-
----
-
-## Video Frame Lifecycle
-
-![Video Frame Pipeline](docs/diagrams/video-pipeline.svg)
-
-Keys rotate every **1 second** in a dedicated daemon thread. Each encrypted payload is prefixed with a 4-byte key index so the receiver can synchronise decryption. A `threading.Lock` protects the shared key state from data races.
-
-A debug video mode (`DEBUG_VIDEO=true`) replaces the camera feed with random grayscale frames, enabling headless testing without a webcam.
-
----
-
-## Encryption
-
-Three encryption schemes, selected via `shared/config.py` or the Settings screen:
-
-| Scheme | Description |
-|--------|-------------|
-| `AESEncryption` | AES-128 CBC (default) |
-| `XOREncryption` | XOR cipher |
-| `DebugEncryption` | Passthrough — no encryption |
-
-Four key generators:
-
-| Generator | Description |
-|-----------|-------------|
-| `BB84KeyGenerator` | Simulated BB84 quantum key distribution (default) |
-| `RandomKeyGenerator` | Cryptographically random keys |
-| `FileKeyGenerator` | Reads keys from `key.bin` (for real QKD hardware) |
-| `DebugKeyGenerator` | Fixed key for testing |
-
----
-
-## Configuration
-
-Runtime settings can be configured in three ways (highest priority first):
-
-1. **Environment variables** (`QVC_*` prefix)
-2. **Settings INI file** (`settings.ini`, editable from the in-app Settings screen)
-3. **Hardcoded defaults** in `shared/config.py`
-
-| Constant | Default | Env Override |
-|----------|---------|-------------|
-| Middleware port | 5001 | `QVC_IPC_PORT` |
-| Server REST port | 5050 | `QVC_SERVER_REST_PORT` |
-| Server WebSocket port | 3000 | `QVC_SERVER_WS_PORT` |
-| Client API port | 4000 | `QVC_CLIENT_API_PORT` |
-| Video shape | 640x480 | — |
-| Frame rate | 15 fps | — |
-| Sample rate | 8000 Hz | — |
-| Key length | 128 bits | — |
-| Debug video | false | `QVC_DEBUG_VIDEO` |
-| BB84 raw bits | 4096 | — |
-| BB84 QBER threshold | 0.11 | — |
-| BB84 fiber length | 1.0 km | — |
-| BB84 source intensity | 0.1 (μ) | — |
-| BB84 detector efficiency | 0.10 | — |
-| BB84 eavesdropper | false | `QVC_BB84_EAVESDROPPER` |
-
-The middleware also reads server connection details from a JSON config file:
-
-- `middleware/dev_python_config.json` (when `DEV = True`)
-- `middleware/python_config.json` (production)
-
----
-
-## State Machines
-
-![State Machines](docs/diagrams/state-machines.svg)
-
----
-
-## REST API Endpoints
-
-### Server (`:5050`)
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/create_user` | Register a new client, returns `user_id` |
-| POST | `/peer_connection` | Initiate peer connection handshake |
-| POST | `/disconnect_peer` | Disconnect a user from their active peer |
-| DELETE | `/remove_user` | Unregister a client on shutdown |
-
-### Client API (`:4000`)
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/peer_connection` | Receive incoming peer connection request |
-| POST | `/peer_disconnected` | Receive notification that peer has hung up |
-
----
-
-## Running Locally
-
-The `start.sh` script handles port detection and process lifecycle:
-
-```bash
-# Terminal 1 — Backend server
-bash start.sh server
-
-# Terminal 2 — Client (browser + middleware)
-bash start.sh client
-```
-
-For a two-client session on one machine, run `bash start.sh client` in two separate terminals. Each instance auto-selects free ports to avoid conflicts.
-
-### Manual startup
-
-```bash
-# 1. Backend server
-cd server && python3 main.py
-
-# 2. Frontend (starts renderer and middleware)
-cd frontend && npm install && npm run start:renderer
-```
-
----
-
-## Testing
-
-```bash
-# All unit + integration tests (excludes live e2e)
-python -m pytest tests/ --ignore=tests/test_live_e2e.py
-
-# Live end-to-end tests (spawns real server + two clients)
-python -m pytest tests/test_live_e2e.py -v -s
-
-# Full suite
-python -m pytest tests/ -v
-
-# Frontend tests
-cd frontend && npm test
-```
-
-**Test coverage:**
-- **455 Python tests** across unit, integration, and e2e layers
-- **80 Jest tests** for React components, screens, and hooks
-
----
-
-## Diagrams
-
-All architecture and flow diagrams are maintained as PlantUML source files in [`docs/diagrams/`](docs/diagrams/). A [GitHub Actions workflow](.github/workflows/render-diagrams.yml) automatically re-renders them to SVG and PNG whenever a `.puml` file is modified.
-
-To render locally:
-
-```bash
-# Requires Java and plantuml.jar
-java -jar plantuml.jar -tsvg -o . docs/diagrams/*.puml
-```
-
----
-
-## Threat Model
-
-See [`docs/THREAT_MODEL.md`](docs/THREAT_MODEL.md) for the full security analysis, including:
-- What BB84 protects against (intercept-resend, PNS attacks)
-- QBER threshold derivation (11% from Shannon limit)
-- System assumptions (authenticated classical channel, trusted devices)
-- Known limitations (simulation only, no decoy states)
-
----
-
-## Key Design Decisions
-
-- **BB84 physical layer simulation**: Models the actual optical chain (Poisson photon source, fiber attenuation, SPD noise) rather than using Qiskit gate circuits, because QKD operates on classical probability distributions, not gate-based quantum computing. Qiskit is available as a validation tool via `QiskitValidator`.
-- **QBER-aware key rotation**: The AV key rotation thread (`server/utils/av.py`) detects BB84 round failures and keeps the old working key during intrusion events, ensuring video never drops.
-- **Hardware bridge pattern**: `AbstractHardwareBridge` decouples the protocol from sensor hardware, enabling seamless transition from simulation to real QKD equipment (MATLAB, LabVIEW, etc.).
-- **`shared/` library**: Eliminates duplicated Python code between server and middleware. Both import from `shared/` via `sys.path`. Includes shared exception-handling decorators (`shared/decorators.py`) and a unified exception hierarchy (`shared/exceptions.py`).
-- **`FrontendAdapter` ABC**: Decouples the middleware from the Socket.IO transport. The `SocketAdapter` is the only class that knows about socket.io; everything else codes against the abstract interface.
-- **Composition over inheritance**: `SocketAPI` owns a `Thread` rather than extending it, keeping the class open for extension without coupling to threading internals. `Server` delegates peer connection workflows to `PeerConnectionManager`.
-- **React hooks for state separation**: `ClientContext` composes three focused hooks (`useConnection`, `useSession`, `useMedia`) rather than managing all state inline. Each hook has a single responsibility and can be tested independently.
-- **Middleware module decomposition**: The lightweight Python middleware (`frontend/src/middleware/`) separates concerns into `state.py` (centralised mutable state), `video.py` (camera capture), `server_comms.py` (QKD server REST calls), and `events.py` (event handler registration), with `client.py` as a thin entry point.
-- **MainScreen component composition**: The single-screen UI composes `ControlBar`, `MediaControls`, `ErrorPanel`, and `StatusBar` components, each owning its own state and socket listeners.
-- **Daemon threads for AV**: Audio capture, video capture, and key rotation each run in daemon threads. A `threading.Event` (`_key_stop`) enables clean shutdown of key rotation on disconnect.
-- **Thread-safe key state**: The rotating encryption key (`AV.key`) is protected by a `threading.Lock` to prevent data races between the key rotation thread and the AV streaming threads.
-- **SID tracking for disconnect**: The `SocketAPI` maps socket session IDs to user IDs, enabling proper state cleanup when clients disconnect unexpectedly.
-- **TOCTOU-safe port binding**: The middleware detects port collisions at startup with `SO_REUSEADDR=0` probing and auto-increments to a free port, preventing two instances on the same machine from silently sharing a port.
-- **Settings INI with no dependencies**: A zero-dependency INI parser/serialiser, with defaults mirrored in both TypeScript and Python.
-
----
-
-## Tech Stack
-
-| Layer | Technologies |
-|-------|-------------|
-| UI | React, React Router, Material UI, TypeScript |
-| Bundler | Webpack 5, webpack-dev-server |
-| Backend server | Python, Flask, Flask-SocketIO, gevent |
-| Middleware | Python, python-socketio, Flask |
-| Video | OpenCV (cv2), ffmpeg-python, H.264 |
-| Audio | PyAudio |
-| Encryption | PyCryptodome (AES-128 CBC) |
-| Networking | psutil (interface discovery) |
-| Testing | pytest, Jest, React Testing Library |

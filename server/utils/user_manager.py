@@ -156,6 +156,7 @@ class UserManager:
     def __init__(self, storage: UserStorageInterface):
         """Initialize with a user storage backend."""
         self.storage = storage
+        logger.debug("UserManager initialized with %s", type(storage).__name__)
 
     def generate_user_id(self):
         """Generate a unique 5-digit numeric user ID (10000-99999)."""

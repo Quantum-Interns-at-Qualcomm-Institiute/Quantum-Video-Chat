@@ -28,7 +28,7 @@ class TestRegisterBrowserEvents:
         registered = {name for name, _ in state.sio.handlers.get("/", {}).items()
                       if name not in {"connect", "disconnect"}}
         # At minimum these should be registered
-        expected = {"ping", "toggle_camera", "toggle_mute", "select_camera",
+        expected = {"pong", "toggle_camera", "toggle_mute", "select_camera",
                     "list_cameras", "select_audio", "list_audio_devices",
                     "configure_server", "create_user", "join_room", "leave_room"}
         assert expected.issubset(registered), f"Missing: {expected - registered}"
@@ -45,23 +45,19 @@ class TestRegisterBrowserEvents:
         state2.sio.event = lambda fn: fn  # passthrough decorator
         register_browser_events(state2)
 
-    def test_ping_returns_status(self, state):
+    def test_pong_updates_last_seen(self, state):
         register_browser_events(state)
-        state.server_alive = True
-        state.user_id = "u1"
 
-        # Call the ping handler directly
+        # Call the pong handler directly
         handlers = state.sio.handlers.get("/", {})
-        ping_handler = handlers.get("ping")
-        assert ping_handler is not None
+        pong_handler = handlers.get("pong")
+        assert pong_handler is not None
 
-        # Mock emit
-        state.sio.emit = MagicMock()
-        ping_handler("sid1")
-        state.sio.emit.assert_called_once_with("pong", {
-            "server": True,
-            "user_id": "u1",
-        }, room="sid1")
+        # Simulate a tracked client
+        state._browser_clients["test-client"] = {"sid": "sid1", "last_seen": 0}
+        state._sid_to_client["sid1"] = "test-client"
+        pong_handler("sid1", {"client_id": "test-client"})
+        assert state._browser_clients["test-client"]["last_seen"] > 0
 
     def test_toggle_camera(self, state):
         register_browser_events(state)
@@ -116,9 +112,11 @@ class TestRegisterBrowserEvents:
         configure = handlers.get("configure_server")
         assert configure is not None
 
-        with patch.object(mw_events, "server_comms") as mock_comms:
+        with patch.object(mw_events, "server_comms") as mock_comms, \
+             patch.object(mw_events, "gevent") as mock_gevent:
             configure("sid1", {"host": "h", "port": 1})
-        mock_comms.configure_server.assert_called_once_with(state, "sid1", {"host": "h", "port": 1})
+        mock_gevent.spawn.assert_called_once_with(
+            mock_comms.configure_server, state, "sid1", {"host": "h", "port": 1})
 
 
 # ─── register_server_events ──────────────────────────────────────────────────
@@ -228,3 +226,33 @@ class TestRegisterRestRoutes:
 
         assert resp.status_code == 200
         mock_gevent.spawn.assert_not_called()
+
+    def test_health_endpoint(self, state):
+        register_rest_routes(state)
+        client = state.flask_app.test_client()
+
+        resp = client.get("/health")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert data["status"] == "ok"
+        assert "uptime" in data
+        assert "clients" in data
+
+    def test_disconnect_endpoint(self, state):
+        register_browser_events(state)
+        register_rest_routes(state)
+        client = state.flask_app.test_client()
+
+        # Add a tracked client
+        state._browser_clients["cid-1"] = {"sid": "s1", "last_seen": 0}
+
+        resp = client.post("/disconnect", json={"client_id": "cid-1"})
+        assert resp.status_code == 204
+        assert "cid-1" not in state._browser_clients
+
+    def test_disconnect_unknown_client(self, state):
+        register_rest_routes(state)
+        client = state.flask_app.test_client()
+
+        resp = client.post("/disconnect", json={"client_id": "nonexistent"})
+        assert resp.status_code == 204

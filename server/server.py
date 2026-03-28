@@ -89,22 +89,28 @@ class Server:
 
     def contact_client(self, user_id, route, json):
         """Delegate to ClientNotifier."""
+        logger.debug("contact_client  user=%s  route=%s", user_id, route)
         return self.notifier.notify(user_id, route, json)
 
     def start_websocket(self, users):
         """Create a new session room for the given users. Returns session_id."""
-        logger.info("Creating WebSocket session.")
+        logger.info("Creating WebSocket session for users %s", users)
         if self.socket_api is None:
             msg = "Cannot start WebSocket session without SocketAPI."
             raise ServerError(msg)
-        return self.socket_api.create_session(users)
+        session_id = self.socket_api.create_session(users)
+        logger.debug("WebSocket session created: %s", session_id)
+        return session_id
 
     def disconnect_peer(self, user_id):
         """Delegate to PeerConnectionManager."""
+        logger.debug("disconnect_peer  user=%s", user_id)
         self.peer_manager.disconnect(user_id)
 
     def handle_peer_connection(self, user_id, peer_id, session_settings=None):
         """Delegate to PeerConnectionManager."""
+        logger.debug("handle_peer_connection  user=%s  peer=%s  settings=%s",
+                     user_id, peer_id, session_settings)
         return self.peer_manager.connect(user_id, peer_id, session_settings)
 
 # endregion

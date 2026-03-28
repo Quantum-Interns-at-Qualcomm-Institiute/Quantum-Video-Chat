@@ -38,11 +38,21 @@ class TestGetLogger:
         _logger = get_logger("test_mkdir", log_dir=str(log_dir))
         assert log_dir.exists()
 
-    def test_stream_handler_level_is_info(self, tmp_path):
-        logger = get_logger("test_stream_level", log_dir=str(tmp_path))
+    def test_stream_handler_level_matches_env(self, tmp_path, monkeypatch):
+        # Default QVC_LOG_LEVEL is DEBUG; override to INFO for this test
+        monkeypatch.setenv("QVC_LOG_LEVEL", "INFO")
+        # Reload the module so _console_level is recalculated
+        import importlib
+
+        import shared.logging as _logging_mod
+        importlib.reload(_logging_mod)
+        logger = _logging_mod.get_logger("test_stream_level_env", log_dir=str(tmp_path))
         for handler in logger.handlers:
             if isinstance(handler, logging.StreamHandler) and not isinstance(handler, RotatingFileHandler):
                 assert handler.level == logging.INFO
+        # Restore default
+        monkeypatch.delenv("QVC_LOG_LEVEL", raising=False)
+        importlib.reload(_logging_mod)
 
     def test_file_handler_level_is_debug(self, tmp_path):
         logger = get_logger("test_file_level", log_dir=str(tmp_path))

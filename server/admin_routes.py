@@ -13,7 +13,10 @@ from shared.config import LOCAL_IP, SERVER_REST_PORT
 from shared.decorators import handle_exceptions
 
 admin_bp = Blueprint("admin", __name__)
-logger = logging.getLogger("ServerAPI")
+
+from shared.logging import get_logger
+
+logger = get_logger(__name__)
 
 _ADMIN_KEY = os.environ.get("QVC_ADMIN_KEY", "")
 
@@ -22,10 +25,16 @@ def _check_admin_auth(req):
     """Return True if the request is authorized for admin access."""
     if _ADMIN_KEY:
         auth = req.headers.get("Authorization", "")
-        return auth == f"Bearer {_ADMIN_KEY}"
+        ok = auth == f"Bearer {_ADMIN_KEY}"
+        if not ok:
+            logger.warning("Admin auth failed from %s", req.remote_addr)
+        return ok
     # No key configured — allow loopback and private (Docker bridge) networks.
     addr = ipaddress.ip_address(req.remote_addr)
-    return addr.is_loopback or addr.is_private
+    allowed = addr.is_loopback or addr.is_private
+    if not allowed:
+        logger.warning("Admin access denied for non-private IP %s", addr)
+    return allowed
 
 # Reference to the Server instance — set by ServerAPI when registering the blueprint.
 _server = None
@@ -39,6 +48,7 @@ def init_admin(server, get_state, shutdown_fn=None):
     _server = server
     _get_state = get_state
     _shutdown_fn = shutdown_fn
+    logger.debug("Admin routes initialized  shutdown_fn=%s", shutdown_fn is not None)
 
 
 # region --- Dashboard ---
@@ -46,6 +56,7 @@ def init_admin(server, get_state, shutdown_fn=None):
 @admin_bp.route("/dashboard")
 def dashboard():
     """Serve the admin dashboard web UI."""
+    logger.debug("GET /dashboard from %s", request.remote_addr)
     return render_template("dashboard.html")
 
 # endregion
@@ -56,10 +67,12 @@ def dashboard():
 def health_check():
     """Liveness probe — returns 200 if the server process is running."""
     uptime = time.time() - _server.start_time if _server else 0
+    state_val = _get_state().value if _get_state else "unknown"
+    logger.debug("GET /health  uptime=%.1f  state=%s", uptime, state_val)
     return jsonify({
         "status": "healthy",
         "uptime_seconds": round(uptime, 1),
-        "api_state": _get_state().value if _get_state else "unknown",
+        "api_state": state_val,
     }), 200
 
 # endregion
@@ -72,6 +85,7 @@ def admin_status():
     """Return server uptime, state, user count, and configuration."""
     if not _check_admin_auth(request):
         return jsonify({"error": "Forbidden"}), 403
+    logger.debug("GET /admin/status from %s", request.remote_addr)
     uptime = time.time() - _server.start_time
     all_users = _server.user_manager.get_all_users()
     user_count = len(all_users)
@@ -101,6 +115,7 @@ def admin_users():
     if not _check_admin_auth(request):
         return jsonify({"error": "Forbidden"}), 403
     users = _server.user_manager.get_all_users()
+    logger.debug("GET /admin/users -> %d user(s)", len(users))
     return jsonify({"users": users}), 200
 
 
@@ -142,7 +157,9 @@ def admin_disconnect(user_id):
     """Force-disconnect a user from their peer."""
     if not _check_admin_auth(request):
         return jsonify({"error": "Forbidden"}), 403
+    logger.info("POST /admin/disconnect/%s", user_id)
     _server.disconnect_peer(user_id)
+    logger.debug("POST /admin/disconnect/%s -> done", user_id)
     return jsonify({"status": "disconnected", "user_id": user_id}), 200
 
 
@@ -152,11 +169,13 @@ def admin_remove(user_id):
     """Force-disconnect and remove a user from the server."""
     if not _check_admin_auth(request):
         return jsonify({"error": "Forbidden"}), 403
+    logger.info("POST /admin/remove/%s", user_id)
     try:
         _server.disconnect_peer(user_id)
     except Exception:  # noqa: BLE001 -- best-effort disconnect before removal
-        logger.debug("User %s may not have a peer", user_id)
+        logger.debug("User %s may not have a peer (ok)", user_id)
     _server.remove_user(user_id)
+    logger.debug("POST /admin/remove/%s -> done", user_id)
     return jsonify({"status": "removed", "user_id": user_id}), 200
 
 
@@ -167,10 +186,10 @@ def admin_shutdown():
     if not _check_admin_auth(request):
         return jsonify({"error": "Forbidden"}), 403
     if _shutdown_fn is None:
+        logger.warning("POST /admin/shutdown -- shutdown_fn not configured")
         return jsonify({"error": "Shutdown not available"}), 503
 
-    # Return the response first, then shut down on a background thread
-    # so the HTTP response actually reaches the client.
+    logger.info("POST /admin/shutdown -- initiating graceful shutdown in 0.5s")
     threading.Timer(0.5, _shutdown_fn).start()
     return jsonify({"status": "shutting_down"}), 200
 

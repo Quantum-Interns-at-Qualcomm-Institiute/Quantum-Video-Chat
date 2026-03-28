@@ -1,6 +1,5 @@
 """WebSocket API for peer-to-peer session communication."""
 
-import logging
 import secrets
 import string
 import uuid
@@ -8,6 +7,8 @@ import uuid
 from flask import request as flask_request
 from flask_socketio import SocketIO, join_room, leave_room, send
 from utils.av import generate_flask_namespace
+
+from shared.logging import get_logger
 
 _ROOM_ID_CHARS = string.ascii_uppercase + string.digits
 _ROOM_ID_LENGTH = 5
@@ -22,7 +23,7 @@ class SocketAPI:
 
     def __init__(self, server, socketio: SocketIO):
         """Initialize SocketAPI with event handlers and AV namespaces."""
-        self.logger = logging.getLogger("SocketAPI")
+        self.logger = get_logger("SocketAPI")
         self.socketio = socketio
         self.server = server
 
@@ -52,6 +53,7 @@ class SocketAPI:
 
     def _register_events(self):
         """Wire up socket.io events from the EVENT_HANDLERS registry."""
+        self.logger.debug("Registering socket events: %s", list(self.EVENT_HANDLERS.keys()))
         for event, method_name in self.EVENT_HANDLERS.items():
             handler = getattr(self, method_name)
             self.socketio.on(event)(handler)
@@ -175,6 +177,8 @@ class SocketAPI:
         Called by the AV layer's key rotation thread when a BB84 round
         completes or is aborted due to intrusion detection.
         """
+        self.logger.debug("QBER update: event=%s  session=%s  data_keys=%s",
+                          event_type, session_id, list(data.keys()))
         kwargs = {}
         if session_id:
             kwargs["to"] = session_id
