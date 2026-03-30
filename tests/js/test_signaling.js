@@ -1,11 +1,6 @@
 /**
- * @jest-environment jsdom
- */
-
-/**
  * Tests for SignalingClient — the browser-side Socket.IO signaling wrapper.
  */
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
 
 // Mock Socket.IO — we test signaling logic, not the transport
 class MockSocket {

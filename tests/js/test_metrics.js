@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, jest } from '@jest/globals';
+import { vi } from 'vitest';
 import { MetricsCollector } from '../../website/client/static/js/metrics.js';
 
 describe('MetricsCollector', () => {
@@ -28,7 +28,7 @@ describe('MetricsCollector', () => {
   });
 
   test('qber exceeding threshold fires qber-exceeded event', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     collector.subscribe('qber-exceeded', callback);
 
     collector.record('qber', 0.05);
@@ -42,7 +42,7 @@ describe('MetricsCollector', () => {
   });
 
   test('qber returning below threshold fires qber-normal event', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     collector.subscribe('qber-normal', callback);
 
     // First push qber above threshold
@@ -57,7 +57,7 @@ describe('MetricsCollector', () => {
   });
 
   test('key budget below watermark fires key-budget-low event', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     collector.subscribe('key-budget-low', callback);
 
     collector.record('keyBudget', 2048);
@@ -71,7 +71,7 @@ describe('MetricsCollector', () => {
   });
 
   test('unsubscribe prevents callback', () => {
-    const callback = jest.fn();
+    const callback = vi.fn();
     collector.subscribe('qber-exceeded', callback);
     collector.unsubscribe('qber-exceeded', callback);
 

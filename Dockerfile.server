@@ -8,7 +8,6 @@ COPY signaling/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 COPY signaling/ signaling/
-COPY shared/ shared/
 
 ENV SIO_ASYNC_MODE=eventlet
 

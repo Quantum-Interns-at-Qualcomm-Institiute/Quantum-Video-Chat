@@ -1,14 +1,9 @@
 /**
- * @jest-environment jsdom
- */
-
-/**
  * DOM rendering tests for app.js.
  *
  * Loads app.js into a jsdom environment and verifies that render()
  * produces the correct DOM structure for each UI state.
  */
-import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +18,10 @@ const APP_JS_EXISTS = existsSync(APP_JS_PATH);
 
 // Stub globals that app.js expects
 function setupGlobals() {
+  // requestAnimationFrame polyfill for jsdom
+  globalThis.requestAnimationFrame = globalThis.requestAnimationFrame || ((cb) => setTimeout(cb, 0));
+  globalThis.cancelAnimationFrame = globalThis.cancelAnimationFrame || ((id) => clearTimeout(id));
+
   // Socket.IO stub
   globalThis.io = () => ({
     on: () => {},
@@ -67,24 +66,59 @@ function setupGlobals() {
   };
 
   // Canvas context stub
-  HTMLCanvasElement.prototype.getContext = function () {
-    return {
-      clearRect: () => {},
-      fillRect: () => {},
-      beginPath: () => {},
-      moveTo: () => {},
-      lineTo: () => {},
-      arc: () => {},
-      stroke: () => {},
-      fill: () => {},
-      setLineDash: () => {},
-      createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
-      putImageData: () => {},
-      fillStyle: '',
-      strokeStyle: '',
-      lineWidth: 1,
-    };
+  const canvasCtxStub = {
+    clearRect: () => {},
+    fillRect: () => {},
+    fillText: () => {},
+    beginPath: () => {},
+    moveTo: () => {},
+    lineTo: () => {},
+    arc: () => {},
+    stroke: () => {},
+    strokeRect: () => {},
+    fill: () => {},
+    setLineDash: () => {},
+    createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
+    putImageData: () => {},
+    fillStyle: '',
+    strokeStyle: '',
+    lineWidth: 1,
+    font: '',
+    textAlign: '',
+    textBaseline: '',
   };
+  HTMLCanvasElement.prototype.getContext = function () { return canvasCtxStub; };
+
+  // captureStream stub (for test media sources)
+  HTMLCanvasElement.prototype.captureStream = function () {
+    return new MediaStream();
+  };
+
+  // MediaStream stub
+  if (!globalThis.MediaStream) {
+    globalThis.MediaStream = class MediaStream {
+      #tracks;
+      constructor(tracks = []) { this.#tracks = [...tracks]; }
+      getTracks() { return this.#tracks; }
+      getVideoTracks() { return this.#tracks.filter(t => t.kind === 'video'); }
+      getAudioTracks() { return this.#tracks.filter(t => t.kind === 'audio'); }
+    };
+  }
+
+  // AudioContext stub (for test audio sources)
+  const oscStub = { type: '', frequency: { value: 0 }, connect: () => {}, start: () => {}, stop: () => {} };
+  const gainStub = { gain: { value: 0 }, connect: () => {} };
+  const destStub = { stream: new MediaStream() };
+  globalThis.AudioContext = class AudioContext {
+    createOscillator() { return { ...oscStub }; }
+    createGain() { return { ...gainStub }; }
+    createMediaStreamDestination() { return { ...destStub }; }
+    close() { return Promise.resolve(); }
+  };
+  globalThis.webkitAudioContext = globalThis.AudioContext;
+
+  // HTMLMediaElement.setSinkId stub
+  HTMLMediaElement.prototype.setSinkId = function () { return Promise.resolve(); };
 
   // localStorage stub
   const store = {};
@@ -121,6 +155,9 @@ function loadApp() {
     return {
       state, render, toggleCamera, toggleMute, createRoom,
       leaveSession, showToast, dismissToast, formatTime, handleJoin,
+      handleMediaSourceChange, handleAudioOutputChange, applyAudioOutput,
+      getLocalMedia, stopLocalMedia, cleanupTestMedia, createTestStream,
+      enumerateAudioOutputDevices,
     };
   `);
   return script();
@@ -132,6 +169,7 @@ describeIfAppExists('App DOM Rendering', () => {
   let app;
 
   beforeEach(() => {
+    vi.useFakeTimers();
     document.body.innerHTML = '<div id="app" class="main-screen"></div>';
     document.documentElement.setAttribute('data-theme', 'dark');
     setupGlobals();
@@ -139,7 +177,8 @@ describeIfAppExists('App DOM Rendering', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   describe('Lobby view (not in call)', () => {
@@ -400,6 +439,137 @@ describeIfAppExists('App DOM Rendering', () => {
       expect(app.formatTime(59)).toBe('00:59');
       expect(app.formatTime(60)).toBe('01:00');
       expect(app.formatTime(3661)).toBe('61:01');
+    });
+  });
+
+  describe('Media source selection', () => {
+    test('lobby renders source dropdown with three options', () => {
+      app.state.connected = true;
+      app.render();
+
+      const select = document.getElementById('media-source-select');
+      expect(select).not.toBeNull();
+      expect(select.tagName).toBe('SELECT');
+
+      const options = select.querySelectorAll('option');
+      expect(options.length).toBe(3);
+      expect(options[0].value).toBe('camera');
+      expect(options[1].value).toBe('test-a');
+      expect(options[2].value).toBe('test-b');
+    });
+
+    test('source dropdown reflects current mediaSource state', () => {
+      app.state.connected = true;
+      app.state.mediaSource = 'test-b';
+      app.render();
+
+      const select = document.getElementById('media-source-select');
+      expect(select.value).toBe('test-b');
+    });
+
+    test('handleMediaSourceChange updates state', async () => {
+      app.state.connected = true;
+      app.state.mediaSource = 'camera';
+      app.handleMediaSourceChange('test-a');
+      expect(app.state.mediaSource).toBe('test-a');
+    });
+
+    test('handleMediaSourceChange is a no-op for same value', () => {
+      app.state.mediaSource = 'camera';
+      app.handleMediaSourceChange('camera');
+      // Should not throw or change anything
+      expect(app.state.mediaSource).toBe('camera');
+    });
+
+    test('createTestStream returns a MediaStream', () => {
+      const stream = app.createTestStream('test-a');
+      expect(stream).toBeInstanceOf(MediaStream);
+    });
+
+    test('cleanupTestMedia does not throw when no test media active', () => {
+      expect(() => app.cleanupTestMedia()).not.toThrow();
+    });
+
+    test('stopLocalMedia does not throw when no stream active', () => {
+      expect(() => app.stopLocalMedia()).not.toThrow();
+    });
+  });
+
+  describe('Audio output device selection', () => {
+    test('speaker dropdown hidden when sinkIdSupported is false', () => {
+      app.state.connected = true;
+      app.state.sinkIdSupported = false;
+      app.render();
+
+      expect(document.getElementById('audio-output-select')).toBeNull();
+    });
+
+    test('speaker dropdown hidden when no output devices', () => {
+      app.state.connected = true;
+      app.state.sinkIdSupported = true;
+      app.state.audioOutputDevices = [];
+      app.render();
+
+      expect(document.getElementById('audio-output-select')).toBeNull();
+    });
+
+    test('speaker dropdown shown when supported and devices available', () => {
+      app.state.connected = true;
+      app.state.sinkIdSupported = true;
+      app.state.audioOutputDevices = [
+        { deviceId: 'default', kind: 'audiooutput', label: 'Default Speaker' },
+        { deviceId: 'abc123', kind: 'audiooutput', label: 'Headphones' },
+      ];
+      app.render();
+
+      const select = document.getElementById('audio-output-select');
+      expect(select).not.toBeNull();
+      const options = select.querySelectorAll('option');
+      expect(options.length).toBe(2);
+      expect(options[0].textContent).toBe('Default Speaker');
+      expect(options[1].textContent).toBe('Headphones');
+    });
+
+    test('handleAudioOutputChange updates selectedAudioOutput state', () => {
+      app.state.sinkIdSupported = true;
+      app.handleAudioOutputChange('abc123');
+      expect(app.state.selectedAudioOutput).toBe('abc123');
+    });
+
+    test('in-call view shows output select when >1 device and supported', () => {
+      app.state.connected = true;
+      app.state.roomId = 'XYZ99';
+      app.state.waitingForPeer = false;
+      app.state.peerConnected = true;
+      app.state.sinkIdSupported = true;
+      app.state.audioOutputDevices = [
+        { deviceId: 'default', kind: 'audiooutput', label: 'Default Speaker' },
+        { deviceId: 'abc123', kind: 'audiooutput', label: 'Headphones' },
+      ];
+      app.render();
+
+      const select = document.querySelector('.incall-output-select');
+      expect(select).not.toBeNull();
+    });
+
+    test('in-call view hides output select when only 1 device', () => {
+      app.state.connected = true;
+      app.state.roomId = 'XYZ99';
+      app.state.waitingForPeer = false;
+      app.state.peerConnected = true;
+      app.state.sinkIdSupported = true;
+      app.state.audioOutputDevices = [
+        { deviceId: 'default', kind: 'audiooutput', label: 'Default Speaker' },
+      ];
+      app.render();
+
+      const select = document.querySelector('.incall-output-select');
+      expect(select).toBeNull();
+    });
+
+    test('applyAudioOutput does not throw when no peer-video element', () => {
+      app.state.sinkIdSupported = true;
+      expect(() => app.applyAudioOutput()).not.toThrow();
     });
   });
 

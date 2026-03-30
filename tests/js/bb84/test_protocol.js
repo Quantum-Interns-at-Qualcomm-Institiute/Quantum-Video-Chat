@@ -1,4 +1,3 @@
-import { describe, test, expect } from '@jest/globals';
 import { BB84Protocol } from '../../../website/client/static/js/bb84/protocol.js';
 import {
   IdealQuantumChannel,

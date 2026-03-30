@@ -1,4 +1,3 @@
-import { describe, test, expect } from '@jest/globals';
 import { SimulatedQuantumChannel } from '../../../website/client/static/js/bb84/simulated.js';
 
 function generateQubits(n) {

@@ -5,16 +5,17 @@ from __future__ import annotations
 import logging
 import os
 import signal
+import socket as _socket
 import sys
-from pathlib import Path
 
-# Ensure project root is on sys.path for shared imports
-_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
-if _PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, _PROJECT_ROOT)
-
-from shared import find_available_port
 from signaling.server import create_app
+
+
+def _find_available_port(host: str = "127.0.0.1") -> int:
+    """Bind to port 0 and let the OS assign an available port."""
+    with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as s:
+        s.bind((host, 0))
+        return s.getsockname()[1]
 
 logging.basicConfig(
     level=logging.DEBUG if os.environ.get("QVC_DEBUG") else logging.INFO,
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     """Start the signaling server."""
     host = os.environ.get("QVC_HOST", "127.0.0.1")
-    port = int(os.environ.get("QVC_SERVER_REST_PORT") or 0) or find_available_port(host)
+    port = int(os.environ.get("QVC_SERVER_REST_PORT") or 0) or _find_available_port(host)
 
     flask_app, _sio, _rooms = create_app()
 

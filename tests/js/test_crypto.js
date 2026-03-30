@@ -1,17 +1,11 @@
-/**
- * @jest-environment node
- */
+// @vitest-environment node
 
 /**
  * Tests for frame-level AES-128-GCM encryption/decryption.
  * Runs in Node environment (not jsdom) to avoid ArrayBuffer realm issues.
  */
-import { describe, test, expect, beforeAll } from '@jest/globals';
 import { webcrypto } from 'node:crypto';
 import { importKey, encryptFrame, decryptFrame, parseKeyIndex } from '../../website/client/static/js/crypto.js';
-
-// Set up globalThis.crypto for the module under test
-globalThis.crypto = webcrypto;
 
 describe('Frame Crypto', () => {
   let key;

@@ -1,8 +1,8 @@
 # Quantum Video Chat
 
-Browser-native, peer-to-peer video chat with **BB84 quantum key distribution**. Video and audio flow directly between browsers via WebRTC — encrypted frame-by-frame with AES-128-GCM keys derived from a simulated quantum optical channel.
+Browser-native, peer-to-peer video chat with **BB84 quantum key distribution**. Video and audio flow directly between browsers via WebRTC. The BB84 protocol runs over a WebRTC DataChannel, producing shared symmetric keys through a simulated quantum optical channel.
 
-The system models real quantum hardware: Poissonian photon statistics, fiber attenuation, single-photon APD detectors, and intercept-resend eavesdropping. When the quantum bit error rate (QBER) exceeds the 11% security threshold, keys are rejected and re-exchanged automatically.
+The quantum channel models real hardware parameters: Poissonian photon statistics, fiber attenuation, single-photon APD detectors, and intercept-resend eavesdropping. When the quantum bit error rate (QBER) exceeds the 11% security threshold, keys are rejected and re-exchanged automatically.
 
 ## Architecture
 
@@ -54,7 +54,26 @@ Navigate to the page that serves `website/client/index.html`. In Docker, this is
 2. Tab A clicks **Start Session** → gets a room code
 3. Tab B enters the room code → clicks **Join**
 4. WebRTC peer connection establishes → video flows P2P
-5. BB84 key exchange runs over DataChannel → frames encrypted
+5. BB84 key exchange runs over DataChannel → shared key derived
+
+## Current Status
+
+This is a research demonstration, not a production QKD system.
+
+### Working
+
+- **Signaling server**: room creation, SDP/ICE relay, connection lifecycle management
+- **WebRTC video**: peer-to-peer video and audio between browsers
+- **BB84 key exchange**: full protocol over DataChannel — basis sifting, QBER estimation, Cascade error correction, Toeplitz privacy amplification. Produces matching symmetric keys on both peers.
+- **Eavesdropper detection**: intercept-resend attacks raise QBER above the 11% threshold, triggering automatic key rejection and re-exchange
+
+### In Progress
+
+- **Connecting BB84 keys to video encryption**: the AES-128-GCM Insertable Streams encryption pipeline exists (Web Worker, `RTCRtpScriptTransform`, frame encrypt/decrypt), but `state.encryptionEnabled` is never set to `true` after key exchange completes. The BB84-derived keys are not yet wired into the frame encryption path.
+
+### Simulated
+
+- **Quantum channel**: there are no real photons. The `SimulatedQuantumChannel` models a Poisson photon source, fiber attenuation, and avalanche photodiode (APD) detectors to produce realistic error rates and key generation statistics. This is a computational model of the quantum optical layer, suitable for demonstrating and testing the classical post-processing stages of BB84.
 
 ## Tests
 
