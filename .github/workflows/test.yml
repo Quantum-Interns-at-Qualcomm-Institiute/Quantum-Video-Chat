@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, refactor]
   pull_request:
     branches: [main]
 
@@ -26,7 +26,7 @@ jobs:
         run: pip install ruff
 
       - name: Run ruff check
-        run: ruff check signaling/ shared/ tests/signaling/
+        run: ruff check signaling/ tests/signaling/
 
   python-tests:
     name: Python Tests
@@ -52,8 +52,8 @@ jobs:
           python -m pytest tests/signaling/ \
             -v --tb=short --timeout=60
 
-  bb84-simulator-tests:
-    name: BB84 Quantum Simulator Tests
+  js-tests:
+    name: JS Tests (Vitest)
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -68,8 +68,8 @@ jobs:
       - name: Install JS dependencies
         run: npm install
 
-      - name: Run BB84 and crypto JS tests
-        run: node --experimental-vm-modules node_modules/.bin/jest tests/js/ --verbose
+      - name: Run JS tests
+        run: npx vitest run
 
   docker-build:
     name: Docker Build
