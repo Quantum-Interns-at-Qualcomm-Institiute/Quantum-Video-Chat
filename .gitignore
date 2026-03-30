@@ -2,8 +2,11 @@
 .*
 !.git*
 !.dashboard.yaml
+!.dockerignore
 
 __pycache__
+node_modules
+package-lock.json
 
 # Logs
 logs
