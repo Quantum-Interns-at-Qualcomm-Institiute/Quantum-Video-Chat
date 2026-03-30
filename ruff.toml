@@ -44,14 +44,21 @@ ignore = [
     "C901",    # complex structure in tests
     "PLR0913", # too many arguments
     "FBT",     # boolean args in tests
+    "BLE001",  # broad exception in tests
+    "SIM105",  # contextlib.suppress suggestion
+    "UP036",   # version block outdated
 ]
-"middleware/client.py" = ["E402"]   # gevent monkey.patch_all() before imports
-"middleware/audio.py" = ["E402"]
-"middleware/video.py" = ["E402"]
-"middleware/events.py" = ["E402"]
-"middleware/server_comms.py" = ["E402"]
-"server/rest_api.py" = ["E402"]     # sys.path before imports
+# Middleware is legacy code being replaced by signaling/ — relax strict rules
+"middleware/**" = [
+    "E402", "PLC0415", "PLR0915", "PLR2004", "C901",
+    "SLF001", "BLE001", "N806", "S310", "TRY",
+    "EM102", "FBT",
+]
+"server/rest_api.py" = ["E402", "PLC0415"]  # sys.path before imports
+"server/main.py" = ["E402"]
+"server/admin_routes.py" = ["E402"]
 "tests/conftest.py" = ["E402"]
+"signaling/main.py" = ["E402"]      # sys.path before imports
 
 [lint.pydocstyle]
 convention = "google"
