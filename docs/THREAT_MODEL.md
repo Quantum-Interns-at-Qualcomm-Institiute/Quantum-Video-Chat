@@ -24,6 +24,8 @@ Eve intercepts each photon, measures it in a randomly chosen basis, and re-sends
 
 Eve performs independent operations on each qubit. The BB84 security proof shows that for any individual attack, the mutual information between Eve and the final key can be bounded by the QBER. Privacy amplification removes Eve's information when QBER < 11%.
 
+**Implementation**: privacy amplification is a seeded Toeplitz hash (leftover hashing) over GF(2). Alice draws a fresh `n + m − 1`-bit seed per round from the platform CSPRNG (`crypto.getRandomValues`), transmits it over the classical channel (the seed is public — security comes from its freshness and uniformity, not its secrecy), and both sides compress the `n` corrected bits to the same `m = 128`-bit key. The parity bits disclosed during error correction are subtracted from the extractable-key budget; a round whose budget cannot cover the 128-bit target aborts (`key-budget`) instead of emitting a weakened key.
+
 ### Collective and Coherent Attacks
 
 More powerful attacks where Eve entangles a probe with each qubit and performs a joint measurement later. The Shor-Preskill proof (2000) establishes that BB84 is secure against all attacks (including coherent attacks) when QBER < 11%, provided error correction and privacy amplification are performed correctly.
@@ -70,7 +72,7 @@ Above 11%, privacy amplification cannot guarantee that Eve has negligible inform
 
 3. **No side channels**: The implementation does not leak key material through timing, power consumption, electromagnetic emissions, or other side channels.
 
-4. **Random number generation**: Basis and bit selection use cryptographically secure random number generators (numpy's default_rng with system entropy).
+4. **Random number generation**: key bits, basis choices, and the Toeplitz seed are drawn from the platform CSPRNG (`crypto.getRandomValues`). The simulated channel's physics (photon loss, wrong-basis measurement outcomes) deliberately uses a plain PRNG — it models nature, not secrets.
 
 ## Known Limitations
 
@@ -78,7 +80,9 @@ Above 11%, privacy amplification cannot guarantee that Eve has negligible inform
 
 2. **No decoy states**: The simulation does not implement the decoy-state protocol (Lo, Ma, Chen 2005), which is required for security with weak coherent pulse sources against PNS attacks. This is documented as future work.
 
-3. **Simplified error correction**: The Cascade protocol implementation is simplified. Production systems use more efficient protocols (e.g., LDPC codes) with lower information leakage.
+3. **Simplified error correction**: the implementation is a single pass of 8-bit block parities, not Cascade — a mismatched block flips its first bit, so blocks with an even number of errors (or errors past the first position) can leave residual errors that surface as a failed round rather than being corrected. The disclosed parity bits are subtracted from the key budget (see above), but full Cascade (multi-pass binary search, as specified in `docs/diagrams/bb84-protocol.puml`) and lower-leakage codes (e.g. LDPC) remain future work.
+
+3a. **Non-random QBER sample**: the QBER estimate uses the first `min(⌊sifted/4⌋, 256)` sifted positions rather than a randomly chosen subset. Against the modeled intercept-resend attack (which is position-independent) this estimates the same rate; an adversary who could target positions would evade it, so a production system must sample randomly.
 
 4. **No finite-key effects**: The security analysis assumes asymptotic key lengths. For short keys (as in our simulation with 4096 raw bits), finite-key corrections reduce the secure key rate. A production system would need composable security bounds.
 
