@@ -10,7 +10,7 @@ The system consists of three parties and two communication channels:
 
 **Quantum channel**: Fiber-optic link carrying single photons. Untrusted — Eve has full access.
 
-**Classical channel**: Authenticated TCP/TLS connection for basis reconciliation, error correction, and privacy amplification. Assumed authenticated but not secret — Eve can read but not modify messages.
+**Classical channel**: A WebRTC DataChannel (DTLS-encrypted transport) carrying basis reconciliation, error correction, and privacy amplification. BB84's security proof requires this channel to be *authenticated* — Eve may read but must not be able to modify or inject messages. **This implementation does not yet cryptographically authenticate it end-to-end**: DTLS protects the hop, but the signaling server relaying the SDP exchange is a trusted party (a malicious signaling server could in principle sit in the middle of both the DTLS session and the BB84 classical messages). What the code does enforce today: every classical message is type-checked with strict sequencing (an injected or out-of-order message aborts the round as `protocol-error`, it cannot desynchronize the protocol), array payloads are bounds-checked, and both sides independently enforce the QBER threshold. Planned next (see roadmap): a link-key MAC over the classical transcript and SDP fingerprints, plus a short-authentication-string (SAS) display, which will reduce the trusted-signaling-server assumption to "authenticated if your invite-link channel was; verified if you compared the SAS".
 
 ## What BB84 Protects Against
 
@@ -68,7 +68,7 @@ Above 11%, privacy amplification cannot guarantee that Eve has negligible inform
 
 1. **Trusted devices**: Alice's source and Bob's detectors are not compromised. There is no detector blinding, Trojan horse attacks on the source, or other device-level attacks. (Device-independent QKD would relax this assumption but is not implemented.)
 
-2. **Authenticated classical channel**: The TCP/TLS connection between Alice and Bob is authenticated. Eve cannot modify classical messages (man-in-the-middle on the classical channel would break the protocol regardless of quantum security).
+2. **Authenticated classical channel**: *assumed, not yet implemented end-to-end* — see the System Model note above. The DataChannel hop is DTLS-protected and the message layer is strictly typed and sequenced, but authentication currently rests on trusting the signaling server that brokered the connection. A MITM on the classical channel breaks the protocol regardless of quantum security, which is why channel authentication (MAC + SAS) is the next planned change rather than a footnote.
 
 3. **No side channels**: The implementation does not leak key material through timing, power consumption, electromagnetic emissions, or other side channels.
 
@@ -90,14 +90,28 @@ Above 11%, privacy amplification cannot guarantee that Eve has negligible inform
 
 ## Attack Surface
 
-| Component | Risk | Mitigation |
-|-----------|------|------------|
-| REST API (:5050) | DoS, unauthorized access | Rate limiting (30 req/min per IP) |
-| WebSocket (:3000) | Session hijacking | User ID authentication on connect |
-| Key material in memory | Memory dump | Keys rotate every 1-3 seconds; old keys are dereferenced |
-| Configuration | Parameter tampering | Environment variables and INI files are local-only |
-| Eavesdropper toggle | Demo feature abuse | Admin endpoint only; not exposed to clients |
-| Classical channel | MITM | TLS with certificate pinning (when certs are configured) |
+This table describes what the code actually does — every mitigation listed here
+is implemented and tested, and the residual risks are stated rather than
+papered over.
+
+| Component | Risk | Mitigation (implemented) | Residual risk |
+|-----------|------|--------------------------|---------------|
+| Signaling: connect/create/join | Flooding, room squatting | Per-IP token bucket (30/min default, `QVC_RATE_LIMIT`); connections over the cap are refused; bucket table swept on a timer and hard-capped; `X-Forwarded-For` is ignored unless `QVC_TRUSTED_PROXIES` is set (then only the hop a trusted proxy vouched for is used) | In-memory, per-process; resets on restart. Behind a proxy the limit is only as good as `QVC_TRUSTED_PROXIES` being set correctly — unset, all clients behind one proxy share a bucket |
+| Room access | Uninvited joiners | Room ids are ~128-bit `secrets.token_urlsafe` capability tokens carried in the invite link's URL fragment; join errors don't echo tokens; dashboards/logs only ever see redacted prefixes | Anyone holding the link can join — the link is the credential; share it over a channel you trust |
+| `/admin/*` endpoints | Recon (rooms, sids), unauthorized ops | Fail-closed shared secret (`QVC_ADMIN_SECRET`, constant-time compare); rejections are shape-identical to a framework 404, wrong-secret probes are rate-limited and logged; responses and server logs redact sids and room ids regardless | Secret distribution is out of band |
+| Media frames | Plaintext leak before/without a key | Fail-closed crypto worker: frames are **dropped** (never passed through) when no key is installed, on short/malformed frames, and on GCM auth failure; the decrypt side keeps a two-key ring selected by the frame header so a re-key doesn't freeze the video; a mid-call renegotiation offer is ignored rather than rebuilding a keyless worker; browsers without `RTCRtpScriptTransform` get a red "unsupported" pill and no key is ever installed; the UI pill shows worker-reported state (amber/green/red) | A user can read the red pill and choose to keep waiting; no media flows either way. On an unsupported browser the call cannot be encrypted at all — the honest outcome is no media |
+| Key material in memory | Memory dump | Keys live only in the crypto worker as non-extractable WebCrypto `CryptoKey`s; a new BB84 round re-keys when the key budget runs low (key index increments per round) | No fixed wall-clock rotation interval; a call that never exhausts its budget keeps its key for the call's duration |
+| Classical channel | MITM, injection | Typed + sequenced message layer (injection ⇒ clean abort), bounds-checked payloads, both-side QBER enforcement; DataChannel mux drops malformed JSON/unknown channels and caps buffers | End-to-end authentication pending (MAC + SAS, see System Model) |
+| Eavesdropper toggle | Misread as a real attack control | It is a **local demo control**: the room creator's client injects intercept-resend into its own *simulated* quantum channel so viewers can watch the QBER spike. It is not an admin feature and grants nothing over a real channel | None — it only degrades the toggler's own session |
+| Third-party script | Supply-chain (CDN) | socket.io-client is vendored into the repo (provenance hash recorded in `index.html`); no runtime third-party script loads | Vendored copy must be bumped manually for security releases |
+| Configuration | Parameter tampering | Environment variables are local-only; CORS origins are exact strings or fully anchored regexes (prefix-attack origins like `localhostevil.com` are rejected, with regression tests); legacy port-wildcard entries are translated to anchored regexes at startup with a warning | — |
+| Deploy skew | A cached `app.js` driving a new worker (or vice versa) across a deploy | Script tags carry a `?v=` cache-busting query bumped per release, so both files roll over together | Users mid-call during a deploy keep the old pair until reload |
+
+**Historical note — `key.bin`**: earlier revisions of this repository wrote a
+`key.bin` file from a prototype key-persistence experiment. It was never used
+to protect live traffic, the code path is gone, and the filename remains in
+`.gitignore` only to keep stray copies out of version control. Treat any
+`key.bin` found in old checkouts as dead material: delete it; do not reuse it.
 
 ## References
 
