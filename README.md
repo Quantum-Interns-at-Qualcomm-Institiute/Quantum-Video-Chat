@@ -1,5 +1,12 @@
 # Quantum Video Chat
 
+> **This repository holds the original project.** The browser rewrite that
+> replaced it — WebRTC, Insertable Streams, a reworked BB84 stack — now lives at
+> [andypeterson2/bb84-video-chat](https://github.com/andypeterson2/bb84-video-chat)
+> and shares no code with what is here. That work stays reachable in this
+> repository at the `browser-rewrite-2026` tag and the
+> `archive/browser-rewrite` branch.
+
 A secure, peer-to-peer video chat application with a full **BB84 quantum key distribution** simulation. Encrypted audio and video streams are exchanged between peers using AES-128 keys generated through a realistic quantum optical channel simulation — including Poissonian photon statistics, fiber attenuation, single-photon detector noise, and the complete BB84 protocol (sifting, QBER estimation, Cascade error correction, Toeplitz privacy amplification).
 
 The system detects eavesdropping in real time: when the quantum bit error rate (QBER) exceeds the 11% threshold, the key is automatically rejected and redistributed — all while the video stream continues uninterrupted.
